@@ -1,0 +1,193 @@
+[
+  {
+    "unite_id": "mal",
+    "baslik": "Peşin Ticari Mal Alımı",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, satış için 50.000 TL + %20 KDV tutarında ticari malı tedarikçisinden e-fatura ile peşin satın almıştır. Ödeme banka havalesi ile yapılmıştır.",
+    "ipucu": "Ticari mal borç + indirilecek KDV borç ↔ banka alacak.",
+    "aciklama": "Mal stokuna giriş 153 Ticari Mallar 50.000 TL borç. KDV 191 İndirilecek KDV 10.000 TL borç. Toplam ödeme 60.000 TL banka çıkışı olarak 102 Bankalar alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "153", "borc": 50000, "alacak": 0 },
+      { "kod": "191", "borc": 10000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 60000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Veresiye Mal Alımı",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, tedarikçisinden 30 gün vadeli olarak 80.000 TL + %20 KDV tutarında ticari mal almıştır. Ödeme yapılmamış, satıcı cari hesabı borçlandırılacaktır.",
+    "ipucu": "Mal ve KDV borç ↔ Satıcılar alacak.",
+    "aciklama": "153 Ticari Mallar 80.000 TL borç, 191 İndirilecek KDV 16.000 TL borç. Vadeli alım olduğu için 320 Satıcılar 96.000 TL alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "153", "borc": 80000, "alacak": 0 },
+      { "kod": "191", "borc": 16000, "alacak": 0 },
+      { "kod": "320", "borc": 0, "alacak": 96000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Peşin Mal Satışı (Sürekli Envanter)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, maliyeti 18.000 TL olan ticari malı 25.000 TL + %20 KDV ile peşin (banka havalesi) satmıştır. Sürekli envanter yöntemi kullanılmaktadır.",
+    "ipucu": "Hem hasılat hem maliyet kaydı yapılır.",
+    "aciklama": "Hasılat: 102 Bankalar 30.000 TL borç; 600 Yurt İçi Satışlar 25.000 TL alacak; 391 Hesaplanan KDV 5.000 TL alacak. Maliyet: 621 Satılan Ticari Mallar Maliyeti 18.000 TL borç; 153 Ticari Mallar 18.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 30000, "alacak": 0 },
+      { "kod": "600", "borc": 0, "alacak": 25000 },
+      { "kod": "391", "borc": 0, "alacak": 5000 },
+      { "kod": "621", "borc": 18000, "alacak": 0 },
+      { "kod": "153", "borc": 0, "alacak": 18000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Veresiye Mal Satışı (Sürekli Envanter)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, maliyeti 12.000 TL olan ticari malları 18.000 TL + %20 KDV ile 60 gün vadeli olarak müşterisine satmıştır. Sürekli envanter yöntemi uygulanmaktadır.",
+    "ipucu": "Alıcılar borç; satış + KDV alacak; ayrıca maliyet kaydı.",
+    "aciklama": "Hasılat: 120 Alıcılar 21.600 TL borç; 600 Yurt İçi Satışlar 18.000 TL alacak; 391 Hesaplanan KDV 3.600 TL alacak. Maliyet: 621 STMM 12.000 TL borç; 153 Ticari Mallar 12.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "120", "borc": 21600, "alacak": 0 },
+      { "kod": "600", "borc": 0, "alacak": 18000 },
+      { "kod": "391", "borc": 0, "alacak": 3600 },
+      { "kod": "621", "borc": 12000, "alacak": 0 },
+      { "kod": "153", "borc": 0, "alacak": 12000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Mal Alımında İskonto (Fatura İçi)",
+    "zorluk": "orta",
+    "senaryo": "İşletme, liste fiyatı 100.000 TL olan ticari malı tedarikçisinden %10 fatura içi iskonto ile satın almıştır. Faturadaki net mal bedeli 90.000 TL + %20 KDV (18.000 TL) toplamı 108.000 TL olup tutar peşin banka havalesi ile ödenmiştir.",
+    "ipucu": "Fatura içi iskonto net bedeli düşürür; ek iskonto kaydı yapılmaz.",
+    "aciklama": "İskontolu net mal bedeli 90.000 TL üzerinden 153 Ticari Mallar borç. KDV iskontolu tutar üzerinden 18.000 TL 191 İndirilecek KDV borç. 102 Bankalar 108.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "153", "borc": 90000, "alacak": 0 },
+      { "kod": "191", "borc": 18000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 108000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Mal Alımına Eşlik Eden Navlun",
+    "zorluk": "orta",
+    "senaryo": "İşletme satıcıdan 60.000 TL + %20 KDV ticari mal almış, vadeli olarak 320 Satıcılar'a borçlanmıştır. Ayrıca malların depoya teslimi için nakliye firmasına 2.000 TL + %20 KDV ödeme banka havalesi ile yapılmıştır. Nakliye gideri stok maliyetine eklenmektedir.",
+    "ipucu": "Nakliye stok maliyetine ilave edilir; iki ayrı kayıt yapılır.",
+    "aciklama": "Mal alış kaydı: 153 Ticari Mallar 60.000 TL borç, 191 İndirilecek KDV 12.000 TL borç, 320 Satıcılar 72.000 TL alacak. Nakliye: 153 Ticari Mallar 2.000 TL borç (maliyete dahil), 191 İndirilecek KDV 400 TL borç, 102 Bankalar 2.400 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "153", "borc": 62000, "alacak": 0 },
+      { "kod": "191", "borc": 12400, "alacak": 0 },
+      { "kod": "320", "borc": 0, "alacak": 72000 },
+      { "kod": "102", "borc": 0, "alacak": 2400 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Satıştan İade (Sürekli Envanter)",
+    "zorluk": "orta",
+    "senaryo": "Önceden 18.000 TL + %20 KDV ile vadeli satılan ticari malların 6.000 TL + %20 KDV tutarındaki kısmı kalite uygunsuzluğu nedeniyle iade alınmıştır. İade edilen malın maliyeti 4.500 TL'dir; sürekli envanter uygulanmaktadır. Müşterinin cari borcu iade tutarı kadar azaltılacaktır.",
+    "ipucu": "Satıştan iadeler hesabı + KDV ters kayıt; ayrıca maliyet ters kaydı.",
+    "aciklama": "Hasılat ters kaydı: 610 Satıştan İadeler 6.000 TL borç, 391 Hesaplanan KDV 1.200 TL borç (ters yön), 120 Alıcılar 7.200 TL alacak. Maliyet ters kaydı: 153 Ticari Mallar 4.500 TL borç, 621 STMM 4.500 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "610", "borc": 6000, "alacak": 0 },
+      { "kod": "391", "borc": 1200, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 7200 },
+      { "kod": "153", "borc": 4500, "alacak": 0 },
+      { "kod": "621", "borc": 0, "alacak": 4500 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Tedarikçiye Sipariş Avansı",
+    "zorluk": "orta",
+    "senaryo": "İşletme, ileride teslim alacağı ticari mal siparişi için tedarikçisine 25.000 TL banka havalesi yoluyla avans göndermiştir. Henüz fatura düzenlenmemiş, mal teslim alınmamıştır.",
+    "ipucu": "Verilen sipariş avansı aktif geçici hesabıdır.",
+    "aciklama": "Avans tutarı 159 Verilen Sipariş Avansları 25.000 TL borç. Banka mevduatı azaldığı için 102 Bankalar 25.000 TL alacak. Mal teslim alındığında 159 hesabı kapatılarak 153 hesabına aktarılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "159", "borc": 25000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 25000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Sipariş Avansının Mahsubu ile Mal Tesliminin Alınması",
+    "zorluk": "orta",
+    "senaryo": "Daha önce tedarikçiye 25.000 TL avans verilmiş ve 159 Verilen Sipariş Avansları'nda izlenmiştir. Bu kez mal teslim alınmış, satıcı 80.000 TL + %20 KDV tutarında fatura düzenlemiştir. Avans mahsup edilmiş, kalan 71.000 TL satıcının cari hesabına borçlanmıştır.",
+    "ipucu": "Avans hesabı kapatılır; kalan satıcı borcu olarak yazılır.",
+    "aciklama": "Mal alış kaydı: 153 Ticari Mallar 80.000 TL borç, 191 İndirilecek KDV 16.000 TL borç. Avans mahsubu: 159 Verilen Sipariş Avansları 25.000 TL alacak (kapanış). Kalan tutar 320 Satıcılar 71.000 TL alacak (96.000 - 25.000).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "153", "borc": 80000, "alacak": 0 },
+      { "kod": "191", "borc": 16000, "alacak": 0 },
+      { "kod": "159", "borc": 0, "alacak": 25000 },
+      { "kod": "320", "borc": 0, "alacak": 71000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Karma Ödemeli Mal Satışı",
+    "zorluk": "zor",
+    "senaryo": "İşletme, maliyeti 35.000 TL olan ticari malı 50.000 TL + %20 KDV ile satmıştır. Müşteri toplam 60.000 TL'nin 20.000 TL'sini nakit, 25.000 TL'sini banka havalesi, kalan 15.000 TL'sini 30 gün vadeli alacak senedi ile ödemiştir. Sürekli envanter uygulanmaktadır.",
+    "ipucu": "Üç farklı tahsilat aracı; ayrıca maliyet kaydı.",
+    "aciklama": "Hasılat: 100 Kasa 20.000, 102 Bankalar 25.000, 121 Alacak Senetleri 15.000 TL borç. Karşılığında 600 Yurt İçi Satışlar 50.000 TL alacak ve 391 Hesaplanan KDV 10.000 TL alacak. Maliyet: 621 STMM 35.000 TL borç, 153 Ticari Mallar 35.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 20000, "alacak": 0 },
+      { "kod": "102", "borc": 25000, "alacak": 0 },
+      { "kod": "121", "borc": 15000, "alacak": 0 },
+      { "kod": "600", "borc": 0, "alacak": 50000 },
+      { "kod": "391", "borc": 0, "alacak": 10000 },
+      { "kod": "621", "borc": 35000, "alacak": 0 },
+      { "kod": "153", "borc": 0, "alacak": 35000 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Alış İskontosu (Vade Sonrası)",
+    "zorluk": "zor",
+    "senaryo": "İşletme, daha önce 320 Satıcılar'da 120.000 TL borç olarak izlenen mal alımının ödemesini vade tarihinden 10 gün önce yapmıştır. Tedarikçi vade öncesi ödeme nedeniyle %3 (3.600 TL) iskonto uygulamış, kalan 116.400 TL banka havalesi ile ödenmiştir. İskonto fatura sonrası ek bir gelir niteliğindedir.",
+    "ipucu": "Sonradan elde edilen alış iskontosu olağan gelir hesabına yazılır.",
+    "aciklama": "Satıcı borcu kapanır: 320 Satıcılar 120.000 TL borç. Ödeme: 102 Bankalar 116.400 TL alacak. İskonto işletme lehine gelir oluşturduğu için 649 Diğer Olağan Gelir ve Karlar 3.600 TL alacak yazılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 120000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 116400 },
+      { "kod": "649", "borc": 0, "alacak": 3600 }
+    ]
+  },
+  {
+    "unite_id": "mal",
+    "baslik": "Mal Alış İadesinde KDV Düzeltmesi",
+    "zorluk": "zor",
+    "senaryo": "İşletme, 320 Satıcılar'da 96.000 TL borç olarak izlenen 80.000 TL + %20 KDV mal alımının 24.000 TL + %20 KDV tutarındaki kısmını hatalı ürün gerekçesiyle iade etmiştir. Tedarikçi iade faturasını kabul etmiş, satıcı cari hesabı 28.800 TL azaltılmıştır.",
+    "ipucu": "Mal hesabı azalır; KDV ters çevrilir; satıcı borcu düşer.",
+    "aciklama": "Tedarikçi borcu azaldığı için 320 Satıcılar 28.800 TL borç. İade edilen mal stoktan çıktığı için 153 Ticari Mallar 24.000 TL alacak. KDV indirim hakkı azaldığı için 191 İndirilecek KDV 4.800 TL alacak (ters kayıt).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 28800, "alacak": 0 },
+      { "kod": "153", "borc": 0, "alacak": 24000 },
+      { "kod": "191", "borc": 0, "alacak": 4800 }
+    ]
+  }
+]

@@ -1,0 +1,196 @@
+import { supabase } from './supabase';
+import { ZORLUK_PUAN } from '../data/sabitler';
+import { bugununTarihi } from './format';
+import { varsayilanIlerleme } from './ilerleme';
+import type { CozulenKayit, Ilerleme, SoruWithUnite, Zorluk } from '../types';
+
+const dunTarihi = (gun: string): string => {
+  const d = new Date(gun);
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().split('T')[0];
+};
+
+const soruZorlukMap = (tumSorular: SoruWithUnite[]): Record<string, Zorluk> =>
+  tumSorular.reduce(
+    (acc, s) => {
+      acc[s.id] = s.zorluk;
+      return acc;
+    },
+    {} as Record<string, Zorluk>,
+  );
+
+// Ardışık aktivite tarihlerinden streak hesapla
+const streakHesapla = (aktiviteTarihleri: Record<string, number>): { streak: number; sonTarih: string | null } => {
+  const tarihler = Object.keys(aktiviteTarihleri).sort();
+  if (tarihler.length === 0) return { streak: 0, sonTarih: null };
+  const sonTarih = tarihler[tarihler.length - 1];
+  const bugun = bugununTarihi();
+  const dun = dunTarihi(bugun);
+  if (sonTarih !== bugun && sonTarih !== dun) return { streak: 0, sonTarih };
+  let streak = 1;
+  for (let i = tarihler.length - 2; i >= 0; i--) {
+    if (tarihler[i] === dunTarihi(tarihler[i + 1])) streak++;
+    else break;
+  }
+  return { streak, sonTarih };
+};
+
+export const ilerlemeYukleSupabase = async (
+  userId: string,
+  tumSorular: SoruWithUnite[],
+): Promise<Ilerleme> => {
+  const [profilSonuc, ilerlemeSonuc, rozetlerSonuc, aktiviteSonuc] = await Promise.all([
+    supabase.from('kullanicilar').select('kullanici_adi, tema').eq('id', userId).maybeSingle(),
+    supabase.from('ilerleme').select('soru_id, dogru_mu, created_at').eq('user_id', userId),
+    supabase.from('kazanilan_rozetler').select('rozet_id, kazanilan_tarih').eq('user_id', userId),
+    supabase.from('aktivite').select('tarih, cozulen_sayi').eq('user_id', userId),
+  ]);
+
+  const baslangic = varsayilanIlerleme();
+  const profil = profilSonuc.data;
+  if (profil) {
+    baslangic.kullaniciAdi = profil.kullanici_adi;
+    baslangic.tema = profil.tema;
+  }
+
+  const soruZorluk = soruZorlukMap(tumSorular);
+
+  // Çözülenler: dogru_mu=true olanlardan en eski tarihi tutuyoruz (ilk çözüm tarihi)
+  const cozulenler: Record<string, CozulenKayit> = {};
+  const yanlislar: Record<string, number> = {};
+  let puan = 0;
+  for (const row of ilerlemeSonuc.data ?? []) {
+    if (row.dogru_mu) {
+      if (!cozulenler[row.soru_id]) {
+        const zorluk = soruZorluk[row.soru_id] ?? 'kolay';
+        cozulenler[row.soru_id] = { tarih: row.created_at.split('T')[0], zorluk };
+        puan += ZORLUK_PUAN[zorluk];
+      }
+    } else {
+      yanlislar[row.soru_id] = (yanlislar[row.soru_id] ?? 0) + 1;
+    }
+  }
+
+  const aktiviteTarihleri: Record<string, number> = {};
+  for (const row of aktiviteSonuc.data ?? []) {
+    aktiviteTarihleri[row.tarih] = row.cozulen_sayi;
+  }
+
+  const kazanilanRozetler: Record<string, string> = {};
+  for (const row of rozetlerSonuc.data ?? []) {
+    kazanilanRozetler[row.rozet_id] = row.kazanilan_tarih.split('T')[0];
+  }
+
+  const { streak, sonTarih } = streakHesapla(aktiviteTarihleri);
+
+  // Onboarding durumunu veriden türet: çözümü veya özel adı varsa tamamlanmış say
+  const onboardingTamam =
+    Object.keys(cozulenler).length > 0 ||
+    (!!baslangic.kullaniciAdi && baslangic.kullaniciAdi !== 'Öğrenci');
+
+  return {
+    ...baslangic,
+    cozulenler,
+    yanlislar,
+    puan,
+    streak,
+    sonCozumTarihi: sonTarih,
+    aktiviteTarihleri,
+    kazanilanRozetler,
+    onboardingTamam,
+  };
+};
+
+export const soruCozumKaydetSupabase = async (
+  userId: string,
+  soruId: string,
+  bugun: string,
+): Promise<void> => {
+  await supabase.from('ilerleme').insert({ user_id: userId, soru_id: soruId, dogru_mu: true });
+  // aktivite upsert: aynı (user_id, tarih) varsa cozulen_sayi'yı +1 yap
+  const { data: mevcut } = await supabase
+    .from('aktivite')
+    .select('cozulen_sayi')
+    .eq('user_id', userId)
+    .eq('tarih', bugun)
+    .maybeSingle();
+  await supabase.from('aktivite').upsert({
+    user_id: userId,
+    tarih: bugun,
+    cozulen_sayi: (mevcut?.cozulen_sayi ?? 0) + 1,
+  });
+};
+
+export const yanlisKaydetSupabase = async (userId: string, soruId: string): Promise<void> => {
+  await supabase.from('ilerleme').insert({ user_id: userId, soru_id: soruId, dogru_mu: false });
+};
+
+export const rozetKaydetSupabase = async (userId: string, rozetId: string): Promise<void> => {
+  await supabase
+    .from('kazanilan_rozetler')
+    .upsert({ user_id: userId, rozet_id: rozetId }, { onConflict: 'user_id,rozet_id' });
+};
+
+export const profilKaydetSupabase = async (
+  userId: string,
+  guncel: Partial<{ kullanici_adi: string; tema: 'light' | 'dark' }>,
+): Promise<void> => {
+  await supabase.from('kullanicilar').update(guncel).eq('id', userId);
+};
+
+// İlk login: localStorage verisini Supabase'e basıp tek seferlik migration yap.
+// Çakışma çözümü yok — Supabase'de zaten veri varsa atla (yeniden migrate olmaması için).
+export const ilerlemeMigrateSupabase = async (
+  userId: string,
+  yerel: Ilerleme,
+): Promise<{ migrateEdildi: boolean; satirSayisi: number }> => {
+  const { count } = await supabase
+    .from('ilerleme')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId);
+
+  if ((count ?? 0) > 0) return { migrateEdildi: false, satirSayisi: 0 };
+  if (Object.keys(yerel.cozulenler).length === 0) return { migrateEdildi: false, satirSayisi: 0 };
+
+  const ilerlemeSatirlari = Object.entries(yerel.cozulenler).map(([soruId, k]) => ({
+    user_id: userId,
+    soru_id: soruId,
+    dogru_mu: true,
+    created_at: `${k.tarih}T12:00:00Z`,
+  }));
+
+  const yanlisSatirlari: { user_id: string; soru_id: string; dogru_mu: boolean }[] = [];
+  for (const [soruId, sayi] of Object.entries(yerel.yanlislar)) {
+    for (let i = 0; i < sayi; i++) {
+      yanlisSatirlari.push({ user_id: userId, soru_id: soruId, dogru_mu: false });
+    }
+  }
+
+  const aktiviteSatirlari = Object.entries(yerel.aktiviteTarihleri).map(([tarih, sayi]) => ({
+    user_id: userId,
+    tarih,
+    cozulen_sayi: sayi,
+  }));
+
+  const rozetSatirlari = Object.keys(yerel.kazanilanRozetler).map((rozetId) => ({
+    user_id: userId,
+    rozet_id: rozetId,
+  }));
+
+  const tumSatirlar = [...ilerlemeSatirlari, ...yanlisSatirlari];
+
+  await Promise.all([
+    tumSatirlar.length > 0 ? supabase.from('ilerleme').insert(tumSatirlar) : Promise.resolve(),
+    aktiviteSatirlari.length > 0
+      ? supabase.from('aktivite').upsert(aktiviteSatirlari, { onConflict: 'user_id,tarih' })
+      : Promise.resolve(),
+    rozetSatirlari.length > 0
+      ? supabase
+          .from('kazanilan_rozetler')
+          .upsert(rozetSatirlari, { onConflict: 'user_id,rozet_id' })
+      : Promise.resolve(),
+    profilKaydetSupabase(userId, { kullanici_adi: yerel.kullaniciAdi, tema: yerel.tema }),
+  ]);
+
+  return { migrateEdildi: true, satirSayisi: tumSatirlar.length };
+};

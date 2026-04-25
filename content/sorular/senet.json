@@ -1,0 +1,173 @@
+[
+  {
+    "unite_id": "senet",
+    "baslik": "Müşteriden Alacak Senedi Alma",
+    "zorluk": "kolay",
+    "senaryo": "Alıcılar hesabında 18.000 TL borcu görünen müşteriden, borcu karşılamak üzere 3 ay vadeli alacak senedi alınmıştır.",
+    "ipucu": "Alacak senedi alacak hesabını kapatmaz; sadece şeklini değiştirir.",
+    "aciklama": "Senetli alacak doğduğu için 121 Alacak Senetleri 18.000 TL borçlanır. Aynı tutarda 120 Alıcılar hesabı 18.000 TL alacaklanır. Tahsilat aracı değişmiş; toplam alacak değişmemiştir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "121", "borc": 18000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 18000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Tedarikçiye Borç Senedi Verme",
+    "zorluk": "kolay",
+    "senaryo": "Satıcılar hesabında 22.500 TL borcu olan işletme, satıcının talebi üzerine 60 gün vadeli borç senedi düzenleyerek vermiştir. Borç şekil değiştirmiş, tutar aynı kalmıştır.",
+    "ipucu": "Satıcı borcu kapanır; borç senedi yükümlülüğü doğar.",
+    "aciklama": "Satıcı cari borcu kapatıldığı için 320 Satıcılar 22.500 TL borç. Senetli borç oluştuğu için 321 Borç Senetleri 22.500 TL alacak. Yükümlülüğün şekli değişmiş, tutarı aynı kalmıştır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 22500, "alacak": 0 },
+      { "kod": "321", "borc": 0, "alacak": 22500 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Vadesi Gelen Alacak Senedinin Tahsili",
+    "zorluk": "kolay",
+    "senaryo": "Vadesi dolan 15.000 TL'lik alacak senedi, müşteri tarafından işletmenin Garanti BBVA hesabına havale yoluyla ödenmiştir. Banka dekontu işletmeye ulaşmıştır.",
+    "ipucu": "Senet kapanır; banka borç.",
+    "aciklama": "Banka mevduatı arttığı için 102 Bankalar 15.000 TL borçlanır. Vadesinde tahsil edildiği için 121 Alacak Senetleri 15.000 TL alacaklanarak kapanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 15000, "alacak": 0 },
+      { "kod": "121", "borc": 0, "alacak": 15000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Vadesi Gelen Borç Senedinin Ödenmesi",
+    "zorluk": "kolay",
+    "senaryo": "Tedarikçiye düzenlenen 28.000 TL'lik borç senedinin vadesi gelmiştir. İşletme, ödemeyi banka havalesi ile yapmıştır.",
+    "ipucu": "Senet borç hesabı kapanır; banka alacak.",
+    "aciklama": "Vadesi dolan senet ödendiği için 321 Borç Senetleri 28.000 TL borç olarak kapanır. Banka mevduatından çıkış yapıldığı için 102 Bankalar 28.000 TL alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "321", "borc": 28000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 28000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Müşteriden Vadeli Çek Alma",
+    "zorluk": "kolay",
+    "senaryo": "Alıcılar hesabında 35.000 TL borcu olan müşteri, borcuna karşılık 45 gün vadeli müşteri çeki vermiştir. Çek henüz tahsil edilmemiş, kasada bekletilmektedir.",
+    "ipucu": "Alınan çek hazır değer grubunda izlenir.",
+    "aciklama": "Alınan çek 101 Alınan Çekler hesabında 35.000 TL borç. Müşteri borcu kapatıldığı için 120 Alıcılar 35.000 TL alacak. Alınan çekler portföye girene kadar 101'de takip edilir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "101", "borc": 35000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 35000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Tedarikçiye Çek Düzenleme (Verilen Çek)",
+    "zorluk": "orta",
+    "senaryo": "Satıcılar hesabında 40.000 TL borcu olan işletme, ödeme için 30 gün vadeli kendi keşide ettiği çeki tedarikçiye vermiştir. Çek henüz bankada tahsile sunulmamıştır.",
+    "ipucu": "103 Verilen Çekler ve Ödeme Emirleri pasif düzenleyici hesaptır.",
+    "aciklama": "Satıcı borcu kapatıldığı için 320 Satıcılar 40.000 TL borç. Verilen çek 103 Verilen Çekler ve Ödeme Emirleri 40.000 TL alacak. Çek tahsil edildiğinde 103 hesabı 102 Bankalar ile mahsuplanacaktır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 40000, "alacak": 0 },
+      { "kod": "103", "borc": 0, "alacak": 40000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Verilen Çekin Bankadan Tahsili",
+    "zorluk": "orta",
+    "senaryo": "Daha önce tedarikçiye verilen 40.000 TL'lik çek vade tarihinde bankaya ibraz edilmiş; bankadaki yeterli bakiyeden tahsil edilmiştir. Banka, hesabımızdan tutarı çekmiş ve dekont göndermiştir.",
+    "ipucu": "Verilen Çekler hesabı kapanır; banka alacak.",
+    "aciklama": "Çek bankadan tahsil edilince 103 Verilen Çekler ve Ödeme Emirleri 40.000 TL borç olarak kapanır. Banka mevduatı azaldığı için 102 Bankalar 40.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "103", "borc": 40000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 40000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Alınan Çekin Tedarikçiye Cirosu",
+    "zorluk": "orta",
+    "senaryo": "Müşteriden alınan 30.000 TL'lik çek, satıcılar hesabında 30.000 TL borç görünen tedarikçiye ciro yoluyla devredilmiştir. Ödeme bu çekle yapılmıştır.",
+    "ipucu": "Alınan çek elden çıkar; satıcı borcu kapanır.",
+    "aciklama": "Satıcı borcu kapatıldığı için 320 Satıcılar 30.000 TL borç. Çek elden çıkarıldığı için 101 Alınan Çekler 30.000 TL alacak. Ödeme aracı bilanço dışına çıkmış olur.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 30000, "alacak": 0 },
+      { "kod": "101", "borc": 0, "alacak": 30000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Alacak Senedinin Bankaya Tahsile Verilmesi",
+    "zorluk": "orta",
+    "senaryo": "Vadesi 5 gün sonra dolacak 22.000 TL tutarındaki alacak senedi, tahsilat takibi için Akbank'a tahsile verilmiştir. Senet bankaya teslim edilmiş; tahsilatı henüz gerçekleşmemiştir. (İşletme tahsile verilen senetleri 121'in alt hesabı olarak izlemektedir.)",
+    "ipucu": "Senedin yardımcı hesap içinde yeri değişir; tahsilat öncesi ana hesap aynı kalır.",
+    "aciklama": "Yardımcı hesap düzeyinde 121 Alacak Senetleri (Tahsildeki Senetler) 22.000 TL borç; 121 Alacak Senetleri (Portföydeki Senetler) 22.000 TL alacak yazılır. Senet tahsil edildiğinde 102 Bankalar borç, 121 Tahsildeki Senetler alacak ile kayıt tamamlanacaktır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "121", "borc": 22000, "alacak": 0 },
+      { "kod": "121", "borc": 0, "alacak": 22000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Senedin Bankaca Tahsil Edilmesi (Komisyonlu)",
+    "zorluk": "orta",
+    "senaryo": "Bankaya tahsile verilen 22.000 TL'lik alacak senedinin vadesi dolmuş, banka tutarı tahsil etmiş ve %0,5 (110 TL) tahsilat komisyonu kesip kalan 21.890 TL'yi vadesiz hesaba yansıtmıştır.",
+    "ipucu": "Banka net tutarla; komisyon gider; senet tahsildeki alt hesabı kapanır.",
+    "aciklama": "Net banka geliri 102 Bankalar 21.890 TL borç; banka komisyonu 653 Komisyon Giderleri 110 TL borç; tahsil edilen senet 121 Alacak Senetleri (Tahsildeki) 22.000 TL alacak ile kapanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 21890, "alacak": 0 },
+      { "kod": "653", "borc": 110, "alacak": 0 },
+      { "kod": "121", "borc": 0, "alacak": 22000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Karşılıksız Çıkan Müşteri Çeki",
+    "zorluk": "zor",
+    "senaryo": "Bir önceki ay alınmış ve 101 Alınan Çekler'de 18.000 TL olarak izlenen müşteri çeki, bankaya ibraz edildiğinde karşılıksız çıkmıştır. İşletme alacağını yeniden alıcı cari hesabına aktararak takibe almıştır.",
+    "ipucu": "Çek bilanço içinde kalır mı kalmaz mı? Karşılıksızda alıcılara aktarılır.",
+    "aciklama": "Karşılıksız çek nakde dönmediği için tekrar müşteri alacağı haline gelir: 120 Alıcılar 18.000 TL borç. Bankada tahsil edilemediği için 101 Alınan Çekler 18.000 TL alacak yazılarak kapatılır. Şüpheli alacak değerlendirmesi sonraki dönem yapılabilir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "120", "borc": 18000, "alacak": 0 },
+      { "kod": "101", "borc": 0, "alacak": 18000 }
+    ]
+  },
+  {
+    "unite_id": "senet",
+    "baslik": "Alacak Senedinin Bankaya İskonto Ettirilmesi",
+    "zorluk": "zor",
+    "senaryo": "İşletme nakit ihtiyacı sebebiyle 60.000 TL'lik alacak senedini vadesinden 60 gün önce Yapı Kredi'ye iskonto ettirmiştir. Banka 1.500 TL faiz (iskonto) ve 200 TL komisyon kesip net 58.300 TL'yi vadesiz hesaba yansıtmıştır.",
+    "ipucu": "Senet portföyden çıkar; iskonto faiz gideridir; komisyon ayrı.",
+    "aciklama": "102 Bankalar 58.300 TL borç. İskonto faizi 660 Kısa Vadeli Borçlanma Giderleri 1.500 TL borç. Banka komisyonu 653 Komisyon Giderleri 200 TL borç. Senet tamamen elden çıkar: 121 Alacak Senetleri 60.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 58300, "alacak": 0 },
+      { "kod": "660", "borc": 1500, "alacak": 0 },
+      { "kod": "653", "borc": 200, "alacak": 0 },
+      { "kod": "121", "borc": 0, "alacak": 60000 }
+    ]
+  }
+]

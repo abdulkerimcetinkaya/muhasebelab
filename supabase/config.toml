@@ -1,0 +1,13 @@
+# Edge Function ayarları.
+# ai-* fonksiyonları kendi auth katmanlarını (kullaniciDogrula / adminKontrol / premiumKontrol)
+# içerde uyguluyor; platform JWT verify açık olursa CORS preflight (OPTIONS) bile
+# auth header beklendiği için fail ediyor, tarayıcı CORS hatası veriyor.
+
+[functions.ai-asistan]
+verify_jwt = false
+
+[functions.ai-belge-uret]
+verify_jwt = false
+
+[functions.ai-yanlis-analizi]
+verify_jwt = false

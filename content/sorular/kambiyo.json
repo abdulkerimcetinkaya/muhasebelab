@@ -1,0 +1,176 @@
+[
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Bankada Döviz Alımı (TL ile)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme Akbank şubesinden 1.000 USD almıştır. Alış kuru 1 USD = 32,00 TL'dir; toplam 32.000 TL banka TL hesabından çekilmiş, 1.000 USD yine bankadaki USD vadesiz hesaba yatırılmıştır.",
+    "ipucu": "TL hesabı azalır, USD hesabı (102) alt hesabı artar.",
+    "aciklama": "USD vadesiz hesap (102 Bankalar - USD) TL karşılığı 32.000 TL ile borç. TL vadesiz hesap (102 Bankalar - TL) 32.000 TL alacak. İki alt hesap arası transfer; toplam banka değişmez ama yardımcı düzeyde bilgi açıklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 32000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 32000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Mal Satışı (Tahsilat İlerde)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme yurtdışı müşteriye 5.000 USD'ye mal satmıştır. Fatura tarihinde kur 1 USD = 33,00 TL olup ödeme 60 gün sonradır. (İhracat KDV istisnası uygulanmaktadır; maliyet ayrı kayıtla yapılacaktır.) İşletme alacağı 120 hesabına TL karşılığı 165.000 TL ile kaydetmiştir.",
+    "ipucu": "Hasılat 601; alacak 120; KDV yok.",
+    "aciklama": "120 Alıcılar 165.000 TL borç (5.000 USD × 33,00). 601 Yurt Dışı Satışlar 165.000 TL alacak. KDV yoktur. Tahsilatta kur farkı 646 veya 656'da değerlendirilecektir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "120", "borc": 165000, "alacak": 0 },
+      { "kod": "601", "borc": 0, "alacak": 165000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Alacağın Vadesinde Tahsilatı (Kur Karı)",
+    "zorluk": "kolay",
+    "senaryo": "Önceden 165.000 TL (5.000 USD × 33,00) olarak kayda alınmış yurtdışı alacağı, vade tarihinde 5.000 USD olarak banka hesabına gelmiştir. Tahsilat günü kur 1 USD = 34,00 TL'dir; TL karşılığı 170.000 TL'dir.",
+    "ipucu": "Tahsilat tutarı arttı → kur karı 646 alacak.",
+    "aciklama": "102 Bankalar (USD) 170.000 TL borç (5.000 USD × 34,00). 120 Alıcılar 165.000 TL alacak (kayıtlı tutar). Aradaki 5.000 TL kambiyo karıdır: 646 Kambiyo Karları 5.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 170000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 165000 },
+      { "kod": "646", "borc": 0, "alacak": 5000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Alacağın Vadesinde Tahsilatı (Kur Zararı)",
+    "zorluk": "kolay",
+    "senaryo": "120 Alıcılar'da 165.000 TL (5.000 USD × 33,00) kayıtlı yurtdışı alacağı, tahsilat günü kuru 1 USD = 31,00 TL olarak gerçekleştiği için 155.000 TL TL karşılığı ile bankaya gelmiştir.",
+    "ipucu": "Düşen kur zararı 656 borç.",
+    "aciklama": "102 Bankalar (USD) 155.000 TL borç. 120 Alıcılar 165.000 TL alacak (kayıtlı tutar). Aradaki 10.000 TL kambiyo zararıdır: 656 Kambiyo Zararları 10.000 TL borç.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 155000, "alacak": 0 },
+      { "kod": "656", "borc": 10000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 165000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Mal İthalatı (Vadeli)",
+    "zorluk": "orta",
+    "senaryo": "İşletme yurtdışından 4.000 EUR tutarında ticari mal ithal etmiş ve fatura tarihinde 1 EUR = 36,00 TL kuruyla 144.000 TL TL karşılığı ile 320 Satıcılar - Yurt Dışı'na borçlanmıştır. Ödeme 90 gün sonra yapılacaktır. (İthalatta KDV gümrükte ayrı süreçte ödenir; bu örnekte ihmal edilmiştir.)",
+    "ipucu": "153 borç ↔ 320 alacak; KDV ihmal.",
+    "aciklama": "153 Ticari Mallar 144.000 TL borç (4.000 EUR × 36,00). 320 Satıcılar 144.000 TL alacak. Ödeme tarihindeki kura göre kur farkı doğacak ve uygun gelir/gider hesabına yansıtılacaktır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "153", "borc": 144000, "alacak": 0 },
+      { "kod": "320", "borc": 0, "alacak": 144000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Borç Ödenmesi (Kur Zararı)",
+    "zorluk": "orta",
+    "senaryo": "Daha önce 144.000 TL (4.000 EUR × 36,00) olarak kaydedilmiş yurtdışı satıcı borcu, vade tarihinde 4.000 EUR olarak ödenecektir. Ödeme günü kur 1 EUR = 38,00 TL'dir; TL karşılığı 152.000 TL'dir.",
+    "ipucu": "Daha çok TL gitti → kur zararı 656 borç.",
+    "aciklama": "320 Satıcılar 144.000 TL borç (kayıtlı tutar kapanır). 656 Kambiyo Zararları 8.000 TL borç (artış). 102 Bankalar (EUR) 152.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 144000, "alacak": 0 },
+      { "kod": "656", "borc": 8000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 152000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Borç Ödenmesi (Kur Karı)",
+    "zorluk": "orta",
+    "senaryo": "320 Satıcılar - Yurt Dışı'nda 144.000 TL (4.000 EUR × 36,00) kayıtlı borç, ödeme günü kuru 1 EUR = 35,00 TL olarak gerçekleştiği için 140.000 TL TL karşılığı ile ödenmiştir.",
+    "ipucu": "Az TL gitti → kur karı 646 alacak.",
+    "aciklama": "320 Satıcılar 144.000 TL borç (kapanış). 102 Bankalar (EUR) 140.000 TL alacak. Aradaki 4.000 TL işletme lehine kambiyo karıdır: 646 Kambiyo Karları 4.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 144000, "alacak": 0 },
+      { "kod": "646", "borc": 0, "alacak": 4000 },
+      { "kod": "102", "borc": 0, "alacak": 140000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Banka Hesabının Yıl Sonu Değerlemesi (Lehe)",
+    "zorluk": "orta",
+    "senaryo": "Yıl sonu itibariyle işletmenin USD hesabında 10.000 USD bulunmaktadır. Defter değeri 320.000 TL (alış kuru 32,00) olarak kayıtlıdır. 31 Aralık MB efektif kuru 1 USD = 33,50 TL'dir; bu durumda hesap 335.000 TL değer kazanmıştır.",
+    "ipucu": "Aktifin değeri arttı → kambiyo karı 646 alacak.",
+    "aciklama": "USD vadesiz hesabın TL değeri arttığı için 102 Bankalar (USD) 15.000 TL borç (artış). Karşılığında 646 Kambiyo Karları 15.000 TL alacak. Yıl sonu değerlemesi sonucu hesap kayıtlı değeri 335.000 TL'ye yükselmiş olur.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 15000, "alacak": 0 },
+      { "kod": "646", "borc": 0, "alacak": 15000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Banka Hesabının Yıl Sonu Değerlemesi (Aleyhte)",
+    "zorluk": "orta",
+    "senaryo": "İşletmenin USD vadesiz hesabında 10.000 USD bulunmaktadır. Defter değeri 320.000 TL'dir. Yıl sonu MB kuru 1 USD = 30,00 TL'ye düşmüş, hesabın TL karşılığı 300.000 TL olmuştur.",
+    "ipucu": "Aktifin değeri düştü → kambiyo zararı 656 borç.",
+    "aciklama": "USD hesabı değer kaybetti: 102 Bankalar (USD) 20.000 TL alacak. 656 Kambiyo Zararları 20.000 TL borç. Yeni TL değer 300.000 TL'ye iner.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "656", "borc": 20000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 20000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Borçların Yıl Sonu Değerlemesi (Aleyhte)",
+    "zorluk": "zor",
+    "senaryo": "Yıl sonu itibariyle 320 Satıcılar - Yurt Dışı bakiyesi 144.000 TL'dir (4.000 EUR × 36,00). 31 Aralık MB efektif kuru 1 EUR = 38,00 TL olduğundan borcun TL değeri 152.000 TL'ye yükselmiştir.",
+    "ipucu": "Pasif arttı → kambiyo zararı 656 borç.",
+    "aciklama": "Yükümlülük arttığı için 320 Satıcılar 8.000 TL alacak (defter değeri yukarı çekilir). 656 Kambiyo Zararları 8.000 TL borç. Yeni TL değer 152.000 TL olur.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "656", "borc": 8000, "alacak": 0 },
+      { "kod": "320", "borc": 0, "alacak": 8000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Dövizli Borçların Yıl Sonu Değerlemesi (Lehe)",
+    "zorluk": "zor",
+    "senaryo": "320 Satıcılar - Yurt Dışı'nda 144.000 TL (4.000 EUR × 36,00) tutarında borç bulunmaktadır. Yıl sonu kuru 1 EUR = 34,00 TL'ye düştüğünden borcun TL karşılığı 136.000 TL'ye inmiştir.",
+    "ipucu": "Pasif azaldı → kambiyo karı 646 alacak.",
+    "aciklama": "Yükümlülük azaldığı için 320 Satıcılar 8.000 TL borç (azaltma). 646 Kambiyo Karları 8.000 TL alacak. Yeni TL değer 136.000 TL'dir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 8000, "alacak": 0 },
+      { "kod": "646", "borc": 0, "alacak": 8000 }
+    ]
+  },
+  {
+    "unite_id": "kambiyo",
+    "baslik": "Karma Yıl Sonu Değerleme: Hem Aktif Hem Pasif",
+    "zorluk": "zor",
+    "senaryo": "Yıl sonu değerlemesinde işletmenin: 1) USD vadesiz hesabı 10.000 USD (defter 320.000 TL; yeni kur 33,50 → 335.000 TL: 15.000 TL kar), 2) EUR satıcı borcu 4.000 EUR (defter 144.000 TL; yeni kur 37,00 → 148.000 TL: 4.000 TL zarar). İki kayıt aynı yevmiyede yapılmıştır.",
+    "ipucu": "Aktif kar + pasif zarar; ikisi de ayrı kayıtla işlenir.",
+    "aciklama": "Aktif değerleme (kar): 102 Bankalar (USD) 15.000 TL borç; 646 Kambiyo Karları 15.000 TL alacak. Pasif değerleme (zarar): 656 Kambiyo Zararları 4.000 TL borç; 320 Satıcılar 4.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 15000, "alacak": 0 },
+      { "kod": "646", "borc": 0, "alacak": 15000 },
+      { "kod": "656", "borc": 4000, "alacak": 0 },
+      { "kod": "320", "borc": 0, "alacak": 4000 }
+    ]
+  }
+]

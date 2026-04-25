@@ -1,0 +1,184 @@
+[
+  {
+    "unite_id": "kdv",
+    "baslik": "KDV Mahsubu — Ödenecek KDV Çıkması",
+    "zorluk": "kolay",
+    "senaryo": "Mart ayı sonu itibariyle 391 Hesaplanan KDV bakiyesi 24.000 TL, 191 İndirilecek KDV bakiyesi 18.000 TL'dir. Ay sonu mahsuplaşmasında 191 hesabı, 391 hesabı ile mahsup edilerek ödenecek KDV ortaya çıkarılacaktır.",
+    "ipucu": "391 borç + 191 alacak; fark 360'a alacak.",
+    "aciklama": "391 Hesaplanan KDV 24.000 TL borçlandırılarak kapatılır. 191 İndirilecek KDV 18.000 TL alacaklandırılarak kapatılır. Aradaki 6.000 TL ödenecek KDV olarak 360 Ödenecek Vergi ve Fonlar'a alacak yazılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "391", "borc": 24000, "alacak": 0 },
+      { "kod": "191", "borc": 0, "alacak": 18000 },
+      { "kod": "360", "borc": 0, "alacak": 6000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "KDV Mahsubu — Devreden KDV Çıkması",
+    "zorluk": "kolay",
+    "senaryo": "Nisan ayı sonu 191 İndirilecek KDV bakiyesi 32.000 TL, 391 Hesaplanan KDV bakiyesi 25.000 TL'dir. Mahsup işleminde indirilecek KDV daha büyük olduğu için aradaki fark devreden KDV olarak sonraki aya aktarılacaktır.",
+    "ipucu": "391 borç + 190 borç ↔ 191 alacak.",
+    "aciklama": "391 Hesaplanan KDV 25.000 TL borçlandırılarak kapatılır. Kalan indirim hakkı (7.000 TL) 190 Devreden KDV hesabında borç olarak izlenir. 191 İndirilecek KDV 32.000 TL alacaklandırılarak kapatılır. Sonraki ayın mahsubunda 190 hesabı tekrar 191 olarak indirime alınır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "391", "borc": 25000, "alacak": 0 },
+      { "kod": "190", "borc": 7000, "alacak": 0 },
+      { "kod": "191", "borc": 0, "alacak": 32000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Ödenecek KDV'nin Bankadan Ödenmesi",
+    "zorluk": "kolay",
+    "senaryo": "Geçen ay mahsup sonucunda 360 Ödenecek Vergi ve Fonlar'da 6.000 TL KDV borcu oluşmuştu. Bu ay vergi dairesine internet bankacılığı üzerinden ödeme yapılmıştır.",
+    "ipucu": "Vergi borcu kapanır; banka alacak.",
+    "aciklama": "Vergi borcu kapatıldığı için 360 Ödenecek Vergi ve Fonlar 6.000 TL borç. Banka mevduatından çıkış olduğu için 102 Bankalar 6.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "360", "borc": 6000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 6000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Devreden KDV'nin Sonraki Ay Mahsubu",
+    "zorluk": "kolay",
+    "senaryo": "Önceki ay 190 Devreden KDV bakiyesi 7.000 TL olarak devretmiştir. Bu ayın başında bu bakiye, ay içi KDV indirimine eklenmek üzere 191 İndirilecek KDV hesabına aktarılmıştır.",
+    "ipucu": "190 alacak; 191 borç.",
+    "aciklama": "Geçmiş aydan devreden indirim hakkı 191 İndirilecek KDV 7.000 TL borç olarak yeniden ay içi indirimlerle birlikte izlenir. 190 Devreden KDV 7.000 TL alacak yazılarak kapatılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "191", "borc": 7000, "alacak": 0 },
+      { "kod": "190", "borc": 0, "alacak": 7000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Faaliyet Dışı Sabit Kıymet Satışında KDV",
+    "zorluk": "orta",
+    "senaryo": "İşletme, kayıtlı değeri 50.000 TL ve birikmiş amortismanı 30.000 TL olan demirbaşı 25.000 TL + %20 KDV ile peşin satmıştır. Satış banka havalesi ile tahsil edilmiştir. (Satış kar/zarar mahsubu için 679/689 hesapları kullanılır.)",
+    "ipucu": "Demirbaş ve birikmiş amortisman birlikte kapanır; KDV satış üzerinden hesaplanır; kar 679 alacak.",
+    "aciklama": "102 Bankalar 30.000 TL borç. 257 Birikmiş Amortismanlar 30.000 TL borç (kapanış). 255 Demirbaşlar 50.000 TL alacak. 391 Hesaplanan KDV 5.000 TL alacak. Net defter değeri 20.000 TL, satış 25.000 TL — 5.000 TL kar 679 Diğer Olağandışı Gelir ve Karlar alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 30000, "alacak": 0 },
+      { "kod": "257", "borc": 30000, "alacak": 0 },
+      { "kod": "255", "borc": 0, "alacak": 50000 },
+      { "kod": "391", "borc": 0, "alacak": 5000 },
+      { "kod": "679", "borc": 0, "alacak": 5000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "İndirilemeyecek KDV Olan Gider",
+    "zorluk": "orta",
+    "senaryo": "İşletme, çalışanların kullanması için 4.000 TL + %20 KDV tutarında binek otomobil yakıtını nakit olarak almıştır. Mevzuat gereği binek otomobile ait yakıt KDV'si indirilemeyeceğinden, KDV gider olarak yansıtılmaktadır.",
+    "ipucu": "İndirilemeyen KDV gider hesabına eklenir.",
+    "aciklama": "İndirilemeyen KDV de gider niteliğindedir; toplam 4.800 TL 770 Genel Yönetim Giderleri'nde borç. 100 Kasa 4.800 TL alacak. 191 İndirilecek KDV kullanılmaz; KDV gider içinde takip edilir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 4800, "alacak": 0 },
+      { "kod": "100", "borc": 0, "alacak": 4800 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Farklı Oranlı Mal Alımı (%10 + %20)",
+    "zorluk": "orta",
+    "senaryo": "İşletme aynı tedarikçiden gıda ürünleri (10.000 TL + %10 KDV) ve temizlik malzemesi (8.000 TL + %20 KDV) almış, toplam fatura tutarı 20.600 TL'yi peşin banka havalesi ile ödemiştir. Hem gıda hem temizlik mallarının her ikisi 153 Ticari Mallar olarak izlenmektedir.",
+    "ipucu": "İki farklı KDV oranı tek kayıtta indirilecek KDV altında birleşir.",
+    "aciklama": "153 Ticari Mallar toplam 18.000 TL borç (10.000 + 8.000). KDV: 10.000 × %10 = 1.000 + 8.000 × %20 = 1.600 → toplam 2.600 TL 191 İndirilecek KDV borç. 102 Bankalar 20.600 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "153", "borc": 18000, "alacak": 0 },
+      { "kod": "191", "borc": 2600, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 20600 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Satıştan İade Sonrası KDV Mahsubu (Geçici)",
+    "zorluk": "orta",
+    "senaryo": "İşletme, daha önce 391 Hesaplanan KDV'de izlenmiş olan 4.000 TL KDV'yi, ilgili satış iadesi nedeniyle ay içinde ters çevirmiştir. Ay sonu mahsupta 391 hesabının kalanı 16.000 TL, 191 hesabı 14.000 TL'dir. Mahsup yapılarak ödenecek KDV bulunacaktır.",
+    "ipucu": "Ay içi iade ters kaydı önceden işlenmiş; mahsup kalan bakiyeler üzerinden yapılır.",
+    "aciklama": "391 Hesaplanan KDV 16.000 TL borç ile kapanır. 191 İndirilecek KDV 14.000 TL alacak ile kapanır. Aradaki 2.000 TL 360 Ödenecek Vergi ve Fonlar alacak olarak izlenir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "391", "borc": 16000, "alacak": 0 },
+      { "kod": "191", "borc": 0, "alacak": 14000 },
+      { "kod": "360", "borc": 0, "alacak": 2000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Ön Ödemeli (Peşin) Vergi: Stopajlı Faturada KDV",
+    "zorluk": "orta",
+    "senaryo": "Serbest meslek erbabından alınan 5.000 TL'lik (KDV %20: 1.000 TL) hizmet faturasında %20 gelir vergisi stopajı (1.000 TL) bulunmaktadır. Toplam ödeme: 5.000 + 1.000 KDV − 1.000 stopaj = 5.000 TL net banka havalesi ile yapılmıştır.",
+    "ipucu": "Hizmet bedeli gider; KDV indirilebilir; stopaj 360'a alacak.",
+    "aciklama": "770 Genel Yönetim Giderleri 5.000 TL borç (hizmet brüt bedeli). 191 İndirilecek KDV 1.000 TL borç. 360 Ödenecek Vergi ve Fonlar 1.000 TL alacak (stopaj). 102 Bankalar 5.000 TL alacak (net ödeme).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 5000, "alacak": 0 },
+      { "kod": "191", "borc": 1000, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 1000 },
+      { "kod": "102", "borc": 0, "alacak": 5000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "İhracat Satışında KDV İstisnası",
+    "zorluk": "zor",
+    "senaryo": "İşletme yurtdışındaki müşterisine 100.000 TL tutarında ticari mal ihracat etmiştir. İhracat KDV'den istisnadır; ödeme banka havalesi ile yurt dışından gelmiştir. Maliyeti 70.000 TL olan mallar sürekli envanter yöntemiyle takip edilmektedir. (Bu örnekte kur farkı dikkate alınmamıştır.)",
+    "ipucu": "601 hesabı; KDV yok; sürekli envanter maliyet kaydı yine yapılır.",
+    "aciklama": "Hasılat: 102 Bankalar 100.000 TL borç; 601 Yurt Dışı Satışlar 100.000 TL alacak (KDV istisnası nedeniyle KDV yazılmaz). Maliyet: 621 STMM 70.000 TL borç; 153 Ticari Mallar 70.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 100000, "alacak": 0 },
+      { "kod": "601", "borc": 0, "alacak": 100000 },
+      { "kod": "621", "borc": 70000, "alacak": 0 },
+      { "kod": "153", "borc": 0, "alacak": 70000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Devreden KDV Çıkması (Devamlı)",
+    "zorluk": "zor",
+    "senaryo": "Şubat ayı: 391 Hesaplanan KDV bakiyesi 12.000 TL, 191 İndirilecek KDV bakiyesi 28.000 TL ve önceki aydan devreden 190 Devreden KDV bakiyesi 4.000 TL'dir. Mahsup işleminde önce devreden KDV ay içi indirime aktarılmış olup; ay içi indirilebilir KDV toplamı 32.000 TL'dir. Net devreden KDV nasıl oluşur?",
+    "ipucu": "Hesaplanan KDV küçük; devreden KDV büyür.",
+    "aciklama": "Önce 190 → 191 aktarımı yapılmış kabul edilirse 191 toplam 32.000 TL'dir. Mahsupta 391 Hesaplanan KDV 12.000 TL borç ile kapanır. 191 İndirilecek KDV 32.000 TL alacak ile kapanır. Aradaki 20.000 TL devreden KDV olarak 190 Devreden KDV borç yazılır ve sonraki aya taşınır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "391", "borc": 12000, "alacak": 0 },
+      { "kod": "190", "borc": 20000, "alacak": 0 },
+      { "kod": "191", "borc": 0, "alacak": 32000 }
+    ]
+  },
+  {
+    "unite_id": "kdv",
+    "baslik": "Tevkifatlı Hizmet Alımı",
+    "zorluk": "zor",
+    "senaryo": "Yapım işi yapan kuruma fatura ödemesinde KDV tevkifatı uygulanmaktadır. Hizmet bedeli 50.000 TL, KDV %20 (10.000 TL). Tevkifat oranı 5/10 olduğundan KDV'nin yarısı (5.000 TL) sorumlu sıfatıyla işletmece beyan edilecek, kalan 5.000 TL satıcıya ödenecektir. Toplam: 50.000 + 5.000 = 55.000 TL banka havalesi.",
+    "ipucu": "İndirilecek KDV 10.000 (tam); 392 Diğer KDV 5.000 alacak (sorumlu sıfatıyla); banka 55.000 alacak.",
+    "aciklama": "770 Genel Yönetim Giderleri 50.000 TL borç. 191 İndirilecek KDV 10.000 TL borç (tam KDV indirim). 392 Diğer KDV (Sorumlu Sıfatıyla) 5.000 TL alacak — sonradan 360 hesabına aktarılarak işletmece ödenecek. 102 Bankalar 55.000 TL alacak (50.000 hizmet + 5.000 satıcının KDV payı).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 50000, "alacak": 0 },
+      { "kod": "191", "borc": 10000, "alacak": 0 },
+      { "kod": "392", "borc": 0, "alacak": 5000 },
+      { "kod": "102", "borc": 0, "alacak": 55000 }
+    ]
+  }
+]

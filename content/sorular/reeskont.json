@@ -1,0 +1,180 @@
+[
+  {
+    "unite_id": "reeskont",
+    "baslik": "Alacak Senedi Reeskontu (Dönem Sonu)",
+    "zorluk": "kolay",
+    "senaryo": "31 Aralık dönem sonu itibariyle 121 Alacak Senetleri'nde nominal değeri 100.000 TL olan vadeli senetlerin reeskont tutarı 4.000 TL olarak hesaplanmıştır. Reeskont, alacağın bugünkü değerine indirgenmesidir.",
+    "ipucu": "Düzenleyici aktif (-) hesabı 122 alacak; reeskont gideri 657 borç.",
+    "aciklama": "Reeskont tutarı dönem gideridir: 657 Reeskont Faiz Giderleri 4.000 TL borç. Düzenleyici aktif (-) hesap olarak 122 Alacak Senetleri Reeskontu 4.000 TL alacak. Bu kayıt alacak senetlerinin bilanço değerini bugünkü değere indirir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "657", "borc": 4000, "alacak": 0 },
+      { "kod": "122", "borc": 0, "alacak": 4000 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Alacak Senedi Reeskontunun Yeni Yıl Başında İptali",
+    "zorluk": "kolay",
+    "senaryo": "Yeni yıl başında, geçen yıl ayrılmış 4.000 TL'lik alacak senetleri reeskontu (122 hesabında) iptal edilerek ters kayıtla geri çevrilecektir. Bu ters kayıt sayesinde senetlerin yıl içinde tahsil edildiğinde bilanço değerinin gerçeği yansıtması sağlanır.",
+    "ipucu": "122 borç ↔ 647 alacak (reeskont faiz geliri).",
+    "aciklama": "122 Alacak Senetleri Reeskontu 4.000 TL borç (kapanış). 647 Reeskont Faiz Gelirleri 4.000 TL alacak (yeni yılın geliri). Senet vadesinde tahsil edildiğinde herhangi bir reeskont kalmayacaktır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "122", "borc": 4000, "alacak": 0 },
+      { "kod": "647", "borc": 0, "alacak": 4000 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Borç Senedi Reeskontu (Dönem Sonu)",
+    "zorluk": "kolay",
+    "senaryo": "31 Aralık dönem sonunda 321 Borç Senetleri'nde nominal değeri 80.000 TL olan vadeli senetler için 3.200 TL reeskont hesaplanmıştır. Bu işlem yükümlülüğün bugünkü değerine indirgenmesidir.",
+    "ipucu": "Düzenleyici pasif (-) hesabı 322 borç; gelir hesabı 647 alacak.",
+    "aciklama": "Yükümlülük bugüne indirgendiği için işletme lehine gelir oluşur: 322 Borç Senetleri Reeskontu 3.200 TL borç (pasif düzeltici). 647 Reeskont Faiz Gelirleri 3.200 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "322", "borc": 3200, "alacak": 0 },
+      { "kod": "647", "borc": 0, "alacak": 3200 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Borç Senedi Reeskontunun Yeni Yıl Başında İptali",
+    "zorluk": "kolay",
+    "senaryo": "Yeni yılın ilk günü, geçen yıl ayrılmış 3.200 TL'lik borç senetleri reeskontu (322 hesabında) ters kayıtla iptal edilmiştir.",
+    "ipucu": "657 borç ↔ 322 alacak.",
+    "aciklama": "657 Reeskont Faiz Giderleri 3.200 TL borç (yeni yıl gideri). 322 Borç Senetleri Reeskontu 3.200 TL alacak (kapanış). Bu kayıtla yükümlülüğün defter değeri tekrar nominal değere döner.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "657", "borc": 3200, "alacak": 0 },
+      { "kod": "322", "borc": 0, "alacak": 3200 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Reeskont Birlikte Kayıt: Alacak + Borç Senedi",
+    "zorluk": "orta",
+    "senaryo": "Dönem sonunda hem alacak hem borç senetleri için reeskont ayrılmaktadır. Alacak senetlerinde 5.000 TL, borç senetlerinde 2.500 TL reeskont hesaplanmıştır. İki kayıt aynı yevmiyede birleştirilebilir.",
+    "ipucu": "Alacak için gider; borç için gelir.",
+    "aciklama": "Alacak reeskontu: 657 Reeskont Faiz Giderleri 5.000 TL borç; 122 Alacak Senetleri Reeskontu 5.000 TL alacak. Borç reeskontu: 322 Borç Senetleri Reeskontu 2.500 TL borç; 647 Reeskont Faiz Gelirleri 2.500 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "657", "borc": 5000, "alacak": 0 },
+      { "kod": "122", "borc": 0, "alacak": 5000 },
+      { "kod": "322", "borc": 2500, "alacak": 0 },
+      { "kod": "647", "borc": 0, "alacak": 2500 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Yeni Yıl Açılışında İki Reeskontun Birlikte İptali",
+    "zorluk": "orta",
+    "senaryo": "Yeni yıl başında, önceki dönemin sonunda ayrılmış olan alacak (5.000 TL) ve borç (2.500 TL) senedi reeskontlarının iptal kaydı yapılacaktır. Aynı yevmiyede birleştirilmiştir.",
+    "ipucu": "Aktif reeskont 647 alacak; pasif reeskont 657 borç.",
+    "aciklama": "Alacak senedi reeskontu iptali: 122 Alacak Senetleri Reeskontu 5.000 TL borç; 647 Reeskont Faiz Gelirleri 5.000 TL alacak. Borç senedi reeskontu iptali: 657 Reeskont Faiz Giderleri 2.500 TL borç; 322 Borç Senetleri Reeskontu 2.500 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "122", "borc": 5000, "alacak": 0 },
+      { "kod": "647", "borc": 0, "alacak": 5000 },
+      { "kod": "657", "borc": 2500, "alacak": 0 },
+      { "kod": "322", "borc": 0, "alacak": 2500 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Reeskont Hesaplaması (Basit Formül)",
+    "zorluk": "orta",
+    "senaryo": "Nominal değeri 60.000 TL olan ve vadesine 90 gün kalmış alacak senedi için yıllık %20 iskonto oranı kullanılarak iç iskonto formülü ile reeskont hesaplanmıştır. Hesaplanan reeskont tutarı 2.876,71 TL olup yuvarlanarak 2.876 TL olarak kaydedilecektir.",
+    "ipucu": "İç iskonto: Reeskont = N × n × t / (36000 + n × t).",
+    "aciklama": "Hesaplanan reeskont 2.876 TL gider olarak kaydedilir: 657 Reeskont Faiz Giderleri 2.876 TL borç. Düzenleyici aktif olarak 122 Alacak Senetleri Reeskontu 2.876 TL alacak. Hesaplama bilgisinin uygulamada doğruluğu önemlidir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "657", "borc": 2876, "alacak": 0 },
+      { "kod": "122", "borc": 0, "alacak": 2876 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Borç Senedi Reeskont Hesaplaması",
+    "zorluk": "orta",
+    "senaryo": "Nominal 50.000 TL ve vadesine 60 gün kalan borç senedi için yıllık %18 iskonto oranı ile reeskont hesaplanmış, bulunan tutar 1.474 TL'dir. Bu tutar dönem sonu kaydı yapılacaktır.",
+    "ipucu": "Borç senedi reeskontu işletme lehine gelir oluşturur.",
+    "aciklama": "322 Borç Senetleri Reeskontu 1.474 TL borç (pasif düzeltici). 647 Reeskont Faiz Gelirleri 1.474 TL alacak. Yeni yıl başında bu kayıt ters çevrilerek iptal edilecektir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "322", "borc": 1474, "alacak": 0 },
+      { "kod": "647", "borc": 0, "alacak": 1474 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Yıl Sonu Karma Senet Portföyü Reeskontu",
+    "zorluk": "zor",
+    "senaryo": "Dönem sonu reeskont incelemesinde işletmenin alacak senetleri portföyünde 250.000 TL nominal toplam, hesaplanan reeskont 9.500 TL; borç senetleri portföyünde 180.000 TL nominal toplam, hesaplanan reeskont 6.800 TL bulunmaktadır. İki ayrı reeskont aynı yevmiyede yapılacaktır.",
+    "ipucu": "Alacak için gider, borç için gelir; iki ayrı kayıt yapılır.",
+    "aciklama": "Alacak senedi reeskontu (gider): 657 Reeskont Faiz Giderleri 9.500 TL borç; 122 Alacak Senetleri Reeskontu 9.500 TL alacak. Borç senedi reeskontu (gelir): 322 Borç Senetleri Reeskontu 6.800 TL borç; 647 Reeskont Faiz Gelirleri 6.800 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "657", "borc": 9500, "alacak": 0 },
+      { "kod": "122", "borc": 0, "alacak": 9500 },
+      { "kod": "322", "borc": 6800, "alacak": 0 },
+      { "kod": "647", "borc": 0, "alacak": 6800 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Çeklerde Reeskont Düzenlemesi",
+    "zorluk": "zor",
+    "senaryo": "İşletmenin elinde 80.000 TL nominal değerli vadeli müşteri çeki bulunmaktadır. Vergi mevzuatı çekleri reeskonta tabi tutmasa da Türkiye Muhasebe Standartları açısından çekler için reeskont uygulaması benimsenmiş, hesaplanan reeskont 2.400 TL olmuştur. (101 hesabı düzeltici alt hesapla izlenmektedir; bu uygulamada düzeltici düzenleyici amaca yönelik olarak 122 alt hesabı kullanılmıştır.)",
+    "ipucu": "İhtiyari reeskontta çekler için de düzeltici hesap kullanılır.",
+    "aciklama": "657 Reeskont Faiz Giderleri 2.400 TL borç. Çek değerini bugünkü değere indirgemek üzere 122 Alacak Senetleri Reeskontu (Çek alt hesabı) 2.400 TL alacak. Ertesi yıl başında ters kayıt ile iptal edilecektir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "657", "borc": 2400, "alacak": 0 },
+      { "kod": "122", "borc": 0, "alacak": 2400 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Karma Açılış: Reeskont İptali ve Yeni Senet Tahsilatı",
+    "zorluk": "zor",
+    "senaryo": "Yeni yılın başında işletme önce geçen yılın 6.000 TL'lik alacak senetleri reeskont kaydını iptal etmiş; ardından aynı gün 50.000 TL nominal değerli alacak senedini vadesinde banka aracılığıyla tahsil etmiştir.",
+    "ipucu": "Önce reeskont iptali; ardından senet tahsilatı.",
+    "aciklama": "Reeskont iptali: 122 Alacak Senetleri Reeskontu 6.000 TL borç; 647 Reeskont Faiz Gelirleri 6.000 TL alacak. Tahsilat: 102 Bankalar 50.000 TL borç; 121 Alacak Senetleri 50.000 TL alacak. Senet kapanmış, reeskont kalıntısı sıfırlanmıştır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "122", "borc": 6000, "alacak": 0 },
+      { "kod": "647", "borc": 0, "alacak": 6000 },
+      { "kod": "102", "borc": 50000, "alacak": 0 },
+      { "kod": "121", "borc": 0, "alacak": 50000 }
+    ]
+  },
+  {
+    "unite_id": "reeskont",
+    "baslik": "Karma Açılış: Borç Reeskont İptali + Senet Ödemesi",
+    "zorluk": "zor",
+    "senaryo": "Yeni yıl başında: 1) Önceki yılın 4.500 TL'lik borç senedi reeskontu ters çevrilerek iptal edilmiştir, 2) Aynı gün 30.000 TL nominal değerli borç senedi vadesinde bankadan ödenmiştir.",
+    "ipucu": "Reeskont iptali kaydı + senet ödeme kaydı.",
+    "aciklama": "Reeskont iptali: 657 Reeskont Faiz Giderleri 4.500 TL borç; 322 Borç Senetleri Reeskontu 4.500 TL alacak. Senet ödeme: 321 Borç Senetleri 30.000 TL borç; 102 Bankalar 30.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "657", "borc": 4500, "alacak": 0 },
+      { "kod": "322", "borc": 0, "alacak": 4500 },
+      { "kod": "321", "borc": 30000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 30000 }
+    ]
+  }
+]

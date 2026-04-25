@@ -1,0 +1,176 @@
+[
+  {
+    "unite_id": "banka",
+    "baslik": "Müşteriden Gelen EFT",
+    "zorluk": "kolay",
+    "senaryo": "İşletmenin Garanti BBVA hesabına, alıcılar hesabında 25.000 TL borcu olan müşteriden EFT yoluyla 25.000 TL gelmiştir. Banka dekontu kayıt için işletmeye ulaşmıştır.",
+    "ipucu": "Banka hesabı borç; alıcılar hesabı kapatılır.",
+    "aciklama": "Banka mevduatı arttığı için 102 Bankalar 25.000 TL borçlanır. Müşteri borcu kapatıldığı için 120 Alıcılar 25.000 TL alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 25000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 25000 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Tedarikçiye Banka Havalesi",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, satıcılar hesabında görünen 18.500 TL borcunu kapatmak üzere İş Bankası şubesinden tedarikçi hesabına havale göndermiş ve dekont almıştır.",
+    "ipucu": "Satıcılar borç; banka alacak.",
+    "aciklama": "Satıcı borcu kapatıldığı için 320 Satıcılar hesabı 18.500 TL borçlandırılır. Banka mevduatı azaldığı için 102 Bankalar hesabı 18.500 TL alacaklandırılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "320", "borc": 18500, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 18500 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Kasa Bakiyesinin Bankaya Yatırılması",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, kasa bakiyesi yüksek kaldığı için Yapı Kredi şubesine 40.000 TL nakit yatırmıştır. Yatırılan tutar için banka makbuzu alınmıştır.",
+    "ipucu": "Hazır değerler arası transfer; banka borç, kasa alacak.",
+    "aciklama": "Banka mevduatı arttığı için 102 Bankalar 40.000 TL borçlanır. Kasadan çıkış olduğu için 100 Kasa 40.000 TL alacaklanır. Bu işlem hazır değerler içinde transfer niteliğindedir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 40000, "alacak": 0 },
+      { "kod": "100", "borc": 0, "alacak": 40000 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Banka Hesap İşletim Ücreti",
+    "zorluk": "kolay",
+    "senaryo": "Banka, üç aylık hesap işletim ücreti olarak işletmenin Akbank vadesiz hesabından 360 TL kesinti yapmış ve dekont göndermiştir. (KDV ihmal edilmiştir.)",
+    "ipucu": "Banka masrafı genel yönetim gideri ya da komisyon gideridir.",
+    "aciklama": "Banka masrafı 770 Genel Yönetim Giderleri olarak borçlanır (360). Banka mevduatı azaldığı için 102 Bankalar hesabı 360 TL alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 360, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 360 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Kısa Vadeli Banka Kredisi Kullanımı",
+    "zorluk": "orta",
+    "senaryo": "İşletme, sezonluk işletme sermayesi ihtiyacı için Halkbank'tan 9 ay vadeli 200.000 TL tutarında kısa vadeli ticari kredi kullanmış; tahsis edilen tutar vadesiz hesaba aktarılmıştır. Kredi kullanım masrafı olarak ayrıca 1.000 TL hesaptan tahsil edilmiştir.",
+    "ipucu": "Banka borç, kredi alacak; ek olarak komisyon gideri ayrı kayıtla.",
+    "aciklama": "Vadesiz hesaba 200.000 TL girdiği için 102 Bankalar borçlanır; karşılığında 300 Banka Kredileri 200.000 TL alacaklanır. Kullanım masrafı (komisyon) 653 Komisyon Giderleri 1.000 TL borç, 102 Bankalar 1.000 TL alacak yazılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 200000, "alacak": 0 },
+      { "kod": "300", "borc": 0, "alacak": 200000 },
+      { "kod": "653", "borc": 1000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 1000 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Mevduat Faiz Geliri Tahakkuku",
+    "zorluk": "orta",
+    "senaryo": "Vadeli hesabın aylık faiz tahakkuku banka tarafından hesaba yansıtılmıştır. Brüt faiz 4.500 TL, gelir vergisi stopajı 675 TL'dir; net 3.825 TL hesaba geçmiştir.",
+    "ipucu": "Brüt faiz gelir; stopaj peşin ödenen vergi olarak izlenir.",
+    "aciklama": "Banka hesabı net tutar (3.825) ile borçlanır; ayrıca stopaj 193 Peşin Ödenen Vergiler ve Fonlar hesabında 675 TL borç olarak izlenir. Brüt faiz 642 Faiz Gelirleri'ne 4.500 TL alacak yazılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 3825, "alacak": 0 },
+      { "kod": "193", "borc": 675, "alacak": 0 },
+      { "kod": "642", "borc": 0, "alacak": 4500 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Kredi Taksit Ödemesi (Anapara + Faiz)",
+    "zorluk": "orta",
+    "senaryo": "İşletme, kullandığı 9 aylık ticari kredinin Mart taksitini ödemiştir. Taksit toplamı 25.500 TL olup; bunun 22.000 TL'si anapara, 3.500 TL'si vade içi faizdir. Ödeme banka hesabından otomatik kesilmiştir.",
+    "ipucu": "Anapara borç hesabından düşer; faiz gider yazılır.",
+    "aciklama": "Banka kredisi anaparası 300 Banka Kredileri'nde 22.000 TL borç olarak düşülür. Faiz gideri 780 Finansman Giderleri'nde değil 6 grubunda izlenmesi gerektiğinden 660 Kısa Vadeli Borçlanma Giderleri 3.500 TL borç yazılır. 102 Bankalar toplam 25.500 TL alacaklandırılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "300", "borc": 22000, "alacak": 0 },
+      { "kod": "660", "borc": 3500, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 25500 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "POS Tahsilatının Hesaba Geçişi",
+    "zorluk": "orta",
+    "senaryo": "Önceki gün toplam 12.000 TL tutarında kredi kartı satışı yapılmış ve 108 Diğer Hazır Değerler hesabında izlenmiştir. Bugün banka, %1,5 (180 TL) komisyon kestikten sonra net 11.820 TL'yi vadesiz hesaba yansıtmıştır.",
+    "ipucu": "108'in kapanışı; banka net tutarla, komisyon gider olarak.",
+    "aciklama": "Banka hesabına net tutar (11.820) 102 Bankalar borç. Banka komisyonu 653 Komisyon Giderleri'nde 180 TL borç. Önceden bekleyen 108 Diğer Hazır Değerler 12.000 TL alacak yazılarak kapatılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 11820, "alacak": 0 },
+      { "kod": "653", "borc": 180, "alacak": 0 },
+      { "kod": "108", "borc": 0, "alacak": 12000 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Banka Üzerinden Kira Ödemesi",
+    "zorluk": "orta",
+    "senaryo": "İşletme, kullandığı işyeri için aylık brüt 20.000 TL kira ödemiştir. Stopaj %20 (4.000 TL) kesilerek net 16.000 TL banka havalesi ile mülk sahibine ödenmiştir; stopaj ödenecek vergi olarak izlenecektir.",
+    "ipucu": "Brüt kira gider; stopaj 360 hesabına alacak.",
+    "aciklama": "Brüt kira gideri 770 Genel Yönetim Giderleri 20.000 TL borçlanır. Stopaj 360 Ödenecek Vergi ve Fonlar 4.000 TL alacak. Net kira 102 Bankalar 16.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 20000, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 4000 },
+      { "kod": "102", "borc": 0, "alacak": 16000 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Şubeler Arası Hesap Aktarımı",
+    "zorluk": "orta",
+    "senaryo": "İşletme, Akbank Levent şubesindeki vadesiz hesabından 75.000 TL'yi Akbank Bakırköy şubesindeki vadesiz hesabına virman ettirmiştir. Banka işlem ücreti almamıştır.",
+    "ipucu": "Aynı hesap grubu içinde alt hesap değişimi; toplam banka tutarı değişmez ama yardımcı hesap düzeyinde kayıt yapılır.",
+    "aciklama": "İşletme yardımcı hesap düzeyinde takip yaptığında 102 Bankalar (Bakırköy) 75.000 TL borçlandırılır; 102 Bankalar (Levent) 75.000 TL alacaklandırılır. Yevmiye toplamı korunur, ana hesap toplam bakiyesi değişmez.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 75000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 75000 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Vadesi Gelen Krediyi Yenileme + Faiz",
+    "zorluk": "zor",
+    "senaryo": "İşletmenin 100.000 TL'lik mevcut kısa vadeli kredi vadesi dolmuştur. Banka, biriken faiz 8.000 TL'yi tahsil ettikten sonra anaparayı 12 ay daha aynı koşulda uzatmıştır. Faiz işletmenin vadesiz hesabından, anaparada herhangi bir hareket olmadan kesilmiştir.",
+    "ipucu": "Anapara hareketsiz kalır; sadece faiz finansman gideri olarak yazılır.",
+    "aciklama": "Anapara aynı 300 Banka Kredileri'nde kalır; sadece vade uzar. Faiz gideri 660 Kısa Vadeli Borçlanma Giderleri 8.000 TL borç. Banka hesabından çıkış olduğu için 102 Bankalar 8.000 TL alacak yazılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "660", "borc": 8000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 8000 }
+    ]
+  },
+  {
+    "unite_id": "banka",
+    "baslik": "Karşılıksız Geçen EFT (Banka Bilgilendirmesi)",
+    "zorluk": "zor",
+    "senaryo": "Müşteriden gelen 30.000 TL'lik EFT, iki gün önce kayda alınmıştı. Bugün banka göndericinin hesabında yetersiz bakiye olduğu için işlemi iptal etmiş ve tutarı işletme hesabından geri çekmiştir. Müşteri borcu yeniden geçerli kalmıştır. Kayıt iki günlük yevmiyeyi düzeltmek değil, ters kayıtla ve müşteri borcunu canlandırarak yapılır.",
+    "ipucu": "Banka azalır; müşteri borcu yeniden doğar.",
+    "aciklama": "İptal nedeniyle banka mevduatı azaldığı için 102 Bankalar 30.000 TL alacak. Müşteri borcu yeniden ortaya çıktığı için 120 Alıcılar 30.000 TL borç. Bu kayıt, ilk kabul kaydının geri çevirisi niteliğindedir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "120", "borc": 30000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 30000 }
+    ]
+  }
+]

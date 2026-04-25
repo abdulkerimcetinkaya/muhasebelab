@@ -1,0 +1,45 @@
+﻿Kategori,Özellik,Açıklama,Ücretsiz,Premium (Bireysel),Sınıf/Öğretmen Tier,Durum,Not
+1. Çekirdek,Tüm sorulara erişim,"80+ soru, sınırsız çözüm",Var,Var,Var,Mevcut,Soru limiti yok (hibrit karar)
+1. Çekirdek,Hesap planı (Tek Düzen),Hesap kodlarının tam listesi,Var,Var,Var,Mevcut,Kodda sabit
+1. Çekirdek,Belge görüntüleme,"Fatura, fiş, çek, senet, dekont",Var,Var,Var,Mevcut,Yeni tasarlandı
+1. Çekirdek,Anonim kullanım,Üye olmadan başla,Var,—,—,Mevcut,localStorage
+1. Çekirdek,Bulut senkron,Cihazlar arası ilerleme,Var,Var,Var,Mevcut,Supabase Auth
+2. Çözüm Deneyimi,Yevmiye girişi,Borç/alacak satır editörü,Var,Var,Var,Mevcut,—
+2. Çözüm Deneyimi,Anında kontrol,Doğru/yanlış tespiti,Var,Var,Var,Mevcut,—
+2. Çözüm Deneyimi,Statik ipucu,Soru ile gelen tek ipucu,Var,Var,Var,Mevcut,—
+2. Çözüm Deneyimi,Klavye kısayolları,"Tab/Enter satır, Cmd+Enter kontrol",Var,Var,Var,Planlandı,Free — sürtünme azaltır
+2. Çözüm Deneyimi,Deterministik yanlış geri bildirimi,"Denge farkı, eksik satır, geçersiz kod",Var,Var,Var,Planlandı,"Free, AI değil"
+2. Çözüm Deneyimi,Hesap kodu/adı autocomplete,"""100"" veya ""kasa"" yaz, öneri",Yok (Sparkles teaser),Var,Var,Mevcut,Premium tetikleyici — HesapKoduInput
+2. Çözüm Deneyimi,Adım adım çözüm anlatımı,"""Bu hesap PASIF mi?"" aşamalı ipucu",Yok,Var,Var,Planlandı,Premium
+3. Yapay Zeka,AI muhasebe asistanı (yan panel),Soru içinde rehber sohbet,3 sorgu/gün,Sınırsız,Sınırsız,Mevcut (kodda),Quota Edge Function tarafında uygulanmalı
+3. Yapay Zeka,AI ile yanlış analizi,Yanlışın derin nedeni,Yok,Var,Var,Mevcut (kodda),Premium
+3. Yapay Zeka,AI ile belge üretimi (admin),Yönetici belge üretir,—,—,—,Mevcut,Sadece admin
+4. İlerleme & Motivasyon,Puan sistemi,Zorluk bazlı puan (5/10/20),Var,Var,Var,Mevcut,—
+4. İlerleme & Motivasyon,Streak (zincir),Günlük çözüm zinciri,Var,Var,Var,Mevcut,—
+4. İlerleme & Motivasyon,Streak freeze,Streak'i koru gün kaçır,Yok,Var,Var,Planlandı,Premium
+4. İlerleme & Motivasyon,Aktivite ısı haritası,Yıllık görsel,Var,Var,Var,Mevcut,—
+4. İlerleme & Motivasyon,Rozetler,12 başarı rozeti,Var,Var,Var,Mevcut,—
+4. İlerleme & Motivasyon,Günün sorusu,Önerilen tek soru,Var,Var,Var,Mevcut,—
+4. İlerleme & Motivasyon,"""Devam et"" akışı",Bir sonraki öneri,Var,Var,Var,Mevcut,—
+4. İlerleme & Motivasyon,Yanlışlarımı tekrar et,Hatalı soruları yeniden çöz,Var,Var,Var,Mevcut,—
+4. İlerleme & Motivasyon,Günlük hedef hatırlatıcısı,"E-posta/push ""bugün streak""",Yok,Var,Var,Planlandı,Premium
+5. Veri & Rapor,Temel ilerleme paneli,"Çözülen, puan, streak",Var,Var,Var,Mevcut,Profil sayfası
+5. Veri & Rapor,JSON dışa aktarma,İlerleme JSON indir,Var,Var,Var,Planlandı,Free
+5. Veri & Rapor,Detaylı istatistik / zayıf hesap haritası,Ünite ve hesap bazlı performans,Yok,Var,Var,Planlandı,Premium
+5. Veri & Rapor,PDF çözüm defteri,Çözdüklerimi PDF olarak indir,Yok,Var,Var,Planlandı,Premium
+6. Tema & Ergonomi,Açık/koyu tema,İki tema,Var,Var,Var,Mevcut,—
+6. Tema & Ergonomi,Premium tema seçenekleri,"Editorial, sepia, kontrast",Yok,Var,Var,Gelecek,Premium
+6. Tema & Ergonomi,Reklamsız,Reklam yok,—,Var,Var,Karar,"Şu an reklam yok; ileride free'ye konursa Premium'da kalkar"
+7. Pratik Modları,Klasik soru çözümü,Mevcut akış,Var,Var,Var,Mevcut,—
+7. Pratik Modları,Karışık soru modu,Rastgele havuz,Yok,Var,Var,Gelecek (P1),Premium
+7. Pratik Modları,Sınav simülasyonu,Süreli sınav,Yok,Var,Var,Gelecek (P1),Premium
+8. Topluluk & Sosyal,Hata bildirme,Soru/cevap hatası bildir,Var,Var,Var,Mevcut,—
+8. Topluluk & Sosyal,Liderlik tablosu,Skor sıralaması,Yok,Var,Var,Gelecek (P1),Premium
+8. Topluluk & Sosyal,Haftalık challenge,Tema bazlı yarışma,Yok,Var,Var,Gelecek (P1),Premium
+9. Sınıf / Eğitmen,Öğretmen paneli,Öğrenci yönetimi,Yok,Yok,Var,Gelecek (P1+),Ayrı tier
+9. Sınıf / Eğitmen,Sınıf oluşturma & davet linki,Sınıf kurulumu,Yok,Yok,Var,Gelecek,Ayrı tier
+9. Sınıf / Eğitmen,Ödev atama,Soru/ünite ödev olarak ver,Yok,Yok,Var,Gelecek,Ayrı tier
+9. Sınıf / Eğitmen,Sınıf başarı raporu,Toplu performans,Yok,Yok,Var,Gelecek,Ayrı tier
+10. Erişim & Kampanya,Erken erişim,İlk 100 kullanıcıya 1 yıl Premium,—,—,—,Mevcut,Geçici (premium_rpc)
+10. Erişim & Kampanya,Aylık abonelik,—,—,79-149 TL/ay,Pazarlık,Planlandı,İyzico entegrasyonu P0
+10. Erişim & Kampanya,Dönemlik abonelik,—,—,399-699 TL,Pazarlık,Planlandı,İyzico entegrasyonu P0

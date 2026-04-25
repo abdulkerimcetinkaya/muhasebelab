@@ -1,0 +1,182 @@
+[
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Vadesi Geçmiş Alacağın Şüpheli Hale Gelmesi",
+    "zorluk": "kolay",
+    "senaryo": "Alıcılar hesabında 25.000 TL borcu olan bir müşterinin alacağı vadesinden 6 ay geçmiş, müşteri ile iletişim kurulamamış ve dava aşamasına gelmiştir. İşletme bu alacağı şüpheli ticari alacağa aktarmaktadır.",
+    "ipucu": "120'den 128'e aktarım; 128 borç, 120 alacak.",
+    "aciklama": "Alacak şüpheli sınıfına geçtiği için 128 Şüpheli Ticari Alacaklar 25.000 TL borç. Normal alıcı kaydı kapanır: 120 Alıcılar 25.000 TL alacak. Bu adımda henüz karşılık ayrılmamıştır; o ayrı bir kayıt gerektirir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "128", "borc": 25000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 25000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Şüpheli Alacağa Karşılık Ayırma",
+    "zorluk": "kolay",
+    "senaryo": "128 Şüpheli Ticari Alacaklar'da bulunan 25.000 TL'lik alacak için tahsil edilemeyebilir riskine karşın aynı tutarda karşılık ayrılması kararlaştırılmıştır.",
+    "ipucu": "Karşılık gideri + karşılık hesabı.",
+    "aciklama": "Karşılık tutarı dönem gideridir: 654 Karşılık Giderleri 25.000 TL borç. Düzenleyici aktif hesap olarak 129 Şüpheli Ticari Alacaklar Karşılığı 25.000 TL alacak. Karşılık gerçek tahsilattan bağımsız olarak risk için ayrılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "654", "borc": 25000, "alacak": 0 },
+      { "kod": "129", "borc": 0, "alacak": 25000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Şüpheli Alacağa Karşılık (Tek İşlemde Birleşik)",
+    "zorluk": "orta",
+    "senaryo": "120 Alıcılar'da 40.000 TL borcu olan müşterinin alacağı dava açılarak şüpheliye çevrilmiş ve aynı yevmiyede tam karşılık ayrılmıştır. (İki kayıt aynı yevmiyede gösterilebilir.)",
+    "ipucu": "Hem 120→128 aktarımı hem 654→129 karşılığı.",
+    "aciklama": "Aktarım: 128 Şüpheli Ticari Alacaklar 40.000 TL borç; 120 Alıcılar 40.000 TL alacak. Karşılık: 654 Karşılık Giderleri 40.000 TL borç; 129 Şüpheli Ticari Alacaklar Karşılığı 40.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "128", "borc": 40000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 40000 },
+      { "kod": "654", "borc": 40000, "alacak": 0 },
+      { "kod": "129", "borc": 0, "alacak": 40000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Şüpheli Alacağın Tahsil Edilmesi (Tam)",
+    "zorluk": "orta",
+    "senaryo": "Önceden şüpheli sınıfına aktarılmış 128 Şüpheli Ticari Alacaklar'daki 25.000 TL'lik alacak, müşteri ile uzlaşılarak tamamen banka havalesi ile tahsil edilmiştir. Daha önce 129'da ayrılan 25.000 TL'lik karşılık de konusuz kalacaktır.",
+    "ipucu": "Hem tahsilat hem karşılık iadesi yapılır.",
+    "aciklama": "Tahsilat: 102 Bankalar 25.000 TL borç; 128 Şüpheli Ticari Alacaklar 25.000 TL alacak. Karşılığın iadesi: 129 Şüpheli Ticari Alacaklar Karşılığı 25.000 TL borç; 644 Konusu Kalmayan Karşılıklar 25.000 TL alacak (gelir).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 25000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 25000 },
+      { "kod": "129", "borc": 25000, "alacak": 0 },
+      { "kod": "644", "borc": 0, "alacak": 25000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Şüpheli Alacağın Kısmi Tahsili",
+    "zorluk": "orta",
+    "senaryo": "128 Şüpheli Ticari Alacaklar'da 30.000 TL'lik alacak yer almakta, 129 Karşılığı'nda 30.000 TL ayrılmıştır. Müşteri ile yapılan görüşme sonucu 18.000 TL banka havalesi ile tahsil edilmiş; kalan 12.000 TL'lik kısım hala şüpheli olarak izlenmeye devam etmektedir. Kısmi tahsilatla ilgili olarak ayrılan karşılık tutarı da kısmen iade edilecektir.",
+    "ipucu": "Tahsilat oranında karşılık iadesi yapılır; geri kalan şüpheli kalır.",
+    "aciklama": "Tahsilat: 102 Bankalar 18.000 TL borç; 128 Şüpheli Ticari Alacaklar 18.000 TL alacak. Tahsil edilen orana isabet eden karşılık iadesi: 129 Şüpheli Ticari Alacaklar Karşılığı 18.000 TL borç; 644 Konusu Kalmayan Karşılıklar 18.000 TL alacak. Kalan 12.000 TL hem 128'de hem 129'da takip edilmeye devam eder.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 18000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 18000 },
+      { "kod": "129", "borc": 18000, "alacak": 0 },
+      { "kod": "644", "borc": 0, "alacak": 18000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Karşılık Ayrılmamış Alacağın Tahsili",
+    "zorluk": "orta",
+    "senaryo": "Daha önce 128 Şüpheli Ticari Alacaklar'a aktarılmış ancak ihtiyatlılık nedeniyle karşılık ayrılmamış 12.000 TL'lik alacak, müşteri ile uzlaşma sağlanması üzerine peşin (banka) tahsil edilmiştir.",
+    "ipucu": "Karşılık olmadığı için yalnızca tahsilat ve 128 kapanışı yapılır.",
+    "aciklama": "Banka mevduatı arttığı için 102 Bankalar 12.000 TL borç. 128 Şüpheli Ticari Alacaklar 12.000 TL alacak ile kapanır. Karşılık ayrılmadığı için 129 ve 644 hesapları kullanılmaz.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 12000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 12000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Değersiz Alacak (Karşılık Ayrılmış)",
+    "zorluk": "orta",
+    "senaryo": "128 Şüpheli Ticari Alacaklar'da 50.000 TL'lik alacak ve 129'da 50.000 TL karşılık bulunmaktadır. Mahkeme kararı kesinleşmiş, alacak değersiz hale gelmiştir. Bilanço dışı çıkarılacaktır.",
+    "ipucu": "Karşılık zaten ayrılmış olduğu için sadece kapanış kayıtları yapılır.",
+    "aciklama": "Karşılık zaten ayrıldığı için ek gider doğmaz: 129 Şüpheli Ticari Alacaklar Karşılığı 50.000 TL borç. 128 Şüpheli Ticari Alacaklar 50.000 TL alacak (kapanış). Sonuçta hem alacak hem karşılık birlikte kapanmıştır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "129", "borc": 50000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 50000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Değersiz Alacak (Karşılık Ayrılmamış)",
+    "zorluk": "orta",
+    "senaryo": "128 Şüpheli Ticari Alacaklar'da 8.000 TL'lik alacak yer almakta, daha önce karşılık ayrılmamıştır. Mahkeme kararı kesinleşmiş ve alacak değersiz hale gelmiştir. Tahsil edilemeyen tutar olağan gider olarak yazılacaktır.",
+    "ipucu": "Karşılık olmayan değersiz alacak doğrudan gider yazılır.",
+    "aciklama": "Karşılık olmadığı için tahsil edilemeyen tutar doğrudan gider yazılır: 659 Diğer Olağan Gider ve Zararlar 8.000 TL borç. 128 Şüpheli Ticari Alacaklar 8.000 TL alacak ile kapanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "659", "borc": 8000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 8000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Şüpheli Alacak Senedi (Senedin Şüpheliye Aktarımı)",
+    "zorluk": "orta",
+    "senaryo": "Vadesi geçmiş ve protesto edilmiş 18.000 TL'lik alacak senedi tahsil edilemeyeceği anlaşılarak 121 Alacak Senetleri'nden 128 Şüpheli Ticari Alacaklar'a aktarılmaktadır.",
+    "ipucu": "Senet de ticari alacaktır; şüpheli sınıfına aktarılır.",
+    "aciklama": "Şüpheli sınıfına geçen alacak için 128 Şüpheli Ticari Alacaklar 18.000 TL borç. Senet kayıttan düştüğü için 121 Alacak Senetleri 18.000 TL alacak. Karşılık daha sonra ayrılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "128", "borc": 18000, "alacak": 0 },
+      { "kod": "121", "borc": 0, "alacak": 18000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Önce Karşılık Ayrılan Sonra Tahsil Edilen (Geçmiş Yıl Geliri)",
+    "zorluk": "zor",
+    "senaryo": "Geçmiş yıllarda 128 Şüpheli Alacaklar'a aktarılan ve 129'a tam karşılık ayrılan 35.000 TL'lik alacak, bu yıl müşterinin uzlaşma kabulü ile peşin (banka) tahsil edilmiştir. Karşılık gideri geçmiş yıllarda yazıldığı için bu yıl karşılık iadesi gelir niteliğindedir.",
+    "ipucu": "Tahsilat + karşılık iadesi (gelir).",
+    "aciklama": "Tahsilat: 102 Bankalar 35.000 TL borç; 128 Şüpheli Ticari Alacaklar 35.000 TL alacak (kapanış). Karşılık iadesi: 129 Şüpheli Ticari Alacaklar Karşılığı 35.000 TL borç; 644 Konusu Kalmayan Karşılıklar 35.000 TL alacak (cari yıl olağan gelir).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 35000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 35000 },
+      { "kod": "129", "borc": 35000, "alacak": 0 },
+      { "kod": "644", "borc": 0, "alacak": 35000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Şüpheli Alacak ve Kısmi Karşılık",
+    "zorluk": "zor",
+    "senaryo": "İşletme, 128 Şüpheli Ticari Alacaklar'da 60.000 TL bulunduran müşteriye karşı tahsil ihtimalini %60 olarak değerlendirmiş ve sadece 24.000 TL (60.000 × %40) karşılık ayırmaya karar vermiştir.",
+    "ipucu": "Karşılık tutarı tahsil edilemeyeceği düşünülen kısma göre ayrılır.",
+    "aciklama": "Tahsil edilemeyeceği değerlendirilen pay kadar karşılık: 654 Karşılık Giderleri 24.000 TL borç. 129 Şüpheli Ticari Alacaklar Karşılığı 24.000 TL alacak. Kalan 36.000 TL'lik tahsil edilebilir kısım için karşılık ayrılmaz; tahsilatları karşılık iadesi gerektirmez.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "654", "borc": 24000, "alacak": 0 },
+      { "kod": "129", "borc": 0, "alacak": 24000 }
+    ]
+  },
+  {
+    "unite_id": "supheli-alacaklar",
+    "baslik": "Karma: Tahsilat + Kalan Değersiz Alacak",
+    "zorluk": "zor",
+    "senaryo": "128 Şüpheli Ticari Alacaklar'da 80.000 TL bulunmakta ve 129'da 80.000 TL tam karşılık ayrılmıştı. Mahkeme uzlaşması sonucunda 30.000 TL banka havalesi ile tahsil edilmiş; kalan 50.000 TL'nin ise tahsil edilemeyeceği kesinleşmiş ve değersiz alacak olarak yazılmıştır. Karşılığın tahsil edilen kısmı geri çevrilmiş, kalan kısmı değersiz alacakla mahsuplaşmıştır.",
+    "ipucu": "Tahsilat + karşılık iadesi + değersiz alacakla karşılığın mahsuplaşması.",
+    "aciklama": "Tahsilat: 102 Bankalar 30.000 TL borç; 128 Şüpheli Ticari Alacaklar 30.000 TL alacak. Karşılığın 30.000 TL'si gelir: 129 Şüpheli Ticari Alacaklar Karşılığı 30.000 TL borç; 644 Konusu Kalmayan Karşılıklar 30.000 TL alacak. Kalan değersiz: 129 Şüpheli Ticari Alacaklar Karşılığı 50.000 TL borç; 128 Şüpheli Ticari Alacaklar 50.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 30000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 30000 },
+      { "kod": "129", "borc": 30000, "alacak": 0 },
+      { "kod": "644", "borc": 0, "alacak": 30000 },
+      { "kod": "129", "borc": 50000, "alacak": 0 },
+      { "kod": "128", "borc": 0, "alacak": 50000 }
+    ]
+  }
+]

@@ -1,0 +1,179 @@
+[
+  {
+    "unite_id": "amortisman",
+    "baslik": "Demirbaş Alımı (Peşin)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, ofis için 30.000 TL + %20 KDV tutarında bilgisayar ve yazıcı seti satın almıştır. Bedel banka havalesi ile tedarikçiye ödenmiştir.",
+    "ipucu": "255 Demirbaşlar borç + KDV borç ↔ banka alacak.",
+    "aciklama": "Sabit kıymet ediniminde 255 Demirbaşlar 30.000 TL borç, 191 İndirilecek KDV 6.000 TL borç yazılır. Toplam ödeme banka mevduatından çıktığı için 102 Bankalar 36.000 TL alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "255", "borc": 30000, "alacak": 0 },
+      { "kod": "191", "borc": 6000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 36000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Taşıt Alımı (Vadeli)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, dağıtım hizmetlerinde kullanmak üzere 600.000 TL + %20 KDV tutarında ticari araç almış, ödemeyi 12 ay vadeli senet düzenleyerek yapmıştır.",
+    "ipucu": "254 Taşıtlar borç + KDV borç ↔ borç senetleri alacak.",
+    "aciklama": "254 Taşıtlar hesabı 600.000 TL borçlanır, 191 İndirilecek KDV 120.000 TL borçlanır. Vadeli ödeme için düzenlenen senet 321 Borç Senetleri'nde 720.000 TL alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "254", "borc": 600000, "alacak": 0 },
+      { "kod": "191", "borc": 120000, "alacak": 0 },
+      { "kod": "321", "borc": 0, "alacak": 720000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Bina Alımı (Banka)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, faaliyetlerinde kullanmak üzere depo binasını 1.500.000 TL bedelle satın almış, bedelin tamamını banka havalesiyle ödemiştir. (Bina KDV'den istisna kabul edildiği için KDV ihmal edilmiştir.)",
+    "ipucu": "Bina alımı bilanço içinde aktif değer değişimidir.",
+    "aciklama": "Sabit kıymet edinildiği için 252 Binalar 1.500.000 TL borçlanır. Banka mevduatı azaldığı için 102 Bankalar 1.500.000 TL alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "252", "borc": 1500000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 1500000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Yıl Sonu Demirbaş Amortismanı (Normal Yöntem)",
+    "zorluk": "kolay",
+    "senaryo": "Aralık ayı sonunda 30.000 TL maliyetli ofis demirbaşları için %20 normal amortisman ayrılacaktır. Demirbaşlar genel yönetim hizmetinde kullanılmaktadır.",
+    "ipucu": "Genel yönetimde kullanılan demirbaş amortismanı 770 hesabında izlenir.",
+    "aciklama": "Yıllık amortisman: 30.000 × %20 = 6.000 TL. 770 Genel Yönetim Giderleri 6.000 TL borç. Birikmiş amortismanlar düzenleyici aktif hesabında 257 Birikmiş Amortismanlar 6.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 6000, "alacak": 0 },
+      { "kod": "257", "borc": 0, "alacak": 6000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Pazarlama Aracının Amortismanı (Normal)",
+    "zorluk": "orta",
+    "senaryo": "Pazarlama bölümünde kullanılan ve 600.000 TL maliyetli olan ticari aracın yıllık %20 normal amortismanı ayrılacaktır. Faaliyet niteliği aracın hangi gider hesabına kaydedileceğini belirler.",
+    "ipucu": "Pazarlamada kullanılan varlığın amortismanı 760 hesabında izlenir.",
+    "aciklama": "Yıllık amortisman 600.000 × %20 = 120.000 TL. Aracın kullanıldığı bölüme göre 760 Pazarlama Satış ve Dağıtım Giderleri 120.000 TL borç. 257 Birikmiş Amortismanlar 120.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "760", "borc": 120000, "alacak": 0 },
+      { "kod": "257", "borc": 0, "alacak": 120000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Azalan Bakiye Amortismanı (1. Yıl)",
+    "zorluk": "orta",
+    "senaryo": "İşletme, 100.000 TL maliyetli üretim makinesi için azalan bakiyeler yöntemini seçmiştir. Normal amortisman oranı %20, azalan bakiyeler oranı %40'tır. Birinci yıl sonunda ayrılacak amortisman tutarı hesaplanmıştır. Üretim hizmetinde kullanıldığı için gider 730 değil, basitlik için 770 hesabına yazılacaktır.",
+    "ipucu": "Azalan bakiyeler 1. yıl: maliyet × azalan oran.",
+    "aciklama": "1. yıl amortisman: 100.000 × %40 = 40.000 TL. 770 Genel Yönetim Giderleri 40.000 TL borç. 257 Birikmiş Amortismanlar 40.000 TL alacak. 2. yıl amortismanı kalan net defter değeri (60.000) üzerinden %40 ile hesaplanacaktır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 40000, "alacak": 0 },
+      { "kod": "257", "borc": 0, "alacak": 40000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Kıst Amortisman (Yıl İçi Alım)",
+    "zorluk": "orta",
+    "senaryo": "İşletme 1 Temmuz tarihinde 80.000 TL maliyetli demirbaş satın almış, yıl sonunda kıst amortisman uygulayacaktır. Amortisman oranı %20, kıst süre 6 aydır. Demirbaş genel yönetim hizmetinde kullanılmaktadır.",
+    "ipucu": "Kıst amortisman: maliyet × oran × (kullanım ay sayısı / 12).",
+    "aciklama": "Kıst amortisman: 80.000 × %20 × (6 / 12) = 8.000 TL. 770 Genel Yönetim Giderleri 8.000 TL borç. 257 Birikmiş Amortismanlar 8.000 TL alacak. Kalan kıst pay sonraki yılın amortismanına eklenmez; ertesi yıl tam yıl amortisman uygulanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 8000, "alacak": 0 },
+      { "kod": "257", "borc": 0, "alacak": 8000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Demirbaş Satışı (Karla)",
+    "zorluk": "orta",
+    "senaryo": "Maliyet bedeli 40.000 TL, birikmiş amortismanı 25.000 TL olan demirbaş 20.000 TL + %20 KDV ile peşin (banka havalesi) satılmıştır. Net defter değeri ile satış bedeli arasındaki fark karı oluşturmaktadır.",
+    "ipucu": "Net defter değeri 15.000; satış 20.000 → 5.000 kar 679 alacak.",
+    "aciklama": "102 Bankalar 24.000 TL borç. 257 Birikmiş Amortismanlar 25.000 TL borç (kapanış). 255 Demirbaşlar 40.000 TL alacak. 391 Hesaplanan KDV 4.000 TL alacak. Net defter 15.000, satış 20.000 → 5.000 TL kar 679 Diğer Olağandışı Gelir ve Karlar alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 24000, "alacak": 0 },
+      { "kod": "257", "borc": 25000, "alacak": 0 },
+      { "kod": "255", "borc": 0, "alacak": 40000 },
+      { "kod": "391", "borc": 0, "alacak": 4000 },
+      { "kod": "679", "borc": 0, "alacak": 5000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Demirbaş Satışı (Zararla)",
+    "zorluk": "orta",
+    "senaryo": "Maliyet bedeli 50.000 TL, birikmiş amortismanı 20.000 TL olan demirbaş 22.000 TL + %20 KDV ile satılmış, ödeme banka havalesi ile alınmıştır. Net defter değeri 30.000 TL olduğundan zarar oluşmuştur.",
+    "ipucu": "Net defter > satış → zarar 689 borç.",
+    "aciklama": "102 Bankalar 26.400 TL borç. 257 Birikmiş Amortismanlar 20.000 TL borç. 689 Diğer Olağandışı Gider ve Zararlar 8.000 TL borç (zarar). 255 Demirbaşlar 50.000 TL alacak. 391 Hesaplanan KDV 4.400 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 26400, "alacak": 0 },
+      { "kod": "257", "borc": 20000, "alacak": 0 },
+      { "kod": "689", "borc": 8000, "alacak": 0 },
+      { "kod": "255", "borc": 0, "alacak": 50000 },
+      { "kod": "391", "borc": 0, "alacak": 4400 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Yapılmakta Olan Yatırımın Tamamlanması",
+    "zorluk": "orta",
+    "senaryo": "İşletmenin inşa ettirdiği depo binası tamamlanmıştır. 258 Yapılmakta Olan Yatırımlar hesabında biriken 800.000 TL'lik tutar, sabit kıymet olarak 252 Binalar hesabına aktarılarak amortismana hazır hale getirilmiştir.",
+    "ipucu": "258 hesabı kapanır; 252 hesabı borçlanır.",
+    "aciklama": "Tamamlanan yatırım sabit kıymete dönüştürüldüğü için 252 Binalar 800.000 TL borç. Yatırım takip hesabı kapanır: 258 Yapılmakta Olan Yatırımlar 800.000 TL alacak. Bina artık amortismana tabi tutulabilir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "252", "borc": 800000, "alacak": 0 },
+      { "kod": "258", "borc": 0, "alacak": 800000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Tamamen İtfa Olmuş Demirbaşın Hurdaya Ayrılması",
+    "zorluk": "zor",
+    "senaryo": "Maliyet bedeli 25.000 TL ve birikmiş amortismanı 25.000 TL olan eski yazıcı, kullanım ömrü dolduğu için hurdaya ayrılmıştır. Hurda satışı bu örnekte yapılmamış; sadece muhasebe kayıtlarından çıkarılmıştır.",
+    "ipucu": "Net defter değeri 0; karşılıklı kapanış kaydı yapılır.",
+    "aciklama": "Demirbaş kayıtlardan tamamen silinir. 257 Birikmiş Amortismanlar 25.000 TL borç (kapanış). 255 Demirbaşlar 25.000 TL alacak. Net defter değeri sıfır olduğu için kar/zarar oluşmaz.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "257", "borc": 25000, "alacak": 0 },
+      { "kod": "255", "borc": 0, "alacak": 25000 }
+    ]
+  },
+  {
+    "unite_id": "amortisman",
+    "baslik": "Aktife Yapılan Modernizasyon",
+    "zorluk": "zor",
+    "senaryo": "İşletme, 600.000 TL maliyetli ticari aracın motorunu yenilemek için 80.000 TL + %20 KDV harcama yapmış, banka havalesiyle ödemiştir. Bu modernizasyon aracın faydalı ömrünü uzattığından maliyete eklenecektir.",
+    "ipucu": "Faydalı ömrü uzatan harcama varlığa eklenir; gider yazılmaz.",
+    "aciklama": "Modernizasyon faydalı ömrü uzattığı için 254 Taşıtlar 80.000 TL borç (varlık değeri artar). 191 İndirilecek KDV 16.000 TL borç. 102 Bankalar 96.000 TL alacak. Sonraki dönem amortismanı yeni maliyet bedeli (680.000 TL) üzerinden hesaplanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "254", "borc": 80000, "alacak": 0 },
+      { "kod": "191", "borc": 16000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 96000 }
+    ]
+  }
+]

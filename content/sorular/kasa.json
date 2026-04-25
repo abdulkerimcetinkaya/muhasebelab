@@ -1,0 +1,176 @@
+[
+  {
+    "unite_id": "kasa",
+    "baslik": "Peşin Hizmet Bedeli Tahsilatı",
+    "zorluk": "kolay",
+    "senaryo": "Bilgisayar bakım hizmeti veren işletme, bir müşterisinden tek seferlik bakım bedeli olarak 15.000 TL'yi nakit tahsil etmiş ve makbuz düzenlemiştir. (KDV bu örnekte ihmal edilmiştir.)",
+    "ipucu": "Kasaya nakit girişi 100 Kasa borç; hizmet hasılatı yurt içi satışlar alacak.",
+    "aciklama": "Kasaya nakit giriş olduğu için 100 Kasa hesabı 15.000 TL borçlanır. Esas faaliyet kapsamındaki hasılat 600 Yurt İçi Satışlar hesabına 15.000 TL alacak olarak işlenir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 15000, "alacak": 0 },
+      { "kod": "600", "borc": 0, "alacak": 15000 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Kasadan Kırtasiye Alımı",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, ofis kullanımı için 800 TL + %20 KDV tutarında kırtasiye malzemesini kasadan nakit ödeyerek almıştır.",
+    "ipucu": "Kırtasiye genel yönetim gideridir. KDV indirilebilir.",
+    "aciklama": "Kırtasiye gideri 770 Genel Yönetim Giderleri olarak borçlanır (800). KDV 191 İndirilecek KDV ile borçlanır (160). Kasadan toplam 960 TL çıkışı olur (alacak).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 800, "alacak": 0 },
+      { "kod": "191", "borc": 160, "alacak": 0 },
+      { "kod": "100", "borc": 0, "alacak": 960 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Kasaya Banka Çekimi",
+    "zorluk": "kolay",
+    "senaryo": "Ay sonu personel ödemeleri için banka hesabından 50.000 TL çekilerek işletme kasasına aktarılmıştır.",
+    "ipucu": "İki hazır değer arası transfer; yalnızca yer değiştirir.",
+    "aciklama": "Kasa varlığı arttığı için 100 Kasa borçlanır (50.000), banka mevduatı azaldığı için 102 Bankalar alacaklanır (50.000). Hazır değerler içinde transfer kayıt değeri yaratmaz, sadece hesaplar arası geçiştir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 50000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 50000 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Personel Avansı Verme (Nakit)",
+    "zorluk": "kolay",
+    "senaryo": "Pazarlama müdürüne iş seyahati için 5.000 TL nakit avans verilmiştir.",
+    "ipucu": "Personel avansı geçici alacak hesabıdır.",
+    "aciklama": "Personele verilen nakit avans 196 Personel Avansları hesabında borçlanır. Kasadan çıkış olduğu için 100 Kasa hesabı alacaklanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "196", "borc": 5000, "alacak": 0 },
+      { "kod": "100", "borc": 0, "alacak": 5000 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Kasa Sayımında Noksan Tespiti",
+    "zorluk": "orta",
+    "senaryo": "Gün sonu yapılan kasa sayımında, kayıtlı bakiye 12.500 TL olmasına karşın fiili kasa 12.350 TL'dir. Fark sebebi tespit edilemediğinden geçici olarak kayda alınmıştır.",
+    "ipucu": "Sayım eksiği geçici hesapta izlenir.",
+    "aciklama": "Kasa kaydı fiili duruma getirilirken 100 Kasa 150 TL alacaklanır. Fark 197 Sayım ve Tesellüm Noksanları hesabında borçlanarak geçici olarak izlenir; sebep tespit edilince ilgili hesaba aktarılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "197", "borc": 150, "alacak": 0 },
+      { "kod": "100", "borc": 0, "alacak": 150 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Müşteriden Avans Tahsilatı",
+    "zorluk": "orta",
+    "senaryo": "İşletme, ileride teslim edilecek mal siparişi için müşteriden 30.000 TL nakit avans tahsil etmiş ve avans makbuzu düzenlemiştir.",
+    "ipucu": "Avans henüz hasılat değildir; alınan sipariş avansı pasif hesabıdır.",
+    "aciklama": "Tahsil edilen avans henüz mal teslimatı yapılmadığı için satış kabul edilmez. 100 Kasa borçlandırılır (30.000); 340 Alınan Sipariş Avansları alacaklandırılır (30.000). Mal teslim edildiğinde 340 hesabı kapatılarak 600 hesabına aktarılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 30000, "alacak": 0 },
+      { "kod": "340", "borc": 0, "alacak": 30000 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Müşteri Borcunun Kısmen Nakit Tahsili",
+    "zorluk": "orta",
+    "senaryo": "Alıcılar hesabında 25.000 TL borcu görünen müşteriden 18.000 TL nakit, kalan 7.000 TL için 30 gün vadeli senet alınmıştır.",
+    "ipucu": "İki tahsilat aracı; biri kasa biri alacak senedi.",
+    "aciklama": "Müşteri borcu 120 Alıcılar hesabından düşürülmek üzere 25.000 TL alacaklandırılır. Karşılığında 100 Kasa 18.000 TL ile, 121 Alacak Senetleri ise 7.000 TL ile borçlandırılarak tahsilat aracı çeşitliliği yansıtılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 18000, "alacak": 0 },
+      { "kod": "121", "borc": 7000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 25000 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Kasa Sayımında Fazlalık",
+    "zorluk": "orta",
+    "senaryo": "Gün sonu kasa sayımında fiili kasa kayıtlı bakiyeden 240 TL fazla bulunmuştur. Sebep henüz araştırılmamaktadır.",
+    "ipucu": "Sayım fazlası, sebebi belirleninceye kadar geçici borç hesabında izlenir.",
+    "aciklama": "Fiili kasa kayıttan fazla olduğu için 100 Kasa hesabı 240 TL borçlandırılır. Sebep belirleninceye kadar fazlalık geçici nitelikte yükümlülük olduğundan 336 Diğer Çeşitli Borçlar hesabında alacak izlenir; sebep tespit edilince ilgili gelir/borç hesabına aktarılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 240, "alacak": 0 },
+      { "kod": "336", "borc": 0, "alacak": 240 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Kasa Noksanının Personelden Tahsili",
+    "zorluk": "orta",
+    "senaryo": "Önceki gün tespit edilen 500 TL kasa noksanlığının kasiyer kaynaklı olduğu anlaşılmış ve aynı gün ilgili personelden nakit olarak tahsil edilmiştir.",
+    "ipucu": "Geçici 197 hesabı kapatılır; tahsilat 100 Kasa'ya işlenir.",
+    "aciklama": "Daha önce 197 Sayım ve Tesellüm Noksanları'nda izlenen 500 TL, sebep belirlendiğinden kapatılır (alacak). Tahsil edilen tutar 100 Kasa hesabında borçlandırılır. Dönem sonunda noksan kalmadığı için sorumlulukla mahsuplaşma sağlanır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 500, "alacak": 0 },
+      { "kod": "197", "borc": 0, "alacak": 500 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Faiz Geliri Nakit Tahsilatı",
+    "zorluk": "orta",
+    "senaryo": "İşletmenin ortağına kullandırdığı borçtan 2.500 TL faiz geliri nakit olarak tahsil edilmiştir.",
+    "ipucu": "Faiz geliri 642 hesabıdır.",
+    "aciklama": "Nakit tahsilat 100 Kasa borç (2.500). Karşılığında 642 Faiz Gelirleri hesabı alacak (2.500). Bu işlem işletmenin esas faaliyetinden değil yan faaliyetinden gelir niteliğindedir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 2500, "alacak": 0 },
+      { "kod": "642", "borc": 0, "alacak": 2500 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Çoklu Tahsilat ve Tediye Birlikte",
+    "zorluk": "zor",
+    "senaryo": "Aynı gün içinde işletme: 1) Bir müşteriden 12.000 TL borcunun tamamını nakit tahsil etmiş, 2) Tedarikçiye 8.000 TL nakit ödeme yapmış, 3) Genel yönetim için 1.200 TL + %20 KDV temsil ağırlama gideri kasadan ödemiştir.",
+    "ipucu": "Üç ayrı işlem ama tek günlük yevmiyede özetlenebilir; net kasa hareketi hesaplanır.",
+    "aciklama": "Müşteriden tahsilat: 100 Kasa borç 12.000, 120 Alıcılar alacak 12.000. Tedarikçi ödemesi: 320 Satıcılar borç 8.000, 100 Kasa alacak 8.000. Temsil-ağırlama gideri: 770 Genel Yönetim Giderleri borç 1.200, 191 İndirilecek KDV borç 240, 100 Kasa alacak 1.440. Üç işlem net etki: kasa 12.000 girer; 8.000 + 1.440 = 9.440 çıkar.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "100", "borc": 12000, "alacak": 0 },
+      { "kod": "120", "borc": 0, "alacak": 12000 },
+      { "kod": "320", "borc": 8000, "alacak": 0 },
+      { "kod": "770", "borc": 1200, "alacak": 0 },
+      { "kod": "191", "borc": 240, "alacak": 0 },
+      { "kod": "100", "borc": 0, "alacak": 9440 }
+    ]
+  },
+  {
+    "unite_id": "kasa",
+    "baslik": "Kasa Noksanının Gider Yazılması",
+    "zorluk": "zor",
+    "senaryo": "Daha önce 197 Sayım ve Tesellüm Noksanları hesabında izlenen 800 TL'lik noksan, dönem sonunda sorumlu tespit edilemediği için olağandışı gider olarak kayıtlardan çıkarılmaktadır.",
+    "ipucu": "Geçici hesap kapatılır; gider hesabına aktarılır.",
+    "aciklama": "Dönem sonu mahsubunda sebep belirlenemeyen kasa noksanı işletme zararı sayılır. 689 Diğer Olağandışı Gider ve Zararlar hesabı 800 TL borçlandırılır; geçici 197 Sayım ve Tesellüm Noksanları hesabı 800 TL alacaklandırılarak kapatılır. Böylece kasa kaydı düzeltilmiş kalır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "689", "borc": 800, "alacak": 0 },
+      { "kod": "197", "borc": 0, "alacak": 800 }
+    ]
+  }
+]

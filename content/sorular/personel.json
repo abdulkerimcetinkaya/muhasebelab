@@ -1,0 +1,186 @@
+[
+  {
+    "unite_id": "personel",
+    "baslik": "Maaş Tahakkuku (Sade)",
+    "zorluk": "kolay",
+    "senaryo": "İşletme, idari personeline ait bir aylık brüt ücret tahakkuku yapmıştır. Brüt ücret 30.000 TL, SGK işçi payı 4.500 TL (15%), gelir vergisi stopajı 4.500 TL'dir; net ödenecek 21.000 TL'dir. Personel idari bölümde çalışmaktadır.",
+    "ipucu": "Brüt ücret gider; kesintiler pasiflerde alacak; net ödenecek personele borç alacak.",
+    "aciklama": "770 Genel Yönetim Giderleri 30.000 TL borç (brüt). 360 Ödenecek Vergi ve Fonlar 4.500 TL alacak (stopaj). 361 Ödenecek Sosyal Güvenlik Kesintileri 4.500 TL alacak (SGK işçi). 335 Personele Borçlar 21.000 TL alacak (net).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 30000, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 4500 },
+      { "kod": "361", "borc": 0, "alacak": 4500 },
+      { "kod": "335", "borc": 0, "alacak": 21000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Net Maaş Ödemesi (Banka)",
+    "zorluk": "kolay",
+    "senaryo": "Önceki yevmiyede 335 Personele Borçlar'da 21.000 TL net maaş borcu kaydedilmişti. Bu ay sonu personelin banka hesabına havale yapılarak ödeme gerçekleşmiştir.",
+    "ipucu": "Personele borçlar kapanır; banka alacak.",
+    "aciklama": "Personele borç kapatıldığı için 335 Personele Borçlar 21.000 TL borç. Banka mevduatından çıkış olduğu için 102 Bankalar 21.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "335", "borc": 21000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 21000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "SGK Primlerinin Bankadan Ödenmesi",
+    "zorluk": "kolay",
+    "senaryo": "Geçen ayın bordrosu nedeniyle 361 Ödenecek Sosyal Güvenlik Kesintileri'nde 12.000 TL borç (işçi + işveren payı toplamı) bulunmaktadır. Bu tutar SGK'ya banka aracılığıyla ödenmiştir.",
+    "ipucu": "361 hesabı kapanır; banka alacak.",
+    "aciklama": "Kapatma için 361 Ödenecek Sosyal Güvenlik Kesintileri 12.000 TL borç; banka mevduatından çıkış olduğu için 102 Bankalar 12.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "361", "borc": 12000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 12000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Stopaj Vergisinin Ödenmesi",
+    "zorluk": "kolay",
+    "senaryo": "Geçen ayın maaş bordrosundan 360 Ödenecek Vergi ve Fonlar'da 4.500 TL gelir vergisi stopajı bulunmaktadır. Vergi dairesine internet bankacılığı ile ödeme yapılmıştır.",
+    "ipucu": "Vergi borcu kapanır; banka alacak.",
+    "aciklama": "Vergi borcu kapatıldığı için 360 Ödenecek Vergi ve Fonlar 4.500 TL borç. Banka mevduatı azaldığı için 102 Bankalar 4.500 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "360", "borc": 4500, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 4500 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Pazarlama Personeli Maaş Tahakkuku",
+    "zorluk": "orta",
+    "senaryo": "İşletme, pazarlama bölümünde çalışan satış temsilcilerinin bir aylık bordrosunu yapmıştır. Brüt 50.000 TL, SGK işçi 7.500 TL, stopaj 7.500 TL, net ödenecek 35.000 TL'dir.",
+    "ipucu": "Pazarlamada çalışan personelin gideri 760 hesabına yazılır.",
+    "aciklama": "760 Pazarlama Satış ve Dağıtım Giderleri 50.000 TL borç (brüt). 360 Ödenecek Vergi ve Fonlar 7.500 TL alacak. 361 Ödenecek SGK Kesintileri 7.500 TL alacak. 335 Personele Borçlar 35.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "760", "borc": 50000, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 7500 },
+      { "kod": "361", "borc": 0, "alacak": 7500 },
+      { "kod": "335", "borc": 0, "alacak": 35000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "İşveren SGK Payı Tahakkuku",
+    "zorluk": "orta",
+    "senaryo": "Personel için işverenin sorumlu olduğu SGK ve işsizlik primi işveren payı (toplam 8.000 TL) ay sonu tahakkuk ettirilecektir. İşveren payı doğrudan gider niteliğindedir; idari personel kapsamındadır.",
+    "ipucu": "İşveren payı gider; SGK alacak.",
+    "aciklama": "İşveren SGK payı işletme gideri olduğu için 770 Genel Yönetim Giderleri 8.000 TL borç. Karşılığında 361 Ödenecek SGK Kesintileri 8.000 TL alacak (işveren payı işçi payıyla aynı hesapta toplanır).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 8000, "alacak": 0 },
+      { "kod": "361", "borc": 0, "alacak": 8000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Personel Avansı (Mahsuplaşma Öncesi)",
+    "zorluk": "orta",
+    "senaryo": "Bir personele Mart ayı maaşına mahsuben 5.000 TL nakit avans verilmiştir. Avans personele teslim edilmiş, makbuz alınmıştır. Mahsuplaşma ay sonu yapılacaktır.",
+    "ipucu": "Personel avansı aktif geçici hesaptır.",
+    "aciklama": "Verilen avans 196 Personel Avansları 5.000 TL borç. Kasadan çıkış olduğu için 100 Kasa 5.000 TL alacak. Ay sonu maaş tahakkukunda bu tutar 335'ten düşülecektir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "196", "borc": 5000, "alacak": 0 },
+      { "kod": "100", "borc": 0, "alacak": 5000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Personel Avansının Maaştan Mahsubu",
+    "zorluk": "orta",
+    "senaryo": "Mart maaş tahakkuku şöyledir: Brüt 25.000 TL, SGK işçi 3.750 TL, stopaj 3.750 TL, hesaplanan net 17.500 TL. Daha önce 196 hesabında 5.000 TL avans bulunmaktadır. Avans mahsup edilerek personele kalan 12.500 TL ödenecektir; ödeme henüz yapılmamış, sadece tahakkuk yapılmıştır.",
+    "ipucu": "Avans 196 alacak; kalan tutar 335 alacak.",
+    "aciklama": "770 Genel Yönetim Giderleri 25.000 TL borç (brüt). 360 Ödenecek Vergi ve Fonlar 3.750 TL alacak. 361 Ödenecek SGK Kesintileri 3.750 TL alacak. 196 Personel Avansları 5.000 TL alacak (mahsuplaşarak kapanır). 335 Personele Borçlar 12.500 TL alacak (kalan ödenecek).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 25000, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 3750 },
+      { "kod": "361", "borc": 0, "alacak": 3750 },
+      { "kod": "196", "borc": 0, "alacak": 5000 },
+      { "kod": "335", "borc": 0, "alacak": 12500 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "İcra Kesintili Maaş Tahakkuku",
+    "zorluk": "zor",
+    "senaryo": "İdari personelin maaşından icra dosyası nedeniyle ek kesinti yapılacaktır. Brüt 40.000 TL, SGK işçi 6.000 TL, stopaj 6.000 TL, icra kesintisi 5.000 TL'dir. Net ödenecek 23.000 TL olarak hesaplanmıştır. İcra tutarı geçici borç hesabında izlenir.",
+    "ipucu": "İcra kesintisi 336 Diğer Çeşitli Borçlar'da takip edilir.",
+    "aciklama": "770 Genel Yönetim Giderleri 40.000 TL borç. 360 Ödenecek Vergi ve Fonlar 6.000 TL alacak. 361 Ödenecek SGK Kesintileri 6.000 TL alacak. 336 Diğer Çeşitli Borçlar 5.000 TL alacak (icra dairesine ödenecek). 335 Personele Borçlar 23.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 40000, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 6000 },
+      { "kod": "361", "borc": 0, "alacak": 6000 },
+      { "kod": "336", "borc": 0, "alacak": 5000 },
+      { "kod": "335", "borc": 0, "alacak": 23000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Karma Bordro: Maaş + İşveren Payı + Avans Mahsubu",
+    "zorluk": "zor",
+    "senaryo": "İdari personel maaş tahakkuku: Brüt 60.000 TL, SGK işçi 9.000 TL, stopaj 9.000 TL. Net ödenecek 42.000 TL hesaplanmıştır. Bunun yanında işveren SGK payı 11.500 TL ayrıca tahakkuk edecektir. Daha önce verilmiş 8.000 TL personel avansı bordroda mahsup edilecektir; kalan 34.000 TL personele net olarak borçlu kalınmıştır. (Tahakkuk; ödeme yapılmadı.)",
+    "ipucu": "Brüt + işveren payı toplam gider; kesintiler pasifte; avans 196 alacakla mahsuplaşır.",
+    "aciklama": "770 Genel Yönetim Giderleri 60.000 (brüt) + 11.500 (işveren) = 71.500 TL borç. 360 Ödenecek Vergi ve Fonlar 9.000 TL alacak. 361 Ödenecek SGK Kesintileri 9.000 (işçi) + 11.500 (işveren) = 20.500 TL alacak. 196 Personel Avansları 8.000 TL alacak. 335 Personele Borçlar 34.000 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 71500, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 9000 },
+      { "kod": "361", "borc": 0, "alacak": 20500 },
+      { "kod": "196", "borc": 0, "alacak": 8000 },
+      { "kod": "335", "borc": 0, "alacak": 34000 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Net Maaş + SGK + Stopajın Aynı Gün Ödenmesi",
+    "zorluk": "zor",
+    "senaryo": "Ay sonu personele 21.000 TL net maaş, SGK'ya 9.000 TL prim, vergi dairesine 4.500 TL stopaj olmak üzere üç ayrı ödeme aynı gün banka havalesi ile yapılmıştır. Toplam 34.500 TL banka çıkışı oluşmuştur. (335, 361 ve 360 hesaplarındaki bakiyeler kapatılacaktır.)",
+    "ipucu": "Üç ayrı borç hesabı kapanır; banka alacak.",
+    "aciklama": "335 Personele Borçlar 21.000 TL borç (kapanış). 361 Ödenecek SGK Kesintileri 9.000 TL borç. 360 Ödenecek Vergi ve Fonlar 4.500 TL borç. Üç borcun toplamı kadar banka çıkışı: 102 Bankalar 34.500 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "335", "borc": 21000, "alacak": 0 },
+      { "kod": "361", "borc": 9000, "alacak": 0 },
+      { "kod": "360", "borc": 4500, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 34500 }
+    ]
+  },
+  {
+    "unite_id": "personel",
+    "baslik": "Kıdem ve İhbar Tazminatı Ödemesi",
+    "zorluk": "zor",
+    "senaryo": "İşten çıkarılan personele 25.000 TL kıdem tazminatı + 10.000 TL ihbar tazminatı ödenmiştir. Kıdem tazminatı stopaj ve SGK'dan istisna; ihbar tazminatı %15 (1.500 TL) gelir vergisi stopajına tabidir. Ödeme bankadan yapılmış olup vergi henüz ödenmedi.",
+    "ipucu": "İhbar tazminatı stopajı 360'a alacak; net ödeme banka alacak.",
+    "aciklama": "770 Genel Yönetim Giderleri 35.000 TL borç (toplam tazminat brütü). 360 Ödenecek Vergi ve Fonlar 1.500 TL alacak (ihbar stopajı). 102 Bankalar 33.500 TL alacak (net ödeme: 25.000 kıdem + 8.500 net ihbar).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 35000, "alacak": 0 },
+      { "kod": "360", "borc": 0, "alacak": 1500 },
+      { "kod": "102", "borc": 0, "alacak": 33500 }
+    ]
+  }
+]

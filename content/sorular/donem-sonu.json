@@ -1,0 +1,170 @@
+[
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Peşin Ödenen Yıllık Sigorta",
+    "zorluk": "kolay",
+    "senaryo": "1 Eylül tarihinde işletme, 12 aylık iş yeri sigorta poliçesi için 24.000 TL'yi banka havalesi ile peşin ödemiş ve 180 Gelecek Aylara Ait Giderler hesabında izlemeye almıştır.",
+    "ipucu": "Peşin gider geçici aktif hesabıdır.",
+    "aciklama": "Henüz dönemine ait olmayan sigorta gideri 180 Gelecek Aylara Ait Giderler 24.000 TL borç. Banka mevduatından çıkış olduğu için 102 Bankalar 24.000 TL alacak. Aylar geçtikçe gider hesabına aktarılacaktır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "180", "borc": 24000, "alacak": 0 },
+      { "kod": "102", "borc": 0, "alacak": 24000 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Yıl Sonu Sigorta Gideri Aktarımı (Kıst)",
+    "zorluk": "kolay",
+    "senaryo": "1 Eylül'de 180 Gelecek Aylara Ait Giderler hesabına 24.000 TL olarak alınmış sigorta gideri için 31 Aralık dönem sonunda 4 ay (Eylül-Ekim-Kasım-Aralık) bu döneme ait sayılarak gidere alınacaktır.",
+    "ipucu": "180'den gider hesabına yıl içi pay aktarılır.",
+    "aciklama": "Aylık sigorta payı: 24.000 / 12 = 2.000 TL. 4 ay = 8.000 TL döneme ait. 770 Genel Yönetim Giderleri 8.000 TL borç. 180 Gelecek Aylara Ait Giderler 8.000 TL alacak. Kalan 16.000 TL ertesi yıl 280 hesabında değerlendirilebilir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 8000, "alacak": 0 },
+      { "kod": "180", "borc": 0, "alacak": 8000 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Peşin Tahsil Edilen Kira Geliri (Hasılat Erteleme)",
+    "zorluk": "kolay",
+    "senaryo": "1 Aralık tarihinde işletme, sahip olduğu dükkân için kiracıdan 6 aylık kira bedeli 60.000 TL'yi banka havalesi ile peşin tahsil etmiştir. Sadece Aralık ayı bu döneme aittir; geri kalan 5 ay sonraki döneme ait olduğundan henüz hasılat değildir.",
+    "ipucu": "Peşin tahsil edilen gelir geçici pasif hesabıdır.",
+    "aciklama": "Banka mevduatına 60.000 TL girdiği için 102 Bankalar borç. Henüz dönemine ait olmayan tutar 380 Gelecek Aylara Ait Gelirler 60.000 TL alacak. Dönem sonu mahsubunda Aralık payı 380'den ilgili gelir hesabına aktarılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "102", "borc": 60000, "alacak": 0 },
+      { "kod": "380", "borc": 0, "alacak": 60000 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Peşin Tahsil Edilen Kiranın Aralık Payı",
+    "zorluk": "kolay",
+    "senaryo": "380 Gelecek Aylara Ait Gelirler hesabında 60.000 TL bulunmaktadır (6 aylık peşin kira). Dönem sonu (31 Aralık) itibariyle 1 aylık kira (10.000 TL) bu yıla ait olduğu için gelir hesabına aktarılacaktır.",
+    "ipucu": "Geçici pasif → gelir hesabına devir.",
+    "aciklama": "380 Gelecek Aylara Ait Gelirler 10.000 TL borç (azaltma). 649 Diğer Olağan Gelir ve Karlar 10.000 TL alacak (gelir tahakkuku). Kalan 50.000 TL gelecek dönemlere aktarılır (uzun vadeli ise 480'e taşınır).",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "380", "borc": 10000, "alacak": 0 },
+      { "kod": "649", "borc": 0, "alacak": 10000 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Tahakkuk Eden Faiz Geliri (Henüz Tahsil Edilmemiş)",
+    "zorluk": "orta",
+    "senaryo": "İşletmenin vadeli mevduatından döneme ait olarak kazanılmış ancak banka tarafından henüz hesaba yansıtılmamış 3.500 TL faiz geliri bulunmaktadır. Faiz Ocak ayında ödenecek olsa da Aralık'ta hak edildiği için bu döneme alınacaktır.",
+    "ipucu": "Hak edilen ama henüz alınmamış gelir 181 hesabında izlenir.",
+    "aciklama": "Hak edilen ancak tahsil edilmeyen faiz 181 Gelir Tahakkukları 3.500 TL borç. Dönemine ait gelir 642 Faiz Gelirleri 3.500 TL alacak. Bankaya geçtiğinde 102 Bankalar borç, 181 alacak ile mahsup edilir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "181", "borc": 3500, "alacak": 0 },
+      { "kod": "642", "borc": 0, "alacak": 3500 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Tahakkuk Eden Gider (Henüz Ödenmemiş Elektrik)",
+    "zorluk": "orta",
+    "senaryo": "Aralık ayına ait 4.200 TL elektrik faturası 31 Aralık'ta gelmiş ancak vadesi 15 Ocak olduğu için henüz ödenmemiştir. Gider bu döneme aittir; sonraki ay ödenecektir.",
+    "ipucu": "Tahakkuk eden gider; gelecek dönem ödenecek olsa bile bu yıla yazılır.",
+    "aciklama": "Gider dönemine ait olduğu için 770 Genel Yönetim Giderleri 4.200 TL borç. Henüz ödenmediği için yükümlülük olarak 381 Gider Tahakkukları 4.200 TL alacak. Ocak'ta ödendiğinde 381 borç, 102 alacak ile kapatılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 4200, "alacak": 0 },
+      { "kod": "381", "borc": 0, "alacak": 4200 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Sayım Sonucu Mal Noksanı",
+    "zorluk": "orta",
+    "senaryo": "Yıl sonu fiziksel sayımda 153 Ticari Mallar kayıtlı bakiyesi 200.000 TL iken fiili stok 197.500 TL bulunmuştur. Aradaki 2.500 TL'lik fark sebebi henüz tespit edilmediği için geçici hesapta izlenecektir.",
+    "ipucu": "Sayım eksiği geçici aktif hesapta izlenir.",
+    "aciklama": "Mal kaydı fiili duruma getirilirken 153 Ticari Mallar 2.500 TL alacak. Geçici aktif olarak 197 Sayım ve Tesellüm Noksanları 2.500 TL borç. Sebep tespit edilince ilgili hesaba aktarılır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "197", "borc": 2500, "alacak": 0 },
+      { "kod": "153", "borc": 0, "alacak": 2500 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Mal Noksanının Olağandışı Gider Yazılması",
+    "zorluk": "orta",
+    "senaryo": "197 Sayım ve Tesellüm Noksanları'nda izlenen 2.500 TL'lik mal noksanlığının sebebi araştırılmış ve tespit edilememiştir. Dönem sonunda olağandışı gider olarak kapatılacaktır.",
+    "ipucu": "Geçici hesap kapanır; gider hesabına yazılır.",
+    "aciklama": "Sebep belirlenemeyen noksan zarar olarak yazılır: 689 Diğer Olağandışı Gider ve Zararlar 2.500 TL borç. Geçici hesap kapanır: 197 Sayım ve Tesellüm Noksanları 2.500 TL alacak.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "689", "borc": 2500, "alacak": 0 },
+      { "kod": "197", "borc": 0, "alacak": 2500 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Stok Maliyetlemesi (Aralıklı Envanter)",
+    "zorluk": "orta",
+    "senaryo": "İşletme aralıklı envanter yöntemini kullanmaktadır. Dönem başı stok 50.000 TL, dönem içi alış 200.000 TL, dönem sonu fiili stok 60.000 TL'dir. Bu durumda satılan ticari malların maliyeti hesaplanıp 621 hesabına aktarılacaktır.",
+    "ipucu": "STMM = DBM + Alış − DSM = 50.000 + 200.000 − 60.000 = 190.000 TL.",
+    "aciklama": "Dönem sonu maliyetlendirme: 621 Satılan Ticari Mallar Maliyeti 190.000 TL borç. 153 Ticari Mallar 190.000 TL alacak (kayıttan stok azaltımı). Kalan 60.000 TL bilanço stok bakiyesini oluşturur.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "621", "borc": 190000, "alacak": 0 },
+      { "kod": "153", "borc": 0, "alacak": 190000 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Yıl İçi Avans Ödemesinin Dönem Sonu Düzeltmesi",
+    "zorluk": "zor",
+    "senaryo": "1 Ekim'de işletme bir tedarikçi sözleşmesi gereği 18 ay süreli yazılım kullanım hakkı için 36.000 TL banka havalesi ile peşin ödeme yapmış ve 280 Gelecek Yıllara Ait Giderler'de izlemiştir. 31 Aralık dönem sonunda Ekim-Kasım-Aralık (3 ay) bu yıla aittir, kalan 15 ay gelecek yıllara aittir; bu yıl payı gider hesabına aktarılacaktır.",
+    "ipucu": "Aylık pay × döneme ait ay; uzun vadelilerden 280 azaltılır.",
+    "aciklama": "Aylık pay: 36.000 / 18 = 2.000 TL. Döneme ait 3 ay = 6.000 TL. 770 Genel Yönetim Giderleri 6.000 TL borç. 280 Gelecek Yıllara Ait Giderler 6.000 TL alacak. Yıl atlanırken 280'den 180'e kalan kısa vadeli kısım da aktarılabilir.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "770", "borc": 6000, "alacak": 0 },
+      { "kod": "280", "borc": 0, "alacak": 6000 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Faiz Gider Tahakkuku (Kullanılan Krediden)",
+    "zorluk": "zor",
+    "senaryo": "İşletmenin 200.000 TL kullandığı kredinin Aralık ayına ait fakat ödemesi Ocak'ta yapılacak 4.000 TL faiz tutarı bu döneme yazılacaktır. Faiz banka tarafından henüz tahsil edilmemiştir.",
+    "ipucu": "Hak edilmiş ancak ödenmemiş gider; finansman gideri + 381.",
+    "aciklama": "Tahakkuk eden faiz gideri 660 Kısa Vadeli Borçlanma Giderleri 4.000 TL borç. Ödeme yapılmadığı için yükümlülük 381 Gider Tahakkukları 4.000 TL alacak. Faiz Ocak'ta hesaptan kesildiğinde 381 borç, 102 alacak ile mahsuplaşır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "660", "borc": 4000, "alacak": 0 },
+      { "kod": "381", "borc": 0, "alacak": 4000 }
+    ]
+  },
+  {
+    "unite_id": "donem-sonu",
+    "baslik": "Dönem Karının 690 Hesabına Aktarımı (Sade)",
+    "zorluk": "zor",
+    "senaryo": "Dönem sonu mahsubunda gelir tablosu hesapları kapanmış ve net olarak 75.000 TL kar oluşmuştur. Bu tutar 690 Dönem Karı veya Zararı'ndan 590 Dönem Net Karı'na aktarılacaktır. (Vergi etkisi bu örnekte ihmal edilmiştir.)",
+    "ipucu": "690 borç ↔ 590 alacak.",
+    "aciklama": "Gelir-gider mahsuplarından sonra net karlı pozisyon: 690 Dönem Karı veya Zararı 75.000 TL borç. 590 Dönem Net Karı 75.000 TL alacak. Bu kayıt sonucunda 690 hesabı kapatılmış, kar bilançoya yansımıştır.",
+    "durum": "taslak",
+    "kaynak": "ai",
+    "cozumler": [
+      { "kod": "690", "borc": 75000, "alacak": 0 },
+      { "kod": "590", "borc": 0, "alacak": 75000 }
+    ]
+  }
+]
