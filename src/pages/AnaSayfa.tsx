@@ -528,19 +528,19 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
   const aktifSahne = useAktifSahne(progress);
   const sahne = SAHNELER[aktifSahne];
 
-  // Paper sheet — büyür, sonra küçülür (orbital sahnede)
-  const paperScale = useTransform(progress, [0, 0.15, 0.65, 0.82, 1], [0.86, 1.0, 1.0, 0.62, 0.62]);
-  const paperRotate = useTransform(progress, [0, 0.15, 0.82, 1], [-3, 0, 0, -2]);
-  const paperOpacity = useTransform(progress, [0, 0.05, 0.95, 1], [0, 1, 1, 0.55]);
+  // Paper sheet — ilk açılıştan itibaren görünür, scroll'la ölçek değişir
+  const paperScale = useTransform(progress, [0, 0.65, 0.82, 1], [0.94, 1.0, 0.62, 0.62]);
+  const paperRotate = useTransform(progress, [0, 0.15, 0.82, 1], [-1.5, 0, 0, -2]);
+  const paperOpacity = useTransform(progress, [0, 0.95, 1], [1, 1, 0.55]);
 
-  // Halkalar — scroll'la genişler
-  const ringScale1 = useTransform(progress, [0, 1], [0.7, 1.5]);
-  const ringScale2 = useTransform(progress, [0, 1], [0.5, 1.7]);
-  const ringScale3 = useTransform(progress, [0, 1], [0.3, 1.9]);
-  const ringOpacity = useTransform(progress, [0, 0.1, 0.9, 1], [0, 0.5, 0.5, 0.15]);
+  // Halkalar — start'tan görünür, scroll'la daha çok genişler
+  const ringScale1 = useTransform(progress, [0, 1], [0.85, 1.5]);
+  const ringScale2 = useTransform(progress, [0, 1], [0.7, 1.7]);
+  const ringScale3 = useTransform(progress, [0, 1], [0.55, 1.9]);
+  const ringOpacity = useTransform(progress, [0, 0.9, 1], [0.55, 0.55, 0.2]);
 
-  // Floating codes — scroll'la görünür/silinir
-  const codesOpacity = useTransform(progress, [0, 0.08, 0.6, 0.9], [0, 0.5, 0.5, 0]);
+  // Floating codes — start'tan görünür, sahne 4'te kaybolur
+  const codesOpacity = useTransform(progress, [0, 0.6, 0.9], [0.6, 0.5, 0]);
 
   // Satırlar — tek tek scroll'la dolar (28% → 55%)
   const row1Opacity = useTransform(progress, [0.30, 0.36], [0, 1]);
@@ -575,7 +575,7 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
           }}
         />
 
-        {/* Konsantrik halkalar — radar tarzı atmosfer */}
+        {/* Konsantrik halkalar — radar tarzı atmosfer (start'tan görünür) */}
         <motion.div
           className="absolute top-1/2 left-1/2"
           style={{
@@ -625,12 +625,9 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
         <div className="absolute inset-0 flex items-center pointer-events-none">
           <div className="relative max-w-[1240px] mx-auto px-5 sm:px-8 w-full">
             <div className="max-w-md lg:max-w-lg pointer-events-auto">
-              <motion.div
+              <div
                 key={aktifSahne}
-                initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -16, filter: 'blur(4px)' }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                style={{ animation: 'sceneEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both' }}
               >
                 <div className="flex items-center gap-2 mb-4">
                   <span className="chip chip-mint">
@@ -652,7 +649,7 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
                     {sahne.altyazi}
                   </p>
                 )}
-              </motion.div>
+              </div>
 
               {/* CTA — son sahnede görünür */}
               <motion.div
@@ -671,8 +668,11 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
         </div>
 
         {/* MERKEZ: Yevmiye defteri kâğıdı */}
-        <motion.div
+        <div
           className="absolute top-1/2 right-[8%] sm:right-[10%] lg:right-[12%] -translate-y-1/2 w-[88vw] sm:w-[68vw] md:w-[52vw] lg:w-[44vw] max-w-[540px]"
+          style={{ animation: 'paperEnter 1.0s cubic-bezier(0.16, 1, 0.3, 1) both', animationDelay: '0.15s' }}
+        >
+        <motion.div
           style={{
             scale: paperScale,
             rotate: paperRotate,
@@ -761,6 +761,7 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
             </div>
           </div>
         </motion.div>
+        </div>
 
         {/* ORBITAL ÜNİTE İKONLARI — sahne 3 */}
         <motion.div

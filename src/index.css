@@ -573,6 +573,18 @@ input[type='number'] { -moz-appearance: textfield; }
   from { transform: translateY(8px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* Paper sheet mount entry — stable CSS animation */
+@keyframes paperEnter {
+  from { opacity: 0; transform: translateY(-50%) scale(0.92); }
+  to { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+
+/* Sahne metni mount entry */
+@keyframes sceneEnter {
+  from { opacity: 0; transform: translateY(20px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0px); }
+}
 .rise { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .rise-2 { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: 0.06s; }
 .rise-3 { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: 0.12s; }
