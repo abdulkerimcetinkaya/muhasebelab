@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, useScroll, useTransform, useSpring, type MotionValue } from 'framer-motion';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,7 +10,7 @@ import { devamEtSorusu, enCokYanlisSoru } from '../lib/oneriler';
 import { bugununTarihi } from '../lib/format';
 import { planlariYukle, type Plan } from '../lib/odeme';
 import { ZORLUK_AD, ZORLUK_PUAN } from '../data/sabitler';
-import type { Ilerleme, Istatistik, SoruWithUnite, Zorluk } from '../types';
+import type { Ilerleme, Istatistik, SoruWithUnite, Zorluk, Unite } from '../types';
 
 /* ----------------------------------------------------------------------
    Yardımcılar
@@ -436,6 +437,418 @@ const ORNEK_KAYIT = [
   { kod: '391', ad: 'HESAPLANAN KDV', borc: '', alacak: '2.000,00' },
 ];
 
+/* Arka planda yüzen hesap kodları — radar tarzı atmosfer */
+const FLOATING_CODES = [
+  { kod: '100 KASA', x: '8%', y: '18%' },
+  { kod: '102 BANKALAR', x: '92%', y: '14%' },
+  { kod: '120 ALICILAR', x: '6%', y: '64%' },
+  { kod: '153 TİC. MAL', x: '95%', y: '38%' },
+  { kod: '191 İND. KDV', x: '14%', y: '88%' },
+  { kod: '257 BİR. AMORT.', x: '88%', y: '78%' },
+  { kod: '320 SATICILAR', x: '4%', y: '40%' },
+  { kod: '391 HESAP. KDV', x: '90%', y: '92%' },
+  { kod: '600 YURT İÇİ SATIŞLAR', x: '12%', y: '32%' },
+  { kod: '770 GENEL YÖN.', x: '94%', y: '58%' },
+];
+
+/* Sahne metni: scroll progress'e göre değişen başlık */
+interface Sahne {
+  start: number;
+  end: number;
+  baslik: string;
+  altyazi?: string;
+}
+
+const SAHNELER: Sahne[] = [
+  {
+    start: 0,
+    end: 0.28,
+    baslik: 'Yevmiye kaydını',
+    altyazi: 'tarayıcıdan, gerçek senaryolarla.',
+  },
+  {
+    start: 0.28,
+    end: 0.55,
+    baslik: 'Senaryoyu oku.',
+    altyazi: 'Borç ve alacak satırlarını sırayla işle.',
+  },
+  {
+    start: 0.55,
+    end: 0.82,
+    baslik: 'Anında doğrula.',
+    altyazi: 'Yanlış satır kırmızı, dengeli kayıt yeşil.',
+  },
+  {
+    start: 0.82,
+    end: 1.0,
+    baslik: 'Sıkıştığında AI yanında.',
+    altyazi: '212 senaryo · 11 ünite · kasadan kambiyoya.',
+  },
+];
+
+/* Aktif sahneyi bul */
+const useAktifSahne = (progress: MotionValue<number>) => {
+  const [aktif, setAktif] = useState(0);
+  useEffect(() => {
+    const unsubscribe = progress.on('change', (v) => {
+      const idx = SAHNELER.findIndex((s) => v >= s.start && v < s.end);
+      setAktif(idx === -1 ? SAHNELER.length - 1 : idx);
+    });
+    return () => unsubscribe();
+  }, [progress]);
+  return aktif;
+};
+
+/* ----------------------------------------------------------------------
+   ScrollHero — Quartermaster-tarzı pinned scroll deneyimi
+---------------------------------------------------------------------- */
+
+interface ScrollHeroProps {
+  nav: (path: string) => void;
+  soruSayisi: number;
+  uniteSayisi: number;
+  uniteler: Unite[];
+}
+
+const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Yumuşatılmış progress (jitter olmasın)
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 80,
+    damping: 22,
+    mass: 0.4,
+  });
+
+  // Sahne metni
+  const aktifSahne = useAktifSahne(progress);
+  const sahne = SAHNELER[aktifSahne];
+
+  // Paper sheet — büyür, sonra küçülür (orbital sahnede)
+  const paperScale = useTransform(progress, [0, 0.15, 0.65, 0.82, 1], [0.86, 1.0, 1.0, 0.62, 0.62]);
+  const paperRotate = useTransform(progress, [0, 0.15, 0.82, 1], [-3, 0, 0, -2]);
+  const paperOpacity = useTransform(progress, [0, 0.05, 0.95, 1], [0, 1, 1, 0.55]);
+
+  // Halkalar — scroll'la genişler
+  const ringScale1 = useTransform(progress, [0, 1], [0.7, 1.5]);
+  const ringScale2 = useTransform(progress, [0, 1], [0.5, 1.7]);
+  const ringScale3 = useTransform(progress, [0, 1], [0.3, 1.9]);
+  const ringOpacity = useTransform(progress, [0, 0.1, 0.9, 1], [0, 0.5, 0.5, 0.15]);
+
+  // Floating codes — scroll'la görünür/silinir
+  const codesOpacity = useTransform(progress, [0, 0.08, 0.6, 0.9], [0, 0.5, 0.5, 0]);
+
+  // Satırlar — tek tek scroll'la dolar (28% → 55%)
+  const row1Opacity = useTransform(progress, [0.30, 0.36], [0, 1]);
+  const row2Opacity = useTransform(progress, [0.36, 0.42], [0, 1]);
+  const row3Opacity = useTransform(progress, [0.42, 0.48], [0, 1]);
+  const totalOpacity = useTransform(progress, [0.48, 0.54], [0, 1]);
+  const aciklamaOpacity = useTransform(progress, [0.54, 0.62], [0, 1]);
+
+  // Orbital ünite ikonları (65% → 82%)
+  const orbitOpacity = useTransform(progress, [0.62, 0.72], [0, 1]);
+  const orbitScale = useTransform(progress, [0.62, 0.72], [0.6, 1]);
+
+  // AI kart slide-in (82% → 100%)
+  const aiCardX = useTransform(progress, [0.82, 0.94], [120, 0]);
+  const aiCardOpacity = useTransform(progress, [0.82, 0.92], [0, 1]);
+
+  // CTA fade-in son sahnede
+  const ctaOpacity = useTransform(progress, [0.88, 1.0], [0, 1]);
+  const ctaY = useTransform(progress, [0.88, 1.0], [20, 0]);
+
+  return (
+    <section ref={sectionRef} className="relative" style={{ height: '420vh' }}>
+      <div className="sticky top-0 h-screen overflow-hidden">
+        {/* Arka plan dokusu — kâğıt fiber his */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch' seed='5'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.23  0 0 0 0 0.37  0 0 0 0.018 0'/></filter><rect width='280' height='280' filter='url(%23n)'/></svg>")`,
+            backgroundSize: '280px',
+            mixBlendMode: 'multiply',
+            opacity: 0.7,
+          }}
+        />
+
+        {/* Konsantrik halkalar — radar tarzı atmosfer */}
+        <motion.div
+          className="absolute top-1/2 left-1/2"
+          style={{
+            opacity: ringOpacity,
+            x: '-50%',
+            y: '-50%',
+          }}
+        >
+          {[
+            { size: 600, scale: ringScale1, dashed: false },
+            { size: 900, scale: ringScale2, dashed: true },
+            { size: 1200, scale: ringScale3, dashed: false },
+          ].map((r, i) => (
+            <motion.div
+              key={i}
+              className="ring"
+              style={{
+                width: r.size,
+                height: r.size,
+                top: -r.size / 2,
+                left: -r.size / 2,
+                scale: r.scale,
+                borderStyle: r.dashed ? 'dashed' : 'solid',
+                borderColor: 'rgba(31, 58, 95, 0.18)',
+              }}
+            />
+          ))}
+        </motion.div>
+
+        {/* Yüzen hesap kodları */}
+        <motion.div className="absolute inset-0" style={{ opacity: codesOpacity }}>
+          {FLOATING_CODES.map((c, i) => {
+            const yOffset = useTransform(progress, [0, 1], [0, (i % 2 === 0 ? -40 : 40)]);
+            return (
+              <motion.span
+                key={i}
+                className="float-code"
+                style={{ left: c.x, top: c.y, y: yOffset }}
+              >
+                {c.kod}
+              </motion.span>
+            );
+          })}
+        </motion.div>
+
+        {/* Sahne metni — sol tarafta sticky */}
+        <div className="absolute inset-0 flex items-center pointer-events-none">
+          <div className="relative max-w-[1240px] mx-auto px-5 sm:px-8 w-full">
+            <div className="max-w-md lg:max-w-lg pointer-events-auto">
+              <motion.div
+                key={aktifSahne}
+                initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -16, filter: 'blur(4px)' }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="chip chip-mint">
+                    <span className="live-dot" />
+                    {soruSayisi} soru aktif
+                  </span>
+                  <span className="font-mono text-[11px] text-ink-mute tracking-wider">
+                    0{aktifSahne + 1} / 0{SAHNELER.length}
+                  </span>
+                </div>
+                <h1
+                  className="scene-text"
+                  style={{ fontSize: 'clamp(40px, 5.6vw, 76px)' }}
+                >
+                  {sahne.baslik}
+                </h1>
+                {sahne.altyazi && (
+                  <p className="text-[16px] sm:text-[18px] text-ink-soft leading-relaxed mt-5 max-w-md">
+                    {sahne.altyazi}
+                  </p>
+                )}
+              </motion.div>
+
+              {/* CTA — son sahnede görünür */}
+              <motion.div
+                style={{ opacity: ctaOpacity, y: ctaY }}
+                className="flex flex-wrap items-center gap-4 mt-8"
+              >
+                <button onClick={() => nav('/problemler')} className="btn btn-primary btn-lg">
+                  Hemen başla — kayıt yok
+                </button>
+                <button onClick={() => nav('/giris')} className="btn-link">
+                  Hesap oluştur →
+                </button>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* MERKEZ: Yevmiye defteri kâğıdı */}
+        <motion.div
+          className="absolute top-1/2 right-[8%] sm:right-[10%] lg:right-[12%] -translate-y-1/2 w-[88vw] sm:w-[68vw] md:w-[52vw] lg:w-[44vw] max-w-[540px]"
+          style={{
+            scale: paperScale,
+            rotate: paperRotate,
+            opacity: paperOpacity,
+            transformOrigin: 'center center',
+          }}
+        >
+          <div className="paper-sheet p-6 sm:p-8">
+            <div className="relative">
+              <div className="flex items-baseline justify-between mb-1">
+                <span className="doc-header">Yevmiye Defteri</span>
+                <span className="doc-header">Sayfa 03 · No. 47</span>
+              </div>
+              <div className="hairline mb-4" />
+
+              <div className="flex items-baseline justify-between text-[12.5px] mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-ink-mute font-mono">26.04.2026</span>
+                  <span className="chip chip-mint" style={{ borderRadius: 4 }}>
+                    Peşin Mal Satışı
+                  </span>
+                </div>
+                <span className="text-ink-mute font-mono tnum">12.000,00 ₺</span>
+              </div>
+
+              {/* Tablo başlığı */}
+              <div className="grid grid-cols-12 gap-2 px-3 py-2 border-y border-line text-[10.5px] uppercase tracking-wider font-mono text-ink-mute">
+                <div className="col-span-2">Kod</div>
+                <div className="col-span-5">Hesap Adı</div>
+                <div className="col-span-2 text-right">Borç</div>
+                <div className="col-span-2 text-right">Alacak</div>
+                <div className="col-span-1"></div>
+              </div>
+
+              {/* Satırlar — scroll'la tek tek dolar */}
+              {[
+                { row: ORNEK_KAYIT[0], opacity: row1Opacity },
+                { row: ORNEK_KAYIT[1], opacity: row2Opacity },
+                { row: ORNEK_KAYIT[2], opacity: row3Opacity },
+              ].map(({ row, opacity }, i) => (
+                <motion.div
+                  key={i}
+                  style={{ opacity }}
+                  className="grid grid-cols-12 gap-2 px-3 py-3 border-b border-line-soft font-mono tnum text-[13px] text-ink"
+                >
+                  <div className="col-span-2 font-semibold">{row.kod}</div>
+                  <div className="col-span-5 truncate">{row.ad}</div>
+                  <div className="col-span-2 text-right">{row.borc}</div>
+                  <div className="col-span-2 text-right">{row.alacak}</div>
+                  <div className="col-span-1 flex justify-end items-center">
+                    <Icon name="Check" size={12} className="text-success" />
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Toplam */}
+              <motion.div
+                style={{ opacity: totalOpacity }}
+                className="grid grid-cols-12 gap-2 px-3 py-3 border-t-2 border-line-strong font-mono tnum font-bold text-[13.5px] text-ink"
+              >
+                <div className="col-span-7 uppercase tracking-wider text-[10.5px] text-ink-mute font-medium pt-0.5">
+                  Toplam
+                </div>
+                <div className="col-span-2 text-right">12.000,00</div>
+                <div className="col-span-2 text-right">12.000,00</div>
+                <div className="col-span-1 flex justify-end items-center">
+                  <Icon name="CheckCircle2" size={14} className="text-success" />
+                </div>
+              </motion.div>
+
+              {/* Açıklama */}
+              <motion.div
+                style={{ opacity: aciklamaOpacity }}
+                className="mt-4 px-3 py-2.5 text-[12px] text-ink-soft italic font-serif border-l-2 border-success"
+
+              >
+                <span style={{ background: 'rgba(93, 138, 111, 0.06)', display: 'inline-block', padding: '2px 6px' }}>
+                  İşletme, ticari mal satışından %20 KDV dahil 12.000 ₺ peşin tahsilat yapmıştır.
+                </span>
+              </motion.div>
+
+              <div className="mt-5 pt-3 border-t border-line flex items-baseline justify-between text-[10.5px] text-ink-mute font-mono uppercase tracking-wider">
+                <span>Hazırlayan: Sen</span>
+                <span>Doğrulandı · +10p</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ORBITAL ÜNİTE İKONLARI — sahne 3 */}
+        <motion.div
+          className="absolute top-1/2 right-[8%] sm:right-[10%] lg:right-[12%] -translate-y-1/2 pointer-events-none"
+          style={{ opacity: orbitOpacity, scale: orbitScale }}
+        >
+          {uniteler.slice(0, 11).map((u, i) => {
+            const angle = (i / 11) * Math.PI * 2 - Math.PI / 2;
+            const radius = 280;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            return (
+              <motion.div
+                key={u.id}
+                className="absolute"
+                style={{
+                  left: `calc(50% + ${x}px)`,
+                  top: `calc(50% + ${y}px)`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+                initial={{ opacity: 0, scale: 0.4 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ delay: i * 0.04, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <Thiings name={u.thiingsIcon} size={44} />
+                  <span className="font-mono text-[10px] text-ink-soft tracking-wider whitespace-nowrap bg-bg/80 backdrop-blur px-1.5 py-0.5 rounded">
+                    {u.ad}
+                  </span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* AI KART SLIDE-IN — sahne 4 */}
+        <motion.div
+          className="absolute right-6 sm:right-10 top-[18%] w-[280px] sm:w-[320px] pointer-events-none z-10"
+          style={{ x: aiCardX, opacity: aiCardOpacity }}
+        >
+          <div className="glass-card p-5">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-8 h-8 rounded-md bg-sky-soft flex items-center justify-center flex-shrink-0">
+                <Icon name="Sparkles" size={14} className="text-sky-deep" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-mono uppercase tracking-wider text-sky-deep font-semibold">
+                  AI Yardım
+                </div>
+                <div className="font-display text-[15px] font-bold text-ink leading-tight mt-0.5">
+                  Yanlış kod tespiti
+                </div>
+              </div>
+            </div>
+            <p className="text-[13px] text-ink-soft leading-relaxed mb-3">
+              <span className="font-mono font-semibold text-danger">391</span> yerine{' '}
+              <span className="font-mono font-semibold text-ink">191</span> yazdın.
+              Hesaplanan KDV'nin alacak tarafına gelmeli.
+            </p>
+            <div className="hairline mb-3" />
+            <div className="flex items-baseline justify-between text-[11px]">
+              <span className="font-mono text-ink-mute">Ünite · KDV</span>
+              <span className="font-mono text-success">+5p potansiyel</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Alt scroll ipucu — sadece başta */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 pointer-events-none"
+          style={{ opacity: useTransform(progress, [0, 0.1, 0.15], [1, 1, 0]) }}
+        >
+          <div className="flex flex-col items-center gap-2 text-ink-mute">
+            <span className="font-mono text-[10.5px] uppercase tracking-wider">Aşağı kaydır</span>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+            >
+              <Icon name="ChevronDown" size={16} />
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 const AnonimAnaSayfa = () => {
   const nav = useNavigate();
   const { uniteler, tumSorular } = useUniteler();
@@ -457,128 +870,17 @@ const AnonimAnaSayfa = () => {
   return (
     <main>
       {/* ===========================================================
-          HERO — sol metin + sağ gerçek yevmiye sayfası mockup
+          HERO — Quartermaster-tarzı pinned scroll deneyimi
+          Ortada sabit yevmiye sayfası, etrafında halkalar açılır,
+          satırlar tek tek dolar, sahne metni scroll'la değişir,
+          AI kart sonunda slide-in olur.
       =========================================================== */}
-      <section className="px-5 sm:px-8 pt-12 sm:pt-16 pb-16 sm:pb-20">
-        <div className="max-w-[1240px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Sol: metin */}
-            <div className="lg:col-span-6 rise">
-              <div className="flex items-center gap-2 mb-5">
-                <span className="chip chip-mint">
-                  <span className="live-dot" />
-                  {tumSorular.length} soru aktif
-                </span>
-                <span className="chip">Ücretsiz başla</span>
-              </div>
-              <h1 className="font-display font-bold tracking-[-0.025em] leading-[1.02] text-ink"
-                  style={{ fontSize: 'clamp(40px, 5.6vw, 72px)' }}>
-                Yevmiye kaydını <br />
-                tarayıcıdan, gerçek senaryolarla <br />
-                <span className="text-ink-soft">öğren ve pekiştir.</span>
-              </h1>
-              <p className="text-[16px] sm:text-[17px] text-ink-soft leading-relaxed max-w-xl mt-6">
-                MuhasebeLab, Tek Düzen Hesap Planı'nı 212 senaryo bazlı problemle pratiğe döker.
-                Senaryoyu okur, defterine işler, anında kontrol edersin —
-                yanlış satırlar kırmızı, dengeli kayıt yeşil.
-              </p>
-              <div className="flex flex-wrap items-center gap-4 mt-8 rise-2">
-                <button onClick={() => nav('/problemler')} className="btn btn-primary btn-lg">
-                  Hemen başla — kayıt yok
-                </button>
-                <button onClick={() => nav('/giris')} className="btn-link">
-                  Hesap oluştur →
-                </button>
-              </div>
-              <div className="mt-8 grid grid-cols-3 gap-6 max-w-md">
-                <div>
-                  <div className="font-display font-bold text-[28px] tnum text-ink leading-none">{tumSorular.length}</div>
-                  <div className="text-[11.5px] text-ink-mute uppercase tracking-wider mt-1.5 font-mono">Soru</div>
-                </div>
-                <div>
-                  <div className="font-display font-bold text-[28px] tnum text-ink leading-none">{uniteler.length}</div>
-                  <div className="text-[11.5px] text-ink-mute uppercase tracking-wider mt-1.5 font-mono">Ünite</div>
-                </div>
-                <div>
-                  <div className="font-display font-bold text-[28px] tnum text-ink leading-none">3</div>
-                  <div className="text-[11.5px] text-ink-mute uppercase tracking-wider mt-1.5 font-mono">Zorluk</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Sağ: gerçek yevmiye kâğıdı */}
-            <div className="lg:col-span-6 rise-3">
-              <div className="paper-sheet p-7 sm:p-8 max-w-[540px] mx-auto" style={{ transform: 'rotate(-0.6deg)' }}>
-                <div className="relative">
-                  {/* Resmi başlık */}
-                  <div className="flex items-baseline justify-between mb-1">
-                    <span className="doc-header">Yevmiye Defteri</span>
-                    <span className="doc-header">Sayfa 03 · No. 47</span>
-                  </div>
-                  <div className="hairline mb-5" />
-
-                  {/* Tarih + tutar şeridi */}
-                  <div className="flex items-baseline justify-between text-[12.5px] mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-ink-mute font-mono">26.04.2026</span>
-                      <span className="chip chip-mint" style={{ borderRadius: 4 }}>Peşin Mal Satışı</span>
-                    </div>
-                    <span className="text-ink-mute font-mono tnum">12.000,00 ₺</span>
-                  </div>
-
-                  {/* Tablo başlığı */}
-                  <div className="grid grid-cols-12 gap-2 px-3 py-2 border-y border-line text-[10.5px] uppercase tracking-wider font-mono text-ink-mute">
-                    <div className="col-span-2">Kod</div>
-                    <div className="col-span-5">Hesap Adı</div>
-                    <div className="col-span-2 text-right">Borç</div>
-                    <div className="col-span-2 text-right">Alacak</div>
-                    <div className="col-span-1"></div>
-                  </div>
-
-                  {/* Satırlar */}
-                  {ORNEK_KAYIT.map((r, i) => (
-                    <div key={i} className="grid grid-cols-12 gap-2 px-3 py-3 border-b border-line-soft font-mono tnum text-[13px] text-ink">
-                      <div className="col-span-2 font-semibold">{r.kod}</div>
-                      <div className="col-span-5 truncate">{r.ad}</div>
-                      <div className="col-span-2 text-right">{r.borc}</div>
-                      <div className="col-span-2 text-right">{r.alacak}</div>
-                      <div className="col-span-1 flex justify-end items-center">
-                        <Icon name="Check" size={12} className="text-success" />
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Toplam */}
-                  <div className="grid grid-cols-12 gap-2 px-3 py-3 border-t-2 border-line-strong font-mono tnum font-bold text-[13.5px] text-ink">
-                    <div className="col-span-7 uppercase tracking-wider text-[10.5px] text-ink-mute font-medium pt-0.5">Toplam</div>
-                    <div className="col-span-2 text-right">12.000,00</div>
-                    <div className="col-span-2 text-right">12.000,00</div>
-                    <div className="col-span-1 flex justify-end items-center">
-                      <Icon name="CheckCircle2" size={14} className="text-success" />
-                    </div>
-                  </div>
-
-                  {/* Açıklama */}
-                  <div className="mt-4 px-3 py-2.5 text-[12px] text-ink-soft italic font-serif border-l-2 border-success bg-success/5" style={{ background: 'rgba(93, 138, 111, 0.06)' }}>
-                    İşletme, ticari mal satışından %20 KDV dahil 12.000 ₺ peşin tahsilat yapmıştır.
-                    Borç = Alacak. Kayıt dengeli.
-                  </div>
-
-                  {/* Alt: imza/tarih */}
-                  <div className="mt-5 pt-3 border-t border-line flex items-baseline justify-between text-[10.5px] text-ink-mute font-mono uppercase tracking-wider">
-                    <span>Hazırlayan: Sen</span>
-                    <span>Doğrulandı · +10p</span>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-[12px] text-ink-mute font-mono uppercase tracking-wider text-center mt-6">
-                ↑ Her soru bu defter sayfasıdır. 212 senaryo, anında kontrol.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ScrollHero
+        nav={nav}
+        soruSayisi={tumSorular.length}
+        uniteSayisi={uniteler.length}
+        uniteler={uniteler}
+      />
 
       {/* ===========================================================
           NASIL ÇALIŞIR — 3 adım
