@@ -73,6 +73,19 @@ const OnboardingGuard = ({
   return null;
 };
 
+// Route değişiminde sayfayı tepeye al — HashRouter scroll restoration default
+// olarak browser'a bırakıyor, eski scroll konumu kalabiliyor.
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const App = () => {
   const { user, yukleniyor: oturumYukleniyor } = useAuth();
   const {
@@ -246,6 +259,7 @@ const App = () => {
 
   return (
     <HashRouter>
+      <ScrollToTop />
       <SiteLoader />
       <div className="min-h-screen bg-stone-50 dark:bg-zinc-900 text-stone-900 dark:text-zinc-100 transition-colors">
         <Navbar
