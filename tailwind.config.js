@@ -13,6 +13,7 @@ export default {
       colors: {
         bg: 'var(--bg)',
         'bg-warm': 'var(--bg-warm)',
+        'bg-tint': 'var(--bg-tint)',
         surface: {
           DEFAULT: 'var(--surface)',
           2: 'var(--surface-2)',
@@ -29,16 +30,23 @@ export default {
           soft: 'var(--line-soft)',
           strong: 'var(--line-strong)',
         },
+        mint: {
+          DEFAULT: 'var(--mint)',
+          deep: 'var(--mint-deep)',
+          soft: 'var(--mint-soft)',
+        },
+        peach: {
+          DEFAULT: 'var(--peach)',
+          deep: 'var(--peach-deep)',
+          soft: 'var(--peach-soft)',
+        },
+        jade: {
+          DEFAULT: 'var(--jade)',
+          soft: 'var(--jade-soft)',
+        },
         primary: {
           DEFAULT: 'var(--primary)',
           deep: 'var(--primary-deep)',
-          soft: 'var(--primary-soft)',
-          tint: 'var(--primary-tint)',
-        },
-        energy: {
-          DEFAULT: 'var(--energy)',
-          deep: 'var(--energy-deep)',
-          soft: 'var(--energy-soft)',
         },
         premium: {
           DEFAULT: 'var(--premium)',
@@ -53,7 +61,7 @@ export default {
           DEFAULT: 'var(--danger)',
           soft: 'var(--danger-soft)',
         },
-        // Geriye dönük (eski editorial sınıfları)
+        // Geriye dönük uyumluluk
         paper: {
           DEFAULT: 'var(--bg)',
           deep: 'var(--bg-warm)',
@@ -65,9 +73,9 @@ export default {
           bold: 'var(--line-strong)',
         },
         bordeaux: {
-          DEFAULT: 'var(--primary)',
-          dark: 'var(--primary-deep)',
-          tint: 'var(--primary-tint)',
+          DEFAULT: 'var(--peach-deep)',
+          dark: 'var(--peach-deep)',
+          tint: 'var(--peach-soft)',
         },
         ochre: {
           DEFAULT: 'var(--premium)',
@@ -77,10 +85,14 @@ export default {
           DEFAULT: 'var(--success)',
           tint: 'var(--success-soft)',
         },
+        energy: {
+          DEFAULT: 'var(--jade)',
+          deep: 'var(--mint-deep)',
+          soft: 'var(--jade-soft)',
+        },
       },
       borderRadius: {
         'pill': '999px',
-        '4xl': '32px',
       },
       boxShadow: {
         'xs': 'var(--shadow-xs)',
@@ -88,8 +100,8 @@ export default {
         'md-soft': 'var(--shadow-md)',
         'lg-soft': 'var(--shadow-lg)',
         'xl-soft': 'var(--shadow-xl)',
-        'primary': 'var(--shadow-primary)',
-        'energy': 'var(--shadow-energy)',
+        'mint': 'var(--shadow-mint)',
+        'peach': 'var(--shadow-peach)',
       },
     },
   },

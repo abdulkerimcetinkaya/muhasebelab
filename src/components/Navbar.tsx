@@ -11,6 +11,22 @@ interface Props {
   onHesapPlaniAc: () => void;
 }
 
+const Logo = () => (
+  <span className="relative flex items-center gap-2.5">
+    <span className="relative flex items-center justify-center w-9 h-9 rounded-2xl overflow-hidden">
+      <span className="absolute inset-0 bg-mint" />
+      <span className="absolute inset-1 rounded-xl bg-surface" />
+      <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-peach" />
+      <span className="relative font-display font-bold text-[16px] leading-none text-ink">
+        ₺
+      </span>
+    </span>
+    <span className="font-display font-bold text-[19px] tracking-[-0.025em] leading-none text-ink hidden sm:block">
+      MuhasebeLab
+    </span>
+  </span>
+);
+
 export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
   const nav = useNavigate();
   const { pathname } = useLocation();
@@ -38,46 +54,43 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 px-3 sm:px-5 pt-3 sm:pt-4">
+    <header className="sticky top-0 z-40 px-3 sm:px-5 pt-3 sm:pt-5">
       <div className="max-w-[1320px] mx-auto">
-        <div className="surface flex items-center justify-between gap-3 px-3 sm:px-4 py-2.5 backdrop-blur-md bg-surface/85">
+        <div className="float-panel flex items-center justify-between gap-3 px-3 sm:px-5 py-3">
           {/* Logo */}
           <button
             onClick={() => nav('/')}
-            className="flex items-center gap-2.5 group pl-1.5 pr-2"
+            className="flex items-center group"
             aria-label="Anasayfa"
           >
-            <span className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-ink text-bg font-display font-bold text-[16px] leading-none">
-              M
-              <span className="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full bg-energy border-2 border-surface" />
-            </span>
-            <span className="font-display font-bold text-[18px] tracking-[-0.025em] leading-none text-ink hidden sm:block">
-              MuhasebeLab
-            </span>
+            <Logo />
           </button>
 
-          {/* Orta nav — masaüstü */}
-          <nav className="hidden md:flex items-center gap-1 bg-surface-2 rounded-pill p-1">
+          {/* Orta nav */}
+          <nav className="hidden md:flex items-center gap-1">
             {linkler.map((l) => (
               <button
                 key={l.id}
                 onClick={() => nav(l.id)}
-                className={`px-4 py-1.5 rounded-pill text-[13.5px] font-medium transition ${
+                className={`relative px-4 py-2 rounded-xl text-[14px] font-semibold transition ${
                   l.aktif
-                    ? 'bg-surface text-ink shadow-soft'
-                    : 'text-ink-soft hover:text-ink'
+                    ? 'text-ink bg-bg-tint'
+                    : 'text-ink-soft hover:text-ink hover:bg-surface-2'
                 }`}
               >
                 {l.ad}
+                {l.aktif && (
+                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-peach-deep" />
+                )}
               </button>
             ))}
           </nav>
 
-          {/* Sağ — istatistik + actions */}
+          {/* Sağ */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Streak + puan */}
+            {/* Streak / puan */}
             {(ilerleme.streak > 0 || ilerleme.puan > 0) && (
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-pill bg-surface-2 border border-line-soft">
+              <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-mint-soft">
                 {ilerleme.streak > 0 && (
                   <div className="flex items-center gap-1.5" title="Seri">
                     <span className="live-dot" />
@@ -87,11 +100,11 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                   </div>
                 )}
                 {ilerleme.streak > 0 && ilerleme.puan > 0 && (
-                  <span className="w-px h-3 bg-line-strong" />
+                  <span className="w-px h-3 bg-mint-deep opacity-40" />
                 )}
                 {ilerleme.puan > 0 && (
                   <div className="flex items-center gap-1.5" title="Puan">
-                    <Icon name="Trophy" size={11} className="text-premium" />
+                    <Icon name="Trophy" size={11} className="text-premium-deep" />
                     <span className="font-mono tnum text-[13px] font-bold text-ink">
                       {ilerleme.puan}
                     </span>
@@ -100,31 +113,28 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
               </div>
             )}
 
-            {/* Hesap planı */}
             <button
               onClick={onHesapPlaniAc}
-              className="hidden lg:flex p-2 rounded-pill text-ink-soft hover:text-ink hover:bg-surface-2 transition"
+              className="hidden lg:flex p-2 rounded-xl text-ink-soft hover:text-ink hover:bg-surface-2 transition"
               title="Hesap Planı"
             >
               <Icon name="BookOpen" size={15} />
             </button>
 
-            {/* Tema */}
             <button
               onClick={onTemaDegistir}
-              className="p-2 rounded-pill text-ink-soft hover:text-ink hover:bg-surface-2 transition"
+              className="p-2 rounded-xl text-ink-soft hover:text-ink hover:bg-surface-2 transition"
               title={ilerleme.tema === 'dark' ? 'Açık tema' : 'Karanlık tema'}
             >
               <Icon name={ilerleme.tema === 'dark' ? 'Sun' : 'Moon'} size={15} />
             </button>
 
-            {/* Premium */}
             {user &&
               (isPremium ? (
                 <button
                   onClick={() => nav('/premium')}
-                  className="hidden md:flex chip-premium"
-                  title="Premium üyelik aktif"
+                  className="hidden md:flex chip chip-premium"
+                  title="Premium aktif"
                 >
                   <Icon name="BadgeCheck" size={11} />
                   Premium
@@ -132,16 +142,15 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
               ) : (
                 <button
                   onClick={() => nav('/premium')}
-                  className="hidden md:flex chip chip-premium"
-                  title="Premium özellikler"
+                  className="hidden md:flex chip-premium chip"
                   style={{ background: 'transparent', borderColor: 'var(--premium)', color: 'var(--premium-deep)' }}
+                  title="Premium"
                 >
                   <Icon name="Sparkles" size={11} />
                   Premium
                 </button>
               ))}
 
-            {/* Admin */}
             {isAdmin && (
               <button
                 onClick={() => nav('/admin')}
@@ -153,11 +162,10 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
               </button>
             )}
 
-            {/* Giriş / Çıkış */}
             {user ? (
               <button
                 onClick={cikis}
-                className="hidden md:flex p-2 rounded-pill text-ink-soft hover:text-danger hover:bg-surface-2 transition"
+                className="hidden md:flex p-2 rounded-xl text-ink-soft hover:text-danger hover:bg-surface-2 transition"
                 title={user.email ?? ''}
               >
                 <Icon name="LogOut" size={15} />
@@ -168,14 +176,13 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                 className="hidden md:flex btn btn-primary btn-sm"
               >
                 Giriş Yap
-                <Icon name="ArrowRight" size={13} />
+                <Icon name="ChevronRight" size={13} />
               </button>
             )}
 
-            {/* Mobil menü */}
             <button
               onClick={() => setMobilMenuAcik(!mobilMenuAcik)}
-              className="md:hidden p-2 rounded-pill border border-line bg-surface text-ink"
+              className="md:hidden p-2 rounded-xl bg-bg-tint text-ink"
               aria-label="Menü"
             >
               <Icon name={mobilMenuAcik ? 'X' : 'Menu'} size={16} />
@@ -185,8 +192,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
 
         {/* Mobil menü */}
         {mobilMenuAcik && (
-          <div className="surface mt-2 overflow-hidden">
-            <div className="flex flex-col">
+          <div className="float-panel mt-2 overflow-hidden">
+            <div className="flex flex-col py-1">
               {linkler.map((l) => (
                 <button
                   key={l.id}
@@ -194,19 +201,21 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                     nav(l.id);
                     setMobilMenuAcik(false);
                   }}
-                  className={`px-5 py-3.5 text-left border-b border-line-soft text-[15px] font-medium last:border-b-0 ${
-                    l.aktif ? 'bg-primary-soft text-primary' : 'text-ink hover:bg-surface-2'
+                  className={`px-5 py-3.5 text-left text-[15px] font-semibold flex items-center justify-between ${
+                    l.aktif ? 'bg-bg-tint text-ink' : 'text-ink hover:bg-surface-2'
                   }`}
                 >
-                  {l.ad}
+                  <span>{l.ad}</span>
+                  {l.aktif && <span className="w-1.5 h-1.5 rounded-full bg-peach-deep" />}
                 </button>
               ))}
+              <div className="dotted-line my-1 mx-5" />
               <button
                 onClick={() => {
                   onHesapPlaniAc();
                   setMobilMenuAcik(false);
                 }}
-                className="px-5 py-3.5 text-left border-t border-line-soft text-[15px] font-medium text-ink hover:bg-surface-2 flex items-center gap-2.5"
+                className="px-5 py-3.5 text-left text-[15px] font-medium text-ink-soft hover:bg-surface-2 flex items-center gap-2.5"
               >
                 <Icon name="BookOpen" size={14} />
                 Hesap Planı
@@ -217,7 +226,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                     nav('/premium');
                     setMobilMenuAcik(false);
                   }}
-                  className="px-5 py-3.5 text-left border-t border-line-soft text-[15px] font-medium text-premium-deep hover:bg-surface-2 flex items-center gap-2.5"
+                  className="px-5 py-3.5 text-left text-[15px] font-semibold text-premium-deep hover:bg-surface-2 flex items-center gap-2.5"
                 >
                   <Icon name={isPremium ? 'BadgeCheck' : 'Sparkles'} size={14} />
                   {isPremium ? 'Premium (Aktif)' : 'Premium'}
@@ -229,8 +238,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                     nav('/admin');
                     setMobilMenuAcik(false);
                   }}
-                  className={`px-5 py-3.5 text-left border-t border-line-soft text-[15px] font-medium hover:bg-surface-2 flex items-center gap-2.5 ${
-                    aktifAdmin ? 'bg-primary-soft text-primary' : 'text-ink'
+                  className={`px-5 py-3.5 text-left text-[15px] font-medium hover:bg-surface-2 flex items-center gap-2.5 ${
+                    aktifAdmin ? 'bg-bg-tint text-ink' : 'text-ink-soft'
                   }`}
                 >
                   <Icon name="Shield" size={14} />
@@ -243,7 +252,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                     cikis();
                     setMobilMenuAcik(false);
                   }}
-                  className="px-5 py-3.5 text-left border-t border-line-soft text-[15px] font-medium text-ink-soft flex items-center gap-2.5"
+                  className="px-5 py-3.5 text-left text-[15px] font-medium text-ink-soft flex items-center gap-2.5"
                 >
                   <Icon name="LogOut" size={14} />
                   <span className="truncate">Çıkış · {user.email}</span>
@@ -257,7 +266,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                   className="m-3 btn btn-primary"
                 >
                   Giriş Yap
-                  <Icon name="ArrowRight" size={13} />
+                  <Icon name="ChevronRight" size={13} />
                 </button>
               )}
             </div>
