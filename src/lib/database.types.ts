@@ -244,6 +244,10 @@ export type Database = {
         Args: Record<string, never>;
         Returns: string;
       };
+      kullanici_adi_uygun: {
+        Args: { _ad: string };
+        Returns: boolean;
+      };
     };
     Enums: {
       soru_durum: SoruDurum;
