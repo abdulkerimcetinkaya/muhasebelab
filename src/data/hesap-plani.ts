@@ -51,8 +51,7 @@ export const HESAP_PLANI: Hesap[] = [
 
   // 17. Yıllara Yaygın İnşaat ve Onarım Maliyetleri
   { kod: '170', ad: 'YILLARA YAYGIN İNŞAAT VE ONARIM MALİYETLERİ', sinif: '1', tur: 'AKTİF' },
-  { kod: '178', ad: 'YILLARA YAYGIN İNŞAAT ENFLASYON DÜZELTME HESABI', sinif: '1', tur: 'AKTİF' },
-  { kod: '179', ad: 'TAŞERONLARA VERİLEN AVANSLAR', sinif: '1', tur: 'AKTİF' },
+  { kod: '179', ad: 'YILLARA YAYGIN İNŞAAT ENFLASYON DÜZELTME', sinif: '1', tur: 'AKTİF' },
 
   // 18. Gelecek Aylara Ait Giderler ve Gelir Tahakkukları
   { kod: '180', ad: 'GELECEK AYLARA AİT GİDERLER', sinif: '1', tur: 'AKTİF' },
@@ -85,6 +84,7 @@ export const HESAP_PLANI: Hesap[] = [
   { kod: '235', ad: 'PERSONELDEN ALACAKLAR', sinif: '2', tur: 'AKTİF' },
   { kod: '236', ad: 'DİĞER ÇEŞİTLİ ALACAKLAR', sinif: '2', tur: 'AKTİF' },
   { kod: '237', ad: 'DİĞER ALACAK SENETLERİ REESKONTU (-)', sinif: '2', tur: 'AKTİF' },
+  { kod: '238', ad: 'ŞÜPHELİ DİĞER ALACAKLAR', sinif: '2', tur: 'AKTİF' },
   { kod: '239', ad: 'ŞÜPHELİ DİĞER ALACAKLAR KARŞILIĞI (-)', sinif: '2', tur: 'AKTİF' },
 
   // 24. Mali Duran Varlıklar
@@ -168,7 +168,6 @@ export const HESAP_PLANI: Hesap[] = [
   { kod: '335', ad: 'PERSONELE BORÇLAR', sinif: '3', tur: 'PASİF' },
   { kod: '336', ad: 'DİĞER ÇEŞİTLİ BORÇLAR', sinif: '3', tur: 'PASİF' },
   { kod: '337', ad: 'DİĞER BORÇ SENETLERİ REESKONTU (-)', sinif: '3', tur: 'PASİF' },
-  { kod: '338', ad: 'KAMUYA OLAN ERTELENMİŞ VEYA TAKSİTLENDİRİLMİŞ BORÇLAR', sinif: '3', tur: 'PASİF' },
 
   // 34. Alınan Avanslar
   { kod: '340', ad: 'ALINAN SİPARİŞ AVANSLARI', sinif: '3', tur: 'PASİF' },
@@ -227,12 +226,8 @@ export const HESAP_PLANI: Hesap[] = [
   { kod: '437', ad: 'DİĞER BORÇ SENETLERİ REESKONTU (-)', sinif: '4', tur: 'PASİF' },
   { kod: '438', ad: 'KAMUYA OLAN ERTELENMİŞ VEYA TAKSİTLENDİRİLMİŞ BORÇLAR', sinif: '4', tur: 'PASİF' },
 
-  // 44. Alınan Avanslar
-  { kod: '440', ad: 'ALINAN SİPARİŞ AVANSLARI', sinif: '4', tur: 'PASİF' },
-
-  // 47. Borç ve Gider Karşılıkları
-  { kod: '472', ad: 'KIDEM TAZMİNATI KARŞILIĞI', sinif: '4', tur: 'PASİF' },
-  { kod: '479', ad: 'DİĞER BORÇ VE GİDER KARŞILIKLARI', sinif: '4', tur: 'PASİF' },
+  // 44. Alınan Avanslar — PDF'de bu başlık altında kod listelenmemiş
+  // 47. Borç ve Gider Karşılıkları — PDF'de bu başlık altında kod listelenmemiş
 
   // 48. Gelecek Yıllara Ait Gelirler ve Gider Tahakkukları
   { kod: '480', ad: 'GELECEK YILLARA AİT GELİRLER', sinif: '4', tur: 'PASİF' },
