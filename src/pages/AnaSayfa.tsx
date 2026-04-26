@@ -13,31 +13,17 @@ import { ZORLUK_AD, ZORLUK_PUAN } from '../data/sabitler';
 import type { Ilerleme, Istatistik, SoruWithUnite, Zorluk } from '../types';
 
 /* ----------------------------------------------------------------------
-   Editorial yardımcı bileşenler
+   Yardımcı bileşenler
 ---------------------------------------------------------------------- */
 
-const ZORLUK_ROZET: Record<Zorluk, string> = {
-  kolay: 'text-verdigris',
-  orta: 'text-ochre',
-  zor: 'text-bordeaux',
+const ZORLUK_RENK: Record<Zorluk, string> = {
+  kolay: 'chip-success',
+  orta: 'chip-premium',
+  zor: 'chip-danger',
 };
 
-const Eyebrow = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`eyebrow ${className}`}>{children}</div>
-);
-
-const Fleuron = ({ glyph = '§' }: { glyph?: string }) => (
-  <div className="fleuron my-6">
-    <span className="italic">{glyph}</span>
-  </div>
-);
-
-const HairlineRule = ({ thick = false, className = '' }: { thick?: boolean; className?: string }) => (
-  <hr className={`${thick ? 'rule-bold' : 'rule'} ${className}`} />
-);
-
-const ZorlukRozet = ({ zorluk }: { zorluk: Zorluk }) => (
-  <span className={`font-display italic text-[12px] tracking-wide ${ZORLUK_ROZET[zorluk]}`}>
+const ZorlukChip = ({ zorluk }: { zorluk: Zorluk }) => (
+  <span className={`chip ${ZORLUK_RENK[zorluk]}`}>
     {ZORLUK_AD[zorluk]} · {ZORLUK_PUAN[zorluk]}p
   </span>
 );
@@ -56,8 +42,8 @@ export const AnaSayfa = ({ ilerleme, stat }: Props) => {
 
   if (yukleniyor) {
     return (
-      <main className="max-w-[1400px] mx-auto px-5 sm:px-8 py-32 flex items-center justify-center">
-        <Icon name="Loader2" size={20} className="animate-spin text-ink-soft" />
+      <main className="max-w-[1320px] mx-auto px-5 py-32 flex items-center justify-center">
+        <Icon name="Loader2" size={20} className="animate-spin text-ink-mute" />
       </main>
     );
   }
@@ -67,7 +53,7 @@ export const AnaSayfa = ({ ilerleme, stat }: Props) => {
 };
 
 /* ----------------------------------------------------------------------
-   Kullanıcı paneli — editorial dashboard
+   Kullanıcı paneli — bento dashboard
 ---------------------------------------------------------------------- */
 
 const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
@@ -119,351 +105,381 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
   })();
 
   const henuzCozulmemis = stat.cozulenSayi === 0;
+  const cozulenYuzde = stat.toplamSoru > 0 ? Math.round((stat.cozulenSayi / stat.toplamSoru) * 100) : 0;
 
   return (
-    <main className="max-w-[1400px] mx-auto px-5 sm:px-8 py-12 sm:py-16">
-      {/* Selamlama başlığı */}
-      <section className="mb-12 ed-rise">
-        <div className="flex items-baseline justify-between gap-6 flex-wrap">
-          <div>
-            <Eyebrow>{selamlama}</Eyebrow>
-            <h1 className="font-display text-[56px] sm:text-[88px] md:text-[120px] leading-[0.86] font-bold tracking-[-0.03em] mt-3 text-ink">
-              {ad}
-              <span className="text-bordeaux">.</span>
-            </h1>
-          </div>
-          <span className="folio">Sayfa I</span>
+    <main className="max-w-[1320px] mx-auto px-3 sm:px-5 py-8 sm:py-12">
+      {/* Selamlama */}
+      <section className="mb-8 rise">
+        <div className="flex items-baseline gap-3 mb-2">
+          <span className="eyebrow-primary">{selamlama}</span>
+          <span className="live-dot" />
         </div>
-        <HairlineRule thick className="mt-8" />
-        <p className="font-display italic text-[18px] sm:text-[20px] text-ink-soft max-w-3xl mt-6 leading-snug">
-          {henuzCozulmemis
-            ? 'Hadi ilk soruyu çözelim. Otuz saniyede bitiyor.'
-            : hedefTamam
-              ? `Bugünkü hedefi tamamladın. ${ilerleme.streak} gündür seri devam ediyor.`
-              : ilerleme.streak > 0
-                ? `${ilerleme.streak} gündür üst üste çalışıyorsun. Bugün ${bugunCozulen}/${gunlukHedef} soru.`
-                : 'Bugün küçük bir başlangıç yap, seri kurmaya başla.'}
-        </p>
+        <h1 className="font-display text-[44px] sm:text-[68px] md:text-[88px] leading-[0.9] font-bold tracking-[-0.035em] text-ink">
+          {ad},
+          <span className="text-ink-mute"> bugün ne çözüyoruz?</span>
+        </h1>
       </section>
 
-      {/* İki sütun: ana kart + sidebar hedef */}
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 lg:gap-12 mb-16 ed-rise-2">
-        <section>
+      {/* Bento grid — top tier */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 mb-4 rise-2">
+        {/* Devam edilecek soru — büyük kart */}
+        <div className="md:col-span-8">
           {aktifUnite && devamSoru ? (
             <button
               onClick={() => nav(`/problemler/${devamSoru.id}`)}
-              className="w-full text-left ed-card group p-7 sm:p-10 relative overflow-hidden hover:bg-paper-deep transition"
+              className="w-full text-left surface-lift group p-7 sm:p-8 relative overflow-hidden h-full flex flex-col min-h-[280px]"
             >
-              <div className="flex items-start justify-between gap-6 mb-7">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{
+                  background: 'radial-gradient(ellipse 80% 60% at 100% 100%, var(--primary-tint), transparent 70%)',
+                }}
+              />
+              <div className="relative flex items-start justify-between gap-6 mb-6">
                 <div className="flex-1 min-w-0">
-                  <Eyebrow className="mb-3">
-                    {henuzCozulmemis ? 'İlk Soru · Bölüm I' : 'Devam Edilecek · Bölüm II'}
-                  </Eyebrow>
-                  <div className="flex items-center gap-3 mb-4 text-[12px] tracking-[0.16em] uppercase font-display font-semibold text-ink-soft">
-                    <Thiings name={aktifUnite.unite.thiingsIcon} size={28} />
-                    <span>{aktifUnite.unite.ad}</span>
-                    <span className="text-ink-mute">·</span>
-                    <span className="font-mono tnum text-ink">
-                      {aktifUnite.cozulen}/{aktifUnite.toplam}
+                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                    <span className="chip-primary chip">
+                      <Icon name="ArrowRight" size={11} />
+                      {henuzCozulmemis ? 'İlk Soru' : 'Devam Et'}
                     </span>
+                    <ZorlukChip zorluk={devamSoru.zorluk} />
                   </div>
-                  <h2 className="font-display text-[28px] sm:text-[40px] leading-[0.95] tracking-[-0.025em] font-bold text-ink mb-4">
+                  <h2 className="font-display text-[28px] sm:text-[36px] md:text-[42px] leading-[0.98] tracking-[-0.03em] font-bold text-ink mb-3">
                     {devamSoru.baslik}
                   </h2>
-                  <p className="font-body text-[16px] sm:text-[17px] text-ink-soft leading-relaxed line-clamp-3 max-w-xl">
+                  <p className="text-[15.5px] text-ink-soft leading-relaxed line-clamp-2 max-w-2xl">
                     {devamSoru.senaryo}
                   </p>
                 </div>
-              </div>
-              <HairlineRule className="mb-5" />
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <ZorlukRozet zorluk={devamSoru.zorluk} />
-                  <span className="text-ink-mute">·</span>
-                  <span className="eyebrow group-hover:text-bordeaux transition">
-                    Çözmeye Başla
-                  </span>
+                <div className="hidden sm:flex flex-shrink-0">
+                  <Thiings name={aktifUnite.unite.thiingsIcon} size={72} />
                 </div>
-                <Icon
-                  name="ArrowRight"
-                  size={18}
-                  className="text-ink-soft group-hover:text-bordeaux group-hover:translate-x-1 transition"
-                />
+              </div>
+              <div className="relative mt-auto pt-5 border-t border-line flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-[13px] text-ink-soft">
+                  <span className="font-medium">{aktifUnite.unite.ad}</span>
+                  <span className="text-ink-quiet">·</span>
+                  <span className="font-mono tnum text-ink">
+                    {aktifUnite.cozulen}/{aktifUnite.toplam}
+                  </span>
+                  <div className="ml-2 flex-1 h-1 bg-line rounded-full overflow-hidden max-w-[120px]">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all"
+                      style={{ width: `${(aktifUnite.cozulen / aktifUnite.toplam) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 text-[13px] font-semibold text-ink group-hover:text-primary transition">
+                  Çöz
+                  <Icon name="ArrowRight" size={14} className="group-hover:translate-x-0.5 transition" />
+                </div>
               </div>
             </button>
           ) : (
-            <div className="ed-card p-12 text-center">
-              <div className="inline-block mb-6">
-                <Thiings name="trophy" size={80} />
-              </div>
-              <h2 className="font-display text-[32px] font-bold tracking-tight mb-3 text-ink">
-                Tüm soruları çözdün.
+            <div className="surface p-10 text-center h-full flex flex-col items-center justify-center min-h-[280px]">
+              <Thiings name="trophy" size={80} />
+              <h2 className="font-display text-[28px] font-bold tracking-tight mt-5 mb-3 text-ink">
+                Tüm soruları çözdün
               </h2>
-              <p className="font-display italic text-[16px] text-ink-soft mb-7 max-w-md mx-auto">
+              <p className="text-[15px] text-ink-soft mb-6 max-w-md">
                 Yeni soruları beklerken yanlışlarını tekrar edebilirsin.
               </p>
-              <button onClick={() => nav('/problemler')} className="btn-ink">
+              <button onClick={() => nav('/problemler')} className="btn btn-primary">
                 Tüm Sorular
+                <Icon name="ArrowRight" size={14} />
               </button>
             </div>
           )}
-        </section>
+        </div>
 
-        {/* Sidebar — Bugünkü hedef */}
-        <aside className="ed-card p-7 self-start">
-          <div className="flex items-baseline justify-between mb-5">
-            <Eyebrow>Bugünkü Hedef</Eyebrow>
-            <span className="folio text-[10px]">{bugun.split('-').slice(1).reverse().join('.')}</span>
-          </div>
-          <div className="flex items-baseline gap-2 mb-5">
-            <span className="font-display text-[80px] leading-none font-bold tracking-[-0.03em] text-ink tnum">
-              {bugunCozulen}
-            </span>
-            <span className="font-mono tnum text-[20px] text-ink-mute font-bold">
-              / {gunlukHedef}
-            </span>
-          </div>
-          <div className="h-[6px] bg-paper-deep border border-rule-strong relative overflow-hidden mb-4">
-            <div
-              className="absolute inset-y-0 left-0 transition-all"
-              style={{
-                width: `${hedefYuzde}%`,
-                background: hedefTamam ? 'var(--verdigris)' : 'var(--bordeaux)',
-              }}
-            />
-          </div>
-          <p className="font-display italic text-[14px] text-ink-soft leading-snug mb-6">
-            {hedefTamam
-              ? 'Hedefi tamamladın. İstersen daha fazla çözebilirsin.'
-              : `${gunlukHedef - bugunCozulen} soru daha. Bugünü kaçırmadan kapat.`}
-          </p>
-          <HairlineRule className="mb-5" />
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <span className="eyebrow text-[10px]">Seri</span>
-              <span className="font-mono tnum font-bold text-[18px] text-ink">
-                {ilerleme.streak}
-                <span className="font-display italic text-[12px] text-ink-mute ml-1.5 not-italic font-normal">
-                  gün
-                </span>
+        {/* Bugünkü hedef — orta kart */}
+        <div className="md:col-span-4">
+          <div className="surface-lift p-7 h-full flex flex-col">
+            <div className="flex items-baseline justify-between mb-4">
+              <span className="eyebrow">Bugünkü Hedef</span>
+              {hedefTamam && <span className="chip chip-success">Tamamlandı ✓</span>}
+            </div>
+
+            <div className="flex items-baseline gap-1 mb-1">
+              <span className="huge-number text-[80px] sm:text-[96px] text-ink">
+                {bugunCozulen}
+              </span>
+              <span className="font-display font-bold text-[28px] text-ink-quiet ml-1 tracking-tight">
+                /{gunlukHedef}
               </span>
             </div>
-            <div className="flex items-baseline justify-between">
-              <span className="eyebrow text-[10px]">Toplam Puan</span>
-              <span className="font-mono tnum font-bold text-[18px] text-ink">
-                {ilerleme.puan}
-              </span>
+            <p className="text-[14px] text-ink-soft mb-5 leading-snug">
+              {hedefTamam
+                ? 'Hedefi geçtin. Bonus puanlar bekliyor.'
+                : `${gunlukHedef - bugunCozulen} soru kaldı.`}
+            </p>
+
+            {/* Progress bar */}
+            <div className="h-2 bg-line rounded-full overflow-hidden mb-6">
+              <div
+                className="h-full transition-all duration-700 rounded-full"
+                style={{
+                  width: `${hedefYuzde}%`,
+                  background: hedefTamam
+                    ? 'linear-gradient(90deg, var(--energy-deep), var(--energy))'
+                    : 'linear-gradient(90deg, var(--primary), var(--primary-deep))',
+                }}
+              />
             </div>
-            <div className="flex items-baseline justify-between">
-              <span className="eyebrow text-[10px]">Çözülen</span>
-              <span className="font-mono tnum font-bold text-[18px] text-ink">
-                {stat.cozulenSayi}
-                <span className="text-ink-mute font-normal">/{stat.toplamSoru}</span>
-              </span>
+
+            <div className="grid grid-cols-2 gap-3 mt-auto">
+              <div className="rounded-2xl bg-surface-2 px-3 py-3 border border-line-soft">
+                <div className="text-[10.5px] text-ink-mute uppercase tracking-wider font-semibold mb-1">Seri</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="font-display font-bold text-[24px] tnum text-ink">{ilerleme.streak}</span>
+                  <span className="text-[12px] text-ink-mute">gün</span>
+                  {ilerleme.streak > 0 && <span className="live-dot ml-auto" />}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-surface-2 px-3 py-3 border border-line-soft">
+                <div className="text-[10.5px] text-ink-mute uppercase tracking-wider font-semibold mb-1">Puan</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="font-display font-bold text-[24px] tnum text-ink">{ilerleme.puan}</span>
+                  <Icon name="Trophy" size={12} className="text-premium ml-auto" />
+                </div>
+              </div>
             </div>
           </div>
-        </aside>
+        </div>
       </div>
 
-      {/* Yan görevler */}
+      {/* Yan görevler — 2x */}
       {(gununSoru || yanlisSoru) && (
-        <section className="mb-16 ed-rise-3">
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="eyebrow-lg">Yan Görevler</h2>
+        <div className={`grid grid-cols-1 ${gununSoru && yanlisSoru ? 'md:grid-cols-2' : ''} gap-3 sm:gap-4 mb-4 rise-3`}>
+          {gununSoru && (
             <button
-              onClick={() => nav('/problemler')}
-              className="eyebrow flex items-center gap-1.5 hover:text-bordeaux transition"
+              onClick={() => nav(`/problemler/${gununSoru.id}`)}
+              className="surface-lift p-6 text-left group"
             >
-              Tüm sorular
-              <Icon name="ArrowRight" size={11} />
-            </button>
-          </div>
-          <HairlineRule thick className="mb-6" />
-          <div className={`grid grid-cols-1 ${gununSoru && yanlisSoru ? 'md:grid-cols-2' : ''} gap-0 md:gap-8`}>
-            {gununSoru && (
-              <button
-                onClick={() => nav(`/problemler/${gununSoru.id}`)}
-                className="text-left p-7 border-t border-rule-bold md:border-t-0 md:border-r md:last:border-r-0 md:pr-8 group hover:bg-paper-inset transition"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="seal-ochre">
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="chip chip-premium">
                     <Icon name="Calendar" size={11} />
                     Günün Sorusu
                   </span>
                   {gununCozulduMu && (
-                    <span className="seal-verdigris">
+                    <span className="chip chip-success">
                       <Icon name="Check" size={11} />
                       Çözüldü
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2 mb-2 text-[11px] tracking-[0.18em] uppercase font-display font-semibold text-ink-soft">
-                  <Thiings name={gununSoru.uniteIcon} size={20} />
-                  {gununSoru.uniteAd}
-                  <span className="text-ink-mute">·</span>
-                  <ZorlukRozet zorluk={gununSoru.zorluk} />
-                </div>
-                <h3 className="font-display text-[24px] leading-[1.05] font-bold tracking-tight text-ink mb-2 group-hover:text-bordeaux transition">
-                  {gununSoru.baslik}
-                </h3>
-                <p className="font-body text-[15px] text-ink-soft line-clamp-2 mb-5">
-                  {gununSoru.senaryo}
-                </p>
-                <span className="eyebrow inline-flex items-center gap-2 group-hover:text-bordeaux transition">
-                  {gununCozulduMu ? 'Tekrar Çöz' : 'Bugünü Çöz'}
-                  <Icon name="ArrowRight" size={11} />
+                <Thiings name={gununSoru.uniteIcon} size={40} />
+              </div>
+              <h3 className="font-display text-[22px] leading-[1.05] tracking-tight font-bold text-ink mb-2 group-hover:text-primary transition">
+                {gununSoru.baslik}
+              </h3>
+              <p className="text-[14px] text-ink-soft line-clamp-2 mb-4">
+                {gununSoru.senaryo}
+              </p>
+              <div className="flex items-center justify-between text-[12.5px]">
+                <span className="text-ink-mute font-medium">{gununSoru.uniteAd}</span>
+                <span className="text-ink font-semibold flex items-center gap-1 group-hover:text-primary group-hover:translate-x-0.5 transition">
+                  {gununCozulduMu ? 'Tekrar' : 'Çöz'}
+                  <Icon name="ArrowRight" size={12} />
                 </span>
-              </button>
-            )}
-            {yanlisSoru && (
-              <button
-                onClick={() => nav(`/problemler/${yanlisSoru.id}`)}
-                className={`text-left p-7 border-t border-rule-bold ${gununSoru ? 'md:border-t-0 md:pl-8' : ''} group hover:bg-paper-inset transition`}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="seal-bordeaux">
+              </div>
+            </button>
+          )}
+          {yanlisSoru && (
+            <button
+              onClick={() => nav(`/problemler/${yanlisSoru.id}`)}
+              className="surface-lift p-6 text-left group"
+            >
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="chip chip-danger">
                     <Icon name="RotateCcw" size={11} />
-                    Yanlışını Tekrarla
+                    Tekrarla
                   </span>
-                  <span className="font-mono tnum text-[12px] text-bordeaux font-bold">
-                    × {ilerleme.yanlislar[yanlisSoru.id]}
-                  </span>
+                  <span className="chip">× {ilerleme.yanlislar[yanlisSoru.id]}</span>
                 </div>
-                <div className="flex items-center gap-2 mb-2 text-[11px] tracking-[0.18em] uppercase font-display font-semibold text-ink-soft">
-                  <Thiings name={yanlisSoru.uniteIcon} size={20} />
-                  {yanlisSoru.uniteAd}
-                  <span className="text-ink-mute">·</span>
-                  <ZorlukRozet zorluk={yanlisSoru.zorluk} />
-                </div>
-                <h3 className="font-display text-[24px] leading-[1.05] font-bold tracking-tight text-ink mb-2 group-hover:text-bordeaux transition">
-                  {yanlisSoru.baslik}
-                </h3>
-                <p className="font-body text-[15px] text-ink-soft line-clamp-2 mb-5">
-                  {yanlisSoru.senaryo}
-                </p>
-                <span className="eyebrow inline-flex items-center gap-2 group-hover:text-bordeaux transition">
-                  Yeniden Dene
-                  <Icon name="ArrowRight" size={11} />
+                <Thiings name={yanlisSoru.uniteIcon} size={40} />
+              </div>
+              <h3 className="font-display text-[22px] leading-[1.05] tracking-tight font-bold text-ink mb-2 group-hover:text-primary transition">
+                {yanlisSoru.baslik}
+              </h3>
+              <p className="text-[14px] text-ink-soft line-clamp-2 mb-4">
+                {yanlisSoru.senaryo}
+              </p>
+              <div className="flex items-center justify-between text-[12.5px]">
+                <span className="text-ink-mute font-medium">{yanlisSoru.uniteAd}</span>
+                <span className="text-ink font-semibold flex items-center gap-1 group-hover:text-primary group-hover:translate-x-0.5 transition">
+                  Yeniden
+                  <Icon name="ArrowRight" size={12} />
                 </span>
-              </button>
-            )}
-          </div>
-          <HairlineRule thick className="mt-0 md:hidden" />
-        </section>
+              </div>
+            </button>
+          )}
+        </div>
       )}
+
+      {/* İstatistik şeridi */}
+      <div className="surface-lift p-6 sm:p-8 mb-4 rise-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div>
+            <div className="eyebrow mb-2">İlerleme</div>
+            <div className="huge-number text-[44px] sm:text-[56px] text-ink mb-1">{cozulenYuzde}<span className="text-[24px] text-ink-mute font-display ml-0.5">%</span></div>
+            <div className="text-[12.5px] text-ink-mute">{stat.cozulenSayi} / {stat.toplamSoru} soru</div>
+          </div>
+          <div>
+            <div className="eyebrow mb-2">Bugün</div>
+            <div className="huge-number text-[44px] sm:text-[56px] text-ink mb-1">{bugunCozulen}</div>
+            <div className="text-[12.5px] text-ink-mute">çözülen soru</div>
+          </div>
+          <div>
+            <div className="eyebrow mb-2">Seri</div>
+            <div className="huge-number text-[44px] sm:text-[56px] text-ink mb-1 flex items-baseline gap-1.5">
+              {ilerleme.streak}
+              {ilerleme.streak > 0 && <span className="live-dot self-center" style={{ width: 12, height: 12 }} />}
+            </div>
+            <div className="text-[12.5px] text-ink-mute">gün üst üste</div>
+          </div>
+          <div>
+            <div className="eyebrow mb-2">Puan</div>
+            <div className="huge-number text-[44px] sm:text-[56px] text-ink mb-1">{ilerleme.puan}</div>
+            <div className="text-[12.5px] text-ink-mute">toplam</div>
+          </div>
+        </div>
+      </div>
 
       {/* Sıkıntı yaşadığın sorular */}
       {yanlisListe.length > 1 && (
-        <section className="mb-16 ed-rise-4">
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="eyebrow-lg">Sıkıntı Yaşadığın Sorular</h2>
-            <span className="folio text-[10px]">Tab. III</span>
+        <div className="surface mb-4 rise-5">
+          <div className="px-6 sm:px-8 pt-6 pb-4 flex items-center justify-between">
+            <h2 className="font-display text-[20px] font-bold tracking-tight text-ink">Sıkıntı yaşadığın sorular</h2>
+            <button
+              onClick={() => nav('/problemler')}
+              className="text-[13px] text-ink-soft hover:text-primary transition flex items-center gap-1 font-medium"
+            >
+              Hepsi
+              <Icon name="ArrowRight" size={12} />
+            </button>
           </div>
-          <HairlineRule thick className="mb-0" />
-          <div className="border-x border-rule-bold border-b">
+          <div className="border-t border-line">
             {yanlisListe.map(({ soru, sayi }, i) => (
               <button
                 key={soru.id}
                 onClick={() => nav(`/problemler/${soru.id}`)}
-                className={`w-full flex items-center gap-4 px-6 py-4 hover:bg-paper-inset transition text-left ${
-                  i < yanlisListe.length - 1 ? 'border-b border-rule' : ''
+                className={`w-full flex items-center gap-4 px-6 sm:px-8 py-3.5 hover:bg-surface-2 transition text-left group ${
+                  i < yanlisListe.length - 1 ? 'border-b border-line-soft' : ''
                 }`}
               >
-                <span className="font-display italic text-[14px] text-ink-mute w-8 text-right">
+                <span className="font-mono tnum text-[12px] text-ink-quiet w-6">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <Thiings name={soru.uniteIcon} size={28} />
+                <Thiings name={soru.uniteIcon} size={32} />
                 <div className="flex-1 min-w-0">
-                  <div className="font-display font-bold text-[17px] tracking-tight truncate text-ink">
+                  <div className="font-display font-bold text-[16px] tracking-tight truncate text-ink group-hover:text-primary transition">
                     {soru.baslik}
                   </div>
-                  <div className="text-[10.5px] tracking-[0.22em] uppercase font-display font-semibold text-ink-mute mt-0.5">
+                  <div className="text-[12px] text-ink-mute font-medium">
                     {soru.uniteAd}
                   </div>
                 </div>
-                <span className="font-mono tnum text-[14px] text-bordeaux font-bold flex-shrink-0">
-                  × {sayi}
-                </span>
-                <Icon name="ChevronRight" size={14} className="text-ink-mute" />
+                <span className="chip chip-danger">× {sayi}</span>
+                <Icon name="ChevronRight" size={14} className="text-ink-quiet group-hover:text-primary transition" />
               </button>
             ))}
           </div>
-        </section>
+        </div>
       )}
 
-      {/* Hızlı bağlantılar */}
-      <section className="ed-rise-5">
-        <Eyebrow className="mb-5">Sayfa Yönlendirmeleri</Eyebrow>
-        <HairlineRule thick className="mb-0" />
-        <div className="grid grid-cols-1 sm:grid-cols-3">
-          {[
-            { yol: '/uniteler', baslik: 'Üniteler', alt: 'Konuya göre sorular', kisa: 'I.' },
-            { yol: '/problemler', baslik: 'Tüm Sorular', alt: 'Filtreleyerek ara', kisa: 'II.' },
-            { yol: '/profil', baslik: 'Profil', alt: 'Rozet · İstatistik', kisa: 'III.' },
-          ].map((l, i) => (
-            <button
-              key={l.yol}
-              onClick={() => nav(l.yol)}
-              className={`text-left p-6 border-rule-bold border-x border-b ${i === 0 ? '' : 'sm:border-l-0'} hover:bg-paper-inset transition group flex items-baseline gap-4`}
+      {/* Hızlı navigasyon */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 rise-5">
+        {[
+          { yol: '/uniteler', baslik: 'Üniteler', alt: 'Konu konu pratik', icon: 'LayoutGrid', renk: 'primary' },
+          { yol: '/problemler', baslik: 'Tüm Sorular', alt: 'Filtrele, ara', icon: 'ListChecks', renk: 'energy' },
+          { yol: '/profil', baslik: 'Profil', alt: 'Rozet · İstatistik', icon: 'User', renk: 'premium' },
+        ].map((l) => (
+          <button
+            key={l.yol}
+            onClick={() => nav(l.yol)}
+            className="surface-lift p-5 text-left group flex items-center gap-4"
+          >
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{
+                background:
+                  l.renk === 'primary'
+                    ? 'var(--primary-soft)'
+                    : l.renk === 'energy'
+                      ? 'var(--energy-soft)'
+                      : 'var(--premium-soft)',
+                color:
+                  l.renk === 'primary'
+                    ? 'var(--primary)'
+                    : l.renk === 'energy'
+                      ? 'var(--energy-deep)'
+                      : 'var(--premium-deep)',
+              }}
             >
-              <span className="font-display italic text-[18px] text-ink-mute">{l.kisa}</span>
-              <div className="flex-1">
-                <div className="font-display font-bold text-[20px] tracking-tight text-ink group-hover:text-bordeaux transition">
-                  {l.baslik}
-                </div>
-                <div className="font-display italic text-[13px] text-ink-soft mt-0.5">
-                  {l.alt}
-                </div>
+              <Icon name={l.icon} size={20} />
+            </div>
+            <div className="flex-1">
+              <div className="font-display font-bold text-[17px] tracking-tight text-ink group-hover:text-primary transition">
+                {l.baslik}
               </div>
-              <Icon name="ArrowRight" size={14} className="text-ink-mute group-hover:text-bordeaux group-hover:translate-x-1 transition" />
-            </button>
-          ))}
-        </div>
-      </section>
+              <div className="text-[12.5px] text-ink-mute mt-0.5">{l.alt}</div>
+            </div>
+            <Icon name="ArrowRight" size={16} className="text-ink-quiet group-hover:text-primary group-hover:translate-x-0.5 transition" />
+          </button>
+        ))}
+      </div>
     </main>
   );
 };
 
 /* ----------------------------------------------------------------------
-   Anonim ana sayfa — gazete birinci sayfası
+   Anonim ana sayfa — fintech landing
 ---------------------------------------------------------------------- */
 
 const OZELLIKLER = [
   {
     icon: 'calculator',
-    no: 'I',
-    eyebrow: 'Madde I',
-    baslik: 'Gerçek Hayat Senaryoları.',
+    no: '01',
+    eyebrow: 'Senaryo',
+    baslik: 'Gerçek hayat işlemleri.',
     aciklama:
-      'Ders kitaplarındaki yapmacık örnekler değil. Peşin mal satışı, KDV mahsubu, amortisman ayırma, maaş tahakkuku — işletmelerde gerçekten karşına çıkacak işlemler.',
+      'Ders kitaplarındaki yapmacık örnekler değil. Peşin mal satışı, KDV mahsubu, amortisman ayırma — işletmelerde gerçekten karşına çıkacak işlemler.',
     mockup: 'senaryo' as const,
+    renk: 'primary',
   },
   {
     icon: 'rocket',
-    no: 'II',
-    eyebrow: 'Madde II',
-    baslik: 'Anlık Geri Bildirim.',
+    no: '02',
+    eyebrow: 'Anlık geri bildirim',
+    baslik: 'Yanlışı görmeden geçemezsin.',
     aciklama:
-      'Yanlış satırlar kırmızı işaretlenir, doğrular yeşil. Her soruda ipucu, resmi çözüm ve detaylı açıklama. Nerede yanıldığını görmeden geçmezsin.',
+      'Yanlış satırlar kırmızı işaretlenir, doğrular yeşil. Her soruda ipucu, resmi çözüm ve detaylı açıklama. AI asistan da yanında.',
     mockup: 'kontrol' as const,
+    renk: 'energy',
   },
   {
     icon: 'chart',
-    no: 'III',
-    eyebrow: 'Madde III',
-    baslik: 'İlerleme Takibi.',
+    no: '03',
+    eyebrow: 'Takip',
+    baslik: 'İlerlemen ölçülebilir.',
     aciklama:
-      'Hangi üniteyi bitirdin, hangi konularda zayıfsın, kaç gündür üst üste çalışıyorsun — hepsi istatistik panelinde. Rozetler ve puan sistemiyle motivasyon hep taze.',
+      'Hangi üniteyi bitirdin, hangi konularda zayıfsın, kaç gündür üst üste çalışıyorsun — hepsi panelde. Rozetler ve seri puanlarıyla motivasyon hep taze.',
     mockup: 'istatistik' as const,
+    renk: 'premium',
   },
   {
     icon: 'trophy',
-    no: 'IV',
-    eyebrow: 'Madde IV',
-    baslik: 'Üç Zorluk Seviyesi.',
+    no: '04',
+    eyebrow: 'Zorluk',
+    baslik: 'Üç seviye, doğru ritim.',
     aciklama:
       'Temel kayıtlardan başla, karmaşık işlemlere yürü. Kolay, orta ve zor soru dağılımı sayesinde hem temel pekişir hem de sınav tipi sorulara hazırlanırsın.',
     mockup: 'zorluk' as const,
+    renk: 'success',
   },
 ];
 
@@ -483,159 +499,111 @@ const AnonimAnaSayfa = () => {
   const donemlikPlan = planlar.find((p) => p.kod === 'donemlik');
 
   return (
-    <main className="paper-warm">
+    <main>
       {/* ===========================================================
-          HERO — gazete birinci sayfası
+          HERO
       =========================================================== */}
-      <section className="relative max-w-[1400px] mx-auto px-5 sm:px-8 pt-12 sm:pt-16 pb-16 sm:pb-20">
-        {/* Üst künye */}
-        <div className="flex items-baseline justify-between gap-6 mb-8 ed-rise">
-          <span className="folio">Editio I · MMXXVI · Sayı 1</span>
-          <span className="folio">Sayfa 1</span>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 mesh-bg pointer-events-none">
+          <div className="w-full h-full" />
         </div>
-        <HairlineRule thick className="mb-1" />
-        <HairlineRule className="mb-12" />
-
-        {/* Ana başlık */}
-        <div className="ed-rise-2">
-          <h1 className="font-display font-bold tracking-[-0.04em] leading-[0.83] text-ink text-[64px] sm:text-[112px] md:text-[160px] lg:text-[200px] xl:text-[224px]">
-            <span className="block">Yevmiye</span>
-            <span className="block">
-              <em className="font-display-italic text-bordeaux">
-                defterini
-              </em>
+        <div className="relative max-w-[1320px] mx-auto px-3 sm:px-5 pt-12 sm:pt-16 pb-12 sm:pb-20">
+          {/* Üst rozet */}
+          <div className="flex justify-center mb-7 rise">
+            <span className="chip chip-energy text-[12px] py-1.5 px-3.5">
+              <span className="live-dot" />
+              {tumSorular.length} soru · 11 ünite · şu an aktif
             </span>
-            <span className="block">tut.</span>
-          </h1>
-        </div>
-
-        {/* Künye altı: 3 sütun */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mt-12 ed-rise-3">
-          {/* Lede paragraph */}
-          <div className="md:col-span-7">
-            <HairlineRule className="mb-5" />
-            <div className="flex items-baseline gap-3 mb-4">
-              <span className="folio">Önsöz</span>
-              <span className="text-rule-strong">·</span>
-              <Eyebrow>Tek Düzen Hesap Planı Atölyesi</Eyebrow>
-            </div>
-            <p className="font-body text-[18px] sm:text-[20px] leading-[1.5] text-ink drop-cap">
-              Muhasebe, ezberlenecek bir konu değil; uygulanarak öğrenilen bir
-              meslek. <em className="text-bordeaux">MuhasebeLab</em>, Türkiye'deki tek düzen hesap planını gerçek
-              işletme senaryolarıyla karşına çıkarır. Senaryoyu okur, yevmiye
-              defterine işler, anında doğrularsın. Kayıt zorunlu değil — saniyeler
-              içinde başla.
-            </p>
-
-            <div className="mt-10 flex flex-wrap gap-3">
-              <button onClick={() => nav('/problemler')} className="btn-seal">
-                Çözmeye Başla
-              </button>
-              <button onClick={() => nav('/giris')} className="btn-hairline">
-                Hesap Oluştur
-              </button>
-            </div>
-            <p className="mt-5 font-display italic text-[14px] text-ink-soft">
-              Üye olmadan da çalışabilirsin · İlerlemen 30 saniyede buluta taşınır
-            </p>
           </div>
 
-          {/* Sağ sidebar — Bu sayıda */}
-          <div className="md:col-span-5 md:pl-10 md:border-l md:border-rule-bold">
-            <div className="flex items-baseline justify-between mb-3">
-              <Eyebrow>Bu Sayıda</Eyebrow>
-              <span className="folio text-[10px]">İçindekiler</span>
-            </div>
-            <HairlineRule thick className="mb-5" />
-            <ul className="space-y-3.5 font-body text-[16px] leading-snug">
-              <li className="flex items-baseline gap-3">
-                <span className="font-mono tnum font-bold text-[14px] w-12 text-ink">
-                  {tumSorular.length}
-                </span>
-                <span className="text-ink">soru, gerçek senaryolarla.</span>
-              </li>
-              <li className="flex items-baseline gap-3">
-                <span className="font-mono tnum font-bold text-[14px] w-12 text-ink">
-                  {uniteler.length}
-                </span>
-                <span className="text-ink">ünite, kasadan kambiyoya.</span>
-              </li>
-              <li className="flex items-baseline gap-3">
-                <span className="font-mono tnum font-bold text-[14px] w-12 text-ink">3</span>
-                <span className="text-ink">zorluk: kolay, orta, zor.</span>
-              </li>
-              <li className="flex items-baseline gap-3">
-                <span className="font-mono tnum font-bold text-[14px] w-12 text-ink">∞</span>
-                <span className="text-ink">tekrar; pekişene kadar.</span>
-              </li>
-              <li className="flex items-baseline gap-3 pt-2 border-t border-rule">
-                <span className="font-display italic text-[14px] w-12 text-ochre">₺0</span>
-                <span className="text-ink-soft italic font-display">
-                  başlangıç ücretsiz, üyelik isteğe bağlı.
-                </span>
-              </li>
-            </ul>
+          {/* Ana başlık */}
+          <h1 className="text-center font-display font-bold tracking-[-0.04em] leading-[0.95] text-ink rise-2"
+              style={{ fontSize: 'clamp(48px, 9vw, 132px)' }}>
+            Yevmiye kaydını
+            <br />
+            <span className="relative inline-block">
+              <span className="ink-underline" style={{
+                backgroundImage: 'linear-gradient(transparent 78%, var(--energy) 78%, var(--energy) 96%, transparent 96%)',
+              }}>çözmenin</span>
+            </span>
+            <br />
+            <span className="text-ink-mute">en hızlı yolu.</span>
+          </h1>
 
-            <Fleuron glyph="✦" />
+          {/* Alt metin */}
+          <p className="text-center text-[16.5px] sm:text-[19px] text-ink-soft max-w-2xl mx-auto mt-8 leading-relaxed rise-3">
+            Tek Düzen Hesap Planı'nı senaryo bazlı problemlerle pratiğe dök.
+            Senaryoyu okur, defterine işler, anında doğrularsın.
+            Kayıtsız başla, otuz saniyede hesap aç.
+          </p>
 
-            <div className="font-display italic text-[14px] text-ink-soft leading-snug">
-              "Defter tutmak, bir işletmeyi anlamanın en sade yolu.
-              Burada her gün biraz daha iyisini öğreniyorsun."
-            </div>
-            <div className="mt-3 eyebrow text-[10px]">— Editör</div>
+          {/* CTA */}
+          <div className="flex flex-wrap gap-3 justify-center mt-10 rise-4">
+            <button onClick={() => nav('/problemler')} className="btn btn-primary btn-lg">
+              <Icon name="Zap" size={16} />
+              Hemen Çözmeye Başla
+            </button>
+            <button onClick={() => nav('/giris')} className="btn btn-ghost btn-lg">
+              Hesap Oluştur
+              <Icon name="ArrowRight" size={15} />
+            </button>
+          </div>
+
+          {/* Sosyal kanıt — istatistik şeridi */}
+          <div className="mt-16 sm:mt-20 grid grid-cols-3 gap-3 sm:gap-5 max-w-3xl mx-auto rise-5">
+            {[
+              { sayi: tumSorular.length.toString(), etiket: 'Hazır soru' },
+              { sayi: uniteler.length.toString(), etiket: 'Konu ünitesi' },
+              { sayi: '₺0', etiket: 'Başlangıç', alt: 'üye olmak isteğe bağlı' },
+            ].map((s, i) => (
+              <div key={i} className="surface px-5 py-6 text-center">
+                <div className="huge-number text-[40px] sm:text-[56px] text-ink mb-1">
+                  {s.sayi}
+                </div>
+                <div className="text-[12px] text-ink-mute font-medium uppercase tracking-wider">
+                  {s.etiket}
+                </div>
+                {s.alt && (
+                  <div className="text-[11px] text-ink-quiet mt-0.5 italic">{s.alt}</div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ===========================================================
-          BUGÜNÜN MAKALESİ — günün sorusu
+          BUGÜNÜN SORUSU
       =========================================================== */}
       {gununSoru && (
-        <section className="border-y border-rule-bold bg-paper-inset">
-          <div className="max-w-[1400px] mx-auto px-5 sm:px-8 py-10 sm:py-14">
-            <div className="flex items-baseline justify-between gap-6 mb-6 flex-wrap">
-              <div className="flex items-baseline gap-3">
-                <Eyebrow className="text-bordeaux">Bugünün Makalesi</Eyebrow>
-                <span className="folio text-[10px]">Front · 02</span>
-              </div>
-              <span className="folio text-[10px]">
-                Tarih · {new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' })}
-              </span>
-            </div>
-            <HairlineRule thick className="mb-8" />
-
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        <section className="px-3 sm:px-5 pb-12 sm:pb-16">
+          <div className="max-w-[1320px] mx-auto">
+            <div className="surface-lift p-7 sm:p-10 grid grid-cols-1 md:grid-cols-12 gap-7 items-center">
               <div className="md:col-span-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Thiings name={gununSoru.uniteIcon} size={36} />
-                  <div>
-                    <div className="eyebrow text-[10px]">{gununSoru.uniteAd}</div>
-                    <ZorlukRozet zorluk={gununSoru.zorluk} />
-                  </div>
+                <div className="flex items-center gap-2 mb-4 flex-wrap">
+                  <span className="chip chip-premium">
+                    <Icon name="Calendar" size={11} />
+                    Bugünün Sorusu
+                  </span>
+                  <ZorlukChip zorluk={gununSoru.zorluk} />
+                  <span className="chip">{gununSoru.uniteAd}</span>
                 </div>
-                <h2 className="font-display text-[36px] sm:text-[52px] leading-[0.95] font-bold tracking-[-0.025em] text-ink mb-4">
+                <h2 className="font-display text-[28px] sm:text-[40px] md:text-[48px] leading-[0.98] tracking-[-0.03em] font-bold text-ink mb-3">
                   {gununSoru.baslik}
                 </h2>
-                <p className="font-body text-[17px] sm:text-[18px] leading-relaxed text-ink-soft max-w-2xl">
+                <p className="text-[15.5px] sm:text-[16.5px] text-ink-soft leading-relaxed max-w-2xl">
                   {gununSoru.senaryo}
                 </p>
               </div>
-              <div className="md:col-span-4 md:pl-8 md:border-l md:border-rule-bold flex flex-col gap-4">
+              <div className="md:col-span-4 flex flex-col gap-3 md:items-end">
+                <Thiings name={gununSoru.uniteIcon} size={120} />
                 <button
                   onClick={() => nav(`/problemler/${gununSoru.id}`)}
-                  className="btn-seal w-full justify-center text-center"
+                  className="btn btn-primary btn-lg w-full md:w-auto"
                 >
                   Bu Soruyu Çöz
+                  <Icon name="ArrowRight" size={15} />
                 </button>
-                <button
-                  onClick={() => nav('/problemler')}
-                  className="btn-hairline w-full justify-center text-center"
-                >
-                  Diğer Sorular
-                </button>
-                <p className="font-display italic text-[13px] text-ink-soft leading-snug">
-                  Her gün yeni bir senaryo. Çözdüğünde puan kazan, seri uzasın.
-                </p>
               </div>
             </div>
           </div>
@@ -643,143 +611,66 @@ const AnonimAnaSayfa = () => {
       )}
 
       {/* ===========================================================
-          ÖRNEK FOLYO — yevmiye defterinden bir kayıt
+          NASIL ÇALIŞIR — bento yerleşim
       =========================================================== */}
-      <section className="max-w-[1400px] mx-auto px-5 sm:px-8 py-20 sm:py-28">
-        <div className="text-center mb-12">
-          <Eyebrow>Örnek Folyo · 03</Eyebrow>
-          <h2 className="font-display text-[48px] sm:text-[72px] md:text-[96px] leading-[0.92] tracking-[-0.03em] font-bold text-ink mt-4">
-            Borç <em className="font-display-italic text-bordeaux">=</em> Alacak,
-            <br />
-            <span className="text-ink-soft">her zaman.</span>
-          </h2>
-          <div className="fleuron mt-6">
-            <span>✦</span>
-          </div>
-        </div>
-
-        <div className="ed-card max-w-4xl mx-auto">
-          {/* Folyo başlığı */}
-          <div className="border-b border-rule-bold p-5 sm:p-7 flex items-baseline justify-between flex-wrap gap-3">
-            <div>
-              <div className="eyebrow mb-1">Yevmiye Defteri · Madde 03</div>
-              <h3 className="font-display text-[24px] sm:text-[28px] font-bold tracking-tight text-ink">
-                Peşin Mal Satışı
-              </h3>
-            </div>
-            <div className="flex items-center gap-3">
-              <ZorlukRozet zorluk="orta" />
-              <span className="folio text-[10px]">Folio III</span>
-            </div>
-          </div>
-
-          {/* Senaryo */}
-          <div className="px-5 sm:px-7 py-5 border-b border-rule bg-paper">
-            <div className="flex gap-4 items-start">
-              <span className="font-display text-[14px] italic text-ink-mute leading-tight pt-1">¶</span>
-              <p className="font-body text-[16px] sm:text-[17px] leading-relaxed text-ink">
-                İşletme, ticari mal satışından{' '}
-                <span className="font-mono tnum font-bold text-bordeaux">10.000,00 ₺ + %20 KDV</span>{' '}
-                tutarında peşin tahsilat yapmıştır. Yevmiye kaydını yapınız.
-              </p>
-            </div>
-          </div>
-
-          {/* Tablo başlığı */}
-          <div className="grid grid-cols-12 gap-2 px-5 sm:px-7 py-2.5 border-b border-rule-bold bg-paper-deep">
-            <div className="col-span-2 eyebrow text-[10px]">Kod</div>
-            <div className="col-span-5 eyebrow text-[10px]">Hesap Adı</div>
-            <div className="col-span-2 eyebrow text-[10px] text-right">Borç</div>
-            <div className="col-span-2 eyebrow text-[10px] text-right">Alacak</div>
-            <div className="col-span-1"></div>
-          </div>
-
-          {[
-            { k: '100', a: 'KASA', b: '12.000,00', al: '' },
-            { k: '600', a: 'YURT İÇİ SATIŞLAR', b: '', al: '10.000,00' },
-            { k: '391', a: 'HESAPLANAN KDV', b: '', al: '2.000,00' },
-          ].map((r, i) => (
-            <div
-              key={i}
-              className="grid grid-cols-12 gap-2 px-5 sm:px-7 py-3 border-b border-rule font-mono tnum text-[14px] sm:text-[15px]"
-            >
-              <div className="col-span-2 font-bold text-ink">{r.k}</div>
-              <div className="col-span-5 truncate text-ink">{r.a}</div>
-              <div className="col-span-2 text-right text-ink">{r.b}</div>
-              <div className="col-span-2 text-right text-ink">{r.al}</div>
-              <div className="col-span-1 flex justify-end items-center">
-                <Icon name="Check" size={13} className="text-verdigris" />
-              </div>
-            </div>
-          ))}
-          <div className="grid grid-cols-12 gap-2 px-5 sm:px-7 py-3.5 border-t-2 border-rule-bold bg-paper-deep font-mono tnum font-bold text-[15px]">
-            <div className="col-span-7 eyebrow text-[10px] flex items-center">Toplam</div>
-            <div className="col-span-2 text-right text-ink">12.000,00</div>
-            <div className="col-span-2 text-right text-ink">12.000,00</div>
-            <div className="col-span-1 flex justify-end items-center">
-              <Icon name="CheckCircle2" size={15} className="text-verdigris" />
-            </div>
-          </div>
-
-          {/* Alt durum */}
-          <div className="px-5 sm:px-7 py-4 flex items-center justify-between flex-wrap gap-3 border-t border-rule bg-paper-inset">
-            <span className="font-display italic text-[14px] text-verdigris">
-              Borç = Alacak · Kayıt dengeli
-            </span>
-            <span className="seal-verdigris">
-              <Icon name="Check" size={11} />
-              Doğru · +10p
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ===========================================================
-          ÖZELLİKLER — numaralı maddeler
-      =========================================================== */}
-      <section className="border-t border-rule-bold bg-paper-inset/30 py-20 sm:py-28">
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-8">
-          <div className="mb-16 max-w-3xl">
-            <Eyebrow>Bölüm IV · Nasıl Çalışır</Eyebrow>
-            <h2 className="font-display text-[44px] sm:text-[64px] md:text-[88px] leading-[0.94] tracking-[-0.025em] font-bold text-ink mt-4">
+      <section className="px-3 sm:px-5 py-12 sm:py-20">
+        <div className="max-w-[1320px] mx-auto">
+          {/* Bölüm başlığı */}
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="eyebrow-primary mb-3 inline-block">Nasıl çalışır</span>
+            <h2 className="font-display text-[40px] sm:text-[60px] md:text-[80px] leading-[0.95] tracking-[-0.035em] font-bold text-ink mt-3 max-w-3xl mx-auto">
               Pratik yapmadan{' '}
-              <em className="font-display-italic text-bordeaux">
-                muhasebeci
-              </em>{' '}
+              <span className="ink-underline">muhasebeci</span>{' '}
               olunmaz.
             </h2>
-            <HairlineRule thick className="mt-8" />
+            <p className="text-[16px] sm:text-[18px] text-ink-soft max-w-xl mx-auto mt-5 leading-relaxed">
+              Ders kitabını kapatıp yevmiye defterine geçtiğin an, asıl öğrenme başlar.
+            </p>
           </div>
 
-          <div className="space-y-24">
+          {/* 4 madde — alternating layout */}
+          <div className="space-y-4 sm:space-y-6">
             {OZELLIKLER.map((o, i) => (
               <div
                 key={i}
-                className={`grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center ${
-                  i % 2 === 1 ? 'lg:[&>*:first-child]:order-2' : ''
-                }`}
+                className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch"
               >
-                <div className="lg:col-span-7 ed-card">
-                  <div className="border-b border-rule-strong px-4 py-2 flex items-center justify-between bg-paper-deep">
-                    <span className="font-display italic text-[12px] text-ink-soft">
-                      muhasebelab.app · özellik · {o.no}
+                <div className={`lg:col-span-7 surface-lift overflow-hidden ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
+                  <div className="flex items-center justify-between px-5 py-3 border-b border-line bg-surface-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[11.5px] tnum text-ink-mute">muhasebelab.app</span>
+                    </div>
+                    <span className="font-mono text-[10.5px] text-ink-quiet tracking-wider">
+                      FIG. {o.no}
                     </span>
-                    <span className="folio text-[10px]">FIG. {String(i + 1).padStart(2, '0')}</span>
                   </div>
                   <OzellikMockup tip={o.mockup} />
                 </div>
-                <div className="lg:col-span-5">
-                  <div className="flex items-baseline gap-5 mb-6">
-                    <span className="font-display italic text-[88px] sm:text-[112px] leading-none text-bordeaux opacity-90">
+                <div className={`lg:col-span-5 surface p-7 sm:p-9 flex flex-col justify-center ${i % 2 === 1 ? 'lg:order-1' : ''}`}>
+                  <div className="flex items-baseline gap-4 mb-5">
+                    <span
+                      className="huge-number text-[80px] sm:text-[112px]"
+                      style={{
+                        color:
+                          o.renk === 'primary'
+                            ? 'var(--primary)'
+                            : o.renk === 'energy'
+                              ? 'var(--energy-deep)'
+                              : o.renk === 'premium'
+                                ? 'var(--premium)'
+                                : 'var(--success)',
+                        opacity: 0.9,
+                      }}
+                    >
                       {o.no}
                     </span>
-                    <Thiings name={o.icon} size={60} />
+                    <Thiings name={o.icon} size={56} />
                   </div>
-                  <Eyebrow className="mb-3">{o.eyebrow}</Eyebrow>
-                  <h3 className="font-display text-[32px] sm:text-[44px] leading-[0.98] tracking-[-0.025em] font-bold text-ink mb-5">
+                  <span className="eyebrow mb-3">{o.eyebrow}</span>
+                  <h3 className="font-display text-[28px] sm:text-[36px] leading-[1.0] tracking-[-0.03em] font-bold text-ink mb-4">
                     {o.baslik}
                   </h3>
-                  <p className="font-body text-[17px] sm:text-[18px] text-ink-soft leading-relaxed">
+                  <p className="text-[15px] sm:text-[16px] text-ink-soft leading-relaxed">
                     {o.aciklama}
                   </p>
                 </div>
@@ -790,86 +681,168 @@ const AnonimAnaSayfa = () => {
       </section>
 
       {/* ===========================================================
-          PREMIUM — abonelik ilanı
+          PREMIUM
       =========================================================== */}
-      <section className="border-t border-rule-bold py-20 sm:py-28">
-        <div className="max-w-[1400px] mx-auto px-5 sm:px-8">
-          <div className="ed-card relative overflow-hidden">
-            {/* Sol köşe damgası */}
-            <div className="absolute -left-6 -top-6 opacity-10 pointer-events-none">
-              <Thiings name="trophy" size={200} />
+      <section className="px-3 sm:px-5 py-12 sm:py-16">
+        <div className="max-w-[1320px] mx-auto">
+          <div
+            className="rounded-[28px] p-7 sm:p-12 md:p-16 relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #0F1115 0%, #1A1822 100%)',
+              boxShadow: 'var(--shadow-xl)',
+            }}
+          >
+            {/* Gradient mesh decoration */}
+            <div className="absolute inset-0 pointer-events-none opacity-50"
+              style={{
+                background:
+                  'radial-gradient(ellipse 70% 50% at 90% 10%, rgba(245, 158, 11, 0.35), transparent 60%), radial-gradient(ellipse 50% 40% at 10% 100%, rgba(190, 242, 100, 0.2), transparent 60%)',
+              }}
+            />
+            <div className="absolute -right-20 -top-20 opacity-25 pointer-events-none">
+              <Thiings name="trophy" size={280} />
             </div>
 
-            <div className="relative grid grid-cols-1 md:grid-cols-12 gap-0">
-              <div className="md:col-span-7 p-8 sm:p-12 md:p-16 md:border-r md:border-rule-bold">
-                <div className="flex items-baseline gap-3 mb-5">
-                  <span className="seal-ochre">
+            <div className="relative grid grid-cols-1 md:grid-cols-12 gap-8">
+              <div className="md:col-span-7">
+                <div className="flex items-center gap-2 mb-5">
+                  <span
+                    className="chip text-[11px]"
+                    style={{
+                      background: 'rgba(245, 158, 11, 0.15)',
+                      color: '#FBBF24',
+                      borderColor: 'transparent',
+                    }}
+                  >
                     <Icon name="Sparkles" size={11} />
                     Premium
                   </span>
-                  <span className="folio text-[10px]">İlan · 05</span>
+                  <span
+                    className="chip text-[11px]"
+                    style={{
+                      background: 'rgba(190, 242, 100, 0.15)',
+                      color: '#D9F99D',
+                      borderColor: 'transparent',
+                      fontWeight: 700,
+                    }}
+                  >
+                    İlk 100'e ücretsiz yıl
+                  </span>
                 </div>
-                <h2 className="font-display text-[40px] sm:text-[60px] md:text-[80px] leading-[0.92] tracking-[-0.025em] font-bold text-ink mb-6">
+                <h2
+                  className="font-display font-bold tracking-[-0.035em] leading-[0.95] mb-6"
+                  style={{
+                    color: '#F5F4EF',
+                    fontSize: 'clamp(36px, 6vw, 72px)',
+                  }}
+                >
                   Yapay zekâ
                   <br />
-                  <em className="font-display-italic text-ochre">
-                    yanında.
-                  </em>
+                  <span style={{ color: '#FBBF24' }}>yanında çalışır.</span>
                 </h2>
-                <p className="font-body text-[17px] sm:text-[18px] leading-relaxed text-ink-soft max-w-xl mb-8">
+                <p
+                  className="text-[16px] sm:text-[17px] leading-relaxed max-w-xl mb-8"
+                  style={{ color: '#B0B3BC' }}
+                >
                   Yanlış cevap analizi, soru içi AI asistanı, hesap kodu otomatik
-                  tamamlama ve sınırsız çalışma — Premium ile gelir. İlk yüz
-                  kullanıcıya{' '}
-                  <em className="text-ochre">bir yıl ücretsiz</em>.
+                  tamamlama, sınırsız çalışma. Premium ile gelir; ilk yüz
+                  kullanıcıya bir yıl bedava.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <button onClick={() => nav('/premium')} className="btn-seal" style={{ background: 'var(--ochre)', borderColor: 'var(--ochre)' }}>
+                  <button
+                    onClick={() => nav('/premium')}
+                    className="btn btn-lg"
+                    style={{
+                      background: 'var(--energy)',
+                      color: '#0F1115',
+                      border: '1px solid var(--energy-deep)',
+                      fontWeight: 700,
+                      boxShadow: '0 12px 28px -8px rgba(190, 242, 100, 0.5)',
+                    }}
+                  >
                     Premium'u Keşfet
+                    <Icon name="ArrowRight" size={15} />
                   </button>
-                  <button onClick={() => nav('/problemler')} className="btn-hairline">
+                  <button
+                    onClick={() => nav('/problemler')}
+                    className="btn btn-lg"
+                    style={{
+                      background: 'transparent',
+                      color: '#F5F4EF',
+                      border: '1px solid rgba(245, 244, 239, 0.2)',
+                    }}
+                  >
                     Önce Ücretsiz Dene
                   </button>
                 </div>
               </div>
 
-              {/* Fiyat kolonu */}
-              <div className="md:col-span-5 p-8 sm:p-12 md:p-14 bg-paper-deep border-t md:border-t-0 border-rule-bold">
-                <Eyebrow className="mb-6">Abonelik Tarifesi</Eyebrow>
-                <HairlineRule thick className="mb-6" />
+              {/* Fiyat kartı */}
+              <div className="md:col-span-5 md:pl-6">
+                <div
+                  className="rounded-3xl p-6 backdrop-blur-md h-full flex flex-col gap-4"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                  }}
+                >
+                  <div className="text-[11px] uppercase tracking-wider font-bold" style={{ color: '#FBBF24' }}>
+                    Tarife
+                  </div>
 
-                <div className="space-y-7">
-                  <div>
-                    <div className="flex items-baseline justify-between mb-1">
-                      <span className="font-display text-[20px] font-bold text-ink">Aylık</span>
-                      <span className="font-mono tnum font-bold text-[28px] text-ink">
-                        {aylikPlan ? `${aylikPlan.tutar.toFixed(0)} ₺` : '99 ₺'}
+                  <div
+                    className="rounded-2xl p-5"
+                    style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                  >
+                    <div className="text-[13px] mb-1" style={{ color: '#B0B3BC' }}>Aylık</div>
+                    <div className="flex items-baseline gap-1">
+                      <span
+                        className="huge-number"
+                        style={{ color: '#F5F4EF', fontSize: 40 }}
+                      >
+                        {aylikPlan ? aylikPlan.tutar.toFixed(0) : 99}
                       </span>
-                    </div>
-                    <div className="font-display italic text-[13px] text-ink-soft">
-                      tek ay, dilediğin zaman iptal
+                      <span className="font-display font-bold text-[20px]" style={{ color: '#B0B3BC' }}>₺</span>
+                      <span className="text-[12px] ml-2" style={{ color: '#6E717A' }}>/ay</span>
                     </div>
                   </div>
 
-                  <HairlineRule />
-
-                  <div>
-                    <div className="flex items-baseline justify-between mb-1">
-                      <span className="font-display text-[20px] font-bold text-ink">
-                        Dönemlik{donemlikPlan ? ` (${donemlikPlan.ay_sayisi} ay)` : ' (4 ay)'}
-                      </span>
-                      <span className="font-mono tnum font-bold text-[28px] text-ink">
-                        {donemlikPlan ? `${donemlikPlan.tutar.toFixed(0)} ₺` : '249 ₺'}
+                  <div
+                    className="rounded-2xl p-5 relative overflow-hidden"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(190, 242, 100, 0.12), rgba(245, 158, 11, 0.08))',
+                      border: '1px solid rgba(190, 242, 100, 0.25)',
+                    }}
+                  >
+                    <div className="absolute top-3 right-3">
+                      <span
+                        className="chip"
+                        style={{
+                          background: 'var(--energy)',
+                          color: '#0F1115',
+                          fontWeight: 700,
+                          fontSize: 10,
+                        }}
+                      >
+                        En avantajlı
                       </span>
                     </div>
-                    <div className="font-display italic text-[13px] text-ochre">
-                      bir tüm dönem · daha avantajlı
+                    <div className="text-[13px] mb-1" style={{ color: '#D9F99D' }}>
+                      Dönemlik {donemlikPlan && `(${donemlikPlan.ay_sayisi} ay)`}
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span
+                        className="huge-number"
+                        style={{ color: '#F5F4EF', fontSize: 40 }}
+                      >
+                        {donemlikPlan ? donemlikPlan.tutar.toFixed(0) : 249}
+                      </span>
+                      <span className="font-display font-bold text-[20px]" style={{ color: '#D9F99D' }}>₺</span>
                     </div>
                   </div>
 
-                  <HairlineRule className="mb-2" />
-
-                  <div className="text-[12px] eyebrow tracking-[0.2em] text-ink-mute">
-                    Vergiler dahil · iyzico ile güvenli ödeme
+                  <div className="text-[11.5px] mt-2 leading-relaxed" style={{ color: '#6E717A' }}>
+                    Vergiler dahil · iyzico ile güvenli ödeme · dilediğin zaman iptal
                   </div>
                 </div>
               </div>
@@ -879,34 +852,30 @@ const AnonimAnaSayfa = () => {
       </section>
 
       {/* ===========================================================
-          KAPANIŞ — Bugün abone olun
+          KAPANIŞ
       =========================================================== */}
-      <section className="border-t border-rule-bold bg-paper">
-        <div className="max-w-[900px] mx-auto px-5 sm:px-8 py-20 sm:py-28 text-center">
-          <Eyebrow>Bölüm Sonu</Eyebrow>
-          <h2 className="font-display text-[44px] sm:text-[64px] md:text-[80px] leading-[0.92] tracking-[-0.025em] font-bold text-ink mt-4 mb-6">
-            Başlamak için{' '}
-            <em className="font-display-italic text-bordeaux">
-              tek tıklama
-            </em>{' '}
-            yeter.
+      <section className="px-3 sm:px-5 pb-16 sm:pb-24 pt-8">
+        <div className="max-w-[900px] mx-auto text-center">
+          <span className="eyebrow-primary mb-4 inline-block">Hadi başla</span>
+          <h2 className="font-display font-bold tracking-[-0.035em] leading-[0.95] text-ink mt-4 mb-6"
+              style={{ fontSize: 'clamp(40px, 7vw, 88px)' }}>
+            Otuz saniye, bir hesap,
+            <br />
+            <span className="ink-underline">bir bütün dönem</span>.
           </h2>
-          <div className="fleuron mb-8">
-            <span>✦</span>
-          </div>
-          <p className="font-display italic text-[18px] sm:text-[20px] text-ink-soft max-w-xl mx-auto leading-snug mb-10">
-            Üye olmadan başlayabilirsin. İlerlemeni kaydetmek için sadece
-            otuz saniye sürer; bir kullanıcı adı, bir şifre, bitti.
+          <p className="text-[16px] sm:text-[18px] text-ink-soft max-w-xl mx-auto leading-relaxed mb-10">
+            Üye olmadan başlayabilirsin. İlerlemeni kaydetmek istersen
+            otuz saniyelik kayıt yeterli — bir kullanıcı adı, bir şifre.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <button onClick={() => nav('/giris')} className="btn-seal">
+            <button onClick={() => nav('/giris')} className="btn btn-primary btn-lg">
+              <Icon name="UserPlus" size={16} />
               Hesap Oluştur
             </button>
-            <button onClick={() => nav('/problemler')} className="btn-hairline">
+            <button onClick={() => nav('/problemler')} className="btn btn-ghost btn-lg">
               Önce Soruları Gör
             </button>
           </div>
-          <div className="mt-10 eyebrow text-[10px] text-ink-mute">— Son —</div>
         </div>
       </section>
     </main>
