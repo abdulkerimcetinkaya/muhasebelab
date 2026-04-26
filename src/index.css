@@ -15,13 +15,13 @@
   --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
   --font-serif: 'Instrument Serif', Georgia, serif;
 
-  /* Yüzey — beyaz kâğıt zemin, off-white warm tint */
-  --bg: #fafaf6;
-  --bg-warm: #f4f3ec;
-  --bg-tint: #fdfdfa;
+  /* Yüzey — cool pearl, hafif slate undertone (Linear/Vercel hissi) */
+  --bg: #f4f5f8;
+  --bg-warm: #ecedf1;
+  --bg-tint: #f9fafc;
   --surface: #ffffff;
-  --surface-2: #f4f5ee;
-  --surface-tint: #f7f8f1;
+  --surface-2: #eef0f4;
+  --surface-tint: #f1f3f7;
 
   /* Mürekkep — fountain pen mavi-siyahı */
   --ink: #1f3a5f;        /* deep navy ink */
@@ -29,10 +29,10 @@
   --ink-mute: #8a9bae;
   --ink-quiet: #b8c4d2;
 
-  /* Hairlines — kâğıt fiber tonu */
-  --line: #e2e0d4;
-  --line-soft: #ecead9;
-  --line-strong: #c8c5b3;
+  /* Hairlines — cool gray tonu */
+  --line: #e2e4ea;
+  --line-soft: #ecedf2;
+  --line-strong: #c8ccd4;
   --line-ink: rgba(31, 58, 95, 0.16);
 
   /* Aksanlar — mavi tonal palet */
@@ -646,7 +646,7 @@ input[type='number'] { -moz-appearance: textfield; }
 /* Mini paper card — küçük yevmiye kâğıdı */
 .mini-paper {
   background: #fff;
-  border: 1px solid #e8e6da;
+  border: 1px solid var(--line-strong);
   border-radius: 4px;
   padding: 10px 12px;
   font-family: var(--font-mono);
@@ -1252,7 +1252,7 @@ input[type='number'] { -moz-appearance: textfield; }
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(31, 58, 95, 0.012) 100%),
     #ffffff;
-  border: 1px solid #e8e6da;
+  border: 1px solid var(--line-strong);
   border-radius: 2px;
   box-shadow:
     0 1px 0 #ffffff inset,
