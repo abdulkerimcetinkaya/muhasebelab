@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Icon } from './Icon';
 
 type AnimateKind = 'float' | 'float-2' | 'float-3' | 'float-4' | null;
 
@@ -9,36 +9,50 @@ interface Props {
   animate?: AnimateKind;
 }
 
-export const Thiings = ({ name, size = 48, className = '', animate = null }: Props) => {
-  const [yok, setYok] = useState(false);
-  const animClass = animate ? `thiings-${animate}` : '';
-  if (yok) {
-    return (
-      <div
-        className={`${className} ${animClass} inline-flex items-center justify-center rounded-2xl`}
-        style={{
-          width: size,
-          height: size,
-          background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
-          boxShadow: '0 10px 20px rgba(0,0,0,0.08)',
-        }}
-      >
-        <span
-          className="text-[9px] font-semibold text-blue-800 px-1 text-center leading-tight"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          {name}
-        </span>
-      </div>
-    );
-  }
+/**
+ * Eski Thiings 3D PNG ikonları yerine Lucide thin-line ikonlar.
+ * Aynı API: <Thiings name="kasa" size={48} />.
+ * `animate` prop kabul ediliyor ama elite tasarımda hareket yok (no-op).
+ */
+
+const ICON_MAP: Record<string, string> = {
+  // Üniteler
+  kasa: 'Wallet',
+  banka: 'Landmark',
+  mal: 'Package',
+  senet: 'FileSignature',
+  kdv: 'Percent',
+  amortisman: 'TrendingDown',
+  personel: 'Users',
+  'donem-sonu': 'CalendarCheck',
+  'supheli-alacaklar': 'AlertCircle',
+  reeskont: 'Hourglass',
+  kambiyo: 'Globe',
+
+  // UI / dekoratif
+  calculator: 'Calculator',
+  rocket: 'Rocket',
+  trophy: 'Trophy',
+  chart: 'BarChart3',
+  dolar: 'DollarSign',
+  tl: 'Banknote',
+  euro: 'Euro',
+  yen: 'JapaneseYen',
+};
+
+export const Thiings = ({ name, size = 48, className = '' }: Props) => {
+  const lucide = ICON_MAP[name] ?? 'Square';
+  // İkon iç boyutu: tile'ın ~%48'i — refined oran
+  const inner = Math.max(14, Math.round(size * 0.48));
+  const radius = size <= 28 ? 6 : size <= 44 ? 8 : size <= 80 ? 10 : 14;
+
   return (
-    <img
-      src={`/icons/${name}.png`}
-      alt={name}
-      onError={() => setYok(true)}
-      className={`thiings-img ${animClass} ${className}`}
-      style={{ width: size, height: size }}
-    />
+    <span
+      className={`thiings-tile ${className}`}
+      style={{ width: size, height: size, borderRadius: radius }}
+      aria-label={name}
+    >
+      <Icon name={lucide} size={inner} />
+    </span>
   );
 };

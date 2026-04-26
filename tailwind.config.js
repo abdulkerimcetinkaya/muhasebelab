@@ -5,10 +5,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Bricolage Grotesque"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Instrument Serif"', '"Times New Roman"', 'serif'],
         body: ['Geist', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['"Geist Mono"', '"JetBrains Mono"', 'ui-monospace', 'monospace'],
-        serif: ['Fraunces', 'Georgia', 'serif'],
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
       },
       colors: {
         bg: 'var(--bg)',
@@ -30,19 +30,15 @@ export default {
           soft: 'var(--line-soft)',
           strong: 'var(--line-strong)',
         },
-        mint: {
-          DEFAULT: 'var(--mint)',
-          deep: 'var(--mint-deep)',
-          soft: 'var(--mint-soft)',
+        sky: {
+          DEFAULT: 'var(--sky)',
+          deep: 'var(--sky-deep)',
+          soft: 'var(--sky-soft)',
         },
-        peach: {
-          DEFAULT: 'var(--peach)',
-          deep: 'var(--peach-deep)',
-          soft: 'var(--peach-soft)',
-        },
-        jade: {
-          DEFAULT: 'var(--jade)',
-          soft: 'var(--jade-soft)',
+        accent: {
+          DEFAULT: 'var(--accent)',
+          deep: 'var(--accent-deep)',
+          soft: 'var(--accent-soft)',
         },
         primary: {
           DEFAULT: 'var(--primary)',
@@ -61,7 +57,21 @@ export default {
           DEFAULT: 'var(--danger)',
           soft: 'var(--danger-soft)',
         },
-        // Geriye dönük uyumluluk
+        // Geriye dönük
+        mint: {
+          DEFAULT: 'var(--sky)',
+          deep: 'var(--sky-deep)',
+          soft: 'var(--sky-soft)',
+        },
+        peach: {
+          DEFAULT: 'var(--accent)',
+          deep: 'var(--accent-deep)',
+          soft: 'var(--accent-soft)',
+        },
+        jade: {
+          DEFAULT: 'var(--sky-deep)',
+          soft: 'var(--sky-soft)',
+        },
         paper: {
           DEFAULT: 'var(--bg)',
           deep: 'var(--bg-warm)',
@@ -73,9 +83,9 @@ export default {
           bold: 'var(--line-strong)',
         },
         bordeaux: {
-          DEFAULT: 'var(--peach-deep)',
-          dark: 'var(--peach-deep)',
-          tint: 'var(--peach-soft)',
+          DEFAULT: 'var(--accent-deep)',
+          dark: 'var(--accent-deep)',
+          tint: 'var(--accent-soft)',
         },
         ochre: {
           DEFAULT: 'var(--premium)',
@@ -86,9 +96,9 @@ export default {
           tint: 'var(--success-soft)',
         },
         energy: {
-          DEFAULT: 'var(--jade)',
-          deep: 'var(--mint-deep)',
-          soft: 'var(--jade-soft)',
+          DEFAULT: 'var(--sky-deep)',
+          deep: 'var(--accent-deep)',
+          soft: 'var(--sky-soft)',
         },
       },
       borderRadius: {

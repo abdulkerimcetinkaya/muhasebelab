@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { Icon } from './Icon';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Footer = () => {
@@ -8,112 +7,78 @@ export const Footer = () => {
   const yil = new Date().getFullYear();
 
   return (
-    <footer className="px-3 sm:px-5 pb-5 mt-24">
-      <div className="max-w-[1320px] mx-auto">
-        <div className="surface relative overflow-hidden p-8 sm:p-12">
-          {/* Pastel blob arka plan */}
-          <div className="blob-mint w-[360px] h-[360px] -left-32 -bottom-32 blob-drift" />
-          <div className="blob-peach w-[260px] h-[260px] -right-20 -top-16 blob-drift-2" />
+    <footer className="border-t border-line mt-32">
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-8 py-16 sm:py-20">
+        {/* Üst — wordmark + tagline */}
+        <div className="flex items-baseline justify-between gap-6 mb-12 flex-wrap">
+          <h2 className="font-display text-[44px] sm:text-[56px] leading-[0.92] tracking-[-0.02em] text-ink">
+            MuhasebeLab.
+          </h2>
+          <span className="folio">— No. 01 · MMXXVI</span>
+        </div>
 
-          <div className="relative grid grid-cols-2 md:grid-cols-12 gap-10">
-            <div className="col-span-2 md:col-span-5">
-              <button
-                onClick={() => nav('/')}
-                className="inline-flex items-center gap-3 mb-5"
-                aria-label="Anasayfa"
-              >
-                <span className="relative flex items-center justify-center w-11 h-11 rounded-2xl overflow-hidden">
-                  <span className="absolute inset-0 bg-mint" />
-                  <span className="absolute inset-1 rounded-xl bg-surface" />
-                  <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-peach" />
-                  <span className="relative font-display font-bold text-[18px] leading-none text-ink">
-                    ₺
-                  </span>
-                </span>
-                <span className="font-display font-bold text-[26px] tracking-[-0.025em] leading-none text-ink">
-                  MuhasebeLab
-                </span>
+        <div className="hairline mb-12" />
+
+        {/* Kolofon — 4 sütun */}
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-8 sm:gap-10">
+          <div className="col-span-2 md:col-span-5">
+            <p className="font-display text-[18px] italic text-ink-soft leading-snug max-w-md">
+              Üniversite muhasebe öğrencileri için interaktif yevmiye atölyesi.
+              Tek Düzen Hesap Planı, senaryo bazlı problemlerle.
+            </p>
+          </div>
+
+          <div className="col-span-1 md:col-span-2 md:col-start-7">
+            <div className="eyebrow mb-3">İçerik</div>
+            <div className="space-y-2 text-[14px]">
+              <button onClick={() => nav('/uniteler')} className="block text-ink hover:text-ink-soft transition">
+                Üniteler
               </button>
-              <p className="text-[15px] text-ink-soft leading-relaxed max-w-md mb-6">
-                Üniversite muhasebe öğrencileri için interaktif yevmiye kaydı atölyesi.
-                Tek Düzen Hesap Planı'nı senaryo bazlı problemlerle öğret, pratik yap, ustalaş.
-              </p>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="chip chip-mint">
-                  <Icon name="BookOpen" size={11} />
-                  11 ünite
-                </span>
-                <span className="chip chip-peach">
-                  <Icon name="ListChecks" size={11} />
-                  212 soru
-                </span>
-                <span className="chip chip-jade">
-                  <span className="live-dot" />
-                  Aktif
-                </span>
-              </div>
-            </div>
-
-            <div className="col-span-1 md:col-span-3 md:col-start-7">
-              <div className="eyebrow eyebrow-mint mb-4">Sayfalar</div>
-              <div className="space-y-2.5 text-[14px]">
-                <button
-                  onClick={() => nav('/uniteler')}
-                  className="block text-ink hover:text-mint-deep transition font-semibold"
-                >
-                  Üniteler
+              <button onClick={() => nav('/problemler')} className="block text-ink hover:text-ink-soft transition">
+                Tüm Sorular
+              </button>
+              {user && (
+                <button onClick={() => nav('/profil')} className="block text-ink hover:text-ink-soft transition">
+                  Profil
                 </button>
-                <button
-                  onClick={() => nav('/problemler')}
-                  className="block text-ink hover:text-mint-deep transition font-semibold"
-                >
-                  Tüm Sorular
-                </button>
-                {user && (
-                  <button
-                    onClick={() => nav('/profil')}
-                    className="block text-ink hover:text-mint-deep transition font-semibold"
-                  >
-                    Profil
-                  </button>
-                )}
-                <button
-                  onClick={() => nav('/premium')}
-                  className="block text-premium-deep hover:opacity-80 transition font-bold"
-                >
-                  Premium ↗
-                </button>
-              </div>
-            </div>
-
-            <div className="col-span-1 md:col-span-3">
-              <div className="eyebrow eyebrow-peach mb-4">Hakkında</div>
-              <div className="space-y-2.5 text-[14px] text-ink-soft">
-                {!user && (
-                  <button
-                    onClick={() => nav('/giris')}
-                    className="block text-ink hover:text-peach-deep transition font-semibold"
-                  >
-                    Giriş / Kayıt
-                  </button>
-                )}
-                <span className="block">Gizlilik · yakında</span>
-                <span className="block">KVKK · yakında</span>
-                <span className="block">İletişim · yakında</span>
-              </div>
+              )}
             </div>
           </div>
 
-          <div className="relative mt-12 pt-6 dotted-line">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-6">
-              <span className="text-[12.5px] text-ink-mute font-mono tnum">
-                © {yil} MuhasebeLab · v0.1.0
-              </span>
-              <span className="text-[12.5px] text-ink-mute italic font-serif">
-                Türkiye'de tasarlandı, kahveyle yapıldı.
-              </span>
+          <div className="col-span-1 md:col-span-2">
+            <div className="eyebrow mb-3">Erişim</div>
+            <div className="space-y-2 text-[14px]">
+              {!user && (
+                <button onClick={() => nav('/giris')} className="block text-ink hover:text-ink-soft transition">
+                  Giriş / Kayıt
+                </button>
+              )}
+              <button onClick={() => nav('/premium')} className="block text-ink hover:text-ink-soft transition">
+                Premium
+              </button>
+              <span className="block text-ink-mute">Gizlilik · yakında</span>
+              <span className="block text-ink-mute">KVKK · yakında</span>
             </div>
           </div>
+
+          <div className="col-span-2 md:col-span-3">
+            <div className="eyebrow mb-3">Kolofon</div>
+            <div className="space-y-2 text-[13.5px] text-ink-soft leading-relaxed">
+              <div>
+                <span className="emph text-ink">Instrument Serif</span> + <span className="emph text-ink">Geist</span>.
+              </div>
+              <div>Türkiye'de tasarlandı, kahveyle yapıldı.</div>
+              <div className="font-mono text-[12px] text-ink-mute">v0.1.0 · build alpha</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="hairline mt-14 mb-6" />
+
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-[12px] text-ink-mute font-mono">
+          <span>© {yil} MuhasebeLab</span>
+          <span className="emph not-italic font-display text-[13px] italic text-ink-soft">— Son —</span>
+          <span>Tüm hakları saklıdır</span>
         </div>
       </div>
     </footer>
