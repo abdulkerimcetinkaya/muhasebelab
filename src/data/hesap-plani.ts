@@ -52,6 +52,7 @@ export const HESAP_PLANI: Hesap[] = [
   // 17. Yıllara Yaygın İnşaat ve Onarım Maliyetleri
   { kod: '170', ad: 'YILLARA YAYGIN İNŞAAT VE ONARIM MALİYETLERİ', sinif: '1', tur: 'AKTİF' },
   { kod: '178', ad: 'YILLARA YAYGIN İNŞAAT ENFLASYON DÜZELTME HESABI', sinif: '1', tur: 'AKTİF' },
+  { kod: '179', ad: 'TAŞERONLARA VERİLEN AVANSLAR', sinif: '1', tur: 'AKTİF' },
 
   // 18. Gelecek Aylara Ait Giderler ve Gelir Tahakkukları
   { kod: '180', ad: 'GELECEK AYLARA AİT GİDERLER', sinif: '1', tur: 'AKTİF' },
@@ -118,6 +119,7 @@ export const HESAP_PLANI: Hesap[] = [
   { kod: '264', ad: 'ÖZEL MALİYETLER', sinif: '2', tur: 'AKTİF' },
   { kod: '267', ad: 'DİĞER MADDİ OLMAYAN DURAN VARLIKLAR', sinif: '2', tur: 'AKTİF' },
   { kod: '268', ad: 'BİRİKMİŞ AMORTİSMANLAR (-)', sinif: '2', tur: 'AKTİF' },
+  { kod: '269', ad: 'VERİLEN AVANSLAR', sinif: '2', tur: 'AKTİF' },
 
   // 27. Özel Tükenmeye Tabi Varlıklar
   { kod: '271', ad: 'ARAMA GİDERLERİ', sinif: '2', tur: 'AKTİF' },
@@ -291,9 +293,9 @@ export const HESAP_PLANI: Hesap[] = [
   { kod: '623', ad: 'DİĞER SATIŞLARIN MALİYETİ (-)', sinif: '6', tur: 'GİDER' },
 
   // 63. Faaliyet Giderleri (-)
+  { kod: '630', ad: 'ARAŞTIRMA VE GELİŞTİRME GİDERLERİ (-)', sinif: '6', tur: 'GİDER' },
   { kod: '631', ad: 'PAZARLAMA SATIŞ VE DAĞITIM GİDERLERİ (-)', sinif: '6', tur: 'GİDER' },
   { kod: '632', ad: 'GENEL YÖNETİM GİDERLERİ (-)', sinif: '6', tur: 'GİDER' },
-  { kod: '633', ad: 'ARAŞTIRMA VE GELİŞTİRME GİDERLERİ (-)', sinif: '6', tur: 'GİDER' },
 
   // 64. Diğer Faaliyetlerden Olağan Gelir ve Karlar
   { kod: '640', ad: 'İŞTİRAKLERDEN TEMETTÜ GELİRLERİ', sinif: '6', tur: 'GELİR' },
