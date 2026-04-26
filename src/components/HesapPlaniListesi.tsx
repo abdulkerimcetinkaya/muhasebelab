@@ -59,7 +59,7 @@ export const HesapPlaniListesi = ({ onKapat, modal = false }: Props) => {
           />
         </div>
         <div className="flex gap-1 flex-wrap">
-          {['hepsi', '1', '2', '3', '5', '6', '7'].map((s) => (
+          {['hepsi', '1', '2', '3', '4', '5', '6', '7'].map((s) => (
             <button
               key={s}
               onClick={() => setSeciliSinif(s)}

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUniteler } from '../contexts/UnitelerContext';
 
 export const Footer = () => {
   const nav = useNavigate();
   const { user } = useAuth();
+  const { tumSorular } = useUniteler();
   const yil = new Date().getFullYear();
   const [lang, setLang] = useState<'TR' | 'EN'>('TR');
 
@@ -53,7 +55,7 @@ export const Footer = () => {
           <div className="col-span-2 md:col-span-5">
             <p className="font-display text-[20px] sm:text-[22px] italic leading-snug text-paper/90 max-w-md">
               Üniversite muhasebe öğrencileri için interaktif yevmiye atölyesi —
-              Tek Düzen Hesap Planı, senaryo bazlı 212 problemle.
+              Tek Düzen Hesap Planı, senaryo bazlı {tumSorular.length} problemle.
             </p>
             <div className="mt-8 flex flex-wrap gap-4 text-[13px] text-paper/60">
               <span className="font-mono uppercase tracking-[0.14em]">İstanbul</span>

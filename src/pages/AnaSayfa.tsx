@@ -18,6 +18,7 @@ import { gununSorusu } from '../lib/gunun-sorusu';
 import { devamEtSorusu, enCokYanlisSoru } from '../lib/oneriler';
 import { bugununTarihi } from '../lib/format';
 import { planlariYukle, type Plan } from '../lib/odeme';
+import { HESAP_PLANI } from '../data/hesap-plani';
 import { ZORLUK_AD, ZORLUK_PUAN } from '../data/sabitler';
 import type { Ilerleme, Istatistik, SoruWithUnite, Zorluk, Unite } from '../types';
 
@@ -616,7 +617,7 @@ const SAHNELER: (Sahne & { vurguBaslik: ReactNode })[] = [
         Sıkıştığında <UnderlinedWord>AI yanında</UnderlinedWord>.
       </>
     ),
-    altyazi: '212 senaryo · 11 ünite · kasadan kambiyoya.',
+    altyazi: 'Kasadan kambiyoya, sürekli envantere — gerçek senaryolar.',
   },
 ];
 
@@ -1219,8 +1220,8 @@ const AnonimAnaSayfa = () => {
             </div>
 
             {[
-              { ozellik: '212 sorunun tamamı', free: true, prem: true },
-              { ozellik: '11 ünite, 3 zorluk', free: true, prem: true },
+              { ozellik: `${tumSorular.length} sorunun tamamı`, free: true, prem: true },
+              { ozellik: `${uniteler.length} ünite, 3 zorluk`, free: true, prem: true },
               { ozellik: 'Anlık doğru/yanlış kontrolü', free: true, prem: true },
               { ozellik: 'İlerleme + rozet sistemi', free: true, prem: true },
               { ozellik: 'AI yanlış cevap analizi', free: false, prem: true },
@@ -1313,7 +1314,7 @@ const AnonimAnaSayfa = () => {
               },
               {
                 s: 'Hangi konuları kapsıyor?',
-                c: 'Tek Düzen Hesap Planı temelli 11 ünite: Kasa, Banka, Mal, Senet, KDV, Amortisman, Personel, Dönem Sonu, Şüpheli Alacaklar, Reeskont, Kambiyo. Toplam 212 senaryo bazlı soru.',
+                c: `Tek Düzen Hesap Planı temelli ${uniteler.length} ünite: Kasa, Banka, Mal, Senet, KDV, Amortisman, Personel, Dönem Sonu, Şüpheli Alacaklar, Reeskont, Kambiyo. Toplam ${tumSorular.length} senaryo bazlı soru.`,
               },
               {
                 s: 'Cevabımı nasıl kontrol ediyor?',
@@ -1460,7 +1461,7 @@ const TdhpDiagramSection = () => {
                   <span>hesap sınıfı (1: Dönen Varlıklar → 7: Maliyet)</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">82</span>
+                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">{HESAP_PLANI.length}</span>
                   <span>geçerli ana hesap kodu (TDHP standardı)</span>
                 </li>
                 <li className="flex items-start gap-3">
