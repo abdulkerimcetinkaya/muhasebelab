@@ -1,6 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring, type MotionValue } from 'framer-motion';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useInView,
+  useMotionValue,
+  animate,
+  type MotionValue,
+} from 'framer-motion';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
 import { useAuth } from '../contexts/AuthContext';
@@ -486,6 +495,67 @@ const SAHNELER: Sahne[] = [
   },
 ];
 
+/* ----------------------------------------------------------------------
+   Yardımcı bileşenler
+---------------------------------------------------------------------- */
+
+/* Görüntüye girince fade + slide-up — staggered children destekli */
+interface RevealProps {
+  children: ReactNode;
+  delay?: number;
+  className?: string;
+  y?: number;
+  as?: 'div' | 'section' | 'article' | 'span';
+}
+const Reveal = ({ children, delay = 0, className, y = 24, as = 'div' }: RevealProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.15 });
+  const Tag = motion[as];
+  return (
+    <Tag
+      ref={ref}
+      initial={{ opacity: 0, y }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
+    >
+      {children}
+    </Tag>
+  );
+};
+
+/* Sayıyı 0'dan hedefe doğru count-up animasyonu — görüntüye girince */
+interface CountUpProps {
+  to: number;
+  duration?: number;
+  className?: string;
+  prefix?: string;
+  suffix?: string;
+}
+const CountUp = ({ to, duration = 1.6, className, prefix = '', suffix = '' }: CountUpProps) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const value = useMotionValue(0);
+  const [display, setDisplay] = useState('0');
+
+  useEffect(() => {
+    if (inView) {
+      const controls = animate(value, to, {
+        duration,
+        ease: [0.22, 1, 0.36, 1],
+        onUpdate: (v) => setDisplay(Math.round(v).toString()),
+      });
+      return () => controls.stop();
+    }
+  }, [inView, to, duration, value]);
+
+  return (
+    <span ref={ref} className={`counter ${className ?? ''}`}>
+      {prefix}{display}{suffix}
+    </span>
+  );
+};
+
 /* Aktif sahneyi bul */
 const useAktifSahne = (progress: MotionValue<number>) => {
   const [aktif, setAktif] = useState(0);
@@ -884,145 +954,285 @@ const AnonimAnaSayfa = () => {
       />
 
       {/* ===========================================================
-          NASIL ÇALIŞIR — 3 adım
+          NASIL ÇALIŞIR — 3 adım, atmosferik
       =========================================================== */}
-      <section className="px-5 sm:px-8 py-16 border-y border-line bg-surface-2/40">
-        <div className="max-w-[1240px] mx-auto">
-          <div className="flex items-baseline justify-between mb-10 flex-wrap gap-3">
-            <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink">
-              Nasıl çalışır
-            </h2>
-            <span className="text-[14px] text-ink-soft max-w-md">
-              Üç adım. Otuz saniye. Kayıt zorunlu değil.
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="relative px-5 sm:px-8 py-20 sm:py-24 border-y border-line bg-surface-2/40 dot-grid-bg overflow-hidden">
+        <div className="max-w-[1240px] mx-auto relative">
+          <Reveal>
+            <div className="section-divider mb-10">
+              <span>§ 01 · Akış</span>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.05}>
+            <div className="flex items-baseline justify-between mb-12 flex-wrap gap-4">
+              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0]">
+                Üç adımda <br className="md:hidden" />yevmiye kaydı.
+              </h2>
+              <span className="text-[15px] text-ink-soft max-w-sm">
+                Senaryoyu oku, defterine işle, anında kontrol et.
+                Kayıt zorunlu değil — otuz saniye yetiyor.
+              </span>
+            </div>
+          </Reveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+            {/* Bağlantı çizgisi — masaüstünde görünür */}
+            <div className="hidden md:block absolute top-[78px] left-[16%] right-[16%] h-px bg-line-strong z-0 pointer-events-none">
+              <span className="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 rounded-full bg-line-strong" />
+              <span className="absolute left-1/4 -translate-x-1/2 -top-1 w-1.5 h-1.5 rounded-full bg-line" />
+              <span className="absolute left-3/4 -translate-x-1/2 -top-1 w-1.5 h-1.5 rounded-full bg-line" />
+            </div>
+
             {[
               {
                 no: '01',
                 baslik: 'Senaryoyu oku',
                 aciklama: 'Gerçek bir işletme işlemi — peşin satış, KDV mahsubu, amortisman, maaş tahakkuku.',
                 icon: 'BookOpen',
+                mini: (
+                  <div className="mini-paper">
+                    <div className="text-ink-mute mb-1 text-[9.5px]">SENARYO · No. 12</div>
+                    <div className="text-ink leading-snug font-sans text-[10.5px] not-italic">
+                      İşletme, peşin mal satışından <span className="font-semibold">10.000 ₺</span> tahsilat yapmıştır.
+                    </div>
+                  </div>
+                ),
               },
               {
                 no: '02',
                 baslik: 'Yevmiye kaydını gir',
                 aciklama: 'Hesap kodunu yaz, borç ve alacak tutarlarını gir. Otomatik tamamlama yardımcı olur.',
                 icon: 'Pencil',
+                mini: (
+                  <div className="mini-paper">
+                    <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-baseline">
+                      <span className="font-bold text-ink">100</span>
+                      <span className="text-ink-soft">KASA</span>
+                      <span className="text-ink tnum">12.000,00</span>
+                    </div>
+                    <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-baseline mt-1">
+                      <span className="font-bold text-ink">600</span>
+                      <span className="text-ink-soft">SATIŞLAR</span>
+                      <span className="text-ink tnum">10.000,00</span>
+                    </div>
+                    <div className="mt-1.5 h-1 w-2/3 bg-sky-soft rounded animate-pulse" />
+                  </div>
+                ),
               },
               {
                 no: '03',
                 baslik: 'Anında kontrol',
                 aciklama: 'Yanlış satırlar kırmızı, doğrular yeşil. İpucu, resmi çözüm ve detaylı açıklama hazır.',
                 icon: 'CheckCircle2',
+                mini: (
+                  <div className="mini-paper">
+                    <div className="flex items-baseline justify-between mb-1.5">
+                      <span className="text-ink-mute text-[9.5px]">SONUÇ</span>
+                      <span className="text-success font-semibold text-[10px]">+10p</span>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <span className="w-3 h-3 rounded-full bg-success-soft flex items-center justify-center">
+                          <Icon name="Check" size={8} className="text-success" />
+                        </span>
+                        <span className="text-ink">Borç = Alacak</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <span className="w-3 h-3 rounded-full bg-success-soft flex items-center justify-center">
+                          <Icon name="Check" size={8} className="text-success" />
+                        </span>
+                        <span className="text-ink">Hesap kodları doğru</span>
+                      </div>
+                    </div>
+                  </div>
+                ),
               },
             ].map((adim, i) => (
-              <div key={i} className="surface p-6">
-                <div className="flex items-baseline justify-between mb-4">
-                  <span className="font-mono text-[12px] text-ink-mute tnum tracking-wider">{adim.no}</span>
-                  <Icon name={adim.icon} size={16} className="text-ink-mute" />
+              <Reveal key={i} delay={0.1 + i * 0.1}>
+                <div className="surface-lift p-7 relative bg-surface z-10">
+                  <div className="flex items-baseline justify-between mb-5">
+                    <span className="font-mono text-[12px] text-ink-mute tnum tracking-wider relative">
+                      <span className="absolute -left-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-sky-deep opacity-60" />
+                      Adım {adim.no}
+                    </span>
+                    <div className="w-9 h-9 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-soft">
+                      <Icon name={adim.icon} size={15} />
+                    </div>
+                  </div>
+                  <h3 className="font-display text-[22px] font-bold tracking-tight text-ink mb-3 leading-tight">
+                    {adim.baslik}
+                  </h3>
+                  <p className="text-[14px] text-ink-soft leading-relaxed mb-5">
+                    {adim.aciklama}
+                  </p>
+                  {/* Mini visualization */}
+                  {adim.mini}
                 </div>
-                <h3 className="font-display text-[20px] font-bold tracking-tight text-ink mb-2">
-                  {adim.baslik}
-                </h3>
-                <p className="text-[14px] text-ink-soft leading-relaxed">
-                  {adim.aciklama}
-                </p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* ===========================================================
-          ÜNİTELER — 11 ünite tam liste
+          ÜNİTELER — 11 ünite, atmosferik (yüzen kodlar arka planda)
       =========================================================== */}
-      <section className="px-5 sm:px-8 py-16 sm:py-20">
-        <div className="max-w-[1240px] mx-auto">
-          <div className="flex items-baseline justify-between mb-10 flex-wrap gap-3">
-            <div>
-              <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink">
-                11 ünite, 212 soru
-              </h2>
-              <p className="text-[15px] text-ink-soft mt-2 max-w-xl">
-                Her ünitede kolay → orta → zor sıralı sorular. Hesap kodları parantez içinde.
-              </p>
-            </div>
-            <button onClick={() => nav('/uniteler')} className="btn btn-soft btn-sm">
-              Tüm üniteler →
-            </button>
-          </div>
+      <section className="relative px-5 sm:px-8 py-20 sm:py-24 overflow-hidden">
+        {/* Arka planda yüzen hesap kodları — düşük opacity */}
+        <div className="absolute inset-0 pointer-events-none opacity-50">
+          <span className="sticker-bg" style={{ left: '4%', top: '12%', transform: 'rotate(-8deg)' }}>100 · KASA</span>
+          <span className="sticker-bg" style={{ right: '6%', top: '18%', transform: 'rotate(6deg)' }}>391 · HESAPLANAN KDV</span>
+          <span className="sticker-bg" style={{ left: '8%', bottom: '20%', transform: 'rotate(4deg)' }}>153 · TİCARİ MAL</span>
+          <span className="sticker-bg" style={{ right: '4%', bottom: '12%', transform: 'rotate(-5deg)' }}>600 · YURT İÇİ SATIŞLAR</span>
+          <span className="sticker-bg" style={{ left: '40%', top: '8%', transform: 'rotate(2deg)' }}>257 · BİRİKMİŞ AMORT.</span>
+        </div>
 
-          <div className="surface overflow-hidden">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {uniteler.map((u, i) => (
-                <button
-                  key={u.id}
-                  onClick={() => nav(`/uniteler/${u.id}`)}
-                  className={`
-                    text-left p-5 transition hover:bg-surface-2 group
-                    border-b border-line
-                    ${i % 3 !== 2 ? 'lg:border-r lg:border-line' : ''}
-                    ${i % 2 !== 1 ? 'sm:max-lg:border-r sm:max-lg:border-line' : ''}
-                    ${i >= uniteler.length - (uniteler.length % 3 || 3) ? 'lg:border-b-0' : ''}
-                  `}
-                >
-                  <div className="flex items-start gap-4">
-                    <Thiings name={u.thiingsIcon} size={36} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline justify-between gap-2 mb-1">
-                        <h3 className="font-display text-[16px] font-bold tracking-tight text-ink group-hover:text-accent-deep transition">
-                          {u.ad}
-                        </h3>
-                        <span className="font-mono tnum text-[12px] text-ink-mute">
-                          {u.sorular.length}
-                        </span>
-                      </div>
-                      <p className="text-[12.5px] text-ink-soft leading-snug">
-                        {UNITE_ACIKLAMA[u.id] ?? u.aciklama ?? '—'}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              ))}
+        <div className="max-w-[1240px] mx-auto relative">
+          <Reveal>
+            <div className="section-divider mb-10">
+              <span>§ 02 · İçerik</span>
             </div>
-          </div>
+          </Reveal>
+
+          <Reveal delay={0.05}>
+            <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
+              <div>
+                <h2 className="font-display text-[34px] sm:text-[44px] md:text-[56px] font-bold tracking-tight text-ink leading-[1.0] mb-3">
+                  <CountUp to={11} /> ünite,{' '}
+                  <span className="text-ink-soft"><CountUp to={tumSorular.length} /> soru</span>.
+                </h2>
+                <p className="text-[15px] text-ink-soft max-w-xl leading-relaxed">
+                  Her ünitede kolay → orta → zor sıralı sorular.
+                  Hesap kodları her başlığın altında — Tek Düzen Hesap Planı'nın tamamı.
+                </p>
+              </div>
+              <button onClick={() => nav('/uniteler')} className="btn btn-soft">
+                Tüm üniteler →
+              </button>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <div className="surface overflow-hidden bg-surface">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {uniteler.map((u, i) => {
+                  // hesap kodu açıklamasından sayıları çıkar
+                  const aciklama = UNITE_ACIKLAMA[u.id] ?? u.aciklama ?? '—';
+                  const kodMatch = aciklama.match(/—\s*(.+)$/);
+                  const kodlar = kodMatch ? kodMatch[1] : '';
+                  const baslangic = aciklama.replace(/—.+$/, '').trim();
+                  return (
+                    <button
+                      key={u.id}
+                      onClick={() => nav(`/uniteler/${u.id}`)}
+                      className={`
+                        text-left p-5 transition hover:bg-surface-2 group relative
+                        border-b border-line
+                        ${i % 3 !== 2 ? 'lg:border-r lg:border-line' : ''}
+                        ${i % 2 !== 1 ? 'sm:max-lg:border-r sm:max-lg:border-line' : ''}
+                        ${i >= uniteler.length - (uniteler.length % 3 || 3) ? 'lg:border-b-0' : ''}
+                      `}
+                    >
+                      <div className="absolute top-3 right-3 font-mono text-[10px] text-ink-quiet tnum">
+                        {String(i + 1).padStart(2, '0')}
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <Thiings name={u.thiingsIcon} size={40} />
+                        <div className="flex-1 min-w-0 pr-4">
+                          <h3 className="font-display text-[17px] font-bold tracking-tight text-ink group-hover:text-accent-deep transition mb-1">
+                            {u.ad}
+                          </h3>
+                          <p className="text-[12.5px] text-ink-soft leading-snug mb-2.5">
+                            {baslangic || aciklama}
+                          </p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {kodlar && (
+                              <span className="font-mono text-[10.5px] text-sky-deep font-semibold tracking-wider px-1.5 py-0.5 rounded bg-sky-soft">
+                                {kodlar}
+                              </span>
+                            )}
+                            <span className="font-mono tnum text-[11px] text-ink-mute">
+                              · {u.sorular.length} soru
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ===========================================================
-          BUGÜNÜN SORUSU
+          BUGÜNÜN SORUSU — günlük "manşet" havası
       =========================================================== */}
       {gununSoru && (
-        <section className="px-5 sm:px-8 pb-16">
+        <section className="px-5 sm:px-8 py-16 border-t border-line">
           <div className="max-w-[1240px] mx-auto">
-            <div className="surface-lift p-7 sm:p-8 grid grid-cols-1 md:grid-cols-12 gap-7 items-center">
-              <div className="md:col-span-8">
-                <div className="flex items-center gap-2 mb-3 flex-wrap">
-                  <span className="chip chip-premium">
-                    <Icon name="Calendar" size={11} />
-                    Bugünün Sorusu
+            <Reveal>
+              <div className="section-divider mb-10">
+                <span>§ 03 · Bugün</span>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.05}>
+              <div className="surface-lift relative overflow-hidden">
+                {/* Sol kenar şerit — günlük yayın hissi */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-sky-deep via-accent to-sky-deep opacity-70" />
+
+                {/* Üst tarih şeridi */}
+                <div className="px-7 sm:px-9 py-3 border-b border-line bg-surface-2 flex items-baseline justify-between">
+                  <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-ink-mute">
+                    {new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
                   </span>
-                  <ZorlukChip zorluk={gununSoru.zorluk} />
-                  <span className="chip">{gununSoru.uniteAd}</span>
+                  <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-ink-mute">
+                    Sayı {new Date().getDate()}
+                  </span>
                 </div>
-                <h2 className="font-display text-[28px] sm:text-[40px] font-bold leading-[1.02] tracking-tight text-ink mb-3">
-                  {gununSoru.baslik}
-                </h2>
-                <p className="text-[15.5px] text-ink-soft leading-relaxed max-w-2xl">
-                  {gununSoru.senaryo}
-                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-7 items-center p-7 sm:p-9">
+                  <div className="md:col-span-8">
+                    <div className="flex items-center gap-2 mb-4 flex-wrap">
+                      <span className="chip chip-premium">
+                        <Icon name="Calendar" size={11} />
+                        Manşet
+                      </span>
+                      <ZorlukChip zorluk={gununSoru.zorluk} />
+                      <span className="chip">{gununSoru.uniteAd}</span>
+                    </div>
+                    <h2 className="font-display text-[28px] sm:text-[40px] md:text-[44px] font-bold leading-[1.0] tracking-tight text-ink mb-4">
+                      {gununSoru.baslik}
+                    </h2>
+                    <p className="text-[15.5px] text-ink-soft leading-relaxed max-w-2xl mb-6">
+                      {gununSoru.senaryo}
+                    </p>
+                    <div className="flex flex-wrap gap-4 items-baseline">
+                      <button
+                        onClick={() => nav(`/problemler/${gununSoru.id}`)}
+                        className="btn btn-primary"
+                      >
+                        Bu Soruyu Çöz
+                      </button>
+                      <button onClick={() => nav('/problemler')} className="btn-link">
+                        Diğerleri →
+                      </button>
+                    </div>
+                  </div>
+                  <div className="md:col-span-4 flex flex-col items-center md:items-end gap-3">
+                    <Thiings name={gununSoru.uniteIcon} size={120} />
+                    <div className="flex items-baseline gap-3 text-[12px] text-ink-mute font-mono uppercase tracking-wider">
+                      <span>≈ 2 dk</span>
+                      <span>·</span>
+                      <span className="text-sky-deep">+{ZORLUK_PUAN[gununSoru.zorluk]}p</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="md:col-span-4 flex flex-col gap-3 md:items-end">
-                <Thiings name={gununSoru.uniteIcon} size={88} />
-                <button
-                  onClick={() => nav(`/problemler/${gununSoru.id}`)}
-                  className="btn btn-primary btn-lg w-full md:w-auto"
-                >
-                  Bu Soruyu Çöz
-                </button>
-              </div>
-            </div>
+            </Reveal>
           </div>
         </section>
       )}
@@ -1030,18 +1240,28 @@ const AnonimAnaSayfa = () => {
       {/* ===========================================================
           ÜCRETSİZ vs PREMIUM KARŞILAŞTIRMA
       =========================================================== */}
-      <section className="px-5 sm:px-8 py-16 sm:py-20 border-t border-line">
+      <section className="px-5 sm:px-8 py-20 sm:py-24 border-t border-line bg-surface-2/30">
         <div className="max-w-[1240px] mx-auto">
-          <div className="text-center mb-10 max-w-2xl mx-auto">
-            <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink">
-              Ücretsiz vs Premium
-            </h2>
-            <p className="text-[15px] text-ink-soft mt-3">
-              Tüm sorular ücretsiz çözülebilir. Premium, sıkıştığında destek katmanını açar.
-            </p>
-          </div>
+          <Reveal>
+            <div className="section-divider mb-10">
+              <span>§ 04 · Tarife</span>
+            </div>
+          </Reveal>
 
-          <div className="surface overflow-hidden max-w-3xl mx-auto">
+          <Reveal delay={0.05}>
+            <div className="text-center mb-12 max-w-2xl mx-auto">
+              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0]">
+                Ücretsiz vs <span className="text-premium-deep">Premium</span>
+              </h2>
+              <p className="text-[15px] text-ink-soft mt-4 leading-relaxed">
+                Tüm sorular ücretsiz çözülebilir. Premium, sıkıştığında AI yardımını ve
+                otomatik tamamlama destek katmanını açar.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+          <div className="surface overflow-hidden max-w-3xl mx-auto bg-surface">
             <div className="grid grid-cols-[1.6fr_1fr_1fr] px-5 py-3 border-b border-line bg-surface-2 text-[11px] uppercase tracking-wider font-mono text-ink-mute">
               <div>Özellik</div>
               <div className="text-center">Ücretsiz</div>
@@ -1100,30 +1320,42 @@ const AnonimAnaSayfa = () => {
             </div>
           </div>
 
-          <div className="text-center mt-8 flex flex-wrap gap-3 justify-center">
-            <button onClick={() => nav('/problemler')} className="btn btn-primary">
-              Ücretsiz Başla
-            </button>
-            <button onClick={() => nav('/premium')} className="btn btn-soft">
-              Premium Detaylar →
-            </button>
-          </div>
-          <p className="text-[12px] text-ink-mute font-mono uppercase tracking-wider text-center mt-4">
-            İlk 100 kullanıcıya bir yıl Premium bedava
-          </p>
+          </Reveal>
+
+          <Reveal delay={0.15}>
+            <div className="text-center mt-10 flex flex-wrap gap-3 justify-center">
+              <button onClick={() => nav('/problemler')} className="btn btn-primary btn-lg">
+                Ücretsiz Başla
+              </button>
+              <button onClick={() => nav('/premium')} className="btn btn-soft btn-lg">
+                Premium Detaylar →
+              </button>
+            </div>
+            <p className="text-[12px] text-ink-mute font-mono uppercase tracking-wider text-center mt-5">
+              <span className="inline-block w-2 h-2 rounded-full bg-premium align-middle mr-2" />
+              İlk 100 kullanıcıya bir yıl Premium bedava
+            </p>
+          </Reveal>
         </div>
       </section>
 
       {/* ===========================================================
           SSS
       =========================================================== */}
-      <section className="px-5 sm:px-8 py-16 sm:py-20 border-t border-line">
+      <section className="px-5 sm:px-8 py-20 sm:py-24 border-t border-line">
         <div className="max-w-[860px] mx-auto">
-          <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink mb-10">
-            Sıkça sorulanlar
-          </h2>
+          <Reveal>
+            <div className="section-divider mb-10">
+              <span>§ 05 · SSS</span>
+            </div>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0] mb-12">
+              Sıkça sorulanlar.
+            </h2>
+          </Reveal>
 
-          <div className="space-y-5">
+          <div className="space-y-4">
             {[
               {
                 s: 'Kayıt olmadan kullanabilir miyim?',
@@ -1146,37 +1378,95 @@ const AnonimAnaSayfa = () => {
                 c: 'Evet — özellikle vize/final öncesi haftada. Sorular gerçek sınav tipinde (kolay/orta/zor karışık), aktivite ısı haritası ve seri sayacı ile düzenli pratik kurma motivasyonunu canlı tutar.',
               },
             ].map((sss, i) => (
-              <details key={i} className="surface group">
-                <summary className="cursor-pointer p-5 flex items-baseline justify-between gap-4 list-none">
-                  <span className="font-display text-[16px] sm:text-[17px] font-semibold text-ink tracking-tight">{sss.s}</span>
-                  <Icon name="ChevronDown" size={16} className="text-ink-mute group-open:rotate-180 transition flex-shrink-0 mt-1" />
-                </summary>
-                <div className="px-5 pb-5 text-[14.5px] text-ink-soft leading-relaxed">{sss.c}</div>
-              </details>
+              <Reveal key={i} delay={0.05 * i} y={16}>
+                <details className="surface group bg-surface hover:border-line-strong transition">
+                  <summary className="cursor-pointer p-5 flex items-baseline justify-between gap-4 list-none">
+                    <span className="flex items-baseline gap-3 flex-1">
+                      <span className="font-mono text-[11px] text-ink-quiet tnum tracking-wider">
+                        0{i + 1}
+                      </span>
+                      <span className="font-display text-[16px] sm:text-[17px] font-semibold text-ink tracking-tight group-hover:text-accent-deep transition">
+                        {sss.s}
+                      </span>
+                    </span>
+                    <Icon name="ChevronDown" size={16} className="text-ink-mute group-open:rotate-180 transition flex-shrink-0 mt-1" />
+                  </summary>
+                  <div className="px-5 pb-5 ml-8 text-[14.5px] text-ink-soft leading-relaxed">{sss.c}</div>
+                </details>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* ===========================================================
-          KAPANIŞ
+          KAPANIŞ — son seslenme, atmosferik
       =========================================================== */}
-      <section className="px-5 sm:px-8 pb-20 pt-12 border-t border-line">
-        <div className="max-w-[860px] mx-auto text-center">
-          <h2 className="font-display text-[32px] sm:text-[44px] font-bold tracking-tight text-ink mb-4 leading-tight">
-            Otuz saniyede başla.
-          </h2>
-          <p className="text-[15.5px] text-ink-soft max-w-xl mx-auto leading-relaxed mb-8">
-            Üye olmadan da çalışabilirsin. İlerlemeni kaydetmek istersen kullanıcı adı + şifre yeter.
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <button onClick={() => nav('/giris')} className="btn btn-primary btn-lg">
-              Hesap Oluştur
-            </button>
-            <button onClick={() => nav('/problemler')} className="btn btn-soft btn-lg">
-              Önce Soruları Gör
-            </button>
-          </div>
+      <section className="relative px-5 sm:px-8 py-24 sm:py-32 border-t border-line overflow-hidden">
+        {/* Hafif arka plan halkaları — hero'yu hatırlatma */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+          <div className="ring" style={{ width: 400, height: 400 }} />
+          <div className="ring ring-inner" style={{ width: 600, height: 600, position: 'absolute' }} />
+          <div className="ring" style={{ width: 800, height: 800, position: 'absolute' }} />
+        </div>
+
+        <div className="relative max-w-[860px] mx-auto text-center">
+          <Reveal>
+            <div className="section-divider mb-10">
+              <span>§ 06 · Başla</span>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.05}>
+            <div className="inline-flex items-center gap-2 mb-6">
+              <span className="live-dot" />
+              <span className="font-mono text-[11.5px] uppercase tracking-[0.16em] text-ink-mute">
+                {tumSorular.length} soru hazır · şu an aktif
+              </span>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <h2 className="font-display text-[40px] sm:text-[60px] md:text-[76px] font-bold tracking-tight text-ink leading-[0.96] mb-6">
+              Otuz saniyede <br className="md:hidden" />
+              <span className="text-ink-soft">başla.</span>
+            </h2>
+          </Reveal>
+
+          <Reveal delay={0.18}>
+            <p className="text-[16px] sm:text-[18px] text-ink-soft max-w-xl mx-auto leading-relaxed mb-10">
+              Üye olmadan da çalışabilirsin. İlerlemeni kaydetmek istersen
+              kullanıcı adı + şifre yeter — bir saniye bile sürmüyor.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.25}>
+            <div className="flex flex-wrap gap-3 justify-center mb-8">
+              <button onClick={() => nav('/giris')} className="btn btn-primary btn-lg">
+                Hesap Oluştur
+              </button>
+              <button onClick={() => nav('/problemler')} className="btn btn-soft btn-lg">
+                Önce Soruları Gör
+              </button>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.32}>
+            <div className="inline-flex items-baseline gap-6 text-[12.5px] font-mono uppercase tracking-[0.14em] text-ink-mute">
+              <span className="flex items-center gap-2">
+                <Icon name="Check" size={11} className="text-success" />
+                Ücretsiz başlangıç
+              </span>
+              <span className="flex items-center gap-2">
+                <Icon name="Check" size={11} className="text-success" />
+                Kayıt zorunlu değil
+              </span>
+              <span className="flex items-center gap-2">
+                <Icon name="Check" size={11} className="text-success" />
+                İlk 100'e Premium
+              </span>
+            </div>
+          </Reveal>
         </div>
       </section>
     </main>
