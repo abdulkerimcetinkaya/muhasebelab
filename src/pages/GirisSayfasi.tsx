@@ -14,6 +14,9 @@ export const GirisSayfasi = () => {
   const [mod, setMod] = useState<Mod>('giris');
   const [email, setEmail] = useState('');
   const [sifre, setSifre] = useState('');
+  const [kullaniciAdi, setKullaniciAdi] = useState('');
+  const [kvkkOnay, setKvkkOnay] = useState(false);
+  const [bultenIzni, setBultenIzni] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
   const [bilgi, setBilgi] = useState<string | null>(null);
   const [yukleniyor, setYukleniyor] = useState(false);
@@ -29,14 +32,40 @@ export const GirisSayfasi = () => {
     e.preventDefault();
     setHata(null);
     setBilgi(null);
+
     if (!email.trim() || !sifre) {
       setHata('E-posta ve şifre gerekli.');
       return;
     }
+
+    if (mod === 'kayit') {
+      const ad = kullaniciAdi.trim();
+      if (ad.length < 2 || ad.length > 30) {
+        setHata('Kullanıcı adı 2-30 karakter olmalı.');
+        return;
+      }
+      if (ad.toLowerCase() === 'öğrenci') {
+        setHata('Lütfen kendine özgü bir kullanıcı adı seç.');
+        return;
+      }
+      if (!kvkkOnay) {
+        setHata('Devam etmek için KVKK Aydınlatma Metni\'ni onaylamalısın.');
+        return;
+      }
+    }
+
     setYukleniyor(true);
     const sonuc =
-      mod === 'giris' ? await girisYap(email.trim(), sifre) : await kayitOl(email.trim(), sifre);
+      mod === 'giris'
+        ? await girisYap(email.trim(), sifre)
+        : await kayitOl({
+            email: email.trim(),
+            sifre,
+            kullaniciAdi: kullaniciAdi.trim(),
+            bultenIzni,
+          });
     setYukleniyor(false);
+
     if (!sonuc.basarili) {
       setHata(sonuc.hata ?? 'Bilinmeyen hata.');
       return;
@@ -97,6 +126,28 @@ export const GirisSayfasi = () => {
         </div>
 
         <form onSubmit={gonder} className="space-y-4">
+          {mod === 'kayit' && (
+            <div>
+              <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                Kullanıcı Adı
+              </label>
+              <input
+                type="text"
+                value={kullaniciAdi}
+                onChange={(e) => setKullaniciAdi(e.target.value)}
+                autoComplete="username"
+                required
+                minLength={2}
+                maxLength={30}
+                className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
+                placeholder="Profilde gözükecek isim"
+              />
+              <div className="text-xs text-stone-500 dark:text-zinc-500 font-medium mt-1.5">
+                2-30 karakter. Profilden değiştirebilirsin.
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
               E-posta
@@ -126,6 +177,44 @@ export const GirisSayfasi = () => {
               placeholder="En az 6 karakter"
             />
           </div>
+
+          {mod === 'kayit' && (
+            <div className="space-y-3 pt-2">
+              <label className="flex items-start gap-2.5 cursor-pointer text-sm">
+                <input
+                  type="checkbox"
+                  checked={kvkkOnay}
+                  onChange={(e) => setKvkkOnay(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-stone-300 dark:border-zinc-600 text-blue-700 focus:ring-blue-500/30 cursor-pointer"
+                  required
+                />
+                <span className="text-stone-700 dark:text-zinc-300 leading-snug font-medium">
+                  <button
+                    type="button"
+                    onClick={() => window.open('#/kvkk', '_blank')}
+                    className="text-blue-700 dark:text-blue-400 hover:underline font-bold"
+                  >
+                    KVKK Aydınlatma Metni
+                  </button>
+                  'ni okudum, kişisel verilerimin işlenmesini kabul ediyorum.{' '}
+                  <span className="text-rose-700 dark:text-rose-400">*</span>
+                </span>
+              </label>
+
+              <label className="flex items-start gap-2.5 cursor-pointer text-sm">
+                <input
+                  type="checkbox"
+                  checked={bultenIzni}
+                  onChange={(e) => setBultenIzni(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-stone-300 dark:border-zinc-600 text-blue-700 focus:ring-blue-500/30 cursor-pointer"
+                />
+                <span className="text-stone-600 dark:text-zinc-400 leading-snug font-medium">
+                  Yeni özellikler ve içerik güncellemelerinden haberdar olmak için e-posta
+                  almak istiyorum. <span className="text-stone-500 dark:text-zinc-500">(opsiyonel)</span>
+                </span>
+              </label>
+            </div>
+          )}
 
           {hata && (
             <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300 font-medium">

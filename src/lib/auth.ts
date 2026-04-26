@@ -19,8 +19,24 @@ const cevirHata = (mesaj: string): string => {
   return mesaj;
 };
 
-export const kayitOl = async (email: string, sifre: string): Promise<AuthSonuc> => {
-  const { data, error } = await supabase.auth.signUp({ email, password: sifre });
+export interface KayitBilgileri {
+  email: string;
+  sifre: string;
+  kullaniciAdi: string;
+  bultenIzni: boolean;
+}
+
+export const kayitOl = async (kayit: KayitBilgileri): Promise<AuthSonuc> => {
+  const { data, error } = await supabase.auth.signUp({
+    email: kayit.email,
+    password: kayit.sifre,
+    options: {
+      data: {
+        kullanici_adi: kayit.kullaniciAdi.trim(),
+        bulten_izni: kayit.bultenIzni,
+      },
+    },
+  });
   if (error) return { basarili: false, hata: cevirHata(error.message) };
   return { basarili: true, user: data.user };
 };
