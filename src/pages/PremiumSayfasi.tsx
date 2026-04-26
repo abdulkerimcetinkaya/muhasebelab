@@ -113,8 +113,8 @@ export const PremiumSayfasi = () => {
     setHata(null);
     try {
       const yanit = await odemeBaslat(kod);
-      // İyzico ödeme sayfasına yönlendir
-      window.location.href = yanit.paymentPageUrl;
+      // İyzico ödeme sayfasına yönlendir (assign — React Compiler uyumlu)
+      window.location.assign(yanit.paymentPageUrl);
     } catch (e) {
       setHata((e as Error).message);
       setSecilenPlan(null);

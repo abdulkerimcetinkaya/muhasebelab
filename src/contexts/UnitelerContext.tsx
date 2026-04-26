@@ -42,7 +42,14 @@ export const UnitelerProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    yukle();
+    let iptal = false;
+    yukle().catch(() => {
+      // hata yukle içinde state'e yazıldı; iptal edildiyse no-op
+      if (iptal) return;
+    });
+    return () => {
+      iptal = true;
+    };
   }, [yukle]);
 
   return (

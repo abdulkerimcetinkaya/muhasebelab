@@ -14,7 +14,6 @@ const APP_BASE_URL =
   Deno.env.get('APP_BASE_URL') ?? 'http://localhost:5173';
 
 const redirect = (durum: 'basarili' | 'hata' | 'iptal', detay?: string): Response => {
-  const url = new URL(`${APP_BASE_URL}/#/premium/sonuc`);
   // HashRouter — query parametresini hash'in içine yazmamız lazım
   const hashParams = new URLSearchParams({ durum });
   if (detay) hashParams.set('detay', detay);

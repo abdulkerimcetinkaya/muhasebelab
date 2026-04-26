@@ -14,6 +14,22 @@ interface Props {
 type DurumFiltre = 'hepsi' | 'cozulen' | 'cozulmeyen';
 type SiralamaFld = 'sira' | 'zorluk' | 'unite' | 'durum';
 
+/* Sıralama oku — parent dışında tanımlı (her render'da yeniden oluşmasın) */
+const SirOk = ({
+  fld,
+  aktifFld,
+  yon,
+}: {
+  fld: SiralamaFld;
+  aktifFld: SiralamaFld;
+  yon: 'asc' | 'desc';
+}) => {
+  if (aktifFld !== fld) {
+    return <Icon name="ChevronsUpDown" size={10} className="text-stone-300 dark:text-zinc-700" />;
+  }
+  return <Icon name={yon === 'asc' ? 'ChevronUp' : 'ChevronDown'} size={10} />;
+};
+
 export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
   const nav = useNavigate();
   const { uniteler, tumSorular } = useUniteler();
@@ -48,7 +64,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
       return siralamaYon === 'asc' ? x : -x;
     });
     return sonuc;
-  }, [arama, zorlukFiltre, uniteFiltre, durumFiltre, siralamaFld, siralamaYon, ilerleme.cozulenler]);
+  }, [tumSorular, arama, zorlukFiltre, uniteFiltre, durumFiltre, siralamaFld, siralamaYon, ilerleme.cozulenler]);
 
   const sirala = (fld: SiralamaFld) => {
     if (siralamaFld === fld) setSiralamaYon(siralamaYon === 'asc' ? 'desc' : 'asc');
@@ -56,12 +72,6 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
       setSiralamaFld(fld);
       setSiralamaYon('asc');
     }
-  };
-
-  const SirOk = ({ fld }: { fld: SiralamaFld }) => {
-    if (siralamaFld !== fld)
-      return <Icon name="ChevronsUpDown" size={10} className="text-stone-300 dark:text-zinc-700" />;
-    return <Icon name={siralamaYon === 'asc' ? 'ChevronUp' : 'ChevronDown'} size={10} />;
   };
 
   const cozulenSayi = tumSorular.filter((s) => ilerleme.cozulenler[s.id]).length;
@@ -135,20 +145,20 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
             onClick={() => sirala('durum')}
             className="col-span-1 text-left flex items-center gap-1 hover:text-stone-900 dark:hover:text-zinc-100"
           >
-            Durum <SirOk fld="durum" />
+            Durum <SirOk fld="durum" aktifFld={siralamaFld} yon={siralamaYon} />
           </button>
           <div className="col-span-5">Başlık</div>
           <button
             onClick={() => sirala('unite')}
             className="col-span-3 text-left flex items-center gap-1 hover:text-stone-900 dark:hover:text-zinc-100"
           >
-            Ünite <SirOk fld="unite" />
+            Ünite <SirOk fld="unite" aktifFld={siralamaFld} yon={siralamaYon} />
           </button>
           <button
             onClick={() => sirala('zorluk')}
             className="col-span-2 text-left flex items-center gap-1 hover:text-stone-900 dark:hover:text-zinc-100"
           >
-            Zorluk <SirOk fld="zorluk" />
+            Zorluk <SirOk fld="zorluk" aktifFld={siralamaFld} yon={siralamaYon} />
           </button>
           <div className="col-span-1 text-right">Puan</div>
         </div>

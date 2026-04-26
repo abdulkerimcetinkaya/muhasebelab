@@ -49,11 +49,16 @@ export const AdminSorularSayfasi = () => {
   };
 
   useEffect(() => {
+    let iptal = false;
     yukle().catch((e) => {
+      if (iptal) return;
       console.error('Sorular yüklenemedi', e);
       setHata(String(e));
       setYukleniyor(false);
     });
+    return () => {
+      iptal = true;
+    };
   }, []);
 
   const uniteAdMap = useMemo(() => {

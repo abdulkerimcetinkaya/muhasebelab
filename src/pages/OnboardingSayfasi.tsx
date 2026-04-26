@@ -7,7 +7,7 @@ import { useUniteler } from '../contexts/UnitelerContext';
 import { authDonusOku, authDonusTemizle } from '../lib/auth-donus';
 
 interface Props {
-  onTamamla: (ad: string, baslangicUniteId: string | null) => void;
+  onTamamla: (ad: string) => void;
   mevcutAd: string;
 }
 
@@ -31,7 +31,7 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
   }, [ad]);
 
   const tamamla = () => {
-    onTamamla(ad.trim(), seciliUnite);
+    onTamamla(ad.trim());
     const donus = authDonusOku();
     if (donus) {
       authDonusTemizle();

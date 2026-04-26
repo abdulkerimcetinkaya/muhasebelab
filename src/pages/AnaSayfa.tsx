@@ -543,6 +543,27 @@ interface Sahne {
   altyazi?: string;
 }
 
+interface FloatingCodeProps {
+  progress: MotionValue<number>;
+  kod: string;
+  x: string;
+  y: string;
+  index: number;
+}
+
+/* Hero arkasında yüzen hesap kodu — scroll'a göre y-parallax */
+const FloatingCode = ({ progress, kod, x, y, index }: FloatingCodeProps) => {
+  const yOffset = useTransform(progress, [0, 1], [0, index % 2 === 0 ? -40 : 40]);
+  return (
+    <motion.span
+      className="float-code"
+      style={{ left: x, top: y, y: yOffset }}
+    >
+      {kod}
+    </motion.span>
+  );
+};
+
 const UnderlinedWord = ({ children }: { children: string }) => (
   <span className="under-mark">
     {children}
@@ -781,18 +802,9 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
 
         {/* Yüzen hesap kodları */}
         <motion.div className="absolute inset-0" style={{ opacity: codesOpacity }}>
-          {FLOATING_CODES.map((c, i) => {
-            const yOffset = useTransform(progress, [0, 1], [0, (i % 2 === 0 ? -40 : 40)]);
-            return (
-              <motion.span
-                key={i}
-                className="float-code"
-                style={{ left: c.x, top: c.y, y: yOffset }}
-              >
-                {c.kod}
-              </motion.span>
-            );
-          })}
+          {FLOATING_CODES.map((c, i) => (
+            <FloatingCode key={i} progress={progress} kod={c.kod} x={c.x} y={c.y} index={i} />
+          ))}
         </motion.div>
 
         {/* Sahne metni — sol tarafta sticky */}

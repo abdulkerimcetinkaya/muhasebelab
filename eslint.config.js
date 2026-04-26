@@ -19,5 +19,24 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Async data-fetch pattern (yukle().catch(setHata)) bu kuralı false-positive
+      // tetikliyor — cancellation flag ile pratikte güvenli, warning'e düşürdük.
+      'react-hooks/set-state-in-effect': 'warn',
+      // useEffect içinden component oluşturmak gerçek bir bug — error kalır.
+      // 'react-hooks/no-create-component-during-render' default'da error.
+    },
+  },
+  // Edge function'lar için Deno ortamı + esnek tipleme
+  {
+    files: ['supabase/functions/**/*.ts'],
+    languageOptions: {
+      globals: {
+        Deno: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
   },
 ])

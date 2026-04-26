@@ -205,7 +205,7 @@ const App = () => {
     if (user) profilKaydetSupabase(user.id, { kullanici_adi: ad }).catch(() => {});
   };
 
-  const onboardingTamamla = (ad: string, _baslangicUniteId: string | null) => {
+  const onboardingTamamla = (ad: string) => {
     setIlerleme((prev) => ({ ...prev, kullaniciAdi: ad, onboardingTamam: true }));
     if (user) profilKaydetSupabase(user.id, { kullanici_adi: ad }).catch(() => {});
   };
