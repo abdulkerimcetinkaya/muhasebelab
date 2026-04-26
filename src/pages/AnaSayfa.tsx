@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
-import { OzellikMockup } from '../components/OzellikMockup';
 import { useAuth } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { gununSorusu } from '../lib/gunun-sorusu';
@@ -96,86 +95,90 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
     [ilerleme.yanlislar, tumSorular],
   );
 
-  const selamlama = (() => {
-    const saat = new Date().getHours();
-    if (saat < 6) return 'İyi geceler';
-    if (saat < 12) return 'Günaydın';
-    if (saat < 18) return 'İyi günler';
-    return 'İyi akşamlar';
-  })();
-
   const henuzCozulmemis = stat.cozulenSayi === 0;
   const cozulenYuzde = stat.toplamSoru > 0 ? Math.round((stat.cozulenSayi / stat.toplamSoru) * 100) : 0;
 
   return (
-    <main className="max-w-[1240px] mx-auto px-5 sm:px-8 py-12 sm:py-16">
-      {/* Selamlama */}
-      <section className="mb-10 rise">
-        <div className="flex items-baseline gap-2.5 mb-4">
-          <span className="eyebrow">{selamlama}</span>
-          <span className="text-ink-quiet">·</span>
-          <span className="folio tnum">{new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' })}</span>
+    <main className="max-w-[1240px] mx-auto px-5 sm:px-8 py-10">
+      {/* Üst bar — selamlama + tarih */}
+      <section className="mb-8 rise flex items-baseline justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink leading-tight">
+            Merhaba, {ad}
+          </h1>
+          <p className="text-[14.5px] text-ink-soft mt-1">
+            {henuzCozulmemis
+              ? 'Hadi ilk soruyu çözelim. Otuz saniye yetiyor.'
+              : `${stat.cozulenSayi}/${stat.toplamSoru} soru çözdün — bugün ${bugunCozulen}/${gunlukHedef}.`}
+          </p>
         </div>
-        <h1 className="font-display text-[56px] sm:text-[80px] md:text-[104px] leading-[0.96] tracking-[-0.025em] text-ink">
-          {ad}, <span className="emph text-ink-soft">bugün ne çözüyoruz?</span>
-        </h1>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="chip">{new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: '2-digit', month: 'long' })}</span>
+          {ilerleme.streak > 0 && (
+            <span className="chip chip-mint">
+              <Icon name="Flame" size={11} />
+              {ilerleme.streak} günlük seri
+            </span>
+          )}
+        </div>
       </section>
 
-      <div className="hairline mb-10" />
-
       {/* Üst grid */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12 rise-2">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 rise-2">
         <div className="md:col-span-8">
           {aktifUnite && devamSoru ? (
             <button
               onClick={() => nav(`/problemler/${devamSoru.id}`)}
-              className="w-full text-left surface-lift group p-7 sm:p-9 h-full flex flex-col min-h-[300px]"
+              className="w-full text-left surface-lift group p-7 sm:p-8 h-full flex flex-col min-h-[280px]"
             >
+              <div className="flex items-center gap-2 mb-5">
+                <span className="chip chip-primary">
+                  {henuzCozulmemis ? 'Başlat' : 'Devam et'}
+                </span>
+                <span className="chip">{aktifUnite.unite.ad}</span>
+                <ZorlukChip zorluk={devamSoru.zorluk} />
+              </div>
               <div className="flex items-start justify-between gap-6 mb-6">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <span className="folio">№ {henuzCozulmemis ? '01' : aktifUnite.cozulen + 1}</span>
-                    <span className="text-ink-quiet">·</span>
-                    <span className="eyebrow">{henuzCozulmemis ? 'İlk Soru' : 'Devam Edilecek'}</span>
-                    <ZorlukChip zorluk={devamSoru.zorluk} />
-                  </div>
-                  <h2 className="font-display text-[32px] sm:text-[44px] leading-[1.0] tracking-[-0.025em] text-ink mb-4">
+                  <h2 className="font-display text-[26px] sm:text-[34px] font-bold leading-[1.05] tracking-tight text-ink mb-3">
                     {devamSoru.baslik}
                   </h2>
-                  <p className="text-[15.5px] text-ink-soft leading-relaxed line-clamp-2 max-w-2xl">
+                  <p className="text-[15px] text-ink-soft leading-relaxed line-clamp-3 max-w-2xl">
                     {devamSoru.senaryo}
                   </p>
                 </div>
                 <Thiings name={aktifUnite.unite.thiingsIcon} size={56} />
               </div>
-              <div className="hairline mb-5 mt-auto" />
+              <div className="hairline mb-4 mt-auto" />
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 text-[13px] text-ink-soft">
-                  <span>{aktifUnite.unite.ad}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono tnum text-ink font-semibold">
+                      {aktifUnite.cozulen}/{aktifUnite.toplam}
+                    </span>
+                    <span className="text-ink-mute">çözüldü</span>
+                  </div>
                   <span className="text-ink-quiet">·</span>
-                  <span className="font-mono tnum text-ink">
-                    {aktifUnite.cozulen}<span className="text-ink-quiet">/</span>{aktifUnite.toplam}
-                  </span>
-                  <div className="ml-1 w-24 h-px bg-line relative">
+                  <div className="w-32 h-1 bg-line rounded-full relative">
                     <div
-                      className="absolute inset-y-0 left-0 bg-ink"
+                      className="absolute inset-y-0 left-0 bg-ink rounded-full"
                       style={{ width: `${(aktifUnite.cozulen / aktifUnite.toplam) * 100}%` }}
                     />
                   </div>
                 </div>
-                <span className="text-[13px] text-ink-soft group-hover:text-ink transition flex items-center gap-1.5">
+                <span className="text-[13px] text-ink font-medium group-hover:text-accent-deep flex items-center gap-1.5 transition">
                   Çözmeye başla
-                  <Icon name="ArrowRight" size={13} className="group-hover:translate-x-0.5 transition" />
+                  <Icon name="ArrowRight" size={13} />
                 </span>
               </div>
             </button>
           ) : (
-            <div className="surface p-12 text-center h-full flex flex-col items-center justify-center min-h-[300px]">
+            <div className="surface p-12 text-center h-full flex flex-col items-center justify-center min-h-[280px]">
               <Thiings name="trophy" size={56} />
-              <h2 className="font-display text-[32px] tracking-tight mt-6 mb-3 text-ink">
+              <h2 className="font-display text-[24px] font-bold tracking-tight mt-5 mb-2 text-ink">
                 Tüm soruları çözdün.
               </h2>
-              <p className="font-display italic text-[16px] text-ink-soft mb-7 max-w-md">
+              <p className="text-[14.5px] text-ink-soft mb-6 max-w-md">
                 Yeni soruları beklerken yanlışlarını tekrar edebilirsin.
               </p>
               <button onClick={() => nav('/problemler')} className="btn btn-primary">
@@ -185,45 +188,47 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
           )}
         </div>
 
-        {/* Hedef sidebar */}
+        {/* Hedef kart */}
         <div className="md:col-span-4">
-          <div className="surface-lift p-7 h-full flex flex-col">
-            <div className="flex items-baseline justify-between mb-5">
-              <span className="eyebrow">Bugünkü Hedef</span>
-              {hedefTamam && <span className="chip chip-success">Tamamlandı</span>}
+          <div className="surface-lift p-6 h-full flex flex-col">
+            <div className="flex items-baseline justify-between mb-4">
+              <span className="eyebrow">Bugünkü hedef</span>
+              {hedefTamam && <span className="chip chip-success">Tamam</span>}
             </div>
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="huge-number text-[88px] text-ink">{bugunCozulen}</span>
-              <span className="font-display italic text-[28px] text-ink-quiet">/{gunlukHedef}</span>
+            <div className="flex items-baseline gap-1 mb-1">
+              <span className="font-display font-bold text-[64px] tnum tracking-tighter text-ink leading-none">
+                {bugunCozulen}
+              </span>
+              <span className="font-mono tnum text-[20px] text-ink-quiet font-medium">/{gunlukHedef}</span>
             </div>
-            <p className="text-[14px] text-ink-soft mb-6 leading-snug">
+            <p className="text-[13.5px] text-ink-soft mb-5">
               {hedefTamam
                 ? 'Hedefi geçtin. Bonus puanlar bekliyor.'
                 : `${gunlukHedef - bugunCozulen} soru kaldı.`}
             </p>
-            <div className="h-px bg-line relative mb-6">
+            <div className="h-1.5 bg-line rounded-full relative mb-5 overflow-hidden">
               <div
-                className="absolute inset-y-[-1px] left-0 bg-ink transition-all duration-700"
-                style={{ width: `${hedefYuzde}%`, height: 2 }}
+                className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                style={{
+                  width: `${hedefYuzde}%`,
+                  background: hedefTamam ? 'var(--success)' : 'var(--ink)',
+                }}
               />
             </div>
-            <div className="hairline mb-5" />
-            <dl className="space-y-3">
+            <div className="hairline mb-4" />
+            <dl className="space-y-2.5 text-[13px]">
               <div className="flex items-baseline justify-between">
-                <dt className="eyebrow">Seri</dt>
-                <dd className="flex items-baseline gap-1.5">
-                  <span className="font-mono tnum text-[15px] text-ink">{ilerleme.streak}</span>
-                  <span className="text-[12px] text-ink-mute">gün</span>
-                </dd>
+                <dt className="text-ink-mute">Seri</dt>
+                <dd className="font-mono tnum font-semibold text-ink">{ilerleme.streak} gün</dd>
               </div>
               <div className="flex items-baseline justify-between">
-                <dt className="eyebrow">Toplam Puan</dt>
-                <dd className="font-mono tnum text-[15px] text-ink">{ilerleme.puan}</dd>
+                <dt className="text-ink-mute">Toplam puan</dt>
+                <dd className="font-mono tnum font-semibold text-ink">{ilerleme.puan}</dd>
               </div>
               <div className="flex items-baseline justify-between">
-                <dt className="eyebrow">Çözülen</dt>
-                <dd className="font-mono tnum text-[15px] text-ink">
-                  {stat.cozulenSayi}<span className="text-ink-quiet">/</span>{stat.toplamSoru}
+                <dt className="text-ink-mute">Çözülen</dt>
+                <dd className="font-mono tnum font-semibold text-ink">
+                  {stat.cozulenSayi}/{stat.toplamSoru}
                 </dd>
               </div>
             </dl>
@@ -234,19 +239,21 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
       {/* Yan görevler */}
       {(gununSoru || yanlisSoru) && (
         <>
-          <div className="flex items-baseline justify-between mb-5 rise-3">
-            <h2 className="font-display text-[24px] tracking-tight text-ink">Yan görevler</h2>
+          <div className="flex items-baseline justify-between mb-4 mt-10 rise-3">
+            <h2 className="font-display text-[20px] font-bold tracking-tight text-ink">
+              Önerilen sorular
+            </h2>
             <button onClick={() => nav('/problemler')} className="btn-link">
               Tüm sorular →
             </button>
           </div>
-          <div className={`grid grid-cols-1 ${gununSoru && yanlisSoru ? 'md:grid-cols-2' : ''} gap-6 mb-12`}>
+          <div className={`grid grid-cols-1 ${gununSoru && yanlisSoru ? 'md:grid-cols-2' : ''} gap-4 mb-10`}>
             {gununSoru && (
               <button
                 onClick={() => nav(`/problemler/${gununSoru.id}`)}
-                className="surface-lift p-7 text-left group"
+                className="surface-lift p-6 text-left group"
               >
-                <div className="flex items-start justify-between gap-3 mb-5">
+                <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="chip chip-premium">
                       <Icon name="Calendar" size={10} />
@@ -254,20 +261,20 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
                     </span>
                     {gununCozulduMu && <span className="chip chip-success">Çözüldü</span>}
                   </div>
-                  <Thiings name={gununSoru.uniteIcon} size={40} />
+                  <Thiings name={gununSoru.uniteIcon} size={36} />
                 </div>
-                <h3 className="font-display text-[26px] leading-[1.05] tracking-tight text-ink mb-3 group-hover:text-ink-soft transition">
+                <h3 className="font-display text-[20px] font-bold leading-tight tracking-tight text-ink mb-2 group-hover:text-accent-deep transition">
                   {gununSoru.baslik}
                 </h3>
-                <p className="text-[14px] text-ink-soft line-clamp-2 mb-5 leading-relaxed">
+                <p className="text-[13.5px] text-ink-soft line-clamp-2 mb-4 leading-relaxed">
                   {gununSoru.senaryo}
                 </p>
-                <div className="hairline mb-4" />
+                <div className="hairline mb-3" />
                 <div className="flex items-center justify-between text-[12.5px]">
                   <span className="text-ink-mute">{gununSoru.uniteAd}</span>
-                  <span className="text-ink-soft group-hover:text-ink flex items-center gap-1 transition">
+                  <span className="text-ink font-medium flex items-center gap-1 group-hover:text-accent-deep transition">
                     {gununCozulduMu ? 'Tekrar' : 'Çöz'}
-                    <Icon name="ArrowRight" size={12} className="group-hover:translate-x-0.5 transition" />
+                    <Icon name="ArrowRight" size={12} />
                   </span>
                 </div>
               </button>
@@ -275,30 +282,30 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
             {yanlisSoru && (
               <button
                 onClick={() => nav(`/problemler/${yanlisSoru.id}`)}
-                className="surface-lift p-7 text-left group"
+                className="surface-lift p-6 text-left group"
               >
-                <div className="flex items-start justify-between gap-3 mb-5">
+                <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="chip chip-danger">
                       <Icon name="RotateCcw" size={10} />
                       Tekrarla
                     </span>
-                    <span className="chip">× {ilerleme.yanlislar[yanlisSoru.id]}</span>
+                    <span className="chip">× {ilerleme.yanlislar[yanlisSoru.id]} yanlış</span>
                   </div>
-                  <Thiings name={yanlisSoru.uniteIcon} size={40} />
+                  <Thiings name={yanlisSoru.uniteIcon} size={36} />
                 </div>
-                <h3 className="font-display text-[26px] leading-[1.05] tracking-tight text-ink mb-3 group-hover:text-ink-soft transition">
+                <h3 className="font-display text-[20px] font-bold leading-tight tracking-tight text-ink mb-2 group-hover:text-accent-deep transition">
                   {yanlisSoru.baslik}
                 </h3>
-                <p className="text-[14px] text-ink-soft line-clamp-2 mb-5 leading-relaxed">
+                <p className="text-[13.5px] text-ink-soft line-clamp-2 mb-4 leading-relaxed">
                   {yanlisSoru.senaryo}
                 </p>
-                <div className="hairline mb-4" />
+                <div className="hairline mb-3" />
                 <div className="flex items-center justify-between text-[12.5px]">
                   <span className="text-ink-mute">{yanlisSoru.uniteAd}</span>
-                  <span className="text-ink-soft group-hover:text-ink flex items-center gap-1 transition">
+                  <span className="text-ink font-medium flex items-center gap-1 group-hover:text-accent-deep transition">
                     Yeniden
-                    <Icon name="ArrowRight" size={12} className="group-hover:translate-x-0.5 transition" />
+                    <Icon name="ArrowRight" size={12} />
                   </span>
                 </div>
               </button>
@@ -307,26 +314,24 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
         </>
       )}
 
-      {/* İstatistik şeridi — bilanço hissi */}
-      <div className="surface mb-12 rise-4">
-        <div className="px-7 sm:px-9 py-5 border-b border-line flex items-baseline justify-between">
-          <h2 className="font-display text-[20px] text-ink tracking-tight">Hesap Özeti</h2>
-          <span className="folio">Tab. III</span>
+      {/* İstatistik tablosu */}
+      <div className="surface mb-10 rise-4">
+        <div className="px-6 sm:px-8 py-4 border-b border-line">
+          <h2 className="font-display text-[18px] font-bold text-ink tracking-tight">İstatistikler</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-line">
           {[
-            { label: 'İlerleme', sayi: cozulenYuzde, suffix: '%', alt: `${stat.cozulenSayi}/${stat.toplamSoru}` },
-            { label: 'Bugün', sayi: bugunCozulen, suffix: '', alt: 'çözülen' },
-            { label: 'Seri', sayi: ilerleme.streak, suffix: '', alt: 'gün' },
+            { label: 'Genel ilerleme', sayi: cozulenYuzde, suffix: '%', alt: `${stat.cozulenSayi}/${stat.toplamSoru} soru` },
+            { label: 'Bugün', sayi: bugunCozulen, suffix: '', alt: 'çözülen soru' },
+            { label: 'Seri', sayi: ilerleme.streak, suffix: '', alt: 'gün üst üste' },
             { label: 'Puan', sayi: ilerleme.puan, suffix: '', alt: 'toplam' },
           ].map((s, i) => (
-            <div key={i} className="px-7 py-7">
-              <div className="eyebrow mb-3">{s.label}</div>
-              <div className="huge-number text-[44px] sm:text-[52px] text-ink mb-1.5">
-                {s.sayi}
-                {s.suffix && <span className="text-[24px] text-ink-quiet font-display italic ml-0.5">{s.suffix}</span>}
+            <div key={i} className="px-6 py-6">
+              <div className="text-[11px] text-ink-mute uppercase tracking-wider font-mono mb-2">{s.label}</div>
+              <div className="font-display font-bold text-[36px] sm:text-[44px] text-ink tnum leading-none mb-1.5 tracking-tight">
+                {s.sayi}{s.suffix && <span className="text-[20px] text-ink-quiet font-medium ml-0.5">{s.suffix}</span>}
               </div>
-              <div className="text-[12px] text-ink-mute font-mono">{s.alt}</div>
+              <div className="text-[12px] text-ink-mute">{s.alt}</div>
             </div>
           ))}
         </div>
@@ -334,10 +339,10 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
 
       {/* Sıkıntılı sorular */}
       {yanlisListe.length > 1 && (
-        <div className="surface mb-12 rise-5">
-          <div className="px-7 sm:px-9 py-5 border-b border-line flex items-baseline justify-between">
-            <h2 className="font-display text-[20px] text-ink tracking-tight">
-              Sıkıntı yaşadığın sorular
+        <div className="surface mb-10 rise-5">
+          <div className="px-6 sm:px-8 py-4 border-b border-line flex items-baseline justify-between">
+            <h2 className="font-display text-[18px] font-bold text-ink tracking-tight">
+              Tekrar etmen gereken sorular
             </h2>
             <button onClick={() => nav('/problemler')} className="btn-link">
               Hepsi →
@@ -348,15 +353,17 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
               <button
                 key={soru.id}
                 onClick={() => nav(`/problemler/${soru.id}`)}
-                className="w-full flex items-center gap-5 px-7 sm:px-9 py-4 hover:bg-surface-2 transition text-left group"
+                className="w-full flex items-center gap-4 px-6 sm:px-8 py-4 hover:bg-surface-2 transition text-left group"
               >
-                <span className="folio tnum w-6 text-right">{String(i + 1).padStart(2, '0')}</span>
-                <Thiings name={soru.uniteIcon} size={36} />
+                <span className="font-mono tnum text-[12px] text-ink-quiet w-5 text-right">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <Thiings name={soru.uniteIcon} size={32} />
                 <div className="flex-1 min-w-0">
-                  <div className="font-display text-[18px] tracking-tight truncate text-ink group-hover:text-ink-soft transition">
+                  <div className="font-display font-semibold text-[15.5px] tracking-tight truncate text-ink group-hover:text-accent-deep transition">
                     {soru.baslik}
                   </div>
-                  <div className="text-[12px] text-ink-mute font-mono uppercase tracking-wider mt-0.5">
+                  <div className="text-[12px] text-ink-mute mt-0.5">
                     {soru.uniteAd}
                   </div>
                 </div>
@@ -370,28 +377,30 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
 
       {/* Hızlı navigasyon */}
       <div className="surface rise-5">
-        <div className="px-7 sm:px-9 py-5 border-b border-line">
-          <h2 className="font-display text-[20px] text-ink tracking-tight">Sayfa yönlendirmeleri</h2>
+        <div className="px-6 sm:px-8 py-4 border-b border-line">
+          <h2 className="font-display text-[18px] font-bold text-ink tracking-tight">Sayfalar</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-line">
           {[
-            { yol: '/uniteler', baslik: 'Üniteler', alt: 'Konu konu pratik', no: 'I' },
-            { yol: '/problemler', baslik: 'Tüm Sorular', alt: 'Filtrele, ara', no: 'II' },
-            { yol: '/profil', baslik: 'Profil', alt: 'Rozet · İstatistik', no: 'III' },
+            { yol: '/uniteler', baslik: 'Üniteler', alt: 'Konu konu pratik', icon: 'LayoutGrid' },
+            { yol: '/problemler', baslik: 'Tüm Sorular', alt: 'Filtrele, ara', icon: 'ListChecks' },
+            { yol: '/profil', baslik: 'Profil', alt: 'Rozet · İstatistik', icon: 'User' },
           ].map((l) => (
             <button
               key={l.yol}
               onClick={() => nav(l.yol)}
-              className="text-left p-7 hover:bg-surface-2 transition group flex items-baseline justify-between gap-4"
+              className="text-left p-6 hover:bg-surface-2 transition group flex items-center justify-between gap-4"
             >
-              <div>
-                <div className="flex items-baseline gap-3 mb-1">
-                  <span className="roman text-[15px]">{l.no}.</span>
-                  <span className="font-display text-[20px] tracking-tight text-ink group-hover:text-ink-soft transition">
-                    {l.baslik}
-                  </span>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-soft group-hover:text-ink group-hover:border-line-strong transition">
+                  <Icon name={l.icon} size={16} />
                 </div>
-                <div className="text-[12.5px] text-ink-mute font-mono ml-7">{l.alt}</div>
+                <div>
+                  <div className="font-display text-[16px] font-semibold tracking-tight text-ink group-hover:text-accent-deep transition">
+                    {l.baslik}
+                  </div>
+                  <div className="text-[12.5px] text-ink-mute mt-0.5">{l.alt}</div>
+                </div>
               </div>
               <Icon name="ArrowRight" size={14} className="text-ink-quiet group-hover:text-ink group-hover:translate-x-0.5 transition" />
             </button>
@@ -403,46 +412,28 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
 };
 
 /* ----------------------------------------------------------------------
-   Anonim ana sayfa — elit editorial landing
+   Anonim ana sayfa — info-yoğun, gerçek belge
 ---------------------------------------------------------------------- */
 
-const OZELLIKLER = [
-  {
-    icon: 'calculator',
-    no: 'I',
-    eyebrow: 'Madde I · Senaryolar',
-    baslik: 'Gerçek hayat işlemleri.',
-    aciklama:
-      'Ders kitabındaki yapmacık örnekler değil. Peşin mal satışı, KDV mahsubu, amortisman, maaş tahakkuku — işletmelerde gerçekten karşına çıkacak işlemler.',
-    mockup: 'senaryo' as const,
-  },
-  {
-    icon: 'rocket',
-    no: 'II',
-    eyebrow: 'Madde II · Doğrulama',
-    baslik: 'Yanlışı görmeden geçemezsin.',
-    aciklama:
-      'Yanlış satırlar kırmızı, doğrular yeşil. Her soruda ipucu, resmi çözüm, detaylı açıklama. Yapay zekâ asistanı sıkıştığında yanında.',
-    mockup: 'kontrol' as const,
-  },
-  {
-    icon: 'chart',
-    no: 'III',
-    eyebrow: 'Madde III · Takip',
-    baslik: 'İlerlemen ölçülebilir.',
-    aciklama:
-      'Hangi üniteyi bitirdin, hangi konularda zayıfsın, kaç gündür üst üste çalışıyorsun — hepsi panelde. Rozetler ve seri puanları motivasyonu canlı tutar.',
-    mockup: 'istatistik' as const,
-  },
-  {
-    icon: 'trophy',
-    no: 'IV',
-    eyebrow: 'Madde IV · Ritim',
-    baslik: 'Üç seviye, doğru ritim.',
-    aciklama:
-      'Temel kayıtlardan başla, karmaşık işlemlere yürü. Kolay, orta ve zor soru dağılımı sayesinde hem temel pekişir hem de sınav tipi sorulara hazırlanırsın.',
-    mockup: 'zorluk' as const,
-  },
+const UNITE_ACIKLAMA: Record<string, string> = {
+  kasa: 'Nakit tahsilat ve ödemeler — 100 hesabı',
+  banka: 'Vadesiz, vadeli, kredi işlemleri — 102, 103',
+  mal: 'Ticari mal alış, satış, iade — 153, 600, 610',
+  senet: 'Alacak/borç senetleri — 121, 321',
+  kdv: 'İndirilecek, hesaplanan, mahsup — 191, 391',
+  amortisman: 'Maddi duran varlık eskime — 257',
+  personel: 'Ücret tahakkuk, ödeme, bordro — 720, 760',
+  'donem-sonu': 'Gelir/gider kapanışı — 690',
+  'supheli-alacaklar': 'Şüpheli, değersiz alacak — 128, 129',
+  reeskont: 'Senet faiz hesaplaması — 122',
+  kambiyo: 'Döviz, kur farkı — 102 dovizli',
+};
+
+// Bir sample yevmiye kaydı — gerçek görünmesi için
+const ORNEK_KAYIT = [
+  { kod: '100', ad: 'KASA', borc: '12.000,00', alacak: '' },
+  { kod: '600', ad: 'YURT İÇİ SATIŞLAR', borc: '', alacak: '10.000,00' },
+  { kod: '391', ad: 'HESAPLANAN KDV', borc: '', alacak: '2.000,00' },
 ];
 
 const AnonimAnaSayfa = () => {
@@ -459,86 +450,240 @@ const AnonimAnaSayfa = () => {
 
   const aylikPlan = planlar.find((p) => p.kod === 'aylik');
   const donemlikPlan = planlar.find((p) => p.kod === 'donemlik');
+  const aylikTutar = aylikPlan ? aylikPlan.tutar.toFixed(0) : '99';
+  const donemlikTutar = donemlikPlan ? donemlikPlan.tutar.toFixed(0) : '249';
+  const donemlikAy = donemlikPlan?.ay_sayisi ?? 4;
 
   return (
     <main>
       {/* ===========================================================
-          HERO — typographic, centered, restraint
+          HERO — sol metin + sağ gerçek yevmiye sayfası mockup
       =========================================================== */}
-      <section className="relative max-w-[1240px] mx-auto px-5 sm:px-8 pt-16 sm:pt-24 pb-20 sm:pb-32">
-        {/* Üst meta */}
-        <div className="flex items-baseline justify-between gap-4 mb-12 rise">
-          <span className="folio">Editio I — MMXXVI</span>
-          <span className="folio">No. 01</span>
-        </div>
-        <div className="hairline mb-16 rise" />
-
-        {/* Ana başlık */}
-        <div className="text-center max-w-[1100px] mx-auto rise-2">
-          <h1 className="font-display tracking-[-0.025em] text-ink leading-[0.96]"
-              style={{ fontSize: 'clamp(56px, 9vw, 152px)' }}>
-            Yevmiye defterini
-            <br />
-            <span className="emph text-ink-soft">tutmayı öğren</span>
-            <span className="text-ink">.</span>
-          </h1>
-        </div>
-
-        {/* Alt metin */}
-        <p className="text-center text-[17px] sm:text-[19px] text-ink-soft max-w-[640px] mx-auto mt-12 leading-[1.55] rise-3">
-          MuhasebeLab, Tek Düzen Hesap Planı'nı senaryo bazlı problemlerle pratiğe döker.
-          Senaryoyu okur, defterine işler, anında doğrularsın.{' '}
-          <span className="emph text-ink">Kayıtsız başla</span> — kaydolmak istersen otuz saniye sürer.
-        </p>
-
-        {/* CTA */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-12 rise-4">
-          <button onClick={() => nav('/problemler')} className="btn btn-primary btn-lg">
-            Çözmeye Başla
-          </button>
-          <button onClick={() => nav('/giris')} className="btn-link">
-            Hesap Oluştur →
-          </button>
-        </div>
-
-        {/* Stats — minimal */}
-        <div className="mt-24 sm:mt-32 max-w-3xl mx-auto rise-5">
-          <div className="hairline mb-8" />
-          <div className="grid grid-cols-3 gap-8">
-            {[
-              { sayi: tumSorular.length.toString(), etiket: 'Soru', alt: 'gerçek senaryolarla' },
-              { sayi: uniteler.length.toString(), etiket: 'Ünite', alt: 'kasadan kambiyoya' },
-              { sayi: '₺0', etiket: 'Başlangıç', alt: 'üyelik isteğe bağlı' },
-            ].map((s, i) => (
-              <div key={i} className="text-center sm:text-left">
-                <div className="huge-number text-[48px] sm:text-[64px] text-ink mb-1">{s.sayi}</div>
-                <div className="eyebrow">{s.etiket}</div>
-                <div className="font-display italic text-[13px] text-ink-mute mt-1">{s.alt}</div>
+      <section className="px-5 sm:px-8 pt-12 sm:pt-16 pb-16 sm:pb-20">
+        <div className="max-w-[1240px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            {/* Sol: metin */}
+            <div className="lg:col-span-6 rise">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="chip chip-mint">
+                  <span className="live-dot" />
+                  {tumSorular.length} soru aktif
+                </span>
+                <span className="chip">Ücretsiz başla</span>
               </div>
-            ))}
+              <h1 className="font-display font-bold tracking-[-0.025em] leading-[1.02] text-ink"
+                  style={{ fontSize: 'clamp(40px, 5.6vw, 72px)' }}>
+                Yevmiye kaydını <br />
+                tarayıcıdan, gerçek senaryolarla <br />
+                <span className="text-ink-soft">öğren ve pekiştir.</span>
+              </h1>
+              <p className="text-[16px] sm:text-[17px] text-ink-soft leading-relaxed max-w-xl mt-6">
+                MuhasebeLab, Tek Düzen Hesap Planı'nı 212 senaryo bazlı problemle pratiğe döker.
+                Senaryoyu okur, defterine işler, anında kontrol edersin —
+                yanlış satırlar kırmızı, dengeli kayıt yeşil.
+              </p>
+              <div className="flex flex-wrap items-center gap-4 mt-8 rise-2">
+                <button onClick={() => nav('/problemler')} className="btn btn-primary btn-lg">
+                  Hemen başla — kayıt yok
+                </button>
+                <button onClick={() => nav('/giris')} className="btn-link">
+                  Hesap oluştur →
+                </button>
+              </div>
+              <div className="mt-8 grid grid-cols-3 gap-6 max-w-md">
+                <div>
+                  <div className="font-display font-bold text-[28px] tnum text-ink leading-none">{tumSorular.length}</div>
+                  <div className="text-[11.5px] text-ink-mute uppercase tracking-wider mt-1.5 font-mono">Soru</div>
+                </div>
+                <div>
+                  <div className="font-display font-bold text-[28px] tnum text-ink leading-none">{uniteler.length}</div>
+                  <div className="text-[11.5px] text-ink-mute uppercase tracking-wider mt-1.5 font-mono">Ünite</div>
+                </div>
+                <div>
+                  <div className="font-display font-bold text-[28px] tnum text-ink leading-none">3</div>
+                  <div className="text-[11.5px] text-ink-mute uppercase tracking-wider mt-1.5 font-mono">Zorluk</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sağ: gerçek yevmiye kâğıdı */}
+            <div className="lg:col-span-6 rise-3">
+              <div className="paper-sheet p-7 sm:p-8 max-w-[540px] mx-auto" style={{ transform: 'rotate(-0.6deg)' }}>
+                <div className="relative">
+                  {/* Resmi başlık */}
+                  <div className="flex items-baseline justify-between mb-1">
+                    <span className="doc-header">Yevmiye Defteri</span>
+                    <span className="doc-header">Sayfa 03 · No. 47</span>
+                  </div>
+                  <div className="hairline mb-5" />
+
+                  {/* Tarih + tutar şeridi */}
+                  <div className="flex items-baseline justify-between text-[12.5px] mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-ink-mute font-mono">26.04.2026</span>
+                      <span className="chip chip-mint" style={{ borderRadius: 4 }}>Peşin Mal Satışı</span>
+                    </div>
+                    <span className="text-ink-mute font-mono tnum">12.000,00 ₺</span>
+                  </div>
+
+                  {/* Tablo başlığı */}
+                  <div className="grid grid-cols-12 gap-2 px-3 py-2 border-y border-line text-[10.5px] uppercase tracking-wider font-mono text-ink-mute">
+                    <div className="col-span-2">Kod</div>
+                    <div className="col-span-5">Hesap Adı</div>
+                    <div className="col-span-2 text-right">Borç</div>
+                    <div className="col-span-2 text-right">Alacak</div>
+                    <div className="col-span-1"></div>
+                  </div>
+
+                  {/* Satırlar */}
+                  {ORNEK_KAYIT.map((r, i) => (
+                    <div key={i} className="grid grid-cols-12 gap-2 px-3 py-3 border-b border-line-soft font-mono tnum text-[13px] text-ink">
+                      <div className="col-span-2 font-semibold">{r.kod}</div>
+                      <div className="col-span-5 truncate">{r.ad}</div>
+                      <div className="col-span-2 text-right">{r.borc}</div>
+                      <div className="col-span-2 text-right">{r.alacak}</div>
+                      <div className="col-span-1 flex justify-end items-center">
+                        <Icon name="Check" size={12} className="text-success" />
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Toplam */}
+                  <div className="grid grid-cols-12 gap-2 px-3 py-3 border-t-2 border-line-strong font-mono tnum font-bold text-[13.5px] text-ink">
+                    <div className="col-span-7 uppercase tracking-wider text-[10.5px] text-ink-mute font-medium pt-0.5">Toplam</div>
+                    <div className="col-span-2 text-right">12.000,00</div>
+                    <div className="col-span-2 text-right">12.000,00</div>
+                    <div className="col-span-1 flex justify-end items-center">
+                      <Icon name="CheckCircle2" size={14} className="text-success" />
+                    </div>
+                  </div>
+
+                  {/* Açıklama */}
+                  <div className="mt-4 px-3 py-2.5 text-[12px] text-ink-soft italic font-serif border-l-2 border-success bg-success/5" style={{ background: 'rgba(93, 138, 111, 0.06)' }}>
+                    İşletme, ticari mal satışından %20 KDV dahil 12.000 ₺ peşin tahsilat yapmıştır.
+                    Borç = Alacak. Kayıt dengeli.
+                  </div>
+
+                  {/* Alt: imza/tarih */}
+                  <div className="mt-5 pt-3 border-t border-line flex items-baseline justify-between text-[10.5px] text-ink-mute font-mono uppercase tracking-wider">
+                    <span>Hazırlayan: Sen</span>
+                    <span>Doğrulandı · +10p</span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[12px] text-ink-mute font-mono uppercase tracking-wider text-center mt-6">
+                ↑ Her soru bu defter sayfasıdır. 212 senaryo, anında kontrol.
+              </p>
+            </div>
           </div>
-          <div className="hairline mt-8" />
         </div>
       </section>
 
       {/* ===========================================================
-          PULL QUOTE
+          NASIL ÇALIŞIR — 3 adım
       =========================================================== */}
-      <section className="px-5 sm:px-8 py-20 sm:py-32 bg-surface-2 border-y border-line">
-        <div className="max-w-[920px] mx-auto text-center">
-          <span className="folio mb-6 inline-block">Açış cümlesi</span>
-          <blockquote className="font-display text-ink leading-[1.12] tracking-[-0.015em]"
-              style={{ fontSize: 'clamp(28px, 4.5vw, 56px)' }}>
-            "Muhasebe ezberlenecek bir konu değil — bir{' '}
-            <span className="emph">meslek</span>.{' '}
-            <span className="emph">Yapılarak</span> öğrenilir."
-          </blockquote>
-          <div className="fleuron mt-10">
-            <span>§</span>
+      <section className="px-5 sm:px-8 py-16 border-y border-line bg-surface-2/40">
+        <div className="max-w-[1240px] mx-auto">
+          <div className="flex items-baseline justify-between mb-10 flex-wrap gap-3">
+            <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink">
+              Nasıl çalışır
+            </h2>
+            <span className="text-[14px] text-ink-soft max-w-md">
+              Üç adım. Otuz saniye. Kayıt zorunlu değil.
+            </span>
           </div>
-          <p className="text-[14px] text-ink-mute font-mono uppercase tracking-wider mt-6">
-            Türkiye'deki muhasebe akademisinin ortak hissi
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                no: '01',
+                baslik: 'Senaryoyu oku',
+                aciklama: 'Gerçek bir işletme işlemi — peşin satış, KDV mahsubu, amortisman, maaş tahakkuku.',
+                icon: 'BookOpen',
+              },
+              {
+                no: '02',
+                baslik: 'Yevmiye kaydını gir',
+                aciklama: 'Hesap kodunu yaz, borç ve alacak tutarlarını gir. Otomatik tamamlama yardımcı olur.',
+                icon: 'Pencil',
+              },
+              {
+                no: '03',
+                baslik: 'Anında kontrol',
+                aciklama: 'Yanlış satırlar kırmızı, doğrular yeşil. İpucu, resmi çözüm ve detaylı açıklama hazır.',
+                icon: 'CheckCircle2',
+              },
+            ].map((adim, i) => (
+              <div key={i} className="surface p-6">
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="font-mono text-[12px] text-ink-mute tnum tracking-wider">{adim.no}</span>
+                  <Icon name={adim.icon} size={16} className="text-ink-mute" />
+                </div>
+                <h3 className="font-display text-[20px] font-bold tracking-tight text-ink mb-2">
+                  {adim.baslik}
+                </h3>
+                <p className="text-[14px] text-ink-soft leading-relaxed">
+                  {adim.aciklama}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===========================================================
+          ÜNİTELER — 11 ünite tam liste
+      =========================================================== */}
+      <section className="px-5 sm:px-8 py-16 sm:py-20">
+        <div className="max-w-[1240px] mx-auto">
+          <div className="flex items-baseline justify-between mb-10 flex-wrap gap-3">
+            <div>
+              <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink">
+                11 ünite, 212 soru
+              </h2>
+              <p className="text-[15px] text-ink-soft mt-2 max-w-xl">
+                Her ünitede kolay → orta → zor sıralı sorular. Hesap kodları parantez içinde.
+              </p>
+            </div>
+            <button onClick={() => nav('/uniteler')} className="btn btn-soft btn-sm">
+              Tüm üniteler →
+            </button>
+          </div>
+
+          <div className="surface overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {uniteler.map((u, i) => (
+                <button
+                  key={u.id}
+                  onClick={() => nav(`/uniteler/${u.id}`)}
+                  className={`
+                    text-left p-5 transition hover:bg-surface-2 group
+                    border-b border-line
+                    ${i % 3 !== 2 ? 'lg:border-r lg:border-line' : ''}
+                    ${i % 2 !== 1 ? 'sm:max-lg:border-r sm:max-lg:border-line' : ''}
+                    ${i >= uniteler.length - (uniteler.length % 3 || 3) ? 'lg:border-b-0' : ''}
+                  `}
+                >
+                  <div className="flex items-start gap-4">
+                    <Thiings name={u.thiingsIcon} size={36} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2 mb-1">
+                        <h3 className="font-display text-[16px] font-bold tracking-tight text-ink group-hover:text-accent-deep transition">
+                          {u.ad}
+                        </h3>
+                        <span className="font-mono tnum text-[12px] text-ink-mute">
+                          {u.sorular.length}
+                        </span>
+                      </div>
+                      <p className="text-[12.5px] text-ink-soft leading-snug">
+                        {UNITE_ACIKLAMA[u.id] ?? u.aciklama ?? '—'}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -546,55 +691,33 @@ const AnonimAnaSayfa = () => {
           BUGÜNÜN SORUSU
       =========================================================== */}
       {gununSoru && (
-        <section className="px-5 sm:px-8 pt-20 sm:pt-28">
+        <section className="px-5 sm:px-8 pb-16">
           <div className="max-w-[1240px] mx-auto">
-            <div className="flex items-baseline justify-between mb-6">
-              <span className="eyebrow">Bugünün Sorusu</span>
-              <span className="folio">II.</span>
-            </div>
-            <div className="hairline mb-10" />
-
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+            <div className="surface-lift p-7 sm:p-8 grid grid-cols-1 md:grid-cols-12 gap-7 items-center">
               <div className="md:col-span-8">
-                <div className="flex items-center gap-2.5 mb-5 flex-wrap">
-                  <span className="chip">{gununSoru.uniteAd}</span>
+                <div className="flex items-center gap-2 mb-3 flex-wrap">
+                  <span className="chip chip-premium">
+                    <Icon name="Calendar" size={11} />
+                    Bugünün Sorusu
+                  </span>
                   <ZorlukChip zorluk={gununSoru.zorluk} />
+                  <span className="chip">{gununSoru.uniteAd}</span>
                 </div>
-                <h2 className="font-display tracking-[-0.02em] leading-[1.0] text-ink mb-5"
-                    style={{ fontSize: 'clamp(36px, 5.5vw, 72px)' }}>
+                <h2 className="font-display text-[28px] sm:text-[40px] font-bold leading-[1.02] tracking-tight text-ink mb-3">
                   {gununSoru.baslik}
                 </h2>
-                <p className="text-[16px] sm:text-[17px] text-ink-soft leading-relaxed max-w-2xl">
+                <p className="text-[15.5px] text-ink-soft leading-relaxed max-w-2xl">
                   {gununSoru.senaryo}
                 </p>
-                <div className="mt-8 flex items-center gap-4">
-                  <button
-                    onClick={() => nav(`/problemler/${gununSoru.id}`)}
-                    className="btn btn-primary"
-                  >
-                    Bu Soruyu Çöz
-                  </button>
-                  <button onClick={() => nav('/problemler')} className="btn-link">
-                    Diğerleri →
-                  </button>
-                </div>
               </div>
-              <div className="md:col-span-4 md:pl-10 md:border-l md:border-line">
-                <Thiings name={gununSoru.uniteIcon} size={120} />
-                <div className="mt-6 space-y-2 text-[13px] text-ink-soft">
-                  <div className="flex items-baseline justify-between">
-                    <span className="eyebrow">Tarih</span>
-                    <span className="font-mono tnum">{new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' })}</span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="eyebrow">Puan</span>
-                    <span className="font-mono tnum">{ZORLUK_PUAN[gununSoru.zorluk]}p</span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="eyebrow">Süre</span>
-                    <span className="font-display italic">≈ 2 dk</span>
-                  </div>
-                </div>
+              <div className="md:col-span-4 flex flex-col gap-3 md:items-end">
+                <Thiings name={gununSoru.uniteIcon} size={88} />
+                <button
+                  onClick={() => nav(`/problemler/${gununSoru.id}`)}
+                  className="btn btn-primary btn-lg w-full md:w-auto"
+                >
+                  Bu Soruyu Çöz
+                </button>
               </div>
             </div>
           </div>
@@ -602,138 +725,132 @@ const AnonimAnaSayfa = () => {
       )}
 
       {/* ===========================================================
-          ÖZELLİKLER — alternating, refined
+          ÜCRETSİZ vs PREMIUM KARŞILAŞTIRMA
       =========================================================== */}
-      <section className="px-5 sm:px-8 pt-32 pb-20 sm:pb-28">
+      <section className="px-5 sm:px-8 py-16 sm:py-20 border-t border-line">
         <div className="max-w-[1240px] mx-auto">
-          {/* Bölüm başlığı */}
-          <div className="text-center mb-20 max-w-3xl mx-auto">
-            <span className="eyebrow inline-block mb-4">Bölüm III · Nasıl çalışır</span>
-            <h2 className="font-display tracking-[-0.025em] leading-[1.0] text-ink"
-                style={{ fontSize: 'clamp(40px, 6vw, 88px)' }}>
-              Pratik yapmadan{' '}
-              <span className="emph">muhasebeci</span> olunmaz.
+          <div className="text-center mb-10 max-w-2xl mx-auto">
+            <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink">
+              Ücretsiz vs Premium
             </h2>
-            <p className="text-[16px] sm:text-[18px] text-ink-soft mt-7 leading-relaxed max-w-xl mx-auto">
-              Ders kitabını kapatıp yevmiye defterine geçtiğin an,
-              asıl öğrenme başlar.
+            <p className="text-[15px] text-ink-soft mt-3">
+              Tüm sorular ücretsiz çözülebilir. Premium, sıkıştığında destek katmanını açar.
             </p>
           </div>
 
-          <div className="space-y-24 sm:space-y-32">
-            {OZELLIKLER.map((o, i) => {
-              const sagdaIllustrasyon = i % 2 === 0;
-              return (
-                <div key={i} className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-                  {/* İllüstrasyon (mockup) */}
-                  <div className={`lg:col-span-7 ${sagdaIllustrasyon ? 'lg:order-2' : 'lg:order-1'}`}>
-                    <div className="surface overflow-hidden">
-                      <div className="px-5 py-2.5 border-b border-line flex items-center justify-between bg-surface-2">
-                        <span className="font-mono text-[11px] text-ink-mute">muhasebelab.app</span>
-                        <span className="font-mono text-[10.5px] text-ink-quiet tracking-wider">
-                          Fig. {String(i + 1).padStart(2, '0')}
-                        </span>
-                      </div>
-                      <OzellikMockup tip={o.mockup} />
-                    </div>
-                  </div>
+          <div className="surface overflow-hidden max-w-3xl mx-auto">
+            <div className="grid grid-cols-[1.6fr_1fr_1fr] px-5 py-3 border-b border-line bg-surface-2 text-[11px] uppercase tracking-wider font-mono text-ink-mute">
+              <div>Özellik</div>
+              <div className="text-center">Ücretsiz</div>
+              <div className="text-center text-premium-deep">Premium</div>
+            </div>
 
-                  {/* Metin */}
-                  <div className={`lg:col-span-5 ${sagdaIllustrasyon ? 'lg:order-1' : 'lg:order-2'}`}>
-                    <div className="flex items-baseline gap-4 mb-6">
-                      <span className="font-display italic text-[64px] sm:text-[80px] leading-none text-ink-soft">
-                        {o.no}
-                      </span>
-                      <Thiings name={o.icon} size={36} />
-                    </div>
-                    <span className="eyebrow inline-block mb-4">{o.eyebrow}</span>
-                    <h3 className="font-display text-[32px] sm:text-[44px] leading-[1.04] tracking-[-0.02em] text-ink mb-5">
-                      {o.baslik}
-                    </h3>
-                    <p className="text-[15.5px] sm:text-[16.5px] text-ink-soft leading-relaxed max-w-xl">
-                      {o.aciklama}
-                    </p>
-                  </div>
+            {[
+              { ozellik: '212 sorunun tamamı', free: true, prem: true },
+              { ozellik: '11 ünite, 3 zorluk', free: true, prem: true },
+              { ozellik: 'Anlık doğru/yanlış kontrolü', free: true, prem: true },
+              { ozellik: 'İlerleme + rozet sistemi', free: true, prem: true },
+              { ozellik: 'AI yanlış cevap analizi', free: false, prem: true },
+              { ozellik: 'Soru içi AI asistan', free: false, prem: true },
+              { ozellik: 'Hesap kodu otomatik tamamlama', free: false, prem: true },
+              { ozellik: 'Belge görselleri (fatura, dekont)', free: false, prem: true },
+              { ozellik: 'Sınırsız çalışma', free: true, prem: true },
+            ].map((satir, i) => (
+              <div key={i} className="compare-row text-[14px]">
+                <div className="text-ink">{satir.ozellik}</div>
+                <div className="text-center">
+                  {satir.free ? (
+                    <Icon name="Check" size={15} className="text-success inline" />
+                  ) : (
+                    <span className="text-ink-quiet font-mono">—</span>
+                  )}
                 </div>
-              );
-            })}
+                <div className="text-center">
+                  {satir.prem ? (
+                    <Icon name="Check" size={15} className="text-premium-deep inline" />
+                  ) : (
+                    <span className="text-ink-quiet font-mono">—</span>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Fiyat satırı */}
+            <div className="grid grid-cols-[1.6fr_1fr_1fr] px-5 py-5 border-t-2 border-line-strong bg-surface-2">
+              <div>
+                <div className="text-[11px] uppercase tracking-wider font-mono text-ink-mute mb-1">Fiyat</div>
+                <div className="text-[12.5px] text-ink-soft">Aylık abonelik / dönem aboneliği</div>
+              </div>
+              <div className="text-center">
+                <div className="font-display font-bold text-[24px] text-ink tnum leading-none">₺0</div>
+                <div className="text-[11px] text-ink-mute mt-1 font-mono uppercase tracking-wider">her zaman</div>
+              </div>
+              <div className="text-center">
+                <div className="font-display font-bold text-[24px] text-ink tnum leading-none">
+                  ₺{aylikTutar}
+                  <span className="text-[14px] text-ink-quiet font-mono">/ay</span>
+                </div>
+                <div className="text-[11px] text-ink-mute mt-1 font-mono uppercase tracking-wider">
+                  veya ₺{donemlikTutar} / {donemlikAy} ay
+                </div>
+              </div>
+            </div>
           </div>
+
+          <div className="text-center mt-8 flex flex-wrap gap-3 justify-center">
+            <button onClick={() => nav('/problemler')} className="btn btn-primary">
+              Ücretsiz Başla
+            </button>
+            <button onClick={() => nav('/premium')} className="btn btn-soft">
+              Premium Detaylar →
+            </button>
+          </div>
+          <p className="text-[12px] text-ink-mute font-mono uppercase tracking-wider text-center mt-4">
+            İlk 100 kullanıcıya bir yıl Premium bedava
+          </p>
         </div>
       </section>
 
       {/* ===========================================================
-          PREMIUM — hairline kart
+          SSS
       =========================================================== */}
-      <section className="px-5 sm:px-8 py-20 sm:py-28">
-        <div className="max-w-[1240px] mx-auto">
-          <div className="surface">
-            <div className="grid grid-cols-1 md:grid-cols-12">
-              <div className="md:col-span-7 p-8 sm:p-12 md:p-14 md:border-r md:border-line">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="chip chip-premium">Premium</span>
-                  <span className="folio">İlk 100 kullanıcıya bir yıl bedava</span>
-                </div>
-                <h2 className="font-display tracking-[-0.02em] leading-[1.0] text-ink mb-6"
-                    style={{ fontSize: 'clamp(36px, 5vw, 72px)' }}>
-                  Yapay zekâ <span className="emph text-ink-soft">yanında çalışır.</span>
-                </h2>
-                <p className="text-[16px] sm:text-[17px] leading-relaxed max-w-xl text-ink-soft mb-8">
-                  Yanlış cevap analizi, soru içi yapay zekâ asistanı, hesap kodu otomatik
-                  tamamlama, sınırsız çalışma. Premium ile gelir.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <button onClick={() => nav('/premium')} className="btn btn-primary btn-lg">
-                    Premium'u Keşfet
-                  </button>
-                  <button onClick={() => nav('/problemler')} className="btn-link">
-                    Önce Ücretsiz Dene →
-                  </button>
-                </div>
-              </div>
+      <section className="px-5 sm:px-8 py-16 sm:py-20 border-t border-line">
+        <div className="max-w-[860px] mx-auto">
+          <h2 className="font-display text-[28px] sm:text-[34px] font-bold tracking-tight text-ink mb-10">
+            Sıkça sorulanlar
+          </h2>
 
-              <div className="md:col-span-5 p-8 sm:p-12 md:p-14 bg-surface-2">
-                <div className="eyebrow mb-6">Tarife</div>
-                <div className="hairline mb-7" />
-
-                <div className="space-y-7">
-                  <div>
-                    <div className="flex items-baseline justify-between mb-1">
-                      <span className="font-display text-[18px] text-ink">Aylık</span>
-                      <span className="font-mono tnum text-[24px] text-ink">
-                        {aylikPlan ? aylikPlan.tutar.toFixed(0) : 99}
-                        <span className="text-[14px] text-ink-mute ml-0.5">₺</span>
-                      </span>
-                    </div>
-                    <div className="font-display italic text-[13px] text-ink-mute">
-                      tek ay, dilediğin zaman iptal
-                    </div>
-                  </div>
-
-                  <div className="hairline" />
-
-                  <div>
-                    <div className="flex items-baseline justify-between mb-1">
-                      <span className="font-display text-[18px] text-ink">
-                        Dönemlik{donemlikPlan ? ` (${donemlikPlan.ay_sayisi} ay)` : ' (4 ay)'}
-                      </span>
-                      <span className="font-mono tnum text-[24px] text-ink">
-                        {donemlikPlan ? donemlikPlan.tutar.toFixed(0) : 249}
-                        <span className="text-[14px] text-ink-mute ml-0.5">₺</span>
-                      </span>
-                    </div>
-                    <div className="font-display italic text-[13px] text-accent-deep">
-                      bir tüm dönem · daha avantajlı
-                    </div>
-                  </div>
-
-                  <div className="hairline" />
-
-                  <div className="text-[12px] text-ink-mute font-mono uppercase tracking-wider">
-                    Vergiler dahil · iyzico ile ödeme
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="space-y-5">
+            {[
+              {
+                s: 'Kayıt olmadan kullanabilir miyim?',
+                c: 'Evet. Ana sayfadaki "Hemen başla" butonu seni problemlere götürür. İlerlemen tarayıcında saklanır. Hesap açarsan tüm veriler buluta taşınır, başka cihazda devam edersin.',
+              },
+              {
+                s: 'Hangi konuları kapsıyor?',
+                c: 'Tek Düzen Hesap Planı temelli 11 ünite: Kasa, Banka, Mal, Senet, KDV, Amortisman, Personel, Dönem Sonu, Şüpheli Alacaklar, Reeskont, Kambiyo. Toplam 212 senaryo bazlı soru.',
+              },
+              {
+                s: 'Cevabımı nasıl kontrol ediyor?',
+                c: 'Her soru için resmi yevmiye kaydı tanımlı. Senin girdiğin satırlar (hesap kodu + borç + alacak tutarı) referansla karşılaştırılır. Doğru = yeşil, yanlış = kırmızı, eksik satır → uyarı.',
+              },
+              {
+                s: 'Premium nedir, neden var?',
+                c: 'Tüm sorular ücretsizdir. Premium, sıkıştığında AI asistan, yanlış cevap analizi ve hesap kodu otomatik tamamlama gibi destek katmanlarını açar. İlk 100 kullanıcıya bir yıl bedava.',
+              },
+              {
+                s: 'Sınav döneminde işime yarar mı?',
+                c: 'Evet — özellikle vize/final öncesi haftada. Sorular gerçek sınav tipinde (kolay/orta/zor karışık), aktivite ısı haritası ve seri sayacı ile düzenli pratik kurma motivasyonunu canlı tutar.',
+              },
+            ].map((sss, i) => (
+              <details key={i} className="surface group">
+                <summary className="cursor-pointer p-5 flex items-baseline justify-between gap-4 list-none">
+                  <span className="font-display text-[16px] sm:text-[17px] font-semibold text-ink tracking-tight">{sss.s}</span>
+                  <Icon name="ChevronDown" size={16} className="text-ink-mute group-open:rotate-180 transition flex-shrink-0 mt-1" />
+                </summary>
+                <div className="px-5 pb-5 text-[14.5px] text-ink-soft leading-relaxed">{sss.c}</div>
+              </details>
+            ))}
           </div>
         </div>
       </section>
@@ -741,30 +858,21 @@ const AnonimAnaSayfa = () => {
       {/* ===========================================================
           KAPANIŞ
       =========================================================== */}
-      <section className="px-5 sm:px-8 pb-24 sm:pb-32 pt-12">
+      <section className="px-5 sm:px-8 pb-20 pt-12 border-t border-line">
         <div className="max-w-[860px] mx-auto text-center">
-          <div className="hairline mb-12" />
-          <span className="eyebrow inline-block mb-6">Bölüm sonu</span>
-          <h2 className="font-display tracking-[-0.025em] leading-[1.0] text-ink mb-8"
-              style={{ fontSize: 'clamp(40px, 6vw, 80px)' }}>
-            Otuz saniye, bir hesap,
-            <br />
-            <span className="emph">bir bütün dönem</span>.
+          <h2 className="font-display text-[32px] sm:text-[44px] font-bold tracking-tight text-ink mb-4 leading-tight">
+            Otuz saniyede başla.
           </h2>
-          <p className="text-[16px] sm:text-[18px] text-ink-soft max-w-xl mx-auto leading-relaxed mb-10">
-            Üye olmadan başlayabilirsin. İlerlemeni kaydetmek istersen
-            otuz saniyelik kayıt yeterli.
+          <p className="text-[15.5px] text-ink-soft max-w-xl mx-auto leading-relaxed mb-8">
+            Üye olmadan da çalışabilirsin. İlerlemeni kaydetmek istersen kullanıcı adı + şifre yeter.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
             <button onClick={() => nav('/giris')} className="btn btn-primary btn-lg">
               Hesap Oluştur
             </button>
-            <button onClick={() => nav('/problemler')} className="btn-link">
-              Önce Soruları Gör →
+            <button onClick={() => nav('/problemler')} className="btn btn-soft btn-lg">
+              Önce Soruları Gör
             </button>
-          </div>
-          <div className="fleuron mt-16">
-            <span>§</span>
           </div>
         </div>
       </section>
