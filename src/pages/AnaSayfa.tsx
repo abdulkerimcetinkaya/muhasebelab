@@ -971,9 +971,10 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
         </motion.div>
         </div>
 
-        {/* ORBITAL ÜNİTE İKONLARI — sahne 3 (paper gizliyken sayfa merkezinde) */}
+        {/* ORBITAL ÜNİTE İKONLARI — paper'ın eski yerinde; sahne 3'te paper
+            opacity 0 olduğu için çakışma yok, sahne 4'te orbital fade out olur. */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          className="absolute top-1/2 right-[28%] sm:right-[30%] lg:right-[34%] -translate-y-1/2 pointer-events-none"
           style={{ opacity: orbitOpacity, scale: orbitScale }}
         >
           {uniteler.slice(0, 11).map((u, i) => {
