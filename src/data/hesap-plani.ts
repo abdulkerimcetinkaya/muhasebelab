@@ -26,7 +26,7 @@ export const HESAP_PLANI: Hesap[] = [
   { kod: '122', ad: 'ALACAK SENETLERİ REESKONTU (-)', sinif: '1', tur: 'AKTİF' },
   { kod: '124', ad: 'KAZANILMAMIŞ FİNANSAL KİRALAMA FAİZ GELİRLERİ (-)', sinif: '1', tur: 'AKTİF' },
   { kod: '126', ad: 'VERİLEN DEPOZİTO VE TEMİNATLAR', sinif: '1', tur: 'AKTİF' },
-  { kod: '127', ad: 'DİĞER TİCARİ ALACAKLAR', sinif: '1', tur: 'AKTİF' },
+  { kod: '127', ad: 'DİĞER TİCARİ ALACAKLAR SENET VE BONOLARI', sinif: '1', tur: 'AKTİF' },
   { kod: '128', ad: 'ŞÜPHELİ TİCARİ ALACAKLAR', sinif: '1', tur: 'AKTİF' },
   { kod: '129', ad: 'ŞÜPHELİ TİCARİ ALACAKLAR KARŞILIĞI (-)', sinif: '1', tur: 'AKTİF' },
 
@@ -51,7 +51,8 @@ export const HESAP_PLANI: Hesap[] = [
 
   // 17. Yıllara Yaygın İnşaat ve Onarım Maliyetleri
   { kod: '170', ad: 'YILLARA YAYGIN İNŞAAT VE ONARIM MALİYETLERİ', sinif: '1', tur: 'AKTİF' },
-  { kod: '179', ad: 'YILLARA YAYGIN İNŞAAT ENFLASYON DÜZELTME', sinif: '1', tur: 'AKTİF' },
+  { kod: '178', ad: 'YILLARA YAYGIN İNŞAAT ENFLASYON DÜZELTME', sinif: '1', tur: 'AKTİF' },
+  { kod: '179', ad: 'TAŞERONLARA VERİLEN AVANSLAR', sinif: '1', tur: 'AKTİF' },
 
   // 18. Gelecek Aylara Ait Giderler ve Gelir Tahakkukları
   { kod: '180', ad: 'GELECEK AYLARA AİT GİDERLER', sinif: '1', tur: 'AKTİF' },
