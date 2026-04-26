@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { HashRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
+import { SiteLoader } from './components/SiteLoader';
 import { ProtectedAdminRoute } from './components/ProtectedAdminRoute';
 import { RozetToast } from './components/RozetToast';
 import { HesapPlaniModal } from './components/HesapPlaniModal';
@@ -245,6 +246,7 @@ const App = () => {
 
   return (
     <HashRouter>
+      <SiteLoader />
       <div className="min-h-screen bg-stone-50 dark:bg-zinc-900 text-stone-900 dark:text-zinc-100 transition-colors">
         <Navbar
           ilerleme={ilerleme}

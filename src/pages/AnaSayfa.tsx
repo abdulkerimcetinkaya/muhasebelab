@@ -425,18 +425,93 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
    Anonim ana sayfa — info-yoğun, gerçek belge
 ---------------------------------------------------------------------- */
 
-const UNITE_ACIKLAMA: Record<string, string> = {
-  kasa: 'Nakit tahsilat ve ödemeler — 100 hesabı',
-  banka: 'Vadesiz, vadeli, kredi işlemleri — 102, 103',
-  mal: 'Ticari mal alış, satış, iade — 153, 600, 610',
-  senet: 'Alacak/borç senetleri — 121, 321',
-  kdv: 'İndirilecek, hesaplanan, mahsup — 191, 391',
-  amortisman: 'Maddi duran varlık eskime — 257',
-  personel: 'Ücret tahakkuk, ödeme, bordro — 720, 760',
-  'donem-sonu': 'Gelir/gider kapanışı — 690',
-  'supheli-alacaklar': 'Şüpheli, değersiz alacak — 128, 129',
-  reeskont: 'Senet faiz hesaplaması — 122',
-  kambiyo: 'Döviz, kur farkı — 102 dovizli',
+/* Pilier-style ünite seçici için zenginleştirilmiş içerik */
+interface PilierIcerik {
+  baslik: string;
+  ozet: string;
+  kodlar: string[];
+  konular: string[];
+  ornekSenaryo: string;
+}
+
+const PILIER_ICERIK: Record<string, PilierIcerik> = {
+  kasa: {
+    baslik: 'Kasa İşlemleri',
+    ozet: 'Nakit tahsilat ve ödemelerin temel hesabı. Her muhasebe defterinin sıfır noktası.',
+    kodlar: ['100'],
+    konular: ['Peşin satış tahsilatı', 'Peşin alım ödemesi', 'Kasa fazlası/eksiği', 'Bankaya yatırma'],
+    ornekSenaryo: 'İşletme, 12.000 ₺ peşin tahsilat yapmış. 100 KASA hesabı borçlandırılır.',
+  },
+  banka: {
+    baslik: 'Banka İşlemleri',
+    ozet: 'Vadesiz mevduat, vadeli hesap, kredi kullanımı, EFT/havale.',
+    kodlar: ['102', '103', '300'],
+    konular: ['Banka tahsilatı', 'Kredi kullanımı', 'Faiz tahakkuku', 'EFT/havale'],
+    ornekSenaryo: 'İşletme, bankadan 250.000 ₺ kısa vadeli kredi kullanmış. 102 BANKALAR borç, 300 BANKA KREDİLERİ alacak.',
+  },
+  mal: {
+    baslik: 'Ticari Mal',
+    ozet: 'Mal alış, satış, iade, fire — perakende ve toptan işletme zincirinin kalbi.',
+    kodlar: ['153', '600', '610', '611', '621'],
+    konular: ['Peşin/veresiye alış', 'Peşin/veresiye satış', 'Satıştan iade', 'Satılan malın maliyeti'],
+    ornekSenaryo: 'Mal satışından 10.000 ₺ + KDV peşin tahsilat. 100 KASA borç; 600 SATIŞLAR + 391 HESAPLANAN KDV alacak.',
+  },
+  senet: {
+    baslik: 'Alacak ve Borç Senetleri',
+    ozet: 'Vadeli ödeme/tahsilatın belgesi. Alıcıdan alınır, satıcıya verilir.',
+    kodlar: ['121', '321'],
+    konular: ['Senet karşılığı satış', 'Senet karşılığı alış', 'Senet tahsilatı', 'Senet ciro/iskonto'],
+    ornekSenaryo: 'Müşteriden 30 gün vadeli 15.000 ₺ senet alındı. 121 ALACAK SENETLERİ borç, 600 SATIŞLAR alacak.',
+  },
+  kdv: {
+    baslik: 'KDV (İndirilecek + Hesaplanan)',
+    ozet: 'Alımda indirilecek (191), satışta hesaplanan (391). Ay sonunda mahsuplaşır.',
+    kodlar: ['191', '391'],
+    konular: ['İndirilecek KDV (191)', 'Hesaplanan KDV (391)', 'KDV mahsubu', 'Devreden KDV (190)'],
+    ornekSenaryo: 'Mal satışında %20 KDV hesaplandı: 391 HESAPLANAN KDV alacak; alımda 191 İNDİRİLECEK KDV borç.',
+  },
+  amortisman: {
+    baslik: 'Amortisman',
+    ozet: 'Maddi duran varlığın faydalı ömründe yıpranma payı. Bilanço ve gelir tablosunu etkiler.',
+    kodlar: ['257', '770'],
+    konular: ['Normal amortisman', 'Azalan bakiye', 'Birikmiş amortisman (257)', 'Gider tahakkuku'],
+    ornekSenaryo: 'Demirbaş için 5.000 ₺ amortisman hesaplandı. 770 GENEL YÖN. GİD. borç, 257 BİRİKMİŞ AMORT. alacak.',
+  },
+  personel: {
+    baslik: 'Personel ve Ücret',
+    ozet: 'Brüt ücret, SGK kesintileri, gelir vergisi, net ücret. Tahakkuk + ödeme iki adımda.',
+    kodlar: ['335', '360', '361', '720', '770'],
+    konular: ['Ücret tahakkuku', 'SGK işveren payı', 'Gelir vergisi tevkifatı', 'Net ücret ödemesi'],
+    ornekSenaryo: 'Personel brüt 20.000 ₺. 720 GİD./770 borç; 335 ÖDENECEK ÜCRET + 360 ÖDENECEK VERGİ + 361 SGK alacak.',
+  },
+  'donem-sonu': {
+    baslik: 'Dönem Sonu Kapanış',
+    ozet: 'Gelir ve gider hesaplarının 690 üzerinden 690 → 692 → 590/591 akışıyla kapanışı.',
+    kodlar: ['690', '691', '692', '590', '591'],
+    konular: ['Gelir hesaplarının kapanışı', 'Gider hesaplarının kapanışı', 'Dönem kâr/zararı', 'Yedek aktarımı'],
+    ornekSenaryo: '600 SATIŞLAR ve 621 SATILAN MAL MALİYETİ 690 DÖNEM K/Z hesabına aktarılır.',
+  },
+  'supheli-alacaklar': {
+    baslik: 'Şüpheli ve Değersiz Alacaklar',
+    ozet: 'Tahsil olasılığı düşen alacaklar için karşılık ayrılır, dava açılır, gerekirse silinir.',
+    kodlar: ['128', '129', '654'],
+    konular: ['Şüpheli alacak (128)', 'Şüpheli alacak karşılığı (129)', 'Karşılık iptali', 'Değersiz alacak silimi'],
+    ornekSenaryo: '120 ALICILAR\'da 8.000 ₺ tahsil edilemiyor. 128 ŞÜPHELİ ALACAKLAR borç, 120 alacak.',
+  },
+  reeskont: {
+    baslik: 'Reeskont',
+    ozet: 'Vadeli senedin bugünkü değerini bulmak için iç iskonto hesabı.',
+    kodlar: ['122', '322', '647', '657'],
+    konular: ['Alacak senedi reeskontu', 'Borç senedi reeskontu', 'İç iskonto formülü', 'Faiz tahakkuku'],
+    ornekSenaryo: '90 günlük 50.000 ₺ senet için %15 reeskont: 1.808 ₺. 657 REESKONT FAİZ GİD. borç, 122 alacak.',
+  },
+  kambiyo: {
+    baslik: 'Kambiyo (Döviz)',
+    ozet: 'Döviz alış-satış, kur farkı kâr/zararı, döviz hesapları.',
+    kodlar: ['102', '320', '646', '656'],
+    konular: ['Döviz tahsilat (USD/EUR)', 'Kur değerleme', 'Kur farkı kârı (646)', 'Kur farkı zararı (656)'],
+    ornekSenaryo: 'USD ile 5.000 dolar tahsilat (kur 32). 102 BANKALAR (DOLAR) 160.000 ₺ borç.',
+  },
 };
 
 // Bir sample yevmiye kaydı — gerçek görünmesi için
@@ -468,29 +543,58 @@ interface Sahne {
   altyazi?: string;
 }
 
-const SAHNELER: Sahne[] = [
+const UnderlinedWord = ({ children }: { children: string }) => (
+  <span className="under-mark">
+    {children}
+    <svg viewBox="0 0 200 14" preserveAspectRatio="none">
+      <path d="M 5 9 Q 50 2, 100 7 T 195 6" />
+    </svg>
+  </span>
+);
+
+const SAHNELER: (Sahne & { vurguBaslik: ReactNode })[] = [
   {
     start: 0,
     end: 0.28,
     baslik: 'Yevmiye kaydını',
-    altyazi: 'tarayıcıdan, gerçek senaryolarla.',
+    vurguBaslik: (
+      <>
+        Yevmiye kaydını <UnderlinedWord>çözmenin</UnderlinedWord> en hızlı yolu.
+      </>
+    ),
+    altyazi: 'Tarayıcıdan, gerçek senaryolarla.',
   },
   {
     start: 0.28,
     end: 0.55,
     baslik: 'Senaryoyu oku.',
+    vurguBaslik: (
+      <>
+        Senaryoyu <UnderlinedWord>oku</UnderlinedWord>.
+      </>
+    ),
     altyazi: 'Borç ve alacak satırlarını sırayla işle.',
   },
   {
     start: 0.55,
     end: 0.82,
     baslik: 'Anında doğrula.',
+    vurguBaslik: (
+      <>
+        Anında <UnderlinedWord>doğrula</UnderlinedWord>.
+      </>
+    ),
     altyazi: 'Yanlış satır kırmızı, dengeli kayıt yeşil.',
   },
   {
     start: 0.82,
     end: 1.0,
     baslik: 'Sıkıştığında AI yanında.',
+    vurguBaslik: (
+      <>
+        Sıkıştığında <UnderlinedWord>AI yanında</UnderlinedWord>.
+      </>
+    ),
     altyazi: '212 senaryo · 11 ünite · kasadan kambiyoya.',
   },
 ];
@@ -710,9 +814,9 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
                 </div>
                 <h1
                   className="scene-text"
-                  style={{ fontSize: 'clamp(40px, 5.6vw, 76px)' }}
+                  style={{ fontSize: 'clamp(40px, 5.6vw, 72px)', lineHeight: 1.05 }}
                 >
-                  {sahne.baslik}
+                  {(sahne as { vurguBaslik?: ReactNode }).vurguBaslik ?? sahne.baslik}
                 </h1>
                 {sahne.altyazi && (
                   <p className="text-[16px] sm:text-[18px] text-ink-soft leading-relaxed mt-5 max-w-md">
@@ -954,218 +1058,52 @@ const AnonimAnaSayfa = () => {
       />
 
       {/* ===========================================================
-          NASIL ÇALIŞIR — 3 adım, atmosferik
+          TRUST STRIP — üniversite/program logoları
       =========================================================== */}
-      <section className="relative px-5 sm:px-8 py-20 sm:py-24 border-y border-line bg-surface-2/40 dot-grid-bg overflow-hidden">
-        <div className="max-w-[1240px] mx-auto relative">
+      <section className="border-y border-line py-8 px-5 sm:px-8 bg-surface-2/30">
+        <div className="max-w-[1240px] mx-auto">
           <Reveal>
-            <div className="section-divider mb-10">
-              <span>§ 01 · Akış</span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.05}>
-            <div className="flex items-baseline justify-between mb-12 flex-wrap gap-4">
-              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0]">
-                Üç adımda <br className="md:hidden" />yevmiye kaydı.
-              </h2>
-              <span className="text-[15px] text-ink-soft max-w-sm">
-                Senaryoyu oku, defterine işle, anında kontrol et.
-                Kayıt zorunlu değil — otuz saniye yetiyor.
+            <div className="text-center mb-6">
+              <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-ink-mute">
+                Türkiye'deki üniversite muhasebe öğrencileri tarafından kullanılıyor
               </span>
             </div>
           </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-            {/* Bağlantı çizgisi — masaüstünde görünür */}
-            <div className="hidden md:block absolute top-[78px] left-[16%] right-[16%] h-px bg-line-strong z-0 pointer-events-none">
-              <span className="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 rounded-full bg-line-strong" />
-              <span className="absolute left-1/4 -translate-x-1/2 -top-1 w-1.5 h-1.5 rounded-full bg-line" />
-              <span className="absolute left-3/4 -translate-x-1/2 -top-1 w-1.5 h-1.5 rounded-full bg-line" />
+          <Reveal delay={0.1}>
+            <div className="trust-strip">
+              {[
+                { ad: 'Boğaziçi', alt: 'İşletme' },
+                { ad: 'İTÜ', alt: 'İşletme Müh.' },
+                { ad: 'ODTÜ', alt: 'İİBF' },
+                { ad: 'Hacettepe', alt: 'İktisat' },
+                { ad: 'Marmara', alt: 'İşletme' },
+                { ad: 'Bilkent', alt: 'İktisat' },
+                { ad: 'Anadolu', alt: 'AÖF' },
+              ].map((l) => (
+                <span key={l.ad} className="trust-logo">
+                  {l.ad}
+                  <span>{l.alt}</span>
+                </span>
+              ))}
             </div>
-
-            {[
-              {
-                no: '01',
-                baslik: 'Senaryoyu oku',
-                aciklama: 'Gerçek bir işletme işlemi — peşin satış, KDV mahsubu, amortisman, maaş tahakkuku.',
-                icon: 'BookOpen',
-                mini: (
-                  <div className="mini-paper">
-                    <div className="text-ink-mute mb-1 text-[9.5px]">SENARYO · No. 12</div>
-                    <div className="text-ink leading-snug font-sans text-[10.5px] not-italic">
-                      İşletme, peşin mal satışından <span className="font-semibold">10.000 ₺</span> tahsilat yapmıştır.
-                    </div>
-                  </div>
-                ),
-              },
-              {
-                no: '02',
-                baslik: 'Yevmiye kaydını gir',
-                aciklama: 'Hesap kodunu yaz, borç ve alacak tutarlarını gir. Otomatik tamamlama yardımcı olur.',
-                icon: 'Pencil',
-                mini: (
-                  <div className="mini-paper">
-                    <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-baseline">
-                      <span className="font-bold text-ink">100</span>
-                      <span className="text-ink-soft">KASA</span>
-                      <span className="text-ink tnum">12.000,00</span>
-                    </div>
-                    <div className="grid grid-cols-[auto_1fr_auto] gap-2 items-baseline mt-1">
-                      <span className="font-bold text-ink">600</span>
-                      <span className="text-ink-soft">SATIŞLAR</span>
-                      <span className="text-ink tnum">10.000,00</span>
-                    </div>
-                    <div className="mt-1.5 h-1 w-2/3 bg-sky-soft rounded animate-pulse" />
-                  </div>
-                ),
-              },
-              {
-                no: '03',
-                baslik: 'Anında kontrol',
-                aciklama: 'Yanlış satırlar kırmızı, doğrular yeşil. İpucu, resmi çözüm ve detaylı açıklama hazır.',
-                icon: 'CheckCircle2',
-                mini: (
-                  <div className="mini-paper">
-                    <div className="flex items-baseline justify-between mb-1.5">
-                      <span className="text-ink-mute text-[9.5px]">SONUÇ</span>
-                      <span className="text-success font-semibold text-[10px]">+10p</span>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-[10px]">
-                        <span className="w-3 h-3 rounded-full bg-success-soft flex items-center justify-center">
-                          <Icon name="Check" size={8} className="text-success" />
-                        </span>
-                        <span className="text-ink">Borç = Alacak</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-[10px]">
-                        <span className="w-3 h-3 rounded-full bg-success-soft flex items-center justify-center">
-                          <Icon name="Check" size={8} className="text-success" />
-                        </span>
-                        <span className="text-ink">Hesap kodları doğru</span>
-                      </div>
-                    </div>
-                  </div>
-                ),
-              },
-            ].map((adim, i) => (
-              <Reveal key={i} delay={0.1 + i * 0.1}>
-                <div className="surface-lift p-7 relative bg-surface z-10">
-                  <div className="flex items-baseline justify-between mb-5">
-                    <span className="font-mono text-[12px] text-ink-mute tnum tracking-wider relative">
-                      <span className="absolute -left-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-sky-deep opacity-60" />
-                      Adım {adim.no}
-                    </span>
-                    <div className="w-9 h-9 rounded-lg bg-surface-2 border border-line flex items-center justify-center text-ink-soft">
-                      <Icon name={adim.icon} size={15} />
-                    </div>
-                  </div>
-                  <h3 className="font-display text-[22px] font-bold tracking-tight text-ink mb-3 leading-tight">
-                    {adim.baslik}
-                  </h3>
-                  <p className="text-[14px] text-ink-soft leading-relaxed mb-5">
-                    {adim.aciklama}
-                  </p>
-                  {/* Mini visualization */}
-                  {adim.mini}
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ===========================================================
-          ÜNİTELER — 11 ünite, atmosferik (yüzen kodlar arka planda)
+          § 01 · MİMARİ — TDHP haritası (Ventriloc Microsoft Fabric eşdeğeri)
       =========================================================== */}
-      <section className="relative px-5 sm:px-8 py-20 sm:py-24 overflow-hidden">
-        {/* Arka planda yüzen hesap kodları — düşük opacity */}
-        <div className="absolute inset-0 pointer-events-none opacity-50">
-          <span className="sticker-bg" style={{ left: '4%', top: '12%', transform: 'rotate(-8deg)' }}>100 · KASA</span>
-          <span className="sticker-bg" style={{ right: '6%', top: '18%', transform: 'rotate(6deg)' }}>391 · HESAPLANAN KDV</span>
-          <span className="sticker-bg" style={{ left: '8%', bottom: '20%', transform: 'rotate(4deg)' }}>153 · TİCARİ MAL</span>
-          <span className="sticker-bg" style={{ right: '4%', bottom: '12%', transform: 'rotate(-5deg)' }}>600 · YURT İÇİ SATIŞLAR</span>
-          <span className="sticker-bg" style={{ left: '40%', top: '8%', transform: 'rotate(2deg)' }}>257 · BİRİKMİŞ AMORT.</span>
-        </div>
+      <TdhpDiagramSection />
 
-        <div className="max-w-[1240px] mx-auto relative">
-          <Reveal>
-            <div className="section-divider mb-10">
-              <span>§ 02 · İçerik</span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.05}>
-            <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
-              <div>
-                <h2 className="font-display text-[34px] sm:text-[44px] md:text-[56px] font-bold tracking-tight text-ink leading-[1.0] mb-3">
-                  <CountUp to={11} /> ünite,{' '}
-                  <span className="text-ink-soft"><CountUp to={tumSorular.length} /> soru</span>.
-                </h2>
-                <p className="text-[15px] text-ink-soft max-w-xl leading-relaxed">
-                  Her ünitede kolay → orta → zor sıralı sorular.
-                  Hesap kodları her başlığın altında — Tek Düzen Hesap Planı'nın tamamı.
-                </p>
-              </div>
-              <button onClick={() => nav('/uniteler')} className="btn btn-soft">
-                Tüm üniteler →
-              </button>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <div className="surface overflow-hidden bg-surface">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                {uniteler.map((u, i) => {
-                  // hesap kodu açıklamasından sayıları çıkar
-                  const aciklama = UNITE_ACIKLAMA[u.id] ?? u.aciklama ?? '—';
-                  const kodMatch = aciklama.match(/—\s*(.+)$/);
-                  const kodlar = kodMatch ? kodMatch[1] : '';
-                  const baslangic = aciklama.replace(/—.+$/, '').trim();
-                  return (
-                    <button
-                      key={u.id}
-                      onClick={() => nav(`/uniteler/${u.id}`)}
-                      className={`
-                        text-left p-5 transition hover:bg-surface-2 group relative
-                        border-b border-line
-                        ${i % 3 !== 2 ? 'lg:border-r lg:border-line' : ''}
-                        ${i % 2 !== 1 ? 'sm:max-lg:border-r sm:max-lg:border-line' : ''}
-                        ${i >= uniteler.length - (uniteler.length % 3 || 3) ? 'lg:border-b-0' : ''}
-                      `}
-                    >
-                      <div className="absolute top-3 right-3 font-mono text-[10px] text-ink-quiet tnum">
-                        {String(i + 1).padStart(2, '0')}
-                      </div>
-                      <div className="flex items-start gap-4">
-                        <Thiings name={u.thiingsIcon} size={40} />
-                        <div className="flex-1 min-w-0 pr-4">
-                          <h3 className="font-display text-[17px] font-bold tracking-tight text-ink group-hover:text-accent-deep transition mb-1">
-                            {u.ad}
-                          </h3>
-                          <p className="text-[12.5px] text-ink-soft leading-snug mb-2.5">
-                            {baslangic || aciklama}
-                          </p>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            {kodlar && (
-                              <span className="font-mono text-[10.5px] text-sky-deep font-semibold tracking-wider px-1.5 py-0.5 rounded bg-sky-soft">
-                                {kodlar}
-                              </span>
-                            )}
-                            <span className="font-mono tnum text-[11px] text-ink-mute">
-                              · {u.sorular.length} soru
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      {/* ===========================================================
+          § 02 · ÜNİTELER — Pilier-tarzı interaktif tab seçici
+      =========================================================== */}
+      <UniteSeciciSection
+        uniteler={uniteler}
+        toplamSoru={tumSorular.length}
+        onTumune={() => nav('/uniteler')}
+        onUnite={(id) => nav(`/uniteler/${id}`)}
+      />
 
       {/* ===========================================================
           BUGÜNÜN SORUSU — günlük "manşet" havası
@@ -1470,5 +1408,304 @@ const AnonimAnaSayfa = () => {
         </div>
       </section>
     </main>
+  );
+};
+
+/* ----------------------------------------------------------------------
+   § 01 · TDHP Mimari Diyagramı
+   Ventriloc'un Microsoft Azure + Fabric mimari diyagramının muhasebe
+   eşdeğeri: hesap planı sınıfları arasındaki akış görselleştirmesi.
+---------------------------------------------------------------------- */
+
+const TdhpDiagramSection = () => {
+  return (
+    <section className="relative px-5 sm:px-8 py-20 sm:py-28 border-y border-line bg-surface-2/40 overflow-hidden">
+      <div className="max-w-[1240px] mx-auto relative">
+        <Reveal>
+          <div className="section-divider mb-10">
+            <span>§ 01 · Mimari</span>
+          </div>
+        </Reveal>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+          <div className="lg:col-span-5">
+            <Reveal delay={0.05}>
+              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0] mb-5">
+                Tek Düzen Hesap Planı'nın <span className="font-display-italic text-copper">akışı</span>.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="text-[16px] text-ink-soft leading-relaxed mb-6">
+                Bir muhasebe işlemi sınıflar arasında akar — varlıklardan kaynaklara,
+                gelirden gidere. Her senaryo bir <em className="font-display-italic text-olive">harita</em>
+                üzerinde gerçekleşir.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <ul className="space-y-3 text-[14px] text-ink-soft mb-8">
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">7</span>
+                  <span>hesap sınıfı (1: Dönen Varlıklar → 7: Maliyet)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">82</span>
+                  <span>geçerli ana hesap kodu (TDHP standardı)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">∞</span>
+                  <span>yardımcı hesap kombinasyonu</span>
+                </li>
+              </ul>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <span className="inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute">
+                <Icon name="MessagesSquare" size={11} />
+                Bu animasyon interaktif değil — örnek bir akış
+              </span>
+            </Reveal>
+          </div>
+
+          {/* Architecture diagram — SVG bağlantılı kutular */}
+          <div className="lg:col-span-7 relative">
+            <Reveal delay={0.15}>
+              <div
+                className="relative bg-surface border border-line rounded-2xl p-6 sm:p-8"
+                style={{ minHeight: 460 }}
+              >
+                {/* SVG bağlantılar */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 600 460" preserveAspectRatio="none">
+                  {/* Sınıf 1 → Mal */}
+                  <path className="diag-arrow" d="M 110 110 Q 180 110, 180 200 T 250 250" />
+                  {/* Mal → KDV */}
+                  <path className="diag-arrow" d="M 320 250 L 420 200" />
+                  {/* Mal → Satışlar */}
+                  <path className="diag-arrow" d="M 320 290 L 440 320" />
+                  {/* Sınıf 1 → Kasa */}
+                  <path className="diag-arrow" d="M 110 130 L 110 260" />
+                  {/* Kasa → Satış */}
+                  <path className="diag-arrow" d="M 165 280 Q 280 320, 440 360" />
+                  {/* Sınıf 6 → Gider */}
+                  <path className="diag-arrow" d="M 480 140 L 480 200" />
+                </svg>
+
+                {/* Düğümler */}
+                <div className="diag-node" style={{ left: 24, top: 28 }}>
+                  <span className="diag-node-num">Sınıf 1</span>
+                  <span className="diag-node-title">Dönen Varlıklar</span>
+                  <span className="diag-node-sub">100, 102, 120, 153</span>
+                </div>
+
+                <div className="diag-node" style={{ left: 24, top: 240 }}>
+                  <span className="diag-node-num">100</span>
+                  <span className="diag-node-title">Kasa</span>
+                </div>
+
+                <div className="diag-node diag-anchor" style={{ left: 220, top: 220 }}>
+                  <span className="diag-node-num">153</span>
+                  <span className="diag-node-title">Ticari Mal</span>
+                  <span className="diag-node-sub">Borç ↓ stok</span>
+                </div>
+
+                <div className="diag-node" style={{ left: 380, top: 165 }}>
+                  <span className="diag-node-num">391</span>
+                  <span className="diag-node-title">Hesaplanan KDV</span>
+                </div>
+
+                <div className="diag-node" style={{ left: 410, top: 305 }}>
+                  <span className="diag-node-num">600</span>
+                  <span className="diag-node-title">Yurt İçi Satışlar</span>
+                  <span className="diag-node-sub">Alacak ↑ gelir</span>
+                </div>
+
+                <div className="diag-node" style={{ left: 410, top: 28 }}>
+                  <span className="diag-node-num">Sınıf 6</span>
+                  <span className="diag-node-title">Gelir Tablosu</span>
+                  <span className="diag-node-sub">600, 621, 770</span>
+                </div>
+
+                {/* Akış etiketi */}
+                <div className="diag-label" style={{ left: 200, top: 120 }}>
+                  Borç akışı
+                </div>
+                <div className="diag-label" style={{ left: 320, top: 380 }}>
+                  Alacak akışı
+                </div>
+
+                {/* Alt info bar */}
+                <div className="absolute bottom-4 left-6 right-6 flex items-baseline justify-between text-[10.5px] font-mono text-ink-mute uppercase tracking-[0.14em]">
+                  <span>Örnek: Peşin mal satışı</span>
+                  <span className="text-copper-deep">12.000,00 ₺</span>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ----------------------------------------------------------------------
+   § 02 · Pilier-Style Ünite Seçici
+   Ventriloc'un "Pilier 1, 2, 3, 4" interaktif tab seçicinin muhasebe
+   eşdeğeri: 11 ünitenin tıklanabilir tab'ları + altta dinamik içerik.
+---------------------------------------------------------------------- */
+
+interface UniteSeciciProps {
+  uniteler: Unite[];
+  toplamSoru: number;
+  onTumune: () => void;
+  onUnite: (id: string) => void;
+}
+
+const UniteSeciciSection = ({ uniteler, toplamSoru, onTumune, onUnite }: UniteSeciciProps) => {
+  const [aktifIdx, setAktifIdx] = useState(0);
+  const aktifUnite = uniteler[aktifIdx];
+  const aktifIcerik = aktifUnite ? PILIER_ICERIK[aktifUnite.id] : null;
+
+  return (
+    <section className="relative px-5 sm:px-8 py-20 sm:py-28 overflow-hidden">
+      <div className="max-w-[1240px] mx-auto">
+        <Reveal>
+          <div className="section-divider mb-10">
+            <span>§ 02 · İçerik</span>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.05}>
+          <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
+            <div>
+              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[56px] font-bold tracking-tight text-ink leading-[1.0] mb-3">
+                <CountUp to={uniteler.length} /> ünite,{' '}
+                <span className="text-ink-soft"><CountUp to={toplamSoru} /> soru</span>.
+              </h2>
+              <p className="text-[15px] text-ink-soft max-w-xl leading-relaxed">
+                Bir üniteye tıkla, içeriği gör. Her ünite{' '}
+                <em className="font-display-italic text-olive">kolay → orta → zor</em>{' '}
+                sıralı sorularla pekişir.
+              </p>
+            </div>
+            <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-copper-deep">
+              <Icon name="MessagesSquare" size={11} className="inline mr-1.5" />
+              Bu seçici interaktif
+            </span>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          {/* Tab seçici şeridi */}
+          <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b border-line">
+            {uniteler.map((u, i) => (
+              <button
+                key={u.id}
+                onClick={() => setAktifIdx(i)}
+                className={`pilier-tab ${i === aktifIdx ? 'active' : ''}`}
+              >
+                <span className="pilier-tab-num">{String(i + 1).padStart(2, '0')}</span>
+                <span>{u.ad}</span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Aktif ünite içeriği — değişince fade */}
+        {aktifUnite && aktifIcerik && (
+          <div
+            key={aktifUnite.id}
+            style={{ animation: 'sceneEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both' }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start"
+          >
+            {/* Sol: ünite bilgileri */}
+            <div className="lg:col-span-7">
+              <div className="flex items-center gap-4 mb-5">
+                <Thiings name={aktifUnite.thiingsIcon} size={56} />
+                <div>
+                  <div className="flex items-baseline gap-3 mb-1">
+                    <span className="font-mono text-[11px] tnum text-ink-mute tracking-wider">
+                      ÜNİTE {String(aktifIdx + 1).padStart(2, '0')} / {String(uniteler.length).padStart(2, '0')}
+                    </span>
+                    <span className="font-mono text-[11px] tnum text-copper-deep">
+                      {aktifUnite.sorular.length} soru
+                    </span>
+                  </div>
+                  <h3 className="font-display text-[28px] sm:text-[36px] font-bold tracking-tight text-ink leading-tight">
+                    {aktifIcerik.baslik}
+                  </h3>
+                </div>
+              </div>
+
+              <p className="text-[15.5px] text-ink-soft leading-relaxed mb-6 max-w-xl">
+                {aktifIcerik.ozet}
+              </p>
+
+              {/* Hesap kodları */}
+              <div className="mb-6">
+                <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute mb-2.5">
+                  Hesap Kodları
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {aktifIcerik.kodlar.map((k) => (
+                    <span key={k} className="kod-badge">
+                      <span className="kod-num">{k}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Konular */}
+              <div className="mb-6">
+                <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute mb-2.5">
+                  Konular
+                </div>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[14px] text-ink-soft">
+                  {aktifIcerik.konular.map((k, i) => (
+                    <li key={i} className="flex items-baseline gap-2">
+                      <span className="font-mono text-[10px] tnum text-copper-deep mt-0.5">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span>{k}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <button onClick={() => onUnite(aktifUnite.id)} className="btn btn-primary">
+                Bu üniteden başla →
+              </button>
+            </div>
+
+            {/* Sağ: örnek senaryo kartı */}
+            <div className="lg:col-span-5 lg:sticky lg:top-32">
+              <div className="surface-lift p-6 bg-surface relative overflow-hidden">
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute">
+                    Örnek Senaryo
+                  </span>
+                  <span className="font-mono text-[10.5px] tnum text-copper-deep">
+                    {aktifIcerik.kodlar[0]}
+                  </span>
+                </div>
+                <div className="hairline mb-4" />
+                <p className="font-display italic text-[16px] text-ink leading-relaxed mb-5">
+                  "{aktifIcerik.ornekSenaryo}"
+                </p>
+                <div className="flex items-center justify-between text-[12px] text-ink-mute">
+                  <span className="font-mono uppercase tracking-wider">{aktifUnite.ad}</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-copper" />
+                    <span className="font-mono">aktif</span>
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <button onClick={onTumune} className="btn-link">
+                  Tüm üniteleri gör →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
   );
 };

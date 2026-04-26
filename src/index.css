@@ -47,6 +47,16 @@
   --primary: #1f3a5f;
   --primary-deep: #122847;
 
+  /* Bakır-amber sıcak aksan (Ventriloc turuncu eşdeğeri, daha mat) */
+  --copper: #b8732b;
+  --copper-deep: #9a5f1f;
+  --copper-soft: #f2e5d0;
+  --copper-glow: rgba(184, 115, 43, 0.42);
+
+  /* Mat zeytin (italik vurgu için) */
+  --olive: #7a6b3f;
+  --olive-soft: #ebe7d6;
+
   --premium: #a07a3f;    /* matlaştırılmış altın */
   --premium-deep: #7a5d2c;
   --premium-soft: #ece1c7;
@@ -700,6 +710,339 @@ input[type='number'] { -moz-appearance: textfield; }
 .counter {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';
+}
+
+/* ---------------------------------------------------------------
+   Site loader — splash screen (Ventriloc tarzı)
+--------------------------------------------------------------- */
+
+.site-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--ink);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@keyframes loaderFadeOut {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+.site-loader.exit {
+  animation: loaderFadeOut 0.7s cubic-bezier(0.65, 0, 0.35, 1) 1.4s both;
+}
+
+@keyframes loaderRise {
+  from { transform: translateY(28px); opacity: 0; filter: blur(8px); }
+  to { transform: translateY(0); opacity: 1; filter: blur(0); }
+}
+
+.site-loader-mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(48px, 7vw, 96px);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  animation: loaderRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.site-loader-mark .mark-section {
+  color: var(--copper);
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  margin-left: 0.04em;
+}
+
+.site-loader-tagline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(247, 248, 240, 0.5);
+  animation: loaderRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+.site-loader-progress {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 1px;
+  background: rgba(247, 248, 240, 0.16);
+  overflow: hidden;
+}
+.site-loader-progress::after {
+  content: '';
+  position: absolute;
+  inset: 0 100% 0 0;
+  background: var(--copper);
+  animation: loaderProgress 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
+}
+@keyframes loaderProgress {
+  0% { right: 100%; }
+  100% { right: 0; }
+}
+
+/* ---------------------------------------------------------------
+   Animated underline — vurgu kelime altı SVG path drawing
+--------------------------------------------------------------- */
+
+.under-mark {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.under-mark svg {
+  position: absolute;
+  left: -3%;
+  right: -3%;
+  width: 106%;
+  bottom: -8px;
+  height: 14px;
+  pointer-events: none;
+  overflow: visible;
+}
+.under-mark svg path {
+  fill: none;
+  stroke: var(--copper);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawUnder 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards;
+}
+@keyframes drawUnder {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---------------------------------------------------------------
+   Bakır buton — Ventriloc'un sıcak aksanı
+--------------------------------------------------------------- */
+
+.btn-copper {
+  background: var(--copper);
+  color: #fff;
+  border: 1px solid var(--copper);
+  font-weight: 600;
+  box-shadow: 0 8px 20px -8px var(--copper-glow);
+}
+.btn-copper:hover {
+  background: var(--copper-deep);
+  border-color: var(--copper-deep);
+  box-shadow: 0 12px 28px -8px var(--copper-glow);
+}
+
+.chip-copper {
+  background: var(--copper-soft);
+  color: var(--copper-deep);
+  border-color: transparent;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------
+   Pilier ünite tab seçici
+--------------------------------------------------------------- */
+
+.pilier-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.pilier-tab:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+.pilier-tab.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.pilier-tab.active .pilier-tab-num {
+  color: var(--copper);
+}
+.pilier-tab-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-quiet);
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------
+   TDHP mimari diyagramı — düğüm + bağlantı
+--------------------------------------------------------------- */
+
+.diag-node {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  position: absolute;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.diag-node:hover {
+  border-color: var(--copper);
+  box-shadow: 0 8px 20px -6px var(--copper-glow);
+}
+.diag-node.diag-anchor {
+  background: var(--copper-soft);
+  border-color: var(--copper);
+  border-width: 2px;
+}
+.diag-node.diag-anchor .diag-node-title {
+  color: var(--copper-deep);
+}
+.diag-node-num {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+.diag-node-title {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+  margin-top: 2px;
+}
+.diag-node-sub {
+  display: block;
+  font-size: 9.5px;
+  color: var(--ink-quiet);
+  margin-top: 3px;
+}
+
+.diag-arrow {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  fill: none;
+}
+.diag-arrow-head {
+  fill: var(--line-strong);
+}
+
+.diag-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--copper-deep);
+  background: var(--bg);
+  padding: 2px 6px;
+}
+
+/* ---------------------------------------------------------------
+   Trust strip — üniversite/program logoları
+--------------------------------------------------------------- */
+
+.trust-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+.trust-logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  color: var(--ink-mute);
+  white-space: nowrap;
+  opacity: 0.7;
+  transition: opacity 0.2s, color 0.2s;
+}
+.trust-logo:hover {
+  opacity: 1;
+  color: var(--ink);
+}
+.trust-logo span {
+  font-weight: 400;
+  margin-left: 4px;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------
+   Footer dark — Ventriloc tarzı koyu kapanış
+--------------------------------------------------------------- */
+
+.footer-dark {
+  background: #14181a;
+  color: #f5f4ee;
+  position: relative;
+  overflow: hidden;
+}
+.footer-dark .footer-mega-mark {
+  position: absolute;
+  right: -30px;
+  bottom: -60px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(220px, 28vw, 480px);
+  font-weight: 400;
+  color: var(--copper);
+  line-height: 0.8;
+  pointer-events: none;
+  opacity: 0.95;
+  user-select: none;
+}
+.footer-dark a {
+  color: rgba(245, 244, 238, 0.7);
+  transition: color 0.18s;
+}
+.footer-dark a:hover { color: #fff; }
+
+.lang-pill {
+  display: inline-flex;
+  background: rgba(245, 244, 238, 0.1);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.lang-pill button {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(245, 244, 238, 0.6);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lang-pill button.active {
+  background: rgba(245, 244, 238, 0.95);
+  color: var(--ink);
 }
 .rise { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .rise-2 { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: 0.06s; }
