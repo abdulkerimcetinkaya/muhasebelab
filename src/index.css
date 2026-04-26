@@ -957,8 +957,329 @@ input[type='number'] { -moz-appearance: textfield; }
 }
 
 /* ---------------------------------------------------------------
-   Sankey-vari akış diyagramı (TdhpDiagramSection)
-   Sol → sağ akış, bant kalınlığı tutarla orantılı
+   TDHP Periyodik Özet (TdhpDiagramSection)
+   Sınıf×ana hesap grid'i + aktif senaryoda vurgulu hücreler
+--------------------------------------------------------------- */
+.periyodik-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(31, 58, 95, 0.04),
+    0 12px 32px -16px rgba(31, 58, 95, 0.1);
+}
+
+.periyodik-baslik {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-2) 60%, transparent) 0%,
+    color-mix(in srgb, var(--surface-2) 30%, transparent) 100%
+  );
+}
+
+.periyodik-aktif-rozet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--copper) 40%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--copper) 8%, transparent);
+  color: var(--copper-deep);
+}
+.periyodik-aktif-nokta {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--copper);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--copper) 60%, transparent);
+  animation: periyodikNokta 1.6s ease-in-out infinite;
+}
+@keyframes periyodikNokta {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--copper) 50%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--copper) 0%, transparent);
+  }
+}
+
+.periyodik-grid-wrap {
+  overflow-x: auto;
+  padding: 18px 18px 22px;
+  background-image:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--copper) 5%, transparent), transparent 35%),
+    radial-gradient(circle at 88% 80%, color-mix(in srgb, var(--ink) 4%, transparent), transparent 35%);
+  background-color: var(--surface);
+}
+.periyodik-grid-wrap::-webkit-scrollbar { height: 6px; }
+.periyodik-grid-wrap::-webkit-scrollbar-track { background: transparent; }
+.periyodik-grid-wrap::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+}
+
+.periyodik-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(82px, 1fr));
+  gap: 8px;
+  min-width: 580px;
+}
+
+.periyodik-sutun {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  animation: periyodikSutunIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes periyodikSutunIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.periyodik-sutun-baslik {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px;
+}
+.periyodik-sinif-no {
+  font-family: var(--font-display, 'Geist', sans-serif);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.periyodik-sinif-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.periyodik-sinif-ad {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.periyodik-sinif-tur {
+  font-family: var(--font-serif, 'Instrument Serif', serif);
+  font-style: italic;
+  font-size: 10px;
+  color: var(--ink-mute);
+  line-height: 1.1;
+}
+
+.periyodik-sutun-hat {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--line) 0%,
+    color-mix(in srgb, var(--copper) 35%, var(--line)) 50%,
+    var(--line) 100%
+  );
+  margin: 0 -2px;
+}
+
+.periyodik-sutun-hucreler {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.periyodik-hucre {
+  position: relative;
+  padding: 6px 8px 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  transition:
+    border-color 0.18s,
+    background 0.18s,
+    transform 0.18s;
+  cursor: default;
+}
+.periyodik-hucre:hover {
+  border-color: var(--ink-mute);
+  background: color-mix(in srgb, var(--surface-2) 50%, var(--surface));
+  transform: translateY(-1px);
+}
+
+.periyodik-hucre-kod {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.periyodik-hucre-ad {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-top: 3px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.periyodik-hucre-aktif {
+  border-color: var(--copper);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--copper) 12%, var(--surface)) 0%,
+      var(--surface) 100%
+    );
+  box-shadow:
+    0 0 0 1px var(--copper),
+    0 6px 18px -8px color-mix(in srgb, var(--copper) 50%, transparent);
+  animation: periyodikIsil 2.6s ease-in-out infinite;
+  z-index: 1;
+}
+.periyodik-hucre-aktif:hover { transform: translateY(-2px); }
+.periyodik-hucre-aktif .periyodik-hucre-kod { color: var(--copper-deep); }
+.periyodik-hucre-aktif .periyodik-hucre-ad { color: var(--ink); }
+
+@keyframes periyodikIsil {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px var(--copper),
+      0 4px 14px -6px color-mix(in srgb, var(--copper) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px var(--copper),
+      0 10px 28px -10px color-mix(in srgb, var(--copper) 60%, transparent);
+  }
+}
+
+.periyodik-hucre-sira {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--copper-deep);
+  color: var(--bg);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+  box-shadow: 0 2px 6px rgba(31, 58, 95, 0.15);
+  font-variant-numeric: tabular-nums;
+}
+
+.periyodik-hucre-etiket {
+  margin-top: 5px;
+  font-family: var(--font-serif, 'Instrument Serif', serif);
+  font-style: italic;
+  font-size: 10.5px;
+  color: var(--copper-deep);
+  line-height: 1;
+}
+
+.periyodik-alt-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+}
+
+.periyodik-yol-zinciri {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.periyodik-yol-bilgi {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.periyodik-yol-num {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--copper-deep);
+  color: var(--bg);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 9px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.periyodik-yol-kod {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.periyodik-yol-not {
+  font-family: var(--font-serif, 'Instrument Serif', serif);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--ink-mute);
+}
+
+.periyodik-tutar {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .periyodik-grid {
+    grid-template-columns: repeat(7, minmax(76px, 1fr));
+    gap: 6px;
+    min-width: 540px;
+  }
+  .periyodik-hucre { padding: 5px 6px 6px; }
+  .periyodik-hucre-kod { font-size: 11px; }
+  .periyodik-hucre-ad { font-size: 8px; }
+  .periyodik-yol-zinciri { padding: 3px 8px; gap: 6px; }
+}
+
+/* ---------------------------------------------------------------
+   Sankey-vari akış diyagramı (eski — başka yerde kullanılmıyorsa silinebilir)
 --------------------------------------------------------------- */
 .sankey-band {
   transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);

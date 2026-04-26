@@ -1501,175 +1501,218 @@ const TdhpDiagramSection = () => {
             </Reveal>
           </div>
 
-          {/* Sankey-vari akış diyagramı — para girişi sol, dağılım sağ */}
+          {/* SAĞ — TDHP Periyodik Özet + Aktif İşlem Vurgusu (7/12) */}
           <div className="lg:col-span-7 relative">
-            <Reveal delay={0.15}>
-              <div className="relative bg-surface border border-line rounded-2xl overflow-hidden">
-                {/* Üst etiket */}
-                <div className="px-6 py-4 border-b border-line bg-surface-2/40 flex items-baseline justify-between gap-4 flex-wrap">
+            <Reveal delay={0.1}>
+              <div className="periyodik-card">
+                {/* Üst bar — meta */}
+                <div className="periyodik-baslik">
                   <div>
                     <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                      Hesap Planı · Periyodik Özet
+                    </div>
+                    <div className="font-display text-[16px] font-bold text-ink mt-0.5 leading-none">
+                      7 sınıf, ana hesap{' '}
+                      <span className="font-display-italic text-copper-deep">haritası</span>
+                    </div>
+                  </div>
+                  <div className="periyodik-aktif-rozet">
+                    <span className="periyodik-aktif-nokta" />
+                    <span className="font-mono text-[10px] tracking-[0.16em] uppercase font-bold">
+                      Canlı senaryo
+                    </span>
+                  </div>
+                </div>
+
+                {/* Grid — 7 sınıf sütunu */}
+                <div className="periyodik-grid-wrap">
+                  <div className="periyodik-grid">
+                    {[
+                      {
+                        no: '1',
+                        ad: 'Dönen Varlık',
+                        tur: 'Aktif',
+                        hesaplar: [
+                          { kod: '100', ad: 'KASA', aktif: 'borc' as const, sira: 1 },
+                          { kod: '102', ad: 'BANKA' },
+                          { kod: '120', ad: 'ALICI' },
+                          { kod: '153', ad: 'TİC. MAL' },
+                          { kod: '191', ad: 'İND. KDV' },
+                        ],
+                      },
+                      {
+                        no: '2',
+                        ad: 'Duran Varlık',
+                        tur: 'Aktif',
+                        hesaplar: [
+                          { kod: '252', ad: 'BİNA' },
+                          { kod: '253', ad: 'MAKİNE' },
+                          { kod: '254', ad: 'TAŞIT' },
+                          { kod: '255', ad: 'DEMİRB.' },
+                          { kod: '257', ad: 'AMORT.' },
+                        ],
+                      },
+                      {
+                        no: '3',
+                        ad: 'KV Yab. Kayn.',
+                        tur: 'Pasif',
+                        hesaplar: [
+                          { kod: '320', ad: 'SATICI' },
+                          { kod: '321', ad: 'BORÇ S.' },
+                          { kod: '335', ad: 'PERSON.' },
+                          { kod: '391', ad: 'HES. KDV', aktif: 'alacak' as const, sira: 3 },
+                          { kod: '361', ad: 'SGK' },
+                        ],
+                      },
+                      {
+                        no: '4',
+                        ad: 'UV Yab. Kayn.',
+                        tur: 'Pasif',
+                        hesaplar: [
+                          { kod: '400', ad: 'BANKA K.' },
+                          { kod: '420', ad: 'SATICI' },
+                          { kod: '472', ad: 'KIDEM' },
+                          { kod: '480', ad: 'GEL. YIL' },
+                        ],
+                      },
+                      {
+                        no: '5',
+                        ad: 'Öz Kaynak',
+                        tur: 'Pasif',
+                        hesaplar: [
+                          { kod: '500', ad: 'SERM.' },
+                          { kod: '540', ad: 'YASAL Y.' },
+                          { kod: '570', ad: 'GEÇ. KÂR' },
+                          { kod: '590', ad: 'D. KÂR' },
+                        ],
+                      },
+                      {
+                        no: '6',
+                        ad: 'Gelir Tablosu',
+                        tur: 'Gelir',
+                        hesaplar: [
+                          { kod: '600', ad: 'YİS', aktif: 'alacak' as const, sira: 2 },
+                          { kod: '621', ad: 'STMM' },
+                          { kod: '642', ad: 'FAİZ G.' },
+                          { kod: '660', ad: 'KV BORÇ' },
+                          { kod: '690', ad: 'D. K/Z' },
+                        ],
+                      },
+                      {
+                        no: '7',
+                        ad: 'Maliyet',
+                        tur: 'Maliyet',
+                        hesaplar: [
+                          { kod: '710', ad: 'D. İLK M' },
+                          { kod: '730', ad: 'GÜG' },
+                          { kod: '760', ad: 'PSDG' },
+                          { kod: '770', ad: 'GYG' },
+                          { kod: '790', ad: 'GÇG' },
+                        ],
+                      },
+                    ].map((sinif, sIdx) => (
+                      <div
+                        key={sinif.no}
+                        className="periyodik-sutun"
+                        style={{ animationDelay: `${0.15 + sIdx * 0.05}s` }}
+                      >
+                        <div className="periyodik-sutun-baslik">
+                          <div className="periyodik-sinif-no">{sinif.no}</div>
+                          <div className="periyodik-sinif-meta">
+                            <div className="periyodik-sinif-ad">{sinif.ad}</div>
+                            <div className="periyodik-sinif-tur">{sinif.tur}</div>
+                          </div>
+                        </div>
+
+                        <div className="periyodik-sutun-hat" />
+
+                        <div className="periyodik-sutun-hucreler">
+                          {sinif.hesaplar.map((h) => {
+                            const aktif = (h as { aktif?: 'borc' | 'alacak' }).aktif;
+                            const sira = (h as { sira?: number }).sira;
+                            return (
+                              <div
+                                key={h.kod}
+                                className={`periyodik-hucre${
+                                  aktif ? ` periyodik-hucre-aktif periyodik-${aktif}` : ''
+                                }`}
+                              >
+                                {sira && <span className="periyodik-hucre-sira">{sira}</span>}
+                                <div className="periyodik-hucre-kod">{h.kod}</div>
+                                <div className="periyodik-hucre-ad">{h.ad}</div>
+                                {aktif && (
+                                  <div className="periyodik-hucre-etiket">
+                                    {aktif === 'borc' ? 'Borç' : 'Alacak'}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Alt bar — akış izleyicisi */}
+                <div className="periyodik-alt-bar">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
                       Senaryo
-                    </div>
-                    <div className="font-display text-[16px] font-bold text-ink mt-0.5">
-                      Peşin mal satışı{' '}
-                      <span className="font-display-italic text-ink-soft text-[13px]">
-                        — KDV dahil 12.000 ₺ tahsil edildi
-                      </span>
-                    </div>
+                    </span>
+                    <span className="font-display-italic text-[14px] text-ink">
+                      Peşin mal satışı
+                    </span>
                   </div>
-                  <div className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase font-bold text-copper-deep">
-                    <Icon name="Workflow" size={12} />
-                    Akış
+
+                  <div className="periyodik-yol-zinciri">
+                    <span className="periyodik-yol-bilgi">
+                      <span className="periyodik-yol-num">1</span>
+                      <span className="periyodik-yol-kod">100</span>
+                      <span className="periyodik-yol-not">borç</span>
+                    </span>
+
+                    <Icon name="ArrowRight" size={11} className="text-copper-deep" />
+
+                    <span className="periyodik-yol-bilgi">
+                      <span className="periyodik-yol-num">2</span>
+                      <span className="periyodik-yol-kod">600</span>
+                      <span className="periyodik-yol-not">alacak</span>
+                    </span>
+
+                    <span className="font-mono text-[11px] text-copper-deep font-bold">+</span>
+
+                    <span className="periyodik-yol-bilgi">
+                      <span className="periyodik-yol-num">3</span>
+                      <span className="periyodik-yol-kod">391</span>
+                      <span className="periyodik-yol-not">alacak</span>
+                    </span>
+                  </div>
+
+                  <div className="periyodik-tutar">
+                    <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute font-bold">
+                      Tutar
+                    </span>
+                    <span className="font-mono text-[15px] tnum font-bold text-copper-deep">
+                      12.000,00 ₺
+                    </span>
                   </div>
                 </div>
-
-                {/* Akış grafiği */}
-                <div className="px-4 sm:px-6 py-7 sm:py-8 relative">
-                  {/* Sınıf etiketleri üstte */}
-                  <div className="grid grid-cols-2 mb-6 px-2">
-                    <div className="text-left">
-                      <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
-                        Borç tarafı
-                      </div>
-                      <div className="font-display-italic text-[13px] text-copper-deep mt-0.5">
-                        Sınıf 1 · Aktif arttı
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
-                        Alacak tarafı
-                      </div>
-                      <div className="font-display-italic text-[13px] text-copper-deep mt-0.5">
-                        Sınıf 6 · Sınıf 3
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* SVG Sankey + node'lar */}
-                  <div className="relative" style={{ height: 280 }}>
-                    {/* Bantlar — SVG */}
-                    <svg
-                      className="absolute inset-0 w-full h-full"
-                      viewBox="0 0 600 280"
-                      preserveAspectRatio="none"
-                    >
-                      <defs>
-                        <linearGradient id="bandMajor" x1="0%" x2="100%">
-                          <stop offset="0%" stopColor="var(--copper)" stopOpacity="0.55" />
-                          <stop offset="100%" stopColor="var(--copper)" stopOpacity="0.28" />
-                        </linearGradient>
-                        <linearGradient id="bandMinor" x1="0%" x2="100%">
-                          <stop offset="0%" stopColor="var(--copper-deep)" stopOpacity="0.55" />
-                          <stop offset="100%" stopColor="var(--copper-deep)" stopOpacity="0.32" />
-                        </linearGradient>
-                      </defs>
-
-                      {/* Bant 1 — 600 SATIŞLAR (10.000 / 12.000 = %83.3, üst kısmı kaplar) */}
-                      {/* Sol kenar y=20→220 (200px), sağ kenar y=10→210 (200px) */}
-                      <path
-                        className="sankey-band sankey-band-1"
-                        d="M 130,20 L 130,220 C 280,220 320,210 470,210 L 470,10 C 320,10 280,20 130,20 Z"
-                        fill="url(#bandMajor)"
-                      />
-
-                      {/* Bant 2 — 391 KDV (2.000 / 12.000 = %16.7) */}
-                      {/* Sol kenar y=220→260 (40px), sağ kenar y=230→270 (40px) */}
-                      <path
-                        className="sankey-band sankey-band-2"
-                        d="M 130,220 L 130,260 C 280,260 320,270 470,270 L 470,230 C 320,230 280,220 130,220 Z"
-                        fill="url(#bandMinor)"
-                      />
-
-                      {/* Bant etiketleri */}
-                      <text
-                        x="300"
-                        y="118"
-                        textAnchor="middle"
-                        className="sankey-label-major"
-                      >
-                        10.000,00 ₺
-                      </text>
-                      <text
-                        x="300"
-                        y="252"
-                        textAnchor="middle"
-                        className="sankey-label-minor"
-                      >
-                        2.000,00 ₺
-                      </text>
-                    </svg>
-
-                    {/* Sol node: 100 KASA */}
-                    <Reveal delay={0.2}>
-                      <div className="sankey-node sankey-node-left">
-                        <div className="sankey-node-tag">Borç ↓</div>
-                        <div className="sankey-node-kod">100</div>
-                        <div className="sankey-node-ad">KASA</div>
-                        <div className="sankey-node-tutar">12.000,00</div>
-                        <div className="sankey-node-aciklama">Kasaya nakit girdi</div>
-                      </div>
-                    </Reveal>
-
-                    {/* Sağ üst node: 600 SATIŞLAR */}
-                    <Reveal delay={0.35}>
-                      <div className="sankey-node sankey-node-right sankey-node-major">
-                        <div className="sankey-node-tag">Alacak ↑</div>
-                        <div className="sankey-node-kod">600</div>
-                        <div className="sankey-node-ad">YURT İÇİ SATIŞLAR</div>
-                        <div className="sankey-node-tutar">10.000,00</div>
-                        <div className="sankey-node-aciklama">Gelir oluştu</div>
-                      </div>
-                    </Reveal>
-
-                    {/* Sağ alt node: 391 KDV */}
-                    <Reveal delay={0.5}>
-                      <div className="sankey-node sankey-node-right sankey-node-minor">
-                        <div className="sankey-node-tag">Alacak ↑</div>
-                        <div className="sankey-node-kod">391</div>
-                        <div className="sankey-node-ad">HES. KDV</div>
-                        <div className="sankey-node-tutar">2.000,00</div>
-                      </div>
-                    </Reveal>
-                  </div>
-                </div>
-
-                {/* Alt denge satırı */}
-                <Reveal delay={0.65}>
-                  <div className="border-t border-line bg-surface-2/40 px-6 py-3.5 flex items-center justify-between gap-4 flex-wrap font-mono text-[11px] tracking-[0.16em] uppercase">
-                    <span className="text-ink-mute font-bold">
-                      Toplam giriş{' '}
-                      <span className="text-ink ml-1.5 tnum">12.000,00</span>
-                    </span>
-                    <span className="font-display-italic normal-case tracking-normal text-[13px] text-copper-deep">
-                      eşittir
-                    </span>
-                    <span className="text-ink-mute font-bold">
-                      Toplam dağılım{' '}
-                      <span className="text-ink ml-1.5 tnum">12.000,00</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold ml-auto">
-                      <Icon name="CheckCircle2" size={13} />
-                      Dengeli
-                    </span>
-                  </div>
-                </Reveal>
               </div>
             </Reveal>
 
             {/* Alt not */}
-            <Reveal delay={0.75}>
+            <Reveal delay={0.6}>
               <div className="mt-4 flex items-start gap-2 text-[12.5px] text-ink-soft leading-snug">
                 <Icon
-                  name="Info"
+                  name="Sparkles"
                   size={13}
                   className="text-copper-deep mt-0.5 flex-shrink-0"
                 />
                 <span>
-                  Bant kalınlığı{' '}
-                  <em className="font-display-italic">tutarla orantılıdır</em>:
-                  bir borç hesabından, ona karşılık gelen alacak hesaplarına dağılan
-                  para akışını görsel olarak izleyebilirsin.
+                  Bir senaryo TDHP üzerinde belirli{' '}
+                  <em className="font-display-italic">hücreleri ışıldatır</em>: işlem
+                  sınıflar arasında gezinir, denge sağlanana kadar durmaz.
                 </span>
               </div>
             </Reveal>
