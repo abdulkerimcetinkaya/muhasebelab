@@ -15,99 +15,101 @@
   --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
   --font-serif: 'Fraunces', Georgia, serif;
 
-  /* Yüzey — soft sage zemin, saf beyaz floating kartlar */
-  --bg: #ebf0e8;
-  --bg-warm: #e3eae0;
-  --bg-tint: #f1f5ee;
+  /* Yüzey — sıcak cream zemin, saf beyaz floating kartlar */
+  --bg: #f7f8f0;
+  --bg-warm: #eef0e3;
+  --bg-tint: #fbfcf5;
   --surface: #ffffff;
-  --surface-2: #f6f8f4;
-  --surface-tint: #faf6ef;
+  --surface-2: #f1f3e7;
+  --surface-tint: #f4f6e9;
 
-  /* Mürekkep — derin yeşilimsi grafit */
-  --ink: #14181a;
-  --ink-soft: #4d5450;
-  --ink-mute: #8a8e89;
-  --ink-quiet: #b8bcb6;
+  /* Mürekkep — derin slate mavisi */
+  --ink: #355872;
+  --ink-soft: #5a748e;
+  --ink-mute: #8b9dae;
+  --ink-quiet: #b8c2cd;
 
-  /* Hairlines */
-  --line: #d6dcd1;
-  --line-soft: #e2e7dd;
-  --line-strong: #c2c9bc;
+  /* Hairlines — cream tonlu */
+  --line: #d8dcc9;
+  --line-soft: #e5e8d6;
+  --line-strong: #bfc5ab;
 
-  /* Pastel aksanlar — qvery ailesi ama özgün denge */
-  --mint: #a6d9c7;
-  --mint-deep: #6db89f;
-  --mint-soft: #d6ece2;
+  /* Aksanlar — gökyüzü mavisi tonal palet */
+  --mint: #9cd5ff;       /* light sky — birincil cool aksan */
+  --mint-deep: #7aaace;  /* mid sky — hover/text */
+  --mint-soft: #e1efff;  /* tint */
 
-  --peach: #f4b5a6;
-  --peach-deep: #ec8a72;
-  --peach-soft: #fbdcd2;
+  --peach: #4b7898;      /* lighter slate — ikincil kontrast aksan */
+  --peach-deep: #355872; /* deep slate */
+  --peach-soft: #d9e3ec; /* tint */
 
-  --jade: #5bbf8e; /* energy / live / streak */
-  --jade-soft: #c9e8d5;
-  --jade-glow: rgba(91, 191, 142, 0.45);
+  --jade: #7aaace;       /* mid sky — live/streak */
+  --jade-soft: #dcedfa;
+  --jade-glow: rgba(122, 170, 206, 0.5);
 
-  --primary: #14181a; /* ink siyahı = primary CTA */
-  --primary-deep: #000000;
+  --primary: #355872;    /* deep slate = primary CTA */
+  --primary-deep: #1f3856;
 
-  --premium: #f59e0b;
-  --premium-deep: #d97706;
-  --premium-soft: #fef0d4;
+  /* Sistem renkleri — paletle uyumlu, fonksiyonel ayrı kalır */
+  --premium: #c5985a;
+  --premium-deep: #9d7440;
+  --premium-soft: #f1e6cd;
 
-  --success: #4ca678;
-  --success-soft: #d1ebe0;
-  --danger: #e57360;
-  --danger-soft: #fbdacf;
+  --success: #6b9d7e;
+  --success-soft: #dceae0;
 
-  /* Gölgeler */
-  --shadow-xs: 0 1px 2px rgba(20, 24, 26, 0.04);
-  --shadow-sm: 0 2px 6px rgba(20, 24, 26, 0.05), 0 1px 2px rgba(20, 24, 26, 0.04);
-  --shadow-md: 0 6px 20px -6px rgba(20, 24, 26, 0.1), 0 2px 6px -2px rgba(20, 24, 26, 0.06);
-  --shadow-lg: 0 18px 50px -12px rgba(20, 24, 26, 0.16), 0 6px 16px -6px rgba(20, 24, 26, 0.08);
-  --shadow-xl: 0 32px 80px -12px rgba(20, 24, 26, 0.22), 0 10px 30px -10px rgba(20, 24, 26, 0.1);
-  --shadow-mint: 0 12px 32px -8px rgba(109, 184, 159, 0.45);
-  --shadow-peach: 0 12px 32px -8px rgba(236, 138, 114, 0.45);
+  --danger: #c2807a;
+  --danger-soft: #eedad7;
+
+  /* Gölgeler — slate tonu */
+  --shadow-xs: 0 1px 2px rgba(53, 88, 114, 0.05);
+  --shadow-sm: 0 2px 6px rgba(53, 88, 114, 0.06), 0 1px 2px rgba(53, 88, 114, 0.04);
+  --shadow-md: 0 6px 20px -6px rgba(53, 88, 114, 0.12), 0 2px 6px -2px rgba(53, 88, 114, 0.06);
+  --shadow-lg: 0 18px 50px -12px rgba(53, 88, 114, 0.18), 0 6px 16px -6px rgba(53, 88, 114, 0.08);
+  --shadow-xl: 0 32px 80px -12px rgba(53, 88, 114, 0.24), 0 10px 30px -10px rgba(53, 88, 114, 0.1);
+  --shadow-mint: 0 12px 32px -8px rgba(122, 170, 206, 0.5);
+  --shadow-peach: 0 12px 32px -8px rgba(53, 88, 114, 0.4);
 }
 
 .dark {
-  --bg: #0f1714;
-  --bg-warm: #131a17;
-  --bg-tint: #161e1a;
-  --surface: #1a221e;
-  --surface-2: #1f2924;
-  --surface-tint: #22281f;
+  --bg: #0e1620;
+  --bg-warm: #121b27;
+  --bg-tint: #16202d;
+  --surface: #1a2532;
+  --surface-2: #1f2c3c;
+  --surface-tint: #1e2a39;
 
-  --ink: #ecf2ec;
-  --ink-soft: #b4bcb4;
-  --ink-mute: #767e76;
-  --ink-quiet: #4d544d;
+  --ink: #f1f5e8;
+  --ink-soft: #b6c5d2;
+  --ink-mute: #7a8a99;
+  --ink-quiet: #4d5a6a;
 
-  --line: #2a3530;
-  --line-soft: #1f2823;
-  --line-strong: #3a4540;
+  --line: #2a3849;
+  --line-soft: #1f2c3c;
+  --line-strong: #3a4858;
 
-  --mint: #94d2c1;
-  --mint-deep: #4ea58c;
-  --mint-soft: rgba(148, 210, 193, 0.16);
+  --mint: #9cd5ff;
+  --mint-deep: #7aaace;
+  --mint-soft: rgba(156, 213, 255, 0.18);
 
-  --peach: #f0a692;
-  --peach-deep: #d97a5f;
-  --peach-soft: rgba(240, 166, 146, 0.14);
+  --peach: #7aaace;
+  --peach-deep: #9cd5ff;
+  --peach-soft: rgba(122, 170, 206, 0.18);
 
-  --jade: #6cd2a0;
-  --jade-soft: rgba(108, 210, 160, 0.16);
+  --jade: #9cd5ff;
+  --jade-soft: rgba(156, 213, 255, 0.16);
 
-  --primary: #ecf2ec;
-  --primary-deep: #ffffff;
+  --primary: #9cd5ff;
+  --primary-deep: #7aaace;
 
-  --premium: #fbbf24;
-  --premium-deep: #f59e0b;
-  --premium-soft: rgba(251, 191, 36, 0.14);
+  --premium: #d8b06a;
+  --premium-deep: #c5985a;
+  --premium-soft: rgba(216, 176, 106, 0.16);
 
-  --success: #6cd2a0;
-  --success-soft: rgba(108, 210, 160, 0.14);
-  --danger: #f08977;
-  --danger-soft: rgba(240, 137, 119, 0.14);
+  --success: #88b89a;
+  --success-soft: rgba(136, 184, 154, 0.16);
+  --danger: #d59890;
+  --danger-soft: rgba(213, 152, 144, 0.14);
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.45);
