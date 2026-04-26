@@ -991,14 +991,15 @@ input[type='number'] { -moz-appearance: textfield; }
 }
 
 /* ---------------------------------------------------------------
-   Footer dark — Ventriloc tarzı koyu kapanış
+   Footer — açık temada açık, koyu temada koyu
 --------------------------------------------------------------- */
 
 .footer-dark {
-  background: #14181a;
-  color: #f5f4ee;
+  background: var(--surface-2);
+  color: var(--ink);
   position: relative;
   overflow: hidden;
+  border-top: 1px solid var(--line);
 }
 .footer-dark .footer-mega-mark {
   position: absolute;
@@ -1006,19 +1007,28 @@ input[type='number'] { -moz-appearance: textfield; }
   bottom: -60px;
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(220px, 28vw, 480px);
+  font-size: clamp(180px, 22vw, 360px);
   font-weight: 400;
   color: var(--copper);
   line-height: 0.8;
   pointer-events: none;
-  opacity: 0.95;
+  opacity: 0.4;
   user-select: none;
 }
 .footer-dark a {
-  color: rgba(245, 244, 238, 0.7);
+  color: var(--ink-soft, #4a5d75);
   transition: color 0.18s;
 }
-.footer-dark a:hover { color: #fff; }
+.footer-dark a:hover { color: var(--ink); }
+
+.dark .footer-dark {
+  background: #14181a;
+  color: #f5f4ee;
+  border-top: 0;
+}
+.dark .footer-dark .footer-mega-mark { opacity: 0.95; }
+.dark .footer-dark a { color: rgba(245, 244, 238, 0.7); }
+.dark .footer-dark a:hover { color: #fff; }
 
 .lang-pill {
   display: inline-flex;

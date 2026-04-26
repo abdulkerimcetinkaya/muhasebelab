@@ -523,6 +523,21 @@ const ORNEK_KAYIT = [
 ];
 
 /* Arka planda yüzen hesap kodları — radar tarzı atmosfer */
+// Orbital için kısa etiketler — uzun ünite adları sayfa kenarına taşmasın
+const ORBITAL_KISA_AD: Record<string, string> = {
+  kasa: 'Kasa',
+  banka: 'Banka',
+  mal: 'Ticari Mal',
+  senet: 'Çek / Senet',
+  kdv: 'KDV',
+  amortisman: 'Amortisman',
+  personel: 'Personel',
+  'donem-sonu': 'Dönem Sonu',
+  'supheli-alacaklar': 'Şüpheli Alacak',
+  reeskont: 'Reeskont',
+  kambiyo: 'Kambiyo',
+};
+
 const FLOATING_CODES = [
   { kod: '100 KASA', x: '8%', y: '18%' },
   { kod: '102 BANKALAR', x: '92%', y: '14%' },
@@ -952,14 +967,15 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
 
         {/* ORBITAL ÜNİTE İKONLARI — sahne 3 */}
         <motion.div
-          className="absolute top-1/2 right-[8%] sm:right-[10%] lg:right-[12%] -translate-y-1/2 pointer-events-none"
+          className="absolute top-1/2 right-[28%] sm:right-[30%] lg:right-[34%] -translate-y-1/2 pointer-events-none"
           style={{ opacity: orbitOpacity, scale: orbitScale }}
         >
           {uniteler.slice(0, 11).map((u, i) => {
             const angle = (i / 11) * Math.PI * 2 - Math.PI / 2;
-            const radius = 280;
+            const radius = 160;
             const x = Math.cos(angle) * radius;
             const y = Math.sin(angle) * radius;
+            const kisaAd = ORBITAL_KISA_AD[u.id] ?? u.ad;
             return (
               <motion.div
                 key={u.id}
@@ -975,9 +991,9 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
                 transition={{ delay: i * 0.04, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="flex flex-col items-center gap-1">
-                  <Thiings name={u.thiingsIcon} size={44} />
+                  <Thiings name={u.thiingsIcon} size={40} />
                   <span className="font-mono text-[10px] text-ink-soft tracking-wider whitespace-nowrap bg-bg/80 backdrop-blur px-1.5 py-0.5 rounded">
-                    {u.ad}
+                    {kisaAd}
                   </span>
                 </div>
               </motion.div>
