@@ -16,6 +16,7 @@ import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
 import { bugununTarihi, paraFormat } from '../lib/format';
 import { yanlisAnaliziYap, type YanlisAnaliz } from '../lib/kontrol';
 import { aiYanlisAnalizi } from '../lib/ai';
+import { authDonusYaz } from '../lib/auth-donus';
 import type { CozumSatir, FisBilgi, FisTuru, Soru, SoruWithUnite, UserRow } from '../types';
 
 type Durum = 'bos' | 'dogru' | 'yanlis';
@@ -778,7 +779,7 @@ export const SoruEkrani = ({
 }: WrapperProps) => {
   const { soruId } = useParams<{ soruId: string }>();
   const nav = useNavigate();
-  const { yukleniyor } = useAuth();
+  const { user, yukleniyor } = useAuth();
   const { tumSorular, yukleniyor: uniteYukleniyor } = useUniteler();
   const soru = tumSorular.find((s) => s.id === soruId);
 
@@ -796,8 +797,8 @@ export const SoruEkrani = ({
 
   if (!soru) return null;
 
-  // Anonim çözüm desteklenir — ilerleme localStorage'a yazılır,
-  // kullanıcı sonradan giriş yaparsa otomatik buluta migration olur.
+  if (!user) return <GirisDuvari soru={soru} />;
+
   return (
     <SoruEkraniIci
       soru={soru}
@@ -809,3 +810,71 @@ export const SoruEkrani = ({
   );
 };
 
+const GirisDuvari = ({ soru }: { soru: SoruWithUnite }) => {
+  const nav = useNavigate();
+  const { uniteler } = useUniteler();
+  const unite = uniteler.find((u) => u.id === soru.uniteId);
+
+  const giriseGit = () => {
+    authDonusYaz(`/problemler/${soru.id}`);
+    nav('/giris');
+  };
+
+  return (
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+      <button
+        onClick={() => nav('/problemler')}
+        className="flex items-center gap-2 text-sm text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 mb-8 font-semibold"
+      >
+        <Icon name="ArrowLeft" size={14} />
+        <span>Tüm Problemler</span>
+      </button>
+
+      <div className="flex items-center gap-3 mb-3">
+        {unite && <Thiings name={unite.thiingsIcon} size={24} />}
+        <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+          {unite?.ad}
+        </div>
+        <span
+          className={`text-[9px] tracking-[0.2em] uppercase font-bold ${ZORLUK_STIL[soru.zorluk]}`}
+        >
+          {ZORLUK_AD[soru.zorluk]} · {ZORLUK_PUAN[soru.zorluk]} puan
+        </span>
+      </div>
+      <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-4 font-bold">
+        {soru.baslik}
+      </h1>
+      <p className="text-base text-stone-600 dark:text-zinc-400 leading-relaxed font-medium mb-10">
+        {soru.senaryo}
+      </p>
+
+      <div className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 rounded-2xl p-8 md:p-10 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mx-auto mb-5">
+          <Icon name="Lock" size={22} className="text-blue-700 dark:text-blue-400" />
+        </div>
+        <h2 className="font-display text-2xl font-bold tracking-tight mb-3">
+          Soruyu çözmek için giriş yap
+        </h2>
+        <p className="text-sm text-stone-600 dark:text-zinc-400 leading-relaxed font-medium max-w-md mx-auto mb-7">
+          Ücretsiz hesap ile ilerlemeni kaydet, rozet kazan, seriyi büyüt. 30 saniyede
+          başlayabilirsin.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={giriseGit}
+            className="bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center justify-center gap-2 rounded-xl shadow-md"
+          >
+            <Icon name="LogIn" size={14} />
+            Giriş Yap / Kayıt Ol
+          </button>
+          <button
+            onClick={() => nav('/problemler')}
+            className="border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center justify-center gap-2 rounded-xl"
+          >
+            Soru Listesine Dön
+          </button>
+        </div>
+      </div>
+    </main>
+  );
+};
