@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Icon } from './Icon';
 import { HESAP_PLANI } from '../data/hesap-plani';
-import { SINIF_ISIMLERI } from '../data/sabitler';
+import { GRUP_ISIMLERI, SINIF_ISIMLERI } from '../data/sabitler';
 import type { Hesap } from '../types';
 
 interface Props {
@@ -23,11 +23,14 @@ export const HesapPlaniListesi = ({ onKapat, modal = false }: Props) => {
     return sonuc;
   }, [arama, seciliSinif]);
 
+  // İki seviyeli gruplandırma: sınıf → grup (2 haneli) → hesaplar
   const gruplanmis = useMemo(() => {
-    const g: Record<string, Hesap[]> = {};
+    const g: Record<string, Record<string, Hesap[]>> = {};
     filtrelenmis.forEach((h) => {
-      if (!g[h.sinif]) g[h.sinif] = [];
-      g[h.sinif].push(h);
+      const grup = h.kod.substring(0, 2);
+      if (!g[h.sinif]) g[h.sinif] = {};
+      if (!g[h.sinif][grup]) g[h.sinif][grup] = [];
+      g[h.sinif][grup].push(h);
     });
     return g;
   }, [filtrelenmis]);
@@ -79,38 +82,52 @@ export const HesapPlaniListesi = ({ onKapat, modal = false }: Props) => {
           .sort()
           .map((sinif) => (
             <div key={sinif} className="mb-6">
-              <div className="flex items-baseline gap-3 mb-2 pb-2 border-b border-stone-900/20 dark:border-zinc-700">
+              <div className="flex items-baseline gap-3 mb-3 pb-2 border-b border-stone-900/20 dark:border-zinc-700">
                 <div className="font-display text-xl font-bold">{sinif}</div>
                 <div className="text-xs tracking-wide text-stone-600 dark:text-zinc-400 uppercase font-bold">
                   {SINIF_ISIMLERI[sinif]}
                 </div>
               </div>
-              <div className={modal ? 'grid grid-cols-1 md:grid-cols-2 gap-x-6' : ''}>
-                {gruplanmis[sinif].map((h) => (
-                  <div
-                    key={h.kod}
-                    className="flex items-center gap-3 py-1.5 border-b border-stone-900/5 dark:border-zinc-800 text-sm"
-                  >
-                    <div className="font-mono font-bold w-10">{h.kod}</div>
-                    <div className="flex-1 text-xs font-medium">{h.ad}</div>
-                    <div
-                      className={`text-[9px] tracking-widest uppercase font-bold ${
-                        h.tur === 'AKTİF'
-                          ? 'text-blue-700 dark:text-blue-400'
-                          : h.tur === 'PASİF'
-                            ? 'text-amber-700 dark:text-amber-400'
-                            : h.tur === 'GELİR'
-                              ? 'text-emerald-700 dark:text-emerald-400'
-                              : h.tur === 'GİDER'
-                                ? 'text-red-700 dark:text-red-400'
-                                : 'text-stone-500'
-                      }`}
-                    >
-                      {h.tur}
+              {Object.keys(gruplanmis[sinif])
+                .sort()
+                .map((grup) => (
+                  <div key={grup} className="mb-4">
+                    <div className="flex items-baseline gap-2 mt-3 mb-1.5">
+                      <div className="font-mono text-sm font-bold text-stone-700 dark:text-zinc-300">
+                        {grup}
+                      </div>
+                      <div className="text-[11px] tracking-wide text-stone-500 dark:text-zinc-500 uppercase font-bold">
+                        {GRUP_ISIMLERI[grup] ?? ''}
+                      </div>
+                    </div>
+                    <div className={modal ? 'grid grid-cols-1 md:grid-cols-2 gap-x-6' : ''}>
+                      {gruplanmis[sinif][grup].map((h) => (
+                        <div
+                          key={h.kod}
+                          className="flex items-center gap-3 py-1.5 border-b border-stone-900/5 dark:border-zinc-800 text-sm"
+                        >
+                          <div className="font-mono font-bold w-10">{h.kod}</div>
+                          <div className="flex-1 text-xs font-medium">{h.ad}</div>
+                          <div
+                            className={`text-[9px] tracking-widest uppercase font-bold ${
+                              h.tur === 'AKTİF'
+                                ? 'text-blue-700 dark:text-blue-400'
+                                : h.tur === 'PASİF'
+                                  ? 'text-amber-700 dark:text-amber-400'
+                                  : h.tur === 'GELİR'
+                                    ? 'text-emerald-700 dark:text-emerald-400'
+                                    : h.tur === 'GİDER'
+                                      ? 'text-red-700 dark:text-red-400'
+                                      : 'text-stone-500'
+                            }`}
+                          >
+                            {h.tur}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
-              </div>
             </div>
           ))}
         {filtrelenmis.length === 0 && (
