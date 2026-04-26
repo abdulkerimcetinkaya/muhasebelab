@@ -1501,222 +1501,178 @@ const TdhpDiagramSection = () => {
             </Reveal>
           </div>
 
-          {/* SAĞ — TDHP Periyodik Özet + Aktif İşlem Vurgusu (7/12) */}
+          {/* SAĞ — Tutarın Anatomisi: KDV ayrıştırma akış diyagramı (7/12) */}
           <div className="lg:col-span-7 relative">
             <Reveal delay={0.1}>
-              <div className="periyodik-card">
-                {/* Üst bar — meta */}
-                <div className="periyodik-baslik">
+              <div className="anatomi-card">
+                {/* Üst — senaryo başlığı */}
+                <div className="anatomi-header">
                   <div>
                     <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
-                      Hesap Planı · Periyodik Özet
+                      Senaryo
                     </div>
                     <div className="font-display text-[16px] font-bold text-ink mt-0.5 leading-none">
-                      7 sınıf, ana hesap{' '}
-                      <span className="font-display-italic text-copper-deep">haritası</span>
+                      Peşin Mal Alışı{' '}
+                      <span className="font-display-italic text-ink-soft text-[13px]">
+                        — fatura tutarı KDV dahil
+                      </span>
                     </div>
                   </div>
-                  <div className="periyodik-aktif-rozet">
-                    <span className="periyodik-aktif-nokta" />
-                    <span className="font-mono text-[10px] tracking-[0.16em] uppercase font-bold">
-                      Canlı senaryo
-                    </span>
+                  <div className="anatomi-tutar-cip">12.000,00 ₺</div>
+                </div>
+
+                {/* Akış diyagramı */}
+                <div className="anatomi-flow">
+                  <svg
+                    className="anatomi-svg"
+                    viewBox="0 0 600 440"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    {/* Tutardan ayrım noktasına */}
+                    <line x1="300" y1="50" x2="300" y2="125" className="hat hat-ana" />
+
+                    {/* Ayrım noktası (kavşak) */}
+                    <circle cx="300" cy="130" r="4" className="kavsak" />
+
+                    {/* Sol dal: matrah → 153 */}
+                    <path d="M 300 130 Q 300 165, 200 175 L 130 200" className="hat hat-sol" />
+                    {/* Sağ dal: KDV → 191 */}
+                    <path d="M 300 130 Q 300 165, 400 175 L 470 200" className="hat hat-sag" />
+
+                    {/* Sol → 153 hesabı dikey */}
+                    <line x1="130" y1="245" x2="130" y2="295" className="hat hat-aktarim" />
+                    {/* Sağ → 191 hesabı dikey */}
+                    <line x1="470" y1="245" x2="470" y2="295" className="hat hat-aktarim" />
+
+                    {/* 153 ve 191 birleşim noktası → 100 KASA */}
+                    <path
+                      d="M 130 360 Q 130 395, 230 400 L 280 405"
+                      className="hat hat-karsi"
+                    />
+                    <path
+                      d="M 470 360 Q 470 395, 370 400 L 320 405"
+                      className="hat hat-karsi"
+                    />
+
+                    {/* Etiketler — SVG text */}
+                    <text x="300" y="105" className="hat-etiket-ayir">
+                      ayrıştır
+                    </text>
+                    <text x="170" y="195" className="hat-etiket-tutar">
+                      10.000,00
+                    </text>
+                    <text x="170" y="207" className="hat-etiket-aciklama">
+                      matrah
+                    </text>
+                    <text x="430" y="195" className="hat-etiket-tutar">
+                      2.000,00
+                    </text>
+                    <text x="430" y="207" className="hat-etiket-aciklama">
+                      KDV %20
+                    </text>
+                    <text x="300" y="395" className="hat-etiket-karsi">
+                      karşılığında peşin ödeme
+                    </text>
+                  </svg>
+
+                  {/* Üst tutar kartı */}
+                  <div className="anatomi-pos anatomi-tutar-karti">
+                    <div className="text-[9px] font-mono tracking-[0.22em] uppercase text-ink-mute font-bold">
+                      Toplam ödenen
+                    </div>
+                    <div className="font-display text-[28px] font-bold text-ink leading-none mt-1 tnum">
+                      12.000<span className="text-ink-mute">,00</span>
+                      <span className="text-[16px] font-mono text-copper-deep ml-1">₺</span>
+                    </div>
+                    <div className="text-[10px] font-display-italic text-ink-soft mt-1">
+                      KDV dahil tek tutar
+                    </div>
+                  </div>
+
+                  {/* Sol hesap: 153 TİCARİ MAL */}
+                  <div className="anatomi-pos anatomi-hesap anatomi-hesap-sol">
+                    <span className="hesap-rozet">①</span>
+                    <div className="hesap-kod">153</div>
+                    <div className="hesap-ad">TİCARİ MAL</div>
+                    <div className="hesap-tutar">10.000,00</div>
+                    <div className="hesap-taraf">
+                      <span>Borç</span>
+                      <Icon name="ArrowUp" size={9} />
+                    </div>
+                  </div>
+
+                  {/* Sağ hesap: 191 İND. KDV */}
+                  <div className="anatomi-pos anatomi-hesap anatomi-hesap-sag">
+                    <span className="hesap-rozet">②</span>
+                    <div className="hesap-kod">191</div>
+                    <div className="hesap-ad">İND. KDV</div>
+                    <div className="hesap-tutar">2.000,00</div>
+                    <div className="hesap-taraf">
+                      <span>Borç</span>
+                      <Icon name="ArrowUp" size={9} />
+                    </div>
+                  </div>
+
+                  {/* Alt hesap: 100 KASA */}
+                  <div className="anatomi-pos anatomi-hesap anatomi-hesap-alt">
+                    <span className="hesap-rozet hesap-rozet-alt">③</span>
+                    <div className="hesap-kod">100</div>
+                    <div className="hesap-ad">KASA</div>
+                    <div className="hesap-tutar">12.000,00</div>
+                    <div className="hesap-taraf hesap-taraf-alacak">
+                      <span>Alacak</span>
+                      <Icon name="ArrowDown" size={9} />
+                    </div>
                   </div>
                 </div>
 
-                {/* Grid — 7 sınıf sütunu */}
-                <div className="periyodik-grid-wrap">
-                  <div className="periyodik-grid">
-                    {[
-                      {
-                        no: '1',
-                        ad: 'Dönen Varlık',
-                        tur: 'Aktif',
-                        hesaplar: [
-                          { kod: '100', ad: 'KASA', aktif: 'borc' as const, sira: 1 },
-                          { kod: '102', ad: 'BANKA' },
-                          { kod: '120', ad: 'ALICI' },
-                          { kod: '153', ad: 'TİC. MAL' },
-                          { kod: '191', ad: 'İND. KDV' },
-                        ],
-                      },
-                      {
-                        no: '2',
-                        ad: 'Duran Varlık',
-                        tur: 'Aktif',
-                        hesaplar: [
-                          { kod: '252', ad: 'BİNA' },
-                          { kod: '253', ad: 'MAKİNE' },
-                          { kod: '254', ad: 'TAŞIT' },
-                          { kod: '255', ad: 'DEMİRB.' },
-                          { kod: '257', ad: 'AMORT.' },
-                        ],
-                      },
-                      {
-                        no: '3',
-                        ad: 'KV Yab. Kayn.',
-                        tur: 'Pasif',
-                        hesaplar: [
-                          { kod: '320', ad: 'SATICI' },
-                          { kod: '321', ad: 'BORÇ S.' },
-                          { kod: '335', ad: 'PERSON.' },
-                          { kod: '391', ad: 'HES. KDV', aktif: 'alacak' as const, sira: 3 },
-                          { kod: '361', ad: 'SGK' },
-                        ],
-                      },
-                      {
-                        no: '4',
-                        ad: 'UV Yab. Kayn.',
-                        tur: 'Pasif',
-                        hesaplar: [
-                          { kod: '400', ad: 'BANKA K.' },
-                          { kod: '420', ad: 'SATICI' },
-                          { kod: '472', ad: 'KIDEM' },
-                          { kod: '480', ad: 'GEL. YIL' },
-                        ],
-                      },
-                      {
-                        no: '5',
-                        ad: 'Öz Kaynak',
-                        tur: 'Pasif',
-                        hesaplar: [
-                          { kod: '500', ad: 'SERM.' },
-                          { kod: '540', ad: 'YASAL Y.' },
-                          { kod: '570', ad: 'GEÇ. KÂR' },
-                          { kod: '590', ad: 'D. KÂR' },
-                        ],
-                      },
-                      {
-                        no: '6',
-                        ad: 'Gelir Tablosu',
-                        tur: 'Gelir',
-                        hesaplar: [
-                          { kod: '600', ad: 'YİS', aktif: 'alacak' as const, sira: 2 },
-                          { kod: '621', ad: 'STMM' },
-                          { kod: '642', ad: 'FAİZ G.' },
-                          { kod: '660', ad: 'KV BORÇ' },
-                          { kod: '690', ad: 'D. K/Z' },
-                        ],
-                      },
-                      {
-                        no: '7',
-                        ad: 'Maliyet',
-                        tur: 'Maliyet',
-                        hesaplar: [
-                          { kod: '710', ad: 'D. İLK M' },
-                          { kod: '730', ad: 'GÜG' },
-                          { kod: '760', ad: 'PSDG' },
-                          { kod: '770', ad: 'GYG' },
-                          { kod: '790', ad: 'GÇG' },
-                        ],
-                      },
-                    ].map((sinif, sIdx) => (
-                      <div
-                        key={sinif.no}
-                        className="periyodik-sutun"
-                        style={{ animationDelay: `${0.15 + sIdx * 0.05}s` }}
-                      >
-                        <div className="periyodik-sutun-baslik">
-                          <div className="periyodik-sinif-no">{sinif.no}</div>
-                          <div className="periyodik-sinif-meta">
-                            <div className="periyodik-sinif-ad">{sinif.ad}</div>
-                            <div className="periyodik-sinif-tur">{sinif.tur}</div>
-                          </div>
-                        </div>
-
-                        <div className="periyodik-sutun-hat" />
-
-                        <div className="periyodik-sutun-hucreler">
-                          {sinif.hesaplar.map((h) => {
-                            const aktif = (h as { aktif?: 'borc' | 'alacak' }).aktif;
-                            const sira = (h as { sira?: number }).sira;
-                            return (
-                              <div
-                                key={h.kod}
-                                className={`periyodik-hucre${
-                                  aktif ? ` periyodik-hucre-aktif periyodik-${aktif}` : ''
-                                }`}
-                              >
-                                {sira && <span className="periyodik-hucre-sira">{sira}</span>}
-                                <div className="periyodik-hucre-kod">{h.kod}</div>
-                                <div className="periyodik-hucre-ad">{h.ad}</div>
-                                {aktif && (
-                                  <div className="periyodik-hucre-etiket">
-                                    {aktif === 'borc' ? 'Borç' : 'Alacak'}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Alt bar — akış izleyicisi */}
-                <div className="periyodik-alt-bar">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
-                      Senaryo
-                    </span>
-                    <span className="font-display-italic text-[14px] text-ink">
-                      Peşin mal satışı
-                    </span>
-                  </div>
-
-                  <div className="periyodik-yol-zinciri">
-                    <span className="periyodik-yol-bilgi">
-                      <span className="periyodik-yol-num">1</span>
-                      <span className="periyodik-yol-kod">100</span>
-                      <span className="periyodik-yol-not">borç</span>
-                    </span>
-
-                    <Icon name="ArrowRight" size={11} className="text-copper-deep" />
-
-                    <span className="periyodik-yol-bilgi">
-                      <span className="periyodik-yol-num">2</span>
-                      <span className="periyodik-yol-kod">600</span>
-                      <span className="periyodik-yol-not">alacak</span>
-                    </span>
-
-                    <span className="font-mono text-[11px] text-copper-deep font-bold">+</span>
-
-                    <span className="periyodik-yol-bilgi">
-                      <span className="periyodik-yol-num">3</span>
-                      <span className="periyodik-yol-kod">391</span>
-                      <span className="periyodik-yol-not">alacak</span>
-                    </span>
-                  </div>
-
-                  <div className="periyodik-tutar">
+                {/* Alt — denge çubuğu */}
+                <div className="anatomi-footer">
+                  <div className="flex items-baseline gap-2">
                     <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute font-bold">
-                      Tutar
+                      Borç
                     </span>
-                    <span className="font-mono text-[15px] tnum font-bold text-copper-deep">
-                      12.000,00 ₺
+                    <span className="font-mono text-[14px] tnum font-bold text-ink">
+                      12.000,00
                     </span>
                   </div>
+                  <span className="font-display-italic text-[13px] text-copper-deep">
+                    eşittir
+                  </span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute font-bold">
+                      Alacak
+                    </span>
+                    <span className="font-mono text-[14px] tnum font-bold text-ink">
+                      12.000,00
+                    </span>
+                  </div>
+                  <span className="anatomi-denge-cip">
+                    <Icon name="CheckCircle2" size={12} />
+                    Dengeli
+                  </span>
                 </div>
               </div>
             </Reveal>
 
-            {/* Alt not */}
             <Reveal delay={0.6}>
               <div className="mt-4 flex items-start gap-2 text-[12.5px] text-ink-soft leading-snug">
                 <Icon
-                  name="Sparkles"
+                  name="GitFork"
                   size={13}
                   className="text-copper-deep mt-0.5 flex-shrink-0"
                 />
                 <span>
-                  Bir senaryo TDHP üzerinde belirli{' '}
-                  <em className="font-display-italic">hücreleri ışıldatır</em>: işlem
-                  sınıflar arasında gezinir, denge sağlanana kadar durmaz.
+                  Bir tutar kayda alınırken{' '}
+                  <em className="font-display-italic">matrah</em> ve{' '}
+                  <em className="font-display-italic">KDV</em>'ye ayrışır; ayrı
+                  ayrı hesaplara aktarılır. Karşılığında ne ödendiyse o da{' '}
+                  <em className="font-display-italic">alacaklanır</em>.
                 </span>
               </div>
             </Reveal>
           </div>
+
         </div>
       </div>
     </section>

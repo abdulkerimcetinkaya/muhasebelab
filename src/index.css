@@ -957,8 +957,284 @@ input[type='number'] { -moz-appearance: textfield; }
 }
 
 /* ---------------------------------------------------------------
-   TDHP Periyodik Özet (TdhpDiagramSection)
-   Sınıf×ana hesap grid'i + aktif senaryoda vurgulu hücreler
+   Tutarın Anatomisi (TdhpDiagramSection)
+   Tek tutar → matrah + KDV ayrıştırma → hesaplara aktarım → karşılık
+--------------------------------------------------------------- */
+.anatomi-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(31, 58, 95, 0.04),
+    0 12px 32px -16px rgba(31, 58, 95, 0.1);
+}
+
+.anatomi-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-2) 60%, transparent) 0%,
+    color-mix(in srgb, var(--surface-2) 30%, transparent) 100%
+  );
+}
+
+.anatomi-tutar-cip {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--copper-deep);
+  background: color-mix(in srgb, var(--copper) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--copper) 35%, transparent);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Akış container — SVG + absolute HTML node'lar */
+.anatomi-flow {
+  position: relative;
+  aspect-ratio: 600 / 440;
+  background:
+    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--copper) 4%, transparent), transparent 40%),
+    radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--ink) 3%, transparent), transparent 40%);
+}
+
+.anatomi-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Çizgiler */
+.hat {
+  fill: none;
+  stroke: var(--copper);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 5 4;
+  opacity: 0;
+  animation: hatCiz 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hat-ana { animation-delay: 0.3s; }
+.hat-sol, .hat-sag { animation-delay: 0.7s; }
+.hat-aktarim { animation-delay: 1.1s; stroke: var(--ink-mute); }
+.hat-karsi {
+  animation-delay: 1.5s;
+  stroke: var(--copper-deep);
+  stroke-width: 1.8;
+}
+
+@keyframes hatCiz {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 80;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+.kavsak {
+  fill: var(--copper);
+  stroke: var(--surface);
+  stroke-width: 2;
+  stroke-dasharray: none;
+  opacity: 0;
+  animation: kavsakBelir 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+}
+@keyframes kavsakBelir {
+  from { opacity: 0; r: 0; }
+  to { opacity: 1; r: 4; }
+}
+
+/* SVG metin etiketleri */
+.hat-etiket-ayir {
+  font-family: var(--font-serif, 'Instrument Serif', serif);
+  font-style: italic;
+  font-size: 12px;
+  fill: var(--copper-deep);
+  text-anchor: middle;
+}
+.hat-etiket-tutar {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--ink);
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+}
+.hat-etiket-aciklama {
+  font-family: var(--font-serif, 'Instrument Serif', serif);
+  font-style: italic;
+  font-size: 11px;
+  fill: var(--ink-mute);
+  text-anchor: middle;
+}
+.hat-etiket-karsi {
+  font-family: var(--font-serif, 'Instrument Serif', serif);
+  font-style: italic;
+  font-size: 11.5px;
+  fill: var(--copper-deep);
+  text-anchor: middle;
+}
+
+/* HTML node'lar (mutlak konum, %  ile responsive) */
+.anatomi-pos {
+  position: absolute;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(31, 58, 95, 0.06);
+}
+
+/* Üst tutar kartı: orta-üst, geniş */
+.anatomi-tutar-karti {
+  left: 30%;
+  right: 30%;
+  top: 2%;
+  text-align: center;
+  border-color: var(--copper);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--copper) 8%, var(--surface)) 0%,
+      var(--surface) 100%
+    );
+  box-shadow:
+    0 0 0 1px var(--copper),
+    0 6px 18px -6px color-mix(in srgb, var(--copper) 35%, transparent);
+}
+
+/* Hesap kartları */
+.anatomi-hesap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 11px;
+}
+.hesap-rozet {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+  box-shadow: 0 2px 6px rgba(31, 58, 95, 0.15);
+}
+.hesap-rozet-alt { background: var(--copper-deep); }
+
+.hesap-kod {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.hesap-ad {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-top: 3px;
+  line-height: 1;
+}
+.hesap-tutar {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px dashed var(--line);
+}
+.hesap-taraf {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--copper-deep);
+  margin-top: 4px;
+}
+.hesap-taraf-alacak { color: var(--ink-soft); }
+
+/* Konum ayarları (SVG viewBox ile koordinat) */
+.anatomi-hesap-sol  { left: 5%;  top: 56%; width: 23%; }
+.anatomi-hesap-sag  { right: 5%; top: 56%; width: 23%; }
+.anatomi-hesap-alt  { left: 38%; right: 38%; bottom: 4%; text-align: center; }
+.anatomi-hesap-alt .hesap-taraf { justify-content: center; }
+.anatomi-hesap-alt .hesap-tutar { text-align: center; }
+.anatomi-hesap-alt .hesap-kod,
+.anatomi-hesap-alt .hesap-ad { text-align: center; }
+
+/* Alt denge çubuğu */
+.anatomi-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+}
+.anatomi-denge-cip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--success, #2da44e) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success, #2da44e) 40%, transparent);
+  color: var(--success, #166534);
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+/* Mobile — kart küçülünce font da küçülsün */
+@media (max-width: 640px) {
+  .anatomi-tutar-karti { left: 22%; right: 22%; }
+  .anatomi-hesap-sol, .anatomi-hesap-sag { width: 28%; }
+  .anatomi-hesap-alt { left: 30%; right: 30%; }
+  .hesap-kod { font-size: 12px; }
+  .hesap-ad { font-size: 8.5px; }
+}
+
+/* ---------------------------------------------------------------
+   TDHP Periyodik Özet (eski — kullanım dışı, başka yerde lazım olursa kalsın)
 --------------------------------------------------------------- */
 .periyodik-card {
   position: relative;
