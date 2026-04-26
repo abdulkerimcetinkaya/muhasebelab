@@ -739,10 +739,15 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
   const aktifSahne = useAktifSahne(progress);
   const sahne = SAHNELER[aktifSahne];
 
-  // Paper sheet — ilk açılıştan itibaren görünür, scroll'la ölçek değişir
-  const paperScale = useTransform(progress, [0, 0.65, 0.82, 1], [0.94, 1.0, 0.62, 0.62]);
+  // Paper sheet — sahne 1-2'de görünür; sahne 3 boyunca (orbital sahnesi)
+  // gizlenir; sahne 4'te (AI kart) tekrar belirir.
+  const paperScale = useTransform(progress, [0, 0.55, 0.82, 1], [0.94, 1.0, 0.62, 0.62]);
   const paperRotate = useTransform(progress, [0, 0.15, 0.82, 1], [-1.5, 0, 0, -2]);
-  const paperOpacity = useTransform(progress, [0, 0.95, 1], [1, 1, 0.55]);
+  const paperOpacity = useTransform(
+    progress,
+    [0, 0.6, 0.66, 0.78, 0.84, 1],
+    [1, 1, 0, 0, 1, 0.85],
+  );
 
   // Halkalar — start'tan görünür, scroll'la daha çok genişler
   const ringScale1 = useTransform(progress, [0, 1], [0.85, 1.5]);
@@ -760,9 +765,10 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
   const totalOpacity = useTransform(progress, [0.48, 0.54], [0, 1]);
   const aciklamaOpacity = useTransform(progress, [0.54, 0.62], [0, 1]);
 
-  // Orbital ünite ikonları (65% → 82%)
-  const orbitOpacity = useTransform(progress, [0.62, 0.72], [0, 1]);
-  const orbitScale = useTransform(progress, [0.62, 0.72], [0.6, 1]);
+  // Orbital ünite ikonları — yalnızca sahne 3'te görünür; sahne 4'e
+  // geçerken paper geri gelirken orbital fade out olur.
+  const orbitOpacity = useTransform(progress, [0.62, 0.72, 0.78, 0.84], [0, 1, 1, 0]);
+  const orbitScale = useTransform(progress, [0.62, 0.72, 0.78, 0.84], [0.6, 1, 1, 0.7]);
 
   // AI kart slide-in (82% → 100%)
   const aiCardX = useTransform(progress, [0.82, 0.94], [120, 0]);
@@ -965,9 +971,9 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
         </motion.div>
         </div>
 
-        {/* ORBITAL ÜNİTE İKONLARI — sahne 3 */}
+        {/* ORBITAL ÜNİTE İKONLARI — sahne 3 (paper gizliyken sayfa merkezinde) */}
         <motion.div
-          className="absolute top-1/2 right-[28%] sm:right-[30%] lg:right-[34%] -translate-y-1/2 pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           style={{ opacity: orbitOpacity, scale: orbitScale }}
         >
           {uniteler.slice(0, 11).map((u, i) => {
