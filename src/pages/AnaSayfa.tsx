@@ -1501,77 +1501,135 @@ const TdhpDiagramSection = () => {
             </Reveal>
           </div>
 
-          {/* Architecture diagram — SVG bağlantılı kutular */}
+          {/* T-hesap akış görselleştirmesi — borç ve alacak yan yana */}
           <div className="lg:col-span-7 relative">
             <Reveal delay={0.15}>
-              <div
-                className="relative bg-surface border border-line rounded-2xl p-6 sm:p-8"
-                style={{ minHeight: 460 }}
-              >
-                {/* SVG bağlantılar */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 600 460" preserveAspectRatio="none">
-                  {/* Sınıf 1 → Mal */}
-                  <path className="diag-arrow" d="M 110 110 Q 180 110, 180 200 T 250 250" />
-                  {/* Mal → KDV */}
-                  <path className="diag-arrow" d="M 320 250 L 420 200" />
-                  {/* Mal → Satışlar */}
-                  <path className="diag-arrow" d="M 320 290 L 440 320" />
-                  {/* Sınıf 1 → Kasa */}
-                  <path className="diag-arrow" d="M 110 130 L 110 260" />
-                  {/* Kasa → Satış */}
-                  <path className="diag-arrow" d="M 165 280 Q 280 320, 440 360" />
-                  {/* Sınıf 6 → Gider */}
-                  <path className="diag-arrow" d="M 480 140 L 480 200" />
-                </svg>
-
-                {/* Düğümler */}
-                <div className="diag-node" style={{ left: 24, top: 28 }}>
-                  <span className="diag-node-num">Sınıf 1</span>
-                  <span className="diag-node-title">Dönen Varlıklar</span>
-                  <span className="diag-node-sub">100, 102, 120, 153</span>
+              <div className="relative bg-surface border border-line rounded-2xl overflow-hidden">
+                {/* Üst bar — işlem başlığı */}
+                <div className="px-6 py-4 border-b border-line bg-surface-2/40 flex items-baseline justify-between gap-4 flex-wrap">
+                  <div>
+                    <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                      Örnek İşlem
+                    </div>
+                    <div className="font-display text-[17px] font-bold text-ink mt-0.5">
+                      Peşin Mal Satışı{' '}
+                      <span className="font-display-italic text-ink-soft text-[14px]">
+                        — KDV dahil
+                      </span>
+                    </div>
+                  </div>
+                  <div className="font-mono text-[18px] tnum font-bold text-copper-deep">
+                    12.000,00 ₺
+                  </div>
                 </div>
 
-                <div className="diag-node" style={{ left: 24, top: 240 }}>
-                  <span className="diag-node-num">100</span>
-                  <span className="diag-node-title">Kasa</span>
+                {/* T-hesap: borç | alacak */}
+                <div className="grid grid-cols-2 relative">
+                  {/* Orta dikey ayırıcı çizgi */}
+                  <div className="absolute left-1/2 top-3 bottom-3 w-px bg-line -translate-x-1/2" />
+
+                  {/* BORÇ tarafı */}
+                  <div className="px-5 py-5 sm:px-6 sm:py-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                        Borç
+                      </span>
+                      <span className="font-display-italic text-[12px] text-ink-mute">
+                        ne girdi
+                      </span>
+                    </div>
+
+                    <Reveal delay={0.25}>
+                      <div className="t-row">
+                        <div className="t-row-head">
+                          <span className="t-kod">100</span>
+                          <span className="t-ad">KASA</span>
+                          <span className="t-tutar">12.000,00</span>
+                        </div>
+                        <div className="t-aciklama">Aktif arttı — kasaya nakit girdi</div>
+                      </div>
+                    </Reveal>
+                  </div>
+
+                  {/* ALACAK tarafı */}
+                  <div className="px-5 py-5 sm:px-6 sm:py-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                        Alacak
+                      </span>
+                      <span className="font-display-italic text-[12px] text-ink-mute">
+                        ne çıktı / oluştu
+                      </span>
+                    </div>
+
+                    <Reveal delay={0.35}>
+                      <div className="t-row">
+                        <div className="t-row-head">
+                          <span className="t-kod">600</span>
+                          <span className="t-ad">YURT İÇİ SATIŞLAR</span>
+                          <span className="t-tutar">10.000,00</span>
+                        </div>
+                        <div className="t-aciklama">Gelir oluştu — satıştan kazanıldı</div>
+                      </div>
+                    </Reveal>
+
+                    <Reveal delay={0.45}>
+                      <div className="t-row mt-3">
+                        <div className="t-row-head">
+                          <span className="t-kod">391</span>
+                          <span className="t-ad">HESAPLANAN KDV</span>
+                          <span className="t-tutar">2.000,00</span>
+                        </div>
+                        <div className="t-aciklama">Pasif arttı — devlete borç doğdu</div>
+                      </div>
+                    </Reveal>
+                  </div>
                 </div>
 
-                <div className="diag-node diag-anchor" style={{ left: 220, top: 220 }}>
-                  <span className="diag-node-num">153</span>
-                  <span className="diag-node-title">Ticari Mal</span>
-                  <span className="diag-node-sub">Borç ↓ stok</span>
-                </div>
+                {/* Denge çizgisi */}
+                <Reveal delay={0.55}>
+                  <div className="border-t border-line bg-surface-2/40 px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                        Borç toplamı
+                      </span>
+                      <span className="font-mono text-[15px] tnum font-bold text-ink">
+                        12.000,00
+                      </span>
+                    </div>
+                    <span className="font-display-italic text-[14px] text-copper-deep px-2">
+                      eşittir
+                    </span>
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                        Alacak toplamı
+                      </span>
+                      <span className="font-mono text-[15px] tnum font-bold text-ink">
+                        12.000,00
+                      </span>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase font-bold text-emerald-700 dark:text-emerald-400 ml-auto">
+                      <Icon name="CheckCircle2" size={13} />
+                      Dengeli
+                    </span>
+                  </div>
+                </Reveal>
+              </div>
+            </Reveal>
 
-                <div className="diag-node" style={{ left: 380, top: 165 }}>
-                  <span className="diag-node-num">391</span>
-                  <span className="diag-node-title">Hesaplanan KDV</span>
-                </div>
-
-                <div className="diag-node" style={{ left: 410, top: 305 }}>
-                  <span className="diag-node-num">600</span>
-                  <span className="diag-node-title">Yurt İçi Satışlar</span>
-                  <span className="diag-node-sub">Alacak ↑ gelir</span>
-                </div>
-
-                <div className="diag-node" style={{ left: 410, top: 28 }}>
-                  <span className="diag-node-num">Sınıf 6</span>
-                  <span className="diag-node-title">Gelir Tablosu</span>
-                  <span className="diag-node-sub">600, 621, 770</span>
-                </div>
-
-                {/* Akış etiketi */}
-                <div className="diag-label" style={{ left: 200, top: 120 }}>
-                  Borç akışı
-                </div>
-                <div className="diag-label" style={{ left: 320, top: 380 }}>
-                  Alacak akışı
-                </div>
-
-                {/* Alt info bar */}
-                <div className="absolute bottom-4 left-6 right-6 flex items-baseline justify-between text-[10.5px] font-mono text-ink-mute uppercase tracking-[0.14em]">
-                  <span>Örnek: Peşin mal satışı</span>
-                  <span className="text-copper-deep">12.000,00 ₺</span>
-                </div>
+            {/* Alt açıklayıcı not */}
+            <Reveal delay={0.65}>
+              <div className="mt-4 flex items-start gap-2 text-[12.5px] text-ink-soft leading-snug">
+                <Icon
+                  name="Info"
+                  size={13}
+                  className="text-copper-deep mt-0.5 flex-shrink-0"
+                />
+                <span>
+                  Her yevmiye kaydında <strong className="font-bold text-ink">borç toplamı</strong> ile{' '}
+                  <strong className="font-bold text-ink">alacak toplamı</strong> birbirine eşittir.
+                  Bu dengeyi sağlamayan kayıt geçersizdir.
+                </span>
               </div>
             </Reveal>
           </div>
