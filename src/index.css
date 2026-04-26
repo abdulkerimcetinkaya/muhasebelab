@@ -997,10 +997,10 @@ input[type='number'] { -moz-appearance: textfield; }
   font-variant-numeric: tabular-nums;
 }
 
-/* Akış container — SVG + absolute HTML node'lar */
+/* Akış container — SVG + absolute HTML node'lar (kompakt 600/320) */
 .anatomi-flow {
   position: relative;
-  aspect-ratio: 600 / 440;
+  aspect-ratio: 600 / 320;
   background:
     radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--copper) 4%, transparent), transparent 40%),
     radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--ink) 3%, transparent), transparent 40%);
@@ -1088,22 +1088,22 @@ input[type='number'] { -moz-appearance: textfield; }
   text-anchor: middle;
 }
 
-/* HTML node'lar (mutlak konum, %  ile responsive) */
+/* HTML node'lar (mutlak konum, % ile responsive — viewBox 600/320 ile hizalı) */
 .anatomi-pos {
   position: absolute;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 8px 10px;
+  border-radius: 7px;
+  padding: 7px 10px;
   z-index: 2;
   box-shadow: 0 2px 6px rgba(31, 58, 95, 0.06);
 }
 
-/* Üst tutar kartı: orta-üst, geniş */
+/* Üst tutar kartı: orta-üst (SVG y=10..76 → %3..%24) */
 .anatomi-tutar-karti {
-  left: 30%;
-  right: 30%;
-  top: 2%;
+  left: 32%;
+  right: 32%;
+  top: 3.5%;
   text-align: center;
   border-color: var(--copper);
   background:
@@ -1121,8 +1121,8 @@ input[type='number'] { -moz-appearance: textfield; }
 .anatomi-hesap {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 9px 11px;
+  gap: 1px;
+  padding: 7px 10px;
 }
 .hesap-rozet {
   position: absolute;
@@ -1187,10 +1187,18 @@ input[type='number'] { -moz-appearance: textfield; }
 }
 .hesap-taraf-alacak { color: var(--ink-soft); }
 
-/* Konum ayarları (SVG viewBox ile koordinat) */
-.anatomi-hesap-sol  { left: 5%;  top: 56%; width: 23%; }
-.anatomi-hesap-sag  { right: 5%; top: 56%; width: 23%; }
-.anatomi-hesap-alt  { left: 38%; right: 38%; bottom: 4%; text-align: center; }
+/* Konum ayarları — SVG koordinatlarıyla senkron (viewBox 600/320)
+   153/191 üst kenar y=170 → %53; alt kenar y=230 → %72
+   100 KASA üst kenar y=265 → %83; transform ile tam ortalama */
+.anatomi-hesap-sol  { left: 5%;  top: 50%; width: 22%; }
+.anatomi-hesap-sag  { right: 5%; top: 50%; width: 22%; }
+.anatomi-hesap-alt  {
+  left: 50%;
+  bottom: 5%;
+  width: 24%;
+  transform: translateX(-50%);
+  text-align: center;
+}
 .anatomi-hesap-alt .hesap-taraf { justify-content: center; }
 .anatomi-hesap-alt .hesap-tutar { text-align: center; }
 .anatomi-hesap-alt .hesap-kod,

@@ -1525,52 +1525,43 @@ const TdhpDiagramSection = () => {
                 <div className="anatomi-flow">
                   <svg
                     className="anatomi-svg"
-                    viewBox="0 0 600 440"
+                    viewBox="0 0 600 320"
                     preserveAspectRatio="xMidYMid meet"
                   >
-                    {/* Tutardan ayrım noktasına */}
-                    <line x1="300" y1="50" x2="300" y2="125" className="hat hat-ana" />
-
+                    {/* Tutardan ayrım noktasına (üst kart bottom y≈80) */}
+                    <line x1="300" y1="80" x2="300" y2="118" className="hat hat-ana" />
                     {/* Ayrım noktası (kavşak) */}
-                    <circle cx="300" cy="130" r="4" className="kavsak" />
-
-                    {/* Sol dal: matrah → 153 */}
-                    <path d="M 300 130 Q 300 165, 200 175 L 130 200" className="hat hat-sol" />
-                    {/* Sağ dal: KDV → 191 */}
-                    <path d="M 300 130 Q 300 165, 400 175 L 470 200" className="hat hat-sag" />
-
-                    {/* Sol → 153 hesabı dikey */}
-                    <line x1="130" y1="245" x2="130" y2="295" className="hat hat-aktarim" />
-                    {/* Sağ → 191 hesabı dikey */}
-                    <line x1="470" y1="245" x2="470" y2="295" className="hat hat-aktarim" />
-
-                    {/* 153 ve 191 birleşim noktası → 100 KASA */}
+                    <circle cx="300" cy="122" r="4" className="kavsak" />
+                    {/* Sol dal: matrah → 153 üst kenar (y≈170) */}
+                    <path d="M 300 122 Q 300 148, 220 156 L 162 170" className="hat hat-sol" />
+                    {/* Sağ dal: KDV → 191 üst kenar */}
+                    <path d="M 300 122 Q 300 148, 380 156 L 438 170" className="hat hat-sag" />
+                    {/* 153 ve 191 birleşim → 100 KASA üst kenar (y≈260) */}
                     <path
-                      d="M 130 360 Q 130 395, 230 400 L 280 405"
+                      d="M 162 230 Q 162 256, 240 262 L 290 264"
                       className="hat hat-karsi"
                     />
                     <path
-                      d="M 470 360 Q 470 395, 370 400 L 320 405"
+                      d="M 438 230 Q 438 256, 360 262 L 310 264"
                       className="hat hat-karsi"
                     />
-
-                    {/* Etiketler — SVG text */}
-                    <text x="300" y="105" className="hat-etiket-ayir">
+                    {/* Etiketler */}
+                    <text x="300" y="103" className="hat-etiket-ayir">
                       ayrıştır
                     </text>
-                    <text x="170" y="195" className="hat-etiket-tutar">
+                    <text x="190" y="148" className="hat-etiket-tutar">
                       10.000,00
                     </text>
-                    <text x="170" y="207" className="hat-etiket-aciklama">
+                    <text x="190" y="160" className="hat-etiket-aciklama">
                       matrah
                     </text>
-                    <text x="430" y="195" className="hat-etiket-tutar">
+                    <text x="410" y="148" className="hat-etiket-tutar">
                       2.000,00
                     </text>
-                    <text x="430" y="207" className="hat-etiket-aciklama">
+                    <text x="410" y="160" className="hat-etiket-aciklama">
                       KDV %20
                     </text>
-                    <text x="300" y="395" className="hat-etiket-karsi">
+                    <text x="300" y="252" className="hat-etiket-karsi">
                       karşılığında peşin ödeme
                     </text>
                   </svg>
