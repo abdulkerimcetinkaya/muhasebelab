@@ -14,8 +14,11 @@ puan + streak, rozet, aktivite ısı haritası ile motivasyon katmanı sağlanı
 - **react-router-dom v7** — `HashRouter` (`#/`, `#/problemler/:id`, `#/uniteler/:id`,
   `#/profil`, `#/giris`, `#/onboarding`, `#/premium`, `#/admin/*`)
 - **Supabase**: Auth (e-posta/şifre), Postgres + RLS, Edge Functions
-- Anonim kullanıcı → `localStorage` (`mli_progress_v3`); oturum açınca veri
-  otomatik buluta taşınır (`ilerlemeMigrateSupabase`)
+- **Erişim modeli:** Soru çözmek kayıt gerektirir. Anonim ziyaretçi
+  soruları, üniteleri ve hesap planını görüntüleyebilir; ilerleme/puan/
+  rozet sistemi kayıtlı kullanıcılar içindir. Çözüm verileri Supabase'e
+  yazılır (`ilerleme-supabase.ts`). Eski anonim→bulut migration kodu
+  duruyor ama artık devrede değil.
 - **Fraunces** (display) + **Inter Tight** (body) fontları
 - **Thiings** 3D PNG ikonları (`public/icons/`) + `lucide-react` UI ikonları
 
@@ -49,12 +52,17 @@ src/
 └── types/index.ts
 
 supabase/
-├── migrations/               — 5 migration:
+├── migrations/               — 10 migration (tümü production'a uygulanmış):
 │   ├── 20260422000001_init                — şema + RLS
 │   ├── 20260422000002_admin_rls           — admin politikaları
 │   ├── 20260422000003_premium_rpc         — erken erişim aktivasyon RPC (ilk 100 kişiye 1 yıl)
+│   ├── 20260423000000_hesap_plani_seed    — 268 hesap (TDHP — Fuat Hoca PDF referansı)
 │   ├── 20260423000001_belgeler            — fatura/makbuz/dekont tablosu
-│   └── 20260423000002_seed_static_sorular — 11 ünite + 80 soru
+│   ├── 20260423000002_seed_static_sorular — 11 ünite + 98 statik soru
+│   ├── 20260425000001_ai_kullanim         — AI çağrı sayacı
+│   ├── 20260425000002_iyzico              — ödeme tablosu (entegrasyon henüz yapılmadı)
+│   ├── 20260425000003_more_sorular        — 115 ek soru (toplam 213)
+│   └── 20260426000001_rls_sikilastir      — RLS policy güçlendirme
 ├── functions/                — Edge Functions:
 │   ├── ai-asistan            — soru içinde AI rehber
 │   ├── ai-belge-uret         — belge üretimi
@@ -63,11 +71,16 @@ supabase/
 ```
 
 ## Veri Yapısı
-- `HESAP_PLANI` — Tek Düzen Hesap Planı (kod, ad, sınıf, tür) — kodda tutulur
+- `HESAP_PLANI` — Tek Düzen Hesap Planı, **268 hesap** (kod, ad, sınıf, tür);
+  hem kodda (`src/data/hesap-plani.ts`) hem Supabase `hesap_plani` tablosunda
+  (FK için zorunlu). PDF referansı: Fuat Hoca broşürü.
+- `GRUP_ISIMLERI` — 58 grup başlığı (10. Hazır Değerler, 11. Menkul Kıymetler…)
+  → 3 seviyeli hiyerarşi (sınıf > grup > hesap) Hesap Planı modal'ında.
 - `uniteler` tablosu — 11 ünite (Kasa, Banka, Mal, Senet, KDV, Amortisman,
   Personel, Dönem Sonu, Şüpheli Alacaklar, Reeskont, Kambiyo)
-- `sorular` tablosu — **80 soru** seed edilmiş; admin panelinden eklenebilir
-  (`durum`: taslak/inceleme/onayli/arsiv)
+- `sorular` tablosu — **213 soru** seed edilmiş; admin panelinden eklenebilir
+  (`durum`: taslak/inceleme/onayli/arsiv). Cozumler tablosu hesap_plani'ye
+  FK ile bağlı.
 - `ROZETLER` — 12 başarı rozeti (kodda)
 - Zorluk puanları: kolay 5p, orta 10p, zor 20p (`ZORLUK_PUAN`)
 
@@ -79,11 +92,11 @@ supabase/
 - **Thiings 3D** ikonları kullan (emoji değil)
 - Estetik: klasik + editorial + modern harmonisi
 
-## Mevcut Durum (2026-04-24)
+## Mevcut Durum (2026-04-26)
 
 ### Tamamlanan
 - Vite/TS/React 19 migrasyonu
-- Supabase Auth + bulut senkron + anonim→bulut migration
+- Supabase Auth + bulut senkron (kayıt zorunlu — anonim çözüm yok)
 - Admin paneli (6 sayfa): tekil/toplu soru ekleme, düzenleme, hata moderasyonu
 - Premium altyapısı: özellik bazlı `PremiumGate` + erken erişim RPC + fiyatlandırma sayfası (günlük soru limiti **yok**, karar: hibrit freemium)
 - AI Edge Functions (3): asistan, belge üretimi, yanlış analizi
@@ -91,7 +104,10 @@ supabase/
 - Hata bildir: kullanıcı UI + admin moderasyon listesi
 - Günün sorusu, "devam et" önerisi, yanlış yapılanları tekrar et
 - Onboarding akışı
-- 11 ünite, 80 soru (Aşama 4 içerik hedefleri büyük ölçüde karşılandı)
+- **TDHP tam entegrasyon:** 268 hesap (PDF birebir), 58 grup başlığı, 3
+  seviyeli hiyerarşi (sınıf > grup > hesap)
+- **11 ünite, 213 soru** — pazar pilot eşiği (150) aşıldı
+- Ventriloc/qvery esinli major reskin (slate blue + cool pearl + bakır accent)
 
 ### Yol haritası (pazar analizi sonrası öncelikli — [PAZAR-ANALIZI.md](PAZAR-ANALIZI.md))
 
@@ -99,12 +115,16 @@ supabase/
 paneli ve sınav modu MVP'de değil — v1.1+. MVP B2C öğrenci lansmanı.
 
 **P0 — MVP shipi için gerekli (sıralı)**
-1. **İyzico ödeme entegrasyonu** — `odemeler` tablosu var, Edge Function +
-   ödeme akışı + abonelik yönetimi yok. Gelir yoksa ürün değil.
-2. **Landing + onboarding friksiyonu** — ziyaretçiyi kayda, kaydolanı
+1. **Sitenin tam test edilmesi** — production akışı (kayıt → onboarding →
+   soru çözme → puan → rozet) birden fazla cihazda doğrulanacak. Bu bitmeden
+   ödeme açılmıyor (yasal sorumluluk).
+2. **İyzico ödeme entegrasyonu** — `odemeler` tablosu var, Edge Function +
+   ödeme akışı + abonelik yönetimi yok. Test sonrası yapılacak.
+3. **Landing + onboarding friksiyonu** — ziyaretçiyi kayda, kaydolanı
    Premium'a çevirecek akış iyileştirmesi.
-3. **Soru sayısı 80 → 120-150** — pazar analizi pilot eşiği (100 minimum).
-   Admin paneli + `soru-uret.md` prompt'u ile hızlı üretilebilir.
+
+**Tamamlanan (eski P0)**
+- ~~Soru sayısı 80 → 150~~ — 213'e çıkıldı.
 
 **P1 — Lansman sonrası (v1.1+)**
 4. Sınav modu + karışık soru modu
