@@ -18,6 +18,43 @@ interface OdemeKayit {
   plan_kodu: string | null;
 }
 
+type Sinif = '' | '1' | '2' | '3' | '4' | 'mezun' | 'diger';
+type Hedef = '' | 'vize-final' | 'kpss' | 'genel' | 'belirsiz';
+
+interface ProfilBilgi {
+  universite: string;
+  bolum: string;
+  sinif: Sinif;
+  hedef: Hedef;
+  dogumYili: string; // form'da string, kayıt anında int'e çevrilir
+  bultenIzni: boolean;
+}
+
+const PROFIL_BOS: ProfilBilgi = {
+  universite: '',
+  bolum: '',
+  sinif: '',
+  hedef: '',
+  dogumYili: '',
+  bultenIzni: false,
+};
+
+const SINIF_LABEL: Record<Exclude<Sinif, ''>, string> = {
+  '1': '1. Sınıf',
+  '2': '2. Sınıf',
+  '3': '3. Sınıf',
+  '4': '4. Sınıf',
+  mezun: 'Mezun',
+  diger: 'Diğer',
+};
+
+const HEDEF_LABEL: Record<Exclude<Hedef, ''>, string> = {
+  'vize-final': 'Vize / Final',
+  kpss: 'KPSS',
+  genel: 'Genel pratik',
+  belirsiz: 'Henüz belirsiz',
+};
+
 interface Props {
   ilerleme: Ilerleme;
   stat: Istatistik;
@@ -42,13 +79,20 @@ export const ProfilSayfasi = ({
   const [adDuzenle, setAdDuzenle] = useState(false);
   const [geciciAd, setGeciciAd] = useState(ilerleme.kullaniciAdi);
   const [odemeler, setOdemeler] = useState<OdemeKayit[]>([]);
+  const [profil, setProfil] = useState<ProfilBilgi>(PROFIL_BOS);
+  const [profilYukleniyor, setProfilYukleniyor] = useState(false);
+  const [profilKaydediliyor, setProfilKaydediliyor] = useState(false);
+  const [profilMesaj, setProfilMesaj] = useState<{ tip: 'basarili' | 'hata'; metin: string } | null>(null);
 
   useEffect(() => {
     if (!user) {
       setOdemeler([]);
+      setProfil(PROFIL_BOS);
       return;
     }
     let aktif = true;
+
+    // Ödeme geçmişi
     supabase
       .from('odemeler')
       .select('id, tutar, para_birimi, durum, basarili_tarih, created_at, plan_kodu')
@@ -58,10 +102,72 @@ export const ProfilSayfasi = ({
       .then(({ data }) => {
         if (aktif && data) setOdemeler(data as OdemeKayit[]);
       });
+
+    // Profil bilgileri
+    setProfilYukleniyor(true);
+    supabase
+      .from('kullanicilar')
+      .select('universite, bolum, sinif, hedef, dogum_yili, bulten_izni')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!aktif) return;
+        setProfilYukleniyor(false);
+        if (data) {
+          setProfil({
+            universite: (data as { universite: string | null }).universite ?? '',
+            bolum: (data as { bolum: string | null }).bolum ?? '',
+            sinif: ((data as { sinif: Sinif | null }).sinif ?? '') as Sinif,
+            hedef: ((data as { hedef: Hedef | null }).hedef ?? '') as Hedef,
+            dogumYili: (data as { dogum_yili: number | null }).dogum_yili?.toString() ?? '',
+            bultenIzni: (data as { bulten_izni: boolean | null }).bulten_izni ?? false,
+          });
+        }
+      });
+
     return () => {
       aktif = false;
     };
   }, [user]);
+
+  const profilKaydet = async () => {
+    if (!user) return;
+    setProfilKaydediliyor(true);
+    setProfilMesaj(null);
+
+    const dogumYiliNum = profil.dogumYili.trim() ? parseInt(profil.dogumYili.trim(), 10) : null;
+    if (dogumYiliNum !== null && (isNaN(dogumYiliNum) || dogumYiliNum < 1950 || dogumYiliNum > 2015)) {
+      setProfilKaydediliyor(false);
+      setProfilMesaj({ tip: 'hata', metin: 'Doğum yılı 1950-2015 arasında olmalı.' });
+      return;
+    }
+
+    const guncelleme: {
+      universite: string | null;
+      bolum: string | null;
+      sinif: Exclude<Sinif, ''> | null;
+      hedef: Exclude<Hedef, ''> | null;
+      dogum_yili: number | null;
+      bulten_izni: boolean;
+    } = {
+      universite: profil.universite.trim() || null,
+      bolum: profil.bolum.trim() || null,
+      sinif: profil.sinif === '' ? null : profil.sinif,
+      hedef: profil.hedef === '' ? null : profil.hedef,
+      dogum_yili: dogumYiliNum,
+      bulten_izni: profil.bultenIzni,
+    };
+
+    const { error } = await supabase.from('kullanicilar').update(guncelleme).eq('id', user.id);
+    setProfilKaydediliyor(false);
+
+    if (error) {
+      setProfilMesaj({ tip: 'hata', metin: 'Kaydedilemedi: ' + error.message });
+    } else {
+      setProfilMesaj({ tip: 'basarili', metin: 'Profil bilgilerin kaydedildi.' });
+      setTimeout(() => setProfilMesaj(null), 3000);
+    }
+  };
 
   const avatarHarfi = (ilerleme.kullaniciAdi || '?')[0].toUpperCase();
   const avatarRenk = useMemo(() => {
@@ -316,6 +422,161 @@ export const ProfilSayfasi = ({
               </div>
             </div>
           )}
+        </section>
+      )}
+
+      {user && (
+        <section className="mb-12">
+          <div className="flex items-baseline justify-between mb-6 border-b border-stone-900/20 dark:border-zinc-700 pb-3">
+            <h2 className="font-display text-2xl md:text-3xl tracking-tight font-bold">
+              Eğitim Bilgileri
+            </h2>
+            {profilYukleniyor && (
+              <Icon name="Loader2" size={14} className="animate-spin text-stone-400" />
+            )}
+          </div>
+
+          <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6 space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                  Üniversite
+                </label>
+                <input
+                  type="text"
+                  value={profil.universite}
+                  onChange={(e) => setProfil({ ...profil, universite: e.target.value })}
+                  maxLength={80}
+                  placeholder="Örn: Boğaziçi, ODTÜ..."
+                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                  Bölüm
+                </label>
+                <input
+                  type="text"
+                  value={profil.bolum}
+                  onChange={(e) => setProfil({ ...profil, bolum: e.target.value })}
+                  maxLength={80}
+                  placeholder="Örn: İşletme, İktisat..."
+                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                Sınıf
+              </label>
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                {(Object.keys(SINIF_LABEL) as Exclude<Sinif, ''>[]).map((kod) => (
+                  <button
+                    key={kod}
+                    type="button"
+                    onClick={() => setProfil({ ...profil, sinif: profil.sinif === kod ? '' : kod })}
+                    className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
+                      profil.sinif === kod
+                        ? 'border-stone-900 dark:border-zinc-100 bg-stone-50 dark:bg-zinc-800 text-stone-900 dark:text-zinc-100'
+                        : 'border-stone-200 dark:border-zinc-700 hover:border-stone-400 dark:hover:border-zinc-600 text-stone-600 dark:text-zinc-400'
+                    }`}
+                  >
+                    {SINIF_LABEL[kod]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                Hedef
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {(Object.keys(HEDEF_LABEL) as Exclude<Hedef, ''>[]).map((kod) => (
+                  <button
+                    key={kod}
+                    type="button"
+                    onClick={() => setProfil({ ...profil, hedef: profil.hedef === kod ? '' : kod })}
+                    className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
+                      profil.hedef === kod
+                        ? 'border-stone-900 dark:border-zinc-100 bg-stone-50 dark:bg-zinc-800 text-stone-900 dark:text-zinc-100'
+                        : 'border-stone-200 dark:border-zinc-700 hover:border-stone-400 dark:hover:border-zinc-600 text-stone-600 dark:text-zinc-400'
+                    }`}
+                  >
+                    {HEDEF_LABEL[kod]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                  Doğum Yılı{' '}
+                  <span className="text-stone-400 dark:text-zinc-600">(opsiyonel)</span>
+                </label>
+                <input
+                  type="number"
+                  value={profil.dogumYili}
+                  onChange={(e) => setProfil({ ...profil, dogumYili: e.target.value })}
+                  min={1950}
+                  max={2015}
+                  placeholder="1998"
+                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium font-mono"
+                />
+              </div>
+            </div>
+
+            <label className="flex items-start gap-2.5 cursor-pointer pt-2">
+              <input
+                type="checkbox"
+                checked={profil.bultenIzni}
+                onChange={(e) => setProfil({ ...profil, bultenIzni: e.target.checked })}
+                className="mt-0.5 h-4 w-4 rounded border-stone-300 dark:border-zinc-600 text-blue-700 focus:ring-blue-500/30 cursor-pointer"
+              />
+              <span className="text-sm text-stone-700 dark:text-zinc-300 font-medium leading-snug">
+                Yeni özellikler ve içerik güncellemelerinden e-posta ile haberdar olmak istiyorum.
+              </span>
+            </label>
+
+            {profilMesaj && (
+              <div
+                className={`flex items-start gap-2 p-3 rounded-lg text-sm font-medium ${
+                  profilMesaj.tip === 'basarili'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300'
+                    : 'bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300'
+                }`}
+              >
+                <Icon
+                  name={profilMesaj.tip === 'basarili' ? 'CheckCircle2' : 'AlertCircle'}
+                  size={16}
+                  className="flex-shrink-0 mt-0.5"
+                />
+                <span>{profilMesaj.metin}</span>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={profilKaydet}
+                disabled={profilKaydediliyor || profilYukleniyor}
+                className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {profilKaydediliyor ? (
+                  <>
+                    <Icon name="Loader2" size={12} className="animate-spin" />
+                    Kaydediliyor
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Save" size={12} />
+                    Kaydet
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </section>
       )}
 

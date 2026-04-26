@@ -67,6 +67,15 @@ export type KullaniciRow = {
   premium_bitis: string | null;
   gunluk_limit_reset: string | null;
   gunluk_cozum_sayisi: number;
+  // Profil — onboarding ve profil sayfasında doldurulur (20260427000001 migration)
+  universite: string | null;
+  bolum: string | null;
+  sinif: '1' | '2' | '3' | '4' | 'mezun' | 'diger' | null;
+  hedef: 'vize-final' | 'kpss' | 'genel' | 'belirsiz' | null;
+  dogum_yili: number | null;
+  avatar_url: string | null;
+  bulten_izni: boolean;
+  kvkk_kabul_tarihi: string | null;
   created_at: string;
   updated_at: string;
 };

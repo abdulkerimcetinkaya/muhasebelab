@@ -63,8 +63,8 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
     const guncelleme: {
       universite?: string;
       bolum?: string;
-      sinif?: string;
-      hedef?: string;
+      sinif?: '1' | '2' | '3' | '4' | 'mezun' | 'diger';
+      hedef?: 'vize-final' | 'kpss' | 'genel' | 'belirsiz';
     } = {};
     if (profil.universite.trim()) guncelleme.universite = profil.universite.trim();
     if (profil.bolum.trim()) guncelleme.bolum = profil.bolum.trim();
