@@ -28,12 +28,6 @@ const IKON_SECENEK = [
   'gelir-tablosu',
   'donem-sonu-kapanis',
   // Yedek/dekoratif
-  'kasa',
-  'banka',
-  'mal',
-  'senet',
-  'reeskont',
-  'kambiyo',
   'calculator',
   'rocket',
   'trophy',

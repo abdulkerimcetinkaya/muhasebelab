@@ -566,27 +566,5 @@ export const KONU_ANLATIMLAR: Record<string, KonuAnlatim> = {
   },
 };
 
-/**
- * Migration öncesi geriye uyum: eski 11 ünite ID'leri yeni 15 ünite
- * yapısındaki en yakın içeriğe yönlendirilir. Migration uygulandıktan
- * sonra DB'de eski ID kalmadığından bu map fiilen kullanılmaz; safety
- * net olarak duruyor.
- */
-const ESKI_YENI_MAP: Record<string, string> = {
-  kasa: 'hazir-degerler',
-  banka: 'hazir-degerler',
-  mal: 'mal-alis',
-  senet: 'ticari-alacaklar',
-  'donem-sonu': 'reeskont-karsilik',
-  'supheli-alacaklar': 'reeskont-karsilik',
-  reeskont: 'reeskont-karsilik',
-  kambiyo: 'yabanci-kaynaklar',
-};
-
-export const konuAnlatimGetir = (uniteId: string): KonuAnlatim | null => {
-  const direct = KONU_ANLATIMLAR[uniteId];
-  if (direct) return direct;
-  const yeni = ESKI_YENI_MAP[uniteId];
-  if (yeni) return KONU_ANLATIMLAR[yeni] ?? null;
-  return null;
-};
+export const konuAnlatimGetir = (uniteId: string): KonuAnlatim | null =>
+  KONU_ANLATIMLAR[uniteId] ?? null;

@@ -33,16 +33,6 @@ const ICON_MAP: Record<string, string> = {
   'gelir-tablosu': 'BarChart3',
   'donem-sonu-kapanis': 'CalendarCheck',
 
-  // Eski ünite isimleri (geriye dönük uyum, soruların migration sonrası eski ID'leri kalsa bile çalışır)
-  kasa: 'Wallet',
-  banka: 'Landmark',
-  mal: 'Package',
-  senet: 'FileSignature',
-  'donem-sonu': 'CalendarCheck',
-  'supheli-alacaklar': 'AlertCircle',
-  reeskont: 'Hourglass',
-  kambiyo: 'Globe',
-
   // UI / dekoratif
   calculator: 'Calculator',
   rocket: 'Rocket',
