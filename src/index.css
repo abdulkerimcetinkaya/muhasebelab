@@ -596,6 +596,28 @@ input[type='number'] { -moz-appearance: textfield; }
   to { opacity: 1; transform: translateY(0); filter: blur(0px); }
 }
 
+@keyframes koc-tour-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Koç turu — kart sabit alt-orta yerleşim, halka aktif elementi vurgular */
+.koc-turu-kart {
+  width: min(360px, calc(100vw - 32px));
+  bottom: 24px;
+  left: 50%;
+  margin-left: calc(min(360px, calc(100vw - 32px)) / -2);
+}
+@media (min-width: 1024px) {
+  .koc-turu-kart {
+    width: 340px;
+    left: auto;
+    right: 32px;
+    bottom: 32px;
+    margin-left: 0;
+  }
+}
+
 /* ---------------------------------------------------------------
    Bölüm atmosferleri
 --------------------------------------------------------------- */

@@ -9,6 +9,9 @@ import { HataBildirModal } from '../components/HataBildirModal';
 import { PremiumGate } from '../components/PremiumGate';
 import { AIAsistanYanPanel } from '../components/AIAsistanYanPanel';
 import { MarkdownLite } from '../components/MarkdownLite';
+import { KocTuru, type KocTuruAdim } from '../components/KocTuru';
+import { KonuAnlatimKart } from '../components/KonuAnlatimKart';
+import { konuAnlatimGetir } from '../data/konu-anlatim';
 import { useAuth } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { HESAP_PLANI } from '../data/hesap-plani';
@@ -98,6 +101,46 @@ const SoruEkraniIci = ({
   const [aiYukleniyor, setAiYukleniyor] = useState(false);
   const [aiMetin, setAiMetin] = useState<string | null>(null);
   const [aiHata, setAiHata] = useState<string | null>(null);
+  const [kocTuruAcik, setKocTuruAcik] = useState(false);
+  const [konuModalAcik, setKonuModalAcik] = useState(false);
+  const konuAnlatim = konuAnlatimGetir(soru.uniteId);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (localStorage.getItem('koc-turu-tamam') === '1') return;
+    const t = setTimeout(() => setKocTuruAcik(true), 500);
+    return () => clearTimeout(t);
+  }, []);
+
+  const kocTuruKapat = () => {
+    setKocTuruAcik(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('koc-turu-tamam', '1');
+    }
+  };
+
+  const kocTuruAdimlari: KocTuruAdim[] = [
+    {
+      hedef: 'senaryo',
+      baslik: 'Önce senaryoyu oku',
+      metin: 'Burada gerçek bir muhasebe olayı anlatılıyor. Tutarlar ve taraflar bu metinden çıkar.',
+    },
+    {
+      hedef: 'fis',
+      baslik: 'Yevmiye fişine kayıt gir',
+      metin: 'Senaryodaki olayı fişe çeviriyorsun: tarih, açıklama, hesap, borç ve alacak.',
+    },
+    {
+      hedef: 'satir',
+      baslik: 'Hesap kodu + tutar',
+      metin: 'Hesap kodunu yazınca öneriler çıkar. Borçlanan tarafa borç sütununa, alacaklı tarafa alacak sütununa tutarı yaz.',
+    },
+    {
+      hedef: 'kontrol',
+      baslik: 'Kaydı kontrol et',
+      metin: 'Bittiğinde bu butonla kaydını doğrula. Yanlış varsa anlık geri bildirim alırsın.',
+    },
+  ];
 
   const fisTuruAd = useMemo(
     () => FIS_TURLERI.find((f) => f.kod === fis.fisTuru)?.ad ?? '',
@@ -312,7 +355,7 @@ const SoruEkraniIci = ({
           <h1 className="font-display text-2xl md:text-3xl tracking-tight mb-4 font-bold">
             {soru.baslik}
           </h1>
-          <div className="border-l-4 border-stone-900 dark:border-zinc-100 pl-5 py-1">
+          <div data-tour="senaryo" className="border-l-4 border-stone-900 dark:border-zinc-100 pl-5 py-1">
             <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 mb-2 font-bold">
               Senaryo
             </div>
@@ -367,6 +410,15 @@ const SoruEkraniIci = ({
             <Icon name="BookOpen" size={14} className="flex-shrink-0" />
             <span>Hesap Planı</span>
           </button>
+          {konuAnlatim && (
+            <button
+              onClick={() => setKonuModalAcik(true)}
+              className="flex items-center gap-2.5 px-3 py-2.5 border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition text-left text-sm font-semibold rounded-lg"
+            >
+              <Icon name="Info" size={14} className="text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <span>Konuyu Hatırlat</span>
+            </button>
+          )}
           <button
             onClick={() => setAiAsistanAcik(true)}
             className="flex items-center gap-2.5 px-3 py-2.5 border border-amber-300/60 dark:border-amber-700/40 bg-gradient-to-r from-amber-50/40 to-transparent dark:from-amber-900/10 hover:border-amber-500 transition text-left text-sm font-semibold rounded-lg"
@@ -399,7 +451,7 @@ const SoruEkraniIci = ({
       </div>
 
       {/* YEVMİYE FİŞİ — LUCA tarzı */}
-      <div className="bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm">
+      <div data-tour="fis" className="bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm">
         {/* Fiş başlığı */}
         <div className="bg-stone-100 dark:bg-zinc-800 px-4 py-2 border-b-2 border-stone-300 dark:border-zinc-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -467,7 +519,7 @@ const SoruEkraniIci = ({
         </div>
 
         <div className="overflow-x-auto">
-        <div className="min-w-[680px]">
+        <div data-tour="satir" className="min-w-[680px]">
         {/* Satır başlıkları */}
         <div className="grid grid-cols-[40px_120px_1fr_1.5fr_140px_140px_40px] gap-px bg-stone-300 dark:bg-zinc-700 border-t-2 border-stone-300 dark:border-zinc-700">
           {['Sıra', 'Hesap Kodu', 'Hesap Adı', 'Açıklama', 'Borç', 'Alacak', ''].map((h, i) => (
@@ -607,6 +659,7 @@ const SoruEkraniIci = ({
       <div className="mt-5 flex flex-col sm:flex-row gap-3">
         <button
           onClick={kontrol}
+          data-tour="kontrol"
           className="flex-1 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 py-3.5 text-sm tracking-wide uppercase font-bold hover:bg-stone-800 dark:hover:bg-white transition flex items-center justify-center gap-2 rounded-xl shadow-lg"
         >
           <Icon name="Zap" size={14} />
@@ -760,6 +813,36 @@ const SoruEkraniIci = ({
         onKapat={() => setAiAsistanAcik(false)}
         baglam={{ soruBaslik: soru.baslik, senaryo: soru.senaryo }}
       />
+      <KocTuru
+        adimlar={kocTuruAdimlari}
+        acik={kocTuruAcik}
+        onKapat={kocTuruKapat}
+      />
+      {konuModalAcik && konuAnlatim && unite && (
+        <div
+          className="fixed inset-0 z-[90] bg-stone-950/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8 animate-[koc-tour-pop_0.28s_cubic-bezier(0.22,1,0.36,1)_both]"
+          onClick={() => setKonuModalAcik(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-2xl my-auto"
+          >
+            <button
+              onClick={() => setKonuModalAcik(false)}
+              className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 shadow-lg flex items-center justify-center hover:bg-stone-50 dark:hover:bg-zinc-800 transition"
+              aria-label="Kapat"
+            >
+              <Icon name="X" size={14} />
+            </button>
+            <KonuAnlatimKart
+              anlatim={konuAnlatim}
+              uniteId={unite.id}
+              uniteAd={unite.ad}
+              davranis="acik"
+            />
+          </div>
+        </div>
+      )}
     </main>
   );
 };

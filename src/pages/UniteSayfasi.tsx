@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
+import { KonuAnlatimKart } from '../components/KonuAnlatimKart';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
+import { konuAnlatimGetir } from '../data/konu-anlatim';
 import type { Ilerleme } from '../types';
 
 interface Props {
@@ -32,6 +34,10 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
     return aCoz - bCoz;
   });
   const ilkCozulmemis = sirayaGoreSorular.find((s) => !ilerleme.cozulenler[s.id]);
+  const anlatim = konuAnlatimGetir(unite.id);
+  const aktifIndex = uniteler.findIndex((u) => u.id === unite.id);
+  const sonrakiUnite = aktifIndex >= 0 ? uniteler[aktifIndex + 1] : null;
+  const tamamlandi = toplam > 0 && cozulen === toplam;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
@@ -93,27 +99,11 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
         </aside>
       </div>
 
-      <section className="mb-12">
-        <div className="border border-dashed border-stone-300 dark:border-zinc-700 rounded-2xl p-8 bg-stone-50/50 dark:bg-zinc-900/30">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-stone-100 dark:bg-zinc-800 flex items-center justify-center">
-              <Icon name="BookOpen" size={18} className="text-stone-500 dark:text-zinc-400" />
-            </div>
-            <div>
-              <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 mb-2 font-bold">
-                Konu Anlatımı
-              </div>
-              <h3 className="font-display text-xl font-bold tracking-tight mb-2">
-                Bu konunun teorik anlatımı yakında.
-              </h3>
-              <p className="text-sm text-stone-600 dark:text-zinc-400 leading-relaxed font-medium">
-                Şimdilik aşağıdaki sorularla pratik yaparak öğrenebilirsin. Her sorunun ipucu,
-                resmi çözümü ve detaylı açıklaması var.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {anlatim && (
+        <section className="mb-12">
+          <KonuAnlatimKart anlatim={anlatim} uniteId={unite.id} uniteAd={unite.ad} />
+        </section>
+      )}
 
       <section>
         <div className="flex items-baseline justify-between mb-4">
@@ -173,6 +163,53 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
           })}
         </div>
       </section>
+
+      {sonrakiUnite && (
+        <section className="mt-16">
+          <button
+            onClick={() => nav(`/uniteler/${sonrakiUnite.id}`)}
+            className={`w-full text-left rounded-2xl p-6 sm:p-8 border transition group ${
+              tamamlandi
+                ? 'bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-900/20 dark:to-zinc-900 border-emerald-300 dark:border-emerald-700/40 hover:border-emerald-500'
+                : 'bg-white dark:bg-zinc-900/40 border-stone-200 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-6">
+              <div className="min-w-0">
+                {tamamlandi ? (
+                  <div className="flex items-center gap-2 mb-3">
+                    <Icon name="CheckCircle2" size={16} className="text-emerald-700 dark:text-emerald-400" />
+                    <span className="text-[10px] tracking-[0.3em] uppercase font-bold text-emerald-700 dark:text-emerald-400">
+                      Bu üniteyi tamamladın
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-[10px] tracking-[0.3em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-3">
+                    Sıradaki ünite
+                  </div>
+                )}
+                <div className="flex items-center gap-4">
+                  <Thiings name={sonrakiUnite.thiingsIcon} size={48} />
+                  <div className="min-w-0">
+                    <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-zinc-100 mb-1 leading-tight">
+                      {sonrakiUnite.ad}
+                    </h3>
+                    <p className="text-sm text-stone-600 dark:text-zinc-400 leading-relaxed font-medium line-clamp-2">
+                      {sonrakiUnite.aciklama}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-shrink-0 flex items-center gap-2 text-stone-500 dark:text-zinc-500 group-hover:text-stone-900 dark:group-hover:text-zinc-100 transition">
+                <span className="hidden sm:inline text-[11px] tracking-[0.18em] uppercase font-bold">
+                  Geç
+                </span>
+                <Icon name="ArrowRight" size={20} />
+              </div>
+            </div>
+          </button>
+        </section>
+      )}
     </main>
   );
 };
