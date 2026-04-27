@@ -601,6 +601,75 @@ input[type='number'] { -moz-appearance: textfield; }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* ---------------------------------------------------------------
+   Müfredat sayfası — editorial liste estetiği
+--------------------------------------------------------------- */
+.mufredat-sayfa {
+  background:
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--copper) 4%, transparent), transparent 40%),
+    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--sky-deep, #5a87b0) 5%, transparent), transparent 50%),
+    var(--bg);
+}
+
+.mufredat-satir {
+  background: transparent;
+  transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              padding 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+}
+.mufredat-satir:hover {
+  background: color-mix(in srgb, var(--copper) 5%, transparent);
+  padding-left: 36px;
+}
+.mufredat-satir:focus-visible {
+  outline: 2px solid var(--copper-deep);
+  outline-offset: -4px;
+}
+
+.mufredat-baslik {
+  background-image: linear-gradient(to right, var(--copper-deep), var(--copper-deep));
+  background-size: 0% 1px;
+  background-position: 0 calc(100% - 0.06em);
+  background-repeat: no-repeat;
+  transition: background-size 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.3s ease;
+}
+.mufredat-satir:hover .mufredat-baslik {
+  color: var(--copper-deep);
+  background-size: 100% 1px;
+}
+
+.mufredat-accent {
+  position: absolute;
+  left: 0;
+  top: 12%;
+  bottom: 12%;
+  width: 0;
+  background: var(--copper-deep);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.mufredat-satir:hover .mufredat-accent {
+  width: 3px;
+}
+
+.mufredat-ok {
+  transition: color 0.3s, gap 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mufredat-satir:hover .mufredat-ok {
+  color: var(--copper-deep);
+  transform: translateX(4px);
+}
+
+.mufredat-hairline {
+  height: 1px;
+  background: linear-gradient(to right,
+    transparent 0%,
+    color-mix(in srgb, var(--ink) 12%, transparent) 5%,
+    color-mix(in srgb, var(--ink) 12%, transparent) 95%,
+    transparent 100%);
+}
+
 /* Koç turu — kart sabit alt-orta yerleşim, halka aktif elementi vurgular */
 .koc-turu-kart {
   width: min(360px, calc(100vw - 32px));
