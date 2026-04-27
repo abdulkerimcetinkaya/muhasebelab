@@ -1002,8 +1002,8 @@ input[type='number'] { -moz-appearance: textfield; }
     gap: 24px;
     margin-bottom: 128px;
   }
-  .zigzag-gorsel-col { grid-column: 1; justify-self: end; max-width: 460px; width: 100%; }
-  .zigzag-metin-col  { grid-column: 3; justify-self: start; max-width: 460px; width: 100%; }
+  .zigzag-gorsel-col { grid-column: 1; grid-row: 1; justify-self: end; max-width: 460px; width: 100%; }
+  .zigzag-metin-col  { grid-column: 3; grid-row: 1; justify-self: start; max-width: 460px; width: 100%; }
   .zigzag-ters .zigzag-gorsel-col { grid-column: 3; justify-self: start; }
   .zigzag-ters .zigzag-metin-col  { grid-column: 1; justify-self: end; text-align: right; }
 }
