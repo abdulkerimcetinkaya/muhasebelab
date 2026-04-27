@@ -1549,16 +1549,16 @@ const TdhpDiagramSection = () => {
                     <text x="300" y="103" className="hat-etiket-ayir">
                       ayrıştır
                     </text>
-                    <text x="190" y="148" className="hat-etiket-tutar">
+                    <text x="190" y="128" className="hat-etiket-tutar">
                       10.000,00
                     </text>
-                    <text x="190" y="160" className="hat-etiket-aciklama">
+                    <text x="190" y="140" className="hat-etiket-aciklama">
                       matrah
                     </text>
-                    <text x="410" y="148" className="hat-etiket-tutar">
+                    <text x="410" y="128" className="hat-etiket-tutar">
                       2.000,00
                     </text>
-                    <text x="410" y="160" className="hat-etiket-aciklama">
+                    <text x="410" y="140" className="hat-etiket-aciklama">
                       KDV %20
                     </text>
                     <text x="300" y="252" className="hat-etiket-karsi">
@@ -1627,8 +1627,8 @@ const TdhpDiagramSection = () => {
                       12.000,00
                     </span>
                   </div>
-                  <span className="font-display-italic text-[13px] text-copper-deep">
-                    eşittir
+                  <span className="font-mono text-[18px] font-bold text-copper-deep leading-none">
+                    =
                   </span>
                   <div className="flex items-baseline gap-2">
                     <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute font-bold">
