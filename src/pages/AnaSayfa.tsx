@@ -18,7 +18,6 @@ import { gununSorusu } from '../lib/gunun-sorusu';
 import { devamEtSorusu, enCokYanlisSoru } from '../lib/oneriler';
 import { bugununTarihi } from '../lib/format';
 import { planlariYukle, type Plan } from '../lib/odeme';
-import { HESAP_PLANI } from '../data/hesap-plani';
 import { ZORLUK_AD, ZORLUK_PUAN } from '../data/sabitler';
 import type { Ilerleme, Istatistik, SoruWithUnite, Zorluk, Unite } from '../types';
 
@@ -1063,7 +1062,6 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
 const AnonimAnaSayfa = () => {
   const nav = useNavigate();
   const { uniteler, tumSorular } = useUniteler();
-  const gununSoru = useMemo(() => gununSorusu(tumSorular), [tumSorular]);
   const [planlar, setPlanlar] = useState<Plan[]>([]);
 
   useEffect(() => {
@@ -1073,10 +1071,7 @@ const AnonimAnaSayfa = () => {
   }, []);
 
   const aylikPlan = planlar.find((p) => p.kod === 'aylik');
-  const donemlikPlan = planlar.find((p) => p.kod === 'donemlik');
   const aylikTutar = aylikPlan ? aylikPlan.tutar.toFixed(0) : '99';
-  const donemlikTutar = donemlikPlan ? donemlikPlan.tutar.toFixed(0) : '249';
-  const donemlikAy = donemlikPlan?.ay_sayisi ?? 4;
 
   return (
     <main>
@@ -1127,12 +1122,7 @@ const AnonimAnaSayfa = () => {
       </section>
 
       {/* ===========================================================
-          § 01 · MİMARİ — TDHP haritası (Ventriloc Microsoft Fabric eşdeğeri)
-      =========================================================== */}
-      <TdhpDiagramSection />
-
-      {/* ===========================================================
-          § 02 · ÜNİTELER — Pilier-tarzı interaktif tab seçici
+          § 01 · İÇERİK — Pilier-tarzı interaktif ünite seçici
       =========================================================== */}
       <UniteSeciciSection
         uniteler={uniteler}
@@ -1142,234 +1132,57 @@ const AnonimAnaSayfa = () => {
       />
 
       {/* ===========================================================
-          BUGÜNÜN SORUSU — günlük "manşet" havası
+          § 02 · TARİFE — kompakt fiyat şeridi
       =========================================================== */}
-      {gununSoru && (
-        <section className="px-5 sm:px-8 py-16 border-t border-line">
-          <div className="max-w-[1240px] mx-auto">
-            <Reveal>
-              <div className="section-divider mb-10">
-                <span>§ 03 · Bugün</span>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.05}>
-              <div className="surface-lift relative overflow-hidden">
-                {/* Sol kenar şerit — günlük yayın hissi */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-sky-deep via-accent to-sky-deep opacity-70" />
-
-                {/* Üst tarih şeridi */}
-                <div className="px-7 sm:px-9 py-3 border-b border-line bg-surface-2 flex items-baseline justify-between">
-                  <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-ink-mute">
-                    {new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
-                  </span>
-                  <span className="font-mono text-[10.5px] tracking-[0.16em] uppercase text-ink-mute">
-                    Sayı {new Date().getDate()}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-7 items-center p-7 sm:p-9">
-                  <div className="md:col-span-8">
-                    <div className="flex items-center gap-2 mb-4 flex-wrap">
-                      <span className="chip chip-premium">
-                        <Icon name="Calendar" size={11} />
-                        Manşet
-                      </span>
-                      <ZorlukChip zorluk={gununSoru.zorluk} />
-                      <span className="chip">{gununSoru.uniteAd}</span>
-                    </div>
-                    <h2 className="font-display text-[28px] sm:text-[40px] md:text-[44px] font-bold leading-[1.0] tracking-tight text-ink mb-4">
-                      {gununSoru.baslik}
-                    </h2>
-                    <p className="text-[15.5px] text-ink-soft leading-relaxed max-w-2xl mb-6">
-                      {gununSoru.senaryo}
-                    </p>
-                    <div className="flex flex-wrap gap-4 items-baseline">
-                      <button
-                        onClick={() => nav(`/problemler/${gununSoru.id}`)}
-                        className="btn btn-primary"
-                      >
-                        Bu Soruyu Çöz
-                      </button>
-                      <button onClick={() => nav('/problemler')} className="btn-link">
-                        Diğerleri →
-                      </button>
-                    </div>
-                  </div>
-                  <div className="md:col-span-4 flex flex-col items-center md:items-end gap-3">
-                    <Thiings name={gununSoru.uniteIcon} size={120} />
-                    <div className="flex items-baseline gap-3 text-[12px] text-ink-mute font-mono uppercase tracking-wider">
-                      <span>≈ 2 dk</span>
-                      <span>·</span>
-                      <span className="text-sky-deep">+{ZORLUK_PUAN[gununSoru.zorluk]}p</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </section>
-      )}
-
-      {/* ===========================================================
-          ÜCRETSİZ vs PREMIUM KARŞILAŞTIRMA
-      =========================================================== */}
-      <section className="px-5 sm:px-8 py-20 sm:py-24 border-t border-line bg-surface-2/30">
+      <section className="px-5 sm:px-8 py-12 sm:py-14 border-t border-line bg-surface-2/30">
         <div className="max-w-[1240px] mx-auto">
           <Reveal>
-            <div className="section-divider mb-10">
-              <span>§ 04 · Tarife</span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.05}>
-            <div className="text-center mb-12 max-w-2xl mx-auto">
-              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0]">
-                Ücretsiz vs <span className="text-premium-deep">Premium</span>
-              </h2>
-              <p className="text-[15px] text-ink-soft mt-4 leading-relaxed">
-                Tüm sorular ücretsiz çözülebilir. Premium, sıkıştığında AI yardımını ve
-                otomatik tamamlama destek katmanını açar.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-          <div className="surface overflow-hidden max-w-3xl mx-auto bg-surface">
-            <div className="grid grid-cols-[1.6fr_1fr_1fr] px-5 py-3 border-b border-line bg-surface-2 text-[11px] uppercase tracking-wider font-mono text-ink-mute">
-              <div>Özellik</div>
-              <div className="text-center">Ücretsiz</div>
-              <div className="text-center text-premium-deep">Premium</div>
-            </div>
-
-            {[
-              { ozellik: `${tumSorular.length} sorunun tamamı`, free: true, prem: true },
-              { ozellik: `${uniteler.length} ünite, 3 zorluk`, free: true, prem: true },
-              { ozellik: 'Anlık doğru/yanlış kontrolü', free: true, prem: true },
-              { ozellik: 'İlerleme + rozet sistemi', free: true, prem: true },
-              { ozellik: 'AI yanlış cevap analizi', free: false, prem: true },
-              { ozellik: 'Soru içi AI asistan', free: false, prem: true },
-              { ozellik: 'Hesap kodu otomatik tamamlama', free: false, prem: true },
-              { ozellik: 'Belge görselleri (fatura, dekont)', free: false, prem: true },
-              { ozellik: 'Sınırsız çalışma', free: true, prem: true },
-            ].map((satir, i) => (
-              <div key={i} className="compare-row text-[14px]">
-                <div className="text-ink">{satir.ozellik}</div>
-                <div className="text-center">
-                  {satir.free ? (
-                    <Icon name="Check" size={15} className="text-success inline" />
-                  ) : (
-                    <span className="text-ink-quiet font-mono">—</span>
-                  )}
+            <div className="surface bg-surface flex items-center justify-between gap-5 flex-wrap p-5 sm:p-6">
+              <div className="flex-1 min-w-[260px]">
+                <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                  Tarife
                 </div>
-                <div className="text-center">
-                  {satir.prem ? (
-                    <Icon name="Check" size={15} className="text-premium-deep inline" />
-                  ) : (
-                    <span className="text-ink-quiet font-mono">—</span>
-                  )}
-                </div>
+                <h3 className="font-display text-[20px] sm:text-[22px] font-bold text-ink mt-1 leading-tight">
+                  Ücretsiz başla, dilersen{' '}
+                  <span className="font-display-italic text-copper-deep">Premium</span>'a geç.
+                </h3>
+                <p className="text-[13px] text-ink-soft mt-1.5 leading-snug">
+                  Tüm sorular ücretsiz. Premium → AI asistan, yanlış analizi, otomatik
+                  tamamlama.
+                  <span className="inline-block ml-2 text-copper-deep font-mono uppercase tracking-[0.16em] text-[10.5px] font-bold">
+                    İlk 100 kişiye 1 yıl bedava
+                  </span>
+                </p>
               </div>
-            ))}
 
-            {/* Fiyat satırı */}
-            <div className="grid grid-cols-[1.6fr_1fr_1fr] px-5 py-5 border-t-2 border-line-strong bg-surface-2">
-              <div>
-                <div className="text-[11px] uppercase tracking-wider font-mono text-ink-mute mb-1">Fiyat</div>
-                <div className="text-[12.5px] text-ink-soft">Aylık abonelik / dönem aboneliği</div>
-              </div>
-              <div className="text-center">
-                <div className="font-display font-bold text-[24px] text-ink tnum leading-none">₺0</div>
-                <div className="text-[11px] text-ink-mute mt-1 font-mono uppercase tracking-wider">her zaman</div>
-              </div>
-              <div className="text-center">
-                <div className="font-display font-bold text-[24px] text-ink tnum leading-none">
-                  ₺{aylikTutar}
-                  <span className="text-[14px] text-ink-quiet font-mono">/ay</span>
+              <div className="flex items-center gap-4 sm:gap-5">
+                <div className="text-right sm:text-center">
+                  <div className="font-display text-[22px] sm:text-[26px] font-bold text-ink leading-none tnum">
+                    ₺0
+                  </div>
+                  <div className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-ink-mute mt-1">
+                    her zaman
+                  </div>
                 </div>
-                <div className="text-[11px] text-ink-mute mt-1 font-mono uppercase tracking-wider">
-                  veya ₺{donemlikTutar} / {donemlikAy} ay
+                <span className="font-mono text-[16px] text-line-strong leading-none">·</span>
+                <div className="text-right sm:text-center">
+                  <div className="font-display text-[22px] sm:text-[26px] font-bold text-ink leading-none tnum">
+                    ₺{aylikTutar}
+                    <span className="text-[12px] font-mono text-ink-quiet ml-0.5">/ay</span>
+                  </div>
+                  <div className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-copper-deep mt-1">
+                    premium
+                  </div>
                 </div>
+                <button
+                  onClick={() => nav('/premium')}
+                  className="btn btn-soft ml-1 sm:ml-2"
+                >
+                  Detay →
+                </button>
               </div>
             </div>
-          </div>
-
           </Reveal>
-
-          <Reveal delay={0.15}>
-            <div className="text-center mt-10 flex flex-wrap gap-3 justify-center">
-              <button onClick={() => nav('/problemler')} className="btn btn-primary btn-lg">
-                Ücretsiz Başla
-              </button>
-              <button onClick={() => nav('/premium')} className="btn btn-soft btn-lg">
-                Premium Detaylar →
-              </button>
-            </div>
-            <p className="text-[12px] text-ink-mute font-mono uppercase tracking-wider text-center mt-5">
-              <span className="inline-block w-2 h-2 rounded-full bg-premium align-middle mr-2" />
-              İlk 100 kullanıcıya bir yıl Premium bedava
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ===========================================================
-          SSS
-      =========================================================== */}
-      <section className="px-5 sm:px-8 py-20 sm:py-24 border-t border-line">
-        <div className="max-w-[860px] mx-auto">
-          <Reveal>
-            <div className="section-divider mb-10">
-              <span>§ 05 · SSS</span>
-            </div>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0] mb-12">
-              Sıkça sorulanlar.
-            </h2>
-          </Reveal>
-
-          <div className="space-y-4">
-            {[
-              {
-                s: 'Kayıt olmadan kullanabilir miyim?',
-                c: 'Evet. Ana sayfadaki "Hemen başla" butonu seni problemlere götürür. İlerlemen tarayıcında saklanır. Hesap açarsan tüm veriler buluta taşınır, başka cihazda devam edersin.',
-              },
-              {
-                s: 'Hangi konuları kapsıyor?',
-                c: `Tek Düzen Hesap Planı temelli ${uniteler.length} ünite: Kasa, Banka, Mal, Senet, KDV, Amortisman, Personel, Dönem Sonu, Şüpheli Alacaklar, Reeskont, Kambiyo. Toplam ${tumSorular.length} senaryo bazlı soru.`,
-              },
-              {
-                s: 'Cevabımı nasıl kontrol ediyor?',
-                c: 'Her soru için resmi yevmiye kaydı tanımlı. Senin girdiğin satırlar (hesap kodu + borç + alacak tutarı) referansla karşılaştırılır. Doğru = yeşil, yanlış = kırmızı, eksik satır → uyarı.',
-              },
-              {
-                s: 'Premium nedir, neden var?',
-                c: 'Tüm sorular ücretsizdir. Premium, sıkıştığında AI asistan, yanlış cevap analizi ve hesap kodu otomatik tamamlama gibi destek katmanlarını açar. İlk 100 kullanıcıya bir yıl bedava.',
-              },
-              {
-                s: 'Sınav döneminde işime yarar mı?',
-                c: 'Evet — özellikle vize/final öncesi haftada. Sorular gerçek sınav tipinde (kolay/orta/zor karışık), aktivite ısı haritası ve seri sayacı ile düzenli pratik kurma motivasyonunu canlı tutar.',
-              },
-            ].map((sss, i) => (
-              <Reveal key={i} delay={0.05 * i} y={16}>
-                <details className="surface group bg-surface hover:border-line-strong transition">
-                  <summary className="cursor-pointer p-5 flex items-baseline justify-between gap-4 list-none">
-                    <span className="flex items-baseline gap-3 flex-1">
-                      <span className="font-mono text-[11px] text-ink-quiet tnum tracking-wider">
-                        0{i + 1}
-                      </span>
-                      <span className="font-display text-[16px] sm:text-[17px] font-semibold text-ink tracking-tight group-hover:text-accent-deep transition">
-                        {sss.s}
-                      </span>
-                    </span>
-                    <Icon name="ChevronDown" size={16} className="text-ink-mute group-open:rotate-180 transition flex-shrink-0 mt-1" />
-                  </summary>
-                  <div className="px-5 pb-5 ml-8 text-[14.5px] text-ink-soft leading-relaxed">{sss.c}</div>
-                </details>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -1387,7 +1200,7 @@ const AnonimAnaSayfa = () => {
         <div className="relative max-w-[860px] mx-auto text-center">
           <Reveal>
             <div className="section-divider mb-10">
-              <span>§ 06 · Başla</span>
+              <span>§ 03 · Başla</span>
             </div>
           </Reveal>
 
@@ -1448,229 +1261,6 @@ const AnonimAnaSayfa = () => {
 };
 
 /* ----------------------------------------------------------------------
-   § 01 · TDHP Mimari Diyagramı
-   Ventriloc'un Microsoft Azure + Fabric mimari diyagramının muhasebe
-   eşdeğeri: hesap planı sınıfları arasındaki akış görselleştirmesi.
----------------------------------------------------------------------- */
-
-const TdhpDiagramSection = () => {
-  return (
-    <section className="relative px-5 sm:px-8 py-20 sm:py-28 border-y border-line bg-surface-2/40 overflow-hidden">
-      <div className="max-w-[1240px] mx-auto relative">
-        <Reveal>
-          <div className="section-divider mb-10">
-            <span>§ 01 · Mimari</span>
-          </div>
-        </Reveal>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-          <div className="lg:col-span-5">
-            <Reveal delay={0.05}>
-              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[52px] font-bold tracking-tight text-ink leading-[1.0] mb-5">
-                Tek Düzen Hesap Planı'nın <span className="font-display-italic text-copper">akışı</span>.
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="text-[16px] text-ink-soft leading-relaxed mb-6">
-                Bir muhasebe işlemi sınıflar arasında akar — varlıklardan kaynaklara,
-                gelirden gidere. Her senaryo bir <em className="font-display-italic text-olive">harita</em>
-                üzerinde gerçekleşir.
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <ul className="space-y-3 text-[14px] text-ink-soft mb-8">
-                <li className="flex items-start gap-3">
-                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">7</span>
-                  <span>hesap sınıfı (1: Dönen Varlıklar → 7: Maliyet)</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">{HESAP_PLANI.length}</span>
-                  <span>geçerli ana hesap kodu (TDHP standardı)</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="font-mono text-[11px] text-copper-deep tnum mt-0.5 w-6">∞</span>
-                  <span>yardımcı hesap kombinasyonu</span>
-                </li>
-              </ul>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <span className="inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute">
-                <Icon name="MessagesSquare" size={11} />
-                Bu animasyon interaktif değil — örnek bir akış
-              </span>
-            </Reveal>
-          </div>
-
-          {/* SAĞ — Tutarın Anatomisi: KDV ayrıştırma akış diyagramı (7/12) */}
-          <div className="lg:col-span-7 relative">
-            <Reveal delay={0.1}>
-              <div className="anatomi-card">
-                {/* Üst — senaryo başlığı */}
-                <div className="anatomi-header">
-                  <div>
-                    <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
-                      Senaryo
-                    </div>
-                    <div className="font-display text-[16px] font-bold text-ink mt-0.5 leading-none">
-                      Peşin Mal Alışı{' '}
-                      <span className="font-display-italic text-ink-soft text-[13px]">
-                        — fatura tutarı KDV dahil
-                      </span>
-                    </div>
-                  </div>
-                  <div className="anatomi-tutar-cip">12.000,00 ₺</div>
-                </div>
-
-                {/* Akış diyagramı */}
-                <div className="anatomi-flow">
-                  <svg
-                    className="anatomi-svg"
-                    viewBox="0 0 600 320"
-                    preserveAspectRatio="xMidYMid meet"
-                  >
-                    {/* Tutardan ayrım noktasına (üst kart bottom y≈80) */}
-                    <line x1="300" y1="80" x2="300" y2="118" className="hat hat-ana" />
-                    {/* Ayrım noktası (kavşak) */}
-                    <circle cx="300" cy="122" r="4" className="kavsak" />
-                    {/* Sol dal: matrah → 153 üst kenar (y≈170) */}
-                    <path d="M 300 122 Q 300 148, 220 156 L 162 170" className="hat hat-sol" />
-                    {/* Sağ dal: KDV → 191 üst kenar */}
-                    <path d="M 300 122 Q 300 148, 380 156 L 438 170" className="hat hat-sag" />
-                    {/* 153 ve 191 birleşim → 100 KASA üst kenar (y≈260) */}
-                    <path
-                      d="M 162 230 Q 162 256, 240 262 L 290 264"
-                      className="hat hat-karsi"
-                    />
-                    <path
-                      d="M 438 230 Q 438 256, 360 262 L 310 264"
-                      className="hat hat-karsi"
-                    />
-                    {/* Etiketler */}
-                    <text x="300" y="103" className="hat-etiket-ayir">
-                      ayrıştır
-                    </text>
-                    <text x="190" y="128" className="hat-etiket-tutar">
-                      10.000,00
-                    </text>
-                    <text x="190" y="140" className="hat-etiket-aciklama">
-                      matrah
-                    </text>
-                    <text x="410" y="128" className="hat-etiket-tutar">
-                      2.000,00
-                    </text>
-                    <text x="410" y="140" className="hat-etiket-aciklama">
-                      KDV %20
-                    </text>
-                    <text x="300" y="252" className="hat-etiket-karsi">
-                      karşılığında peşin ödeme
-                    </text>
-                  </svg>
-
-                  {/* Üst tutar kartı */}
-                  <div className="anatomi-pos anatomi-tutar-karti">
-                    <div className="text-[9px] font-mono tracking-[0.22em] uppercase text-ink-mute font-bold">
-                      Toplam ödenen
-                    </div>
-                    <div className="font-display text-[28px] font-bold text-ink leading-none mt-1 tnum">
-                      12.000<span className="text-ink-mute">,00</span>
-                      <span className="text-[16px] font-mono text-copper-deep ml-1">₺</span>
-                    </div>
-                    <div className="text-[10px] font-display-italic text-ink-soft mt-1">
-                      KDV dahil tek tutar
-                    </div>
-                  </div>
-
-                  {/* Sol hesap: 153 TİCARİ MAL */}
-                  <div className="anatomi-pos anatomi-hesap anatomi-hesap-sol">
-                    <span className="hesap-rozet">①</span>
-                    <div className="hesap-kod">153</div>
-                    <div className="hesap-ad">TİCARİ MAL</div>
-                    <div className="hesap-tutar">10.000,00</div>
-                    <div className="hesap-taraf">
-                      <span>Borç</span>
-                      <Icon name="ArrowUp" size={9} />
-                    </div>
-                  </div>
-
-                  {/* Sağ hesap: 191 İND. KDV */}
-                  <div className="anatomi-pos anatomi-hesap anatomi-hesap-sag">
-                    <span className="hesap-rozet">②</span>
-                    <div className="hesap-kod">191</div>
-                    <div className="hesap-ad">İND. KDV</div>
-                    <div className="hesap-tutar">2.000,00</div>
-                    <div className="hesap-taraf">
-                      <span>Borç</span>
-                      <Icon name="ArrowUp" size={9} />
-                    </div>
-                  </div>
-
-                  {/* Alt hesap: 100 KASA */}
-                  <div className="anatomi-pos anatomi-hesap anatomi-hesap-alt">
-                    <span className="hesap-rozet hesap-rozet-alt">③</span>
-                    <div className="hesap-kod">100</div>
-                    <div className="hesap-ad">KASA</div>
-                    <div className="hesap-tutar">12.000,00</div>
-                    <div className="hesap-taraf hesap-taraf-alacak">
-                      <span>Alacak</span>
-                      <Icon name="ArrowDown" size={9} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Alt — denge çubuğu */}
-                <div className="anatomi-footer">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute font-bold">
-                      Borç
-                    </span>
-                    <span className="font-mono text-[14px] tnum font-bold text-ink">
-                      12.000,00
-                    </span>
-                  </div>
-                  <span className="font-mono text-[18px] font-bold text-copper-deep leading-none">
-                    =
-                  </span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute font-bold">
-                      Alacak
-                    </span>
-                    <span className="font-mono text-[14px] tnum font-bold text-ink">
-                      12.000,00
-                    </span>
-                  </div>
-                  <span className="anatomi-denge-cip">
-                    <Icon name="CheckCircle2" size={12} />
-                    Dengeli
-                  </span>
-                </div>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.6}>
-              <div className="mt-4 flex items-start gap-2 text-[12.5px] text-ink-soft leading-snug">
-                <Icon
-                  name="GitFork"
-                  size={13}
-                  className="text-copper-deep mt-0.5 flex-shrink-0"
-                />
-                <span>
-                  Bir tutar kayda alınırken{' '}
-                  <em className="font-display-italic">matrah</em> ve{' '}
-                  <em className="font-display-italic">KDV</em>'ye ayrışır; ayrı
-                  ayrı hesaplara aktarılır. Karşılığında ne ödendiyse o da{' '}
-                  <em className="font-display-italic">alacaklanır</em>.
-                </span>
-              </div>
-            </Reveal>
-          </div>
-
-        </div>
-      </div>
-    </section>
-  );
-};
-
-/* ----------------------------------------------------------------------
    § 02 · Pilier-Style Ünite Seçici
    Ventriloc'un "Pilier 1, 2, 3, 4" interaktif tab seçicinin muhasebe
    eşdeğeri: 11 ünitenin tıklanabilir tab'ları + altta dinamik içerik.
@@ -1693,7 +1283,7 @@ const UniteSeciciSection = ({ uniteler, toplamSoru, onTumune, onUnite }: UniteSe
       <div className="max-w-[1240px] mx-auto">
         <Reveal>
           <div className="section-divider mb-10">
-            <span>§ 02 · İçerik</span>
+            <span>§ 01 · İçerik</span>
           </div>
         </Reveal>
 
