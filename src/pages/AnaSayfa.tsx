@@ -1274,153 +1274,122 @@ interface UniteSeciciProps {
 }
 
 const UniteSeciciSection = ({ uniteler, toplamSoru, onTumune, onUnite }: UniteSeciciProps) => {
-  const [aktifIdx, setAktifIdx] = useState(0);
-  const aktifUnite = uniteler[aktifIdx];
-  const aktifIcerik = aktifUnite ? PILIER_ICERIK[aktifUnite.id] : null;
-
   return (
-    <section className="relative px-5 sm:px-8 py-20 sm:py-28 overflow-hidden">
-      <div className="max-w-[1240px] mx-auto">
-        <Reveal>
-          <div className="section-divider mb-10">
-            <span>§ 01 · İçerik</span>
-          </div>
-        </Reveal>
+    <section className="relative px-5 sm:px-8 py-24 sm:py-32 overflow-hidden">
+      <div className="max-w-[1240px] mx-auto relative">
+        {/* Üst başlık */}
+        <div className="text-center max-w-2xl mx-auto mb-24 lg:mb-32">
+          <Reveal>
+            <div className="section-divider mb-8">
+              <span>§ 01 · İçerik</span>
+            </div>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h2 className="font-display text-[40px] sm:text-[56px] md:text-[68px] font-bold tracking-tight text-ink leading-[0.96]">
+              <CountUp to={uniteler.length} /> bölüm,{' '}
+              <span className="font-display-italic text-copper-deep">adım adım</span>.
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="text-[16px] sm:text-[17px] text-ink-soft mt-6 leading-relaxed">
+              Sıfırdan başla — kasa ve banka kayıtlarıyla. İleri konulara git —
+              reeskont, kambiyo, dönem sonu.{' '}
+              <strong className="text-ink font-semibold">{toplamSoru}</strong> senaryo,
+              kolaydan zora sıralı.
+            </p>
+          </Reveal>
+        </div>
 
+        {/* Zigzag sahneler */}
+        <div className="zigzag-track">
+          {/* Dikey timeline çizgisi */}
+          <div className="zigzag-line" aria-hidden />
+
+          {uniteler.map((u, i) => (
+            <UniteSahne
+              key={u.id}
+              unite={u}
+              index={i}
+              toplam={uniteler.length}
+              ters={i % 2 === 1}
+              onTik={() => onUnite(u.id)}
+            />
+          ))}
+        </div>
+
+        {/* Alt CTA */}
         <Reveal delay={0.05}>
-          <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
-            <div>
-              <h2 className="font-display text-[34px] sm:text-[44px] md:text-[56px] font-bold tracking-tight text-ink leading-[1.0] mb-3">
-                <CountUp to={uniteler.length} /> ünite,{' '}
-                <span className="text-ink-soft"><CountUp to={toplamSoru} /> soru</span>.
-              </h2>
-              <p className="text-[15px] text-ink-soft max-w-xl leading-relaxed">
-                Bir üniteye tıkla, içeriği gör. Her ünite{' '}
-                <em className="font-display-italic text-olive">kolay → orta → zor</em>{' '}
-                sıralı sorularla pekişir.
-              </p>
-            </div>
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-copper-deep">
-              <Icon name="MessagesSquare" size={11} className="inline mr-1.5" />
-              Bu seçici interaktif
+          <div className="text-center mt-24 sm:mt-32">
+            <span className="block font-mono text-[10.5px] tracking-[0.22em] uppercase text-ink-mute mb-5 font-bold">
+              Liste sonu
             </span>
+            <button onClick={onTumune} className="btn btn-primary btn-lg">
+              Tüm Soruları Gör →
+            </button>
           </div>
         </Reveal>
-
-        <Reveal delay={0.1}>
-          {/* Tab seçici şeridi */}
-          <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b border-line">
-            {uniteler.map((u, i) => (
-              <button
-                key={u.id}
-                onClick={() => setAktifIdx(i)}
-                className={`pilier-tab ${i === aktifIdx ? 'active' : ''}`}
-              >
-                <span className="pilier-tab-num">{String(i + 1).padStart(2, '0')}</span>
-                <span>{u.ad}</span>
-              </button>
-            ))}
-          </div>
-        </Reveal>
-
-        {/* Aktif ünite içeriği — değişince fade */}
-        {aktifUnite && aktifIcerik && (
-          <div
-            key={aktifUnite.id}
-            style={{ animation: 'sceneEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both' }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start"
-          >
-            {/* Sol: ünite bilgileri */}
-            <div className="lg:col-span-7">
-              <div className="flex items-center gap-4 mb-5">
-                <Thiings name={aktifUnite.thiingsIcon} size={56} />
-                <div>
-                  <div className="flex items-baseline gap-3 mb-1">
-                    <span className="font-mono text-[11px] tnum text-ink-mute tracking-wider">
-                      ÜNİTE {String(aktifIdx + 1).padStart(2, '0')} / {String(uniteler.length).padStart(2, '0')}
-                    </span>
-                    <span className="font-mono text-[11px] tnum text-copper-deep">
-                      {aktifUnite.sorular.length} soru
-                    </span>
-                  </div>
-                  <h3 className="font-display text-[28px] sm:text-[36px] font-bold tracking-tight text-ink leading-tight">
-                    {aktifIcerik.baslik}
-                  </h3>
-                </div>
-              </div>
-
-              <p className="text-[15.5px] text-ink-soft leading-relaxed mb-6 max-w-xl">
-                {aktifIcerik.ozet}
-              </p>
-
-              {/* Hesap kodları */}
-              <div className="mb-6">
-                <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute mb-2.5">
-                  Hesap Kodları
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {aktifIcerik.kodlar.map((k) => (
-                    <span key={k} className="kod-badge">
-                      <span className="kod-num">{k}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Konular */}
-              <div className="mb-6">
-                <div className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute mb-2.5">
-                  Konular
-                </div>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[14px] text-ink-soft">
-                  {aktifIcerik.konular.map((k, i) => (
-                    <li key={i} className="flex items-baseline gap-2">
-                      <span className="font-mono text-[10px] tnum text-copper-deep mt-0.5">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span>{k}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <button onClick={() => onUnite(aktifUnite.id)} className="btn btn-primary">
-                Bu üniteden başla →
-              </button>
-            </div>
-
-            {/* Sağ: örnek senaryo kartı */}
-            <div className="lg:col-span-5 lg:sticky lg:top-32">
-              <div className="surface-lift p-6 bg-surface relative overflow-hidden">
-                <div className="flex items-baseline justify-between mb-4">
-                  <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-mute">
-                    Örnek Senaryo
-                  </span>
-                  <span className="font-mono text-[10.5px] tnum text-copper-deep">
-                    {aktifIcerik.kodlar[0]}
-                  </span>
-                </div>
-                <div className="hairline mb-4" />
-                <p className="font-display italic text-[16px] text-ink leading-relaxed mb-5">
-                  "{aktifIcerik.ornekSenaryo}"
-                </p>
-                <div className="flex items-center justify-between text-[12px] text-ink-mute">
-                  <span className="font-mono uppercase tracking-wider">{aktifUnite.ad}</span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-copper" />
-                    <span className="font-mono">aktif</span>
-                  </span>
-                </div>
-              </div>
-              <div className="mt-4 text-center">
-                <button onClick={onTumune} className="btn-link">
-                  Tüm üniteleri gör →
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </section>
+  );
+};
+
+interface UniteSahneProps {
+  unite: Unite;
+  index: number;
+  toplam: number;
+  ters: boolean;
+  onTik: () => void;
+}
+
+const UniteSahne = ({ unite, index, toplam, ters, onTik }: UniteSahneProps) => {
+  const ozet = PILIER_ICERIK[unite.id]?.ozet ?? '';
+  const numStr = String(index + 1).padStart(2, '0');
+  const totStr = String(toplam).padStart(2, '0');
+
+  return (
+    <div className={`zigzag-sahne ${ters ? 'zigzag-ters' : ''}`}>
+      {/* Timeline noktası — orta */}
+      <div className="zigzag-dot" aria-hidden>
+        <span>{numStr}</span>
+      </div>
+
+      {/* Görsel taraf */}
+      <Reveal y={28} delay={0.05} className="zigzag-gorsel-col">
+        <div className="zigzag-gorsel">
+          <div className="zigzag-bg-num" aria-hidden>{numStr}</div>
+          <div className="zigzag-icon">
+            <Thiings name={unite.thiingsIcon} size={144} />
+          </div>
+          <span className="zigzag-corner zigzag-corner-tl">§ {numStr}</span>
+          <span className="zigzag-corner zigzag-corner-br">{unite.sorular.length} soru</span>
+        </div>
+      </Reveal>
+
+      {/* Metin taraf */}
+      <Reveal y={28} delay={0.15} className="zigzag-metin-col">
+        <div className="zigzag-metin">
+          <div className="zigzag-meta">
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+              Ünite {numStr} / {totStr}
+            </span>
+            <span className="zigzag-meta-cizgi" />
+          </div>
+          <h3 className="zigzag-baslik">{unite.ad}</h3>
+          {ozet && <p className="zigzag-aciklama">{ozet}</p>}
+          <div className="zigzag-zorluk-stripe">
+            <span className="zigzag-zorluk z-kolay" />
+            <span className="zigzag-zorluk z-orta" />
+            <span className="zigzag-zorluk z-zor" />
+            <span className="zigzag-zorluk-etiket">
+              kolay <span className="text-ink-quiet">→</span> zor
+            </span>
+          </div>
+          <button onClick={onTik} className="zigzag-kesfet">
+            <span>Bu üniteyi keşfet</span>
+            <Icon name="ArrowRight" size={13} />
+          </button>
+        </div>
+      </Reveal>
+    </div>
   );
 };
