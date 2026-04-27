@@ -16,14 +16,28 @@ interface Props {
  */
 
 const ICON_MAP: Record<string, string> = {
-  // Üniteler
+  // Yeni 15 ünite (Yevmiye Kayıt Müfredatı)
+  acilis: 'Rocket',
+  'hazir-degerler': 'Wallet',
+  'mal-alis': 'Package',
+  'mal-satis': 'Banknote',
+  'ticari-alacaklar': 'FileSignature',
+  'ticari-borclar': 'Receipt',
+  kdv: 'Percent',
+  personel: 'Users',
+  mdv: 'Package',
+  amortisman: 'TrendingDown',
+  'reeskont-karsilik': 'Hourglass',
+  'stok-degerleme': 'Archive',
+  'yabanci-kaynaklar': 'Landmark',
+  'gelir-tablosu': 'BarChart3',
+  'donem-sonu-kapanis': 'CalendarCheck',
+
+  // Eski ünite isimleri (geriye dönük uyum, soruların migration sonrası eski ID'leri kalsa bile çalışır)
   kasa: 'Wallet',
   banka: 'Landmark',
   mal: 'Package',
   senet: 'FileSignature',
-  kdv: 'Percent',
-  amortisman: 'TrendingDown',
-  personel: 'Users',
   'donem-sonu': 'CalendarCheck',
   'supheli-alacaklar': 'AlertCircle',
   reeskont: 'Hourglass',

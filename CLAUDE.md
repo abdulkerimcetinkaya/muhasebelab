@@ -52,7 +52,7 @@ src/
 └── types/index.ts
 
 supabase/
-├── migrations/               — 10 migration (tümü production'a uygulanmış):
+├── migrations/               — 13 migration:
 │   ├── 20260422000001_init                — şema + RLS
 │   ├── 20260422000002_admin_rls           — admin politikaları
 │   ├── 20260422000003_premium_rpc         — erken erişim aktivasyon RPC (ilk 100 kişiye 1 yıl)
@@ -62,7 +62,10 @@ supabase/
 │   ├── 20260425000001_ai_kullanim         — AI çağrı sayacı
 │   ├── 20260425000002_iyzico              — ödeme tablosu (entegrasyon henüz yapılmadı)
 │   ├── 20260425000003_more_sorular        — 115 ek soru (toplam 213)
-│   └── 20260426000001_rls_sikilastir      — RLS policy güçlendirme
+│   ├── 20260426000001_rls_sikilastir      — RLS policy güçlendirme
+│   ├── 20260427000001_kullanici_profil_alanlari — onboarding profil alanları
+│   ├── 20260427000002_kullanici_adi_unique      — username UNIQUE constraint
+│   └── 20260427000003_yeni_unite_yapisi          — 11→15 ünite restructure
 ├── functions/                — Edge Functions:
 │   ├── ai-asistan            — soru içinde AI rehber
 │   ├── ai-belge-uret         — belge üretimi
@@ -76,9 +79,15 @@ supabase/
   (FK için zorunlu). PDF referansı: Fuat Hoca broşürü.
 - `GRUP_ISIMLERI` — 58 grup başlığı (10. Hazır Değerler, 11. Menkul Kıymetler…)
   → 3 seviyeli hiyerarşi (sınıf > grup > hesap) Hesap Planı modal'ında.
-- `uniteler` tablosu — 11 ünite (Kasa, Banka, Mal, Senet, KDV, Amortisman,
-  Personel, Dönem Sonu, Şüpheli Alacaklar, Reeskont, Kambiyo)
-- `sorular` tablosu — **213 soru** seed edilmiş; admin panelinden eklenebilir
+- `uniteler` tablosu — **15 ünite** ([Yevmiye Kayıt Müfredatı](Yevmiye_Kayit_Mufredati.docx)
+  baz alındı, 27 Nisan 2026'da 11→15 restructure yapıldı):
+  1. Açılış Kayıtları · 2. Hazır Değerler · 3. Mal Alış · 4. Mal Satış ·
+  5. Ticari Alacaklar · 6. Ticari Borçlar · 7. KDV · 8. Personel ·
+  9. MDV Alış-Satış · 10. Amortisman · 11. Reeskont/Karşılık ·
+  12. Stok Değerleme · 13. Yabancı Kaynaklar · 14. Gelir Tablosu ·
+  15. Dönem Sonu Kapanış
+- `sorular` tablosu — **213 soru** seed edilmiş; restructure migration'ında
+  keyword bazlı yeni ünitelere taşındı, admin panelinden manuel düzeltme yapılabilir
   (`durum`: taslak/inceleme/onayli/arsiv). Cozumler tablosu hesap_plani'ye
   FK ile bağlı.
 - `ROZETLER` — 12 başarı rozeti (kodda)
