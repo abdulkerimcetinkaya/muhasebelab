@@ -1353,13 +1353,11 @@ const UniteSahne = ({ unite, index, toplam, ters, onTik }: UniteSahneProps) => {
         <span>{numStr}</span>
       </div>
 
-      {/* Görsel taraf */}
+      {/* Görsel taraf — büyük numara + mavi tonlu atmosfer */}
       <Reveal y={28} delay={0.05} className="zigzag-gorsel-col">
         <div className="zigzag-gorsel">
+          <div className="zigzag-blue-glow" aria-hidden />
           <div className="zigzag-bg-num" aria-hidden>{numStr}</div>
-          <div className="zigzag-icon">
-            <Thiings name={unite.thiingsIcon} size={144} />
-          </div>
           <span className="zigzag-corner zigzag-corner-tl">§ {numStr}</span>
           <span className="zigzag-corner zigzag-corner-br">{unite.sorular.length} soru</span>
         </div>

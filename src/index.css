@@ -1055,13 +1055,44 @@ input[type='number'] { -moz-appearance: textfield; }
   justify-content: center;
   overflow: hidden;
   background-image:
-    radial-gradient(circle at 20% 25%, color-mix(in srgb, var(--copper) 6%, transparent), transparent 45%),
-    radial-gradient(circle at 80% 75%, color-mix(in srgb, var(--ink) 4%, transparent), transparent 45%);
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s;
+    radial-gradient(circle at 30% 35%, color-mix(in srgb, var(--sky-deep, #5a87b0) 14%, transparent), transparent 55%),
+    radial-gradient(circle at 75% 70%, color-mix(in srgb, var(--ink) 8%, transparent), transparent 50%);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s, box-shadow 0.4s;
 }
 .zigzag-gorsel:hover {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--copper) 40%, var(--line));
+  border-color: color-mix(in srgb, var(--sky-deep, #5a87b0) 45%, var(--line));
+  box-shadow:
+    0 12px 32px -16px color-mix(in srgb, var(--sky-deep, #5a87b0) 35%, transparent);
+}
+
+/* Merkezdeki mavi orb — yumuşak gölge / aurora gibi */
+.zigzag-blue-glow {
+  position: absolute;
+  width: 65%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--sky-deep, #5a87b0) 28%, transparent) 0%,
+    color-mix(in srgb, var(--sky-deep, #5a87b0) 14%, transparent) 35%,
+    transparent 70%
+  );
+  filter: blur(18px);
+  pointer-events: none;
+  z-index: 0;
+  animation: zigzagBlueGlow 7s ease-in-out infinite;
+}
+@keyframes zigzagBlueGlow {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+  50%      { transform: translate(-48%, -52%) scale(1.08); opacity: 1; }
+}
+.zigzag-gorsel:hover .zigzag-blue-glow {
+  opacity: 1;
+  filter: blur(14px);
 }
 
 .zigzag-bg-num {
@@ -1072,17 +1103,19 @@ input[type='number'] { -moz-appearance: textfield; }
   justify-content: center;
   font-family: var(--font-display, 'Geist', sans-serif);
   font-weight: 800;
-  font-size: clamp(140px, 22vw, 220px);
+  font-size: clamp(160px, 26vw, 260px);
   line-height: 0.85;
-  color: var(--ink);
-  opacity: 0.04;
+  color: var(--sky-deep, #5a87b0);
+  opacity: 0.18;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.06em;
   user-select: none;
+  z-index: 1;
+  text-shadow:
+    0 1px 0 color-mix(in srgb, var(--bg) 60%, transparent),
+    0 0 40px color-mix(in srgb, var(--sky-deep, #5a87b0) 10%, transparent);
 }
-
-.zigzag-icon { position: relative; z-index: 1; }
 
 .zigzag-corner {
   position: absolute;
@@ -1100,6 +1133,8 @@ input[type='number'] { -moz-appearance: textfield; }
 .zigzag-metin {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  min-height: 220px;
 }
 
 .zigzag-meta {
