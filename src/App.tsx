@@ -25,6 +25,7 @@ const AdminYeniSoruSayfasi = lazy(() => import('./pages/admin/AdminYeniSoruSayfa
 const AdminDuzenleSoruSayfasi = lazy(() => import('./pages/admin/AdminDuzenleSoruSayfasi').then((m) => ({ default: m.AdminDuzenleSoruSayfasi })));
 const AdminTopluEkleSayfasi = lazy(() => import('./pages/admin/AdminTopluEkleSayfasi').then((m) => ({ default: m.AdminTopluEkleSayfasi })));
 const AdminHatalarSayfasi = lazy(() => import('./pages/admin/AdminHatalarSayfasi').then((m) => ({ default: m.AdminHatalarSayfasi })));
+const AdminUnitelerSayfasi = lazy(() => import('./pages/admin/AdminUnitelerSayfasi').then((m) => ({ default: m.AdminUnitelerSayfasi })));
 
 const SayfaYukleniyor = () => (
   <div className="min-h-[60vh] flex items-center justify-center text-stone-400 dark:text-zinc-500 text-sm">
@@ -323,6 +324,14 @@ const App = () => {
               element={
                 <ProtectedAdminRoute>
                   <AdminAnaSayfa />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/uniteler"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminUnitelerSayfasi />
                 </ProtectedAdminRoute>
               }
             />

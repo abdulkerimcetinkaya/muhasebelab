@@ -3,6 +3,7 @@ import { Icon } from './Icon';
 
 const linkler = [
   { to: '/admin', etiket: 'Genel Bakış', icon: 'LayoutDashboard', end: true },
+  { to: '/admin/uniteler', etiket: 'Üniteler', icon: 'LayoutGrid', end: true },
   { to: '/admin/sorular', etiket: 'Sorular', icon: 'FileText', end: true },
   { to: '/admin/sorular/yeni', etiket: 'Yeni Soru', icon: 'PlusCircle', end: true },
   { to: '/admin/sorular/toplu-ekle', etiket: 'Toplu Ekle (JSON)', icon: 'Upload', end: true },
