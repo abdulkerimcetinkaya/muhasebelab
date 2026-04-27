@@ -715,12 +715,11 @@ const useAktifSahne = (progress: MotionValue<number>) => {
 
 interface ScrollHeroProps {
   nav: (path: string) => void;
-  soruSayisi: number;
   uniteSayisi: number;
   uniteler: Unite[];
 }
 
-const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
+const ScrollHero = ({ nav, uniteler }: ScrollHeroProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -837,10 +836,6 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
                 style={{ animation: 'sceneEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both' }}
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="chip chip-mint">
-                    <span className="live-dot" />
-                    {soruSayisi} soru aktif
-                  </span>
                   <span className="font-mono text-[11px] text-ink-mute tracking-wider">
                     0{aktifSahne + 1} / 0{SAHNELER.length}
                   </span>
@@ -1061,7 +1056,7 @@ const ScrollHero = ({ nav, soruSayisi, uniteler }: ScrollHeroProps) => {
 
 const AnonimAnaSayfa = () => {
   const nav = useNavigate();
-  const { uniteler, tumSorular } = useUniteler();
+  const { uniteler } = useUniteler();
   const [planlar, setPlanlar] = useState<Plan[]>([]);
 
   useEffect(() => {
@@ -1083,7 +1078,6 @@ const AnonimAnaSayfa = () => {
       =========================================================== */}
       <ScrollHero
         nav={nav}
-        soruSayisi={tumSorular.length}
         uniteSayisi={uniteler.length}
         uniteler={uniteler}
       />
@@ -1126,7 +1120,6 @@ const AnonimAnaSayfa = () => {
       =========================================================== */}
       <UniteSeciciSection
         uniteler={uniteler}
-        toplamSoru={tumSorular.length}
         onTumune={() => nav('/uniteler')}
         onUnite={(id) => nav(`/uniteler/${id}`)}
       />
@@ -1199,16 +1192,10 @@ const AnonimAnaSayfa = () => {
 
         <div className="relative max-w-[860px] mx-auto text-center">
           <Reveal>
-            <div className="section-divider mb-10">
-              <span>§ 03 · Başla</span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.05}>
             <div className="inline-flex items-center gap-2 mb-6">
               <span className="live-dot" />
               <span className="font-mono text-[11.5px] uppercase tracking-[0.16em] text-ink-mute">
-                {tumSorular.length} soru hazır · şu an aktif
+                Şu an aktif
               </span>
             </div>
           </Reveal>
@@ -1268,23 +1255,17 @@ const AnonimAnaSayfa = () => {
 
 interface UniteSeciciProps {
   uniteler: Unite[];
-  toplamSoru: number;
   onTumune: () => void;
   onUnite: (id: string) => void;
 }
 
-const UniteSeciciSection = ({ uniteler, toplamSoru, onTumune, onUnite }: UniteSeciciProps) => {
+const UniteSeciciSection = ({ uniteler, onTumune, onUnite }: UniteSeciciProps) => {
   return (
     <section className="relative px-5 sm:px-8 py-24 sm:py-32 overflow-hidden">
       <div className="max-w-[1240px] mx-auto relative">
         {/* Üst başlık */}
         <div className="text-center max-w-2xl mx-auto mb-24 lg:mb-32">
           <Reveal>
-            <div className="section-divider mb-8">
-              <span>§ 01 · İçerik</span>
-            </div>
-          </Reveal>
-          <Reveal delay={0.05}>
             <h2 className="font-display text-[40px] sm:text-[56px] md:text-[68px] font-bold tracking-tight text-ink leading-[0.96]">
               <CountUp to={uniteler.length} /> bölüm,{' '}
               <span className="font-display-italic text-copper-deep">adım adım</span>.
@@ -1293,9 +1274,7 @@ const UniteSeciciSection = ({ uniteler, toplamSoru, onTumune, onUnite }: UniteSe
           <Reveal delay={0.1}>
             <p className="text-[16px] sm:text-[17px] text-ink-soft mt-6 leading-relaxed">
               Sıfırdan başla — kasa ve banka kayıtlarıyla. İleri konulara git —
-              reeskont, kambiyo, dönem sonu.{' '}
-              <strong className="text-ink font-semibold">{toplamSoru}</strong> senaryo,
-              kolaydan zora sıralı.
+              reeskont, kambiyo, dönem sonu. Senaryolar kolaydan zora sıralı.
             </p>
           </Reveal>
         </div>
@@ -1359,7 +1338,6 @@ const UniteSahne = ({ unite, index, toplam, ters, onTik }: UniteSahneProps) => {
           <div className="zigzag-blue-glow" aria-hidden />
           <div className="zigzag-bg-num" aria-hidden>{numStr}</div>
           <span className="zigzag-corner zigzag-corner-tl">§ {numStr}</span>
-          <span className="zigzag-corner zigzag-corner-br">{unite.sorular.length} soru</span>
         </div>
       </Reveal>
 

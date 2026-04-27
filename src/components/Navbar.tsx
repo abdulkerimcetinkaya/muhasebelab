@@ -50,9 +50,6 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
             <span className="font-display text-[24px] leading-none text-ink tracking-tight">
               MuhasebeLab
             </span>
-            <span className="hidden md:inline font-display italic text-[13px] text-ink-mute leading-none">
-              — atölye
-            </span>
           </button>
 
           {/* Orta nav */}
