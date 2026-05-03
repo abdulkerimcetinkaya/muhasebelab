@@ -4,12 +4,14 @@ import { Icon } from '../../components/Icon';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { SoruForm } from '../../components/SoruForm';
 import type { SoruFormDegerleri } from '../../components/SoruForm';
+import { useUniteler } from '../../contexts/UnitelerContext';
 import { supabase } from '../../lib/supabase';
 import type { Belge } from '../../types';
 
 export const AdminDuzenleSoruSayfasi = () => {
   const { soruId } = useParams<{ soruId: string }>();
   const nav = useNavigate();
+  const { yenile } = useUniteler();
   const [baslangic, setBaslangic] = useState<SoruFormDegerleri | null>(null);
   const [hata, setHata] = useState<string | null>(null);
 
@@ -32,6 +34,7 @@ export const AdminDuzenleSoruSayfasi = () => {
       setBaslangic({
         id: s.id,
         unite_id: s.unite_id,
+        konu_id: s.konu_id ?? '',
         baslik: s.baslik,
         zorluk: s.zorluk,
         senaryo: s.senaryo,
@@ -60,6 +63,7 @@ export const AdminDuzenleSoruSayfasi = () => {
       .from('sorular')
       .update({
         unite_id: d.unite_id,
+        konu_id: d.konu_id || null,
         baslik: d.baslik,
         zorluk: d.zorluk,
         senaryo: d.senaryo,
@@ -88,6 +92,8 @@ export const AdminDuzenleSoruSayfasi = () => {
     const { error: ekleErr } = await supabase.from('cozumler').insert(cozumSatirlari);
     if (ekleErr) throw new Error('Yeni çözümler eklenemedi: ' + ekleErr.message);
 
+    // Public sayfaların güncel veriyi göstermesi için context cache'ini yenile
+    await yenile();
     nav('/admin/sorular');
   };
 

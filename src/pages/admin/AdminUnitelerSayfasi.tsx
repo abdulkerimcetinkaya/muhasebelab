@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '../../components/Icon';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { Thiings } from '../../components/Thiings';
@@ -43,6 +44,7 @@ interface FormDurum {
 }
 
 export const AdminUnitelerSayfasi = () => {
+  const nav = useNavigate();
   const [uniteler, setUniteler] = useState<UniteIstatistik[]>([]);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState<string | null>(null);
@@ -165,7 +167,7 @@ export const AdminUnitelerSayfasi = () => {
           />
         ) : (
           <div className="border border-stone-200 dark:border-zinc-700 rounded-xl overflow-hidden bg-white dark:bg-zinc-900/50">
-            <div className="grid grid-cols-[64px_56px_1fr_120px_140px] gap-3 px-4 py-2.5 bg-stone-50 dark:bg-zinc-800/40 border-b border-stone-200 dark:border-zinc-700 text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+            <div className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-2.5 bg-stone-50 dark:bg-zinc-800/40 border-b border-stone-200 dark:border-zinc-700 text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
               <div>Sıra</div>
               <div>İkon</div>
               <div>Ünite</div>
@@ -175,7 +177,7 @@ export const AdminUnitelerSayfasi = () => {
             {filtreli.map((u) => (
               <div
                 key={u.id}
-                className="grid grid-cols-[64px_56px_1fr_120px_140px] gap-3 px-4 py-3 items-center border-b border-stone-200 dark:border-zinc-800 last:border-b-0 hover:bg-stone-50/60 dark:hover:bg-zinc-800/30 transition"
+                className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-3 items-center border-b border-stone-200 dark:border-zinc-800 last:border-b-0 hover:bg-stone-50/60 dark:hover:bg-zinc-800/30 transition"
               >
                 <div>
                   <input
@@ -213,9 +215,25 @@ export const AdminUnitelerSayfasi = () => {
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
                   <button
+                    onClick={() => nav(`/admin/uniteler/${u.id}/konular`)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-100 dark:bg-zinc-800 text-stone-900 dark:text-zinc-100 text-[11.5px] font-bold tracking-wide hover:bg-stone-200 dark:hover:bg-zinc-700 transition"
+                    title="Alt-konular (LeetCode-tarzı mikro yapı)"
+                  >
+                    <Icon name="LayoutList" size={12} />
+                    Konular
+                  </button>
+                  <button
+                    onClick={() => nav(`/admin/uniteler/${u.id}/icerik`)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[11.5px] font-bold tracking-wide hover:opacity-90 transition"
+                    title="Notion-tarzı ünite içerik editörü"
+                  >
+                    <Icon name="FileText" size={12} />
+                    İçerik
+                  </button>
+                  <button
                     onClick={() => setForm({ acik: true, duzenleniyor: u })}
                     className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded transition"
-                    title="Düzenle"
+                    title="Üst meta düzenle (ad, ikon, sıra)"
                   >
                     <Icon name="Pencil" size={14} />
                   </button>

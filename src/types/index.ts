@@ -153,6 +153,7 @@ export interface Soru {
   aciklama: string;
   cozum: CozumSatir[];
   belgeler?: Belge[];
+  konuId?: string | null;
 }
 
 export interface SoruWithUnite extends Soru {
@@ -161,12 +162,31 @@ export interface SoruWithUnite extends Soru {
   uniteIcon: string;
 }
 
+/**
+ * Ünite alt-konusu — LeetCode-tarzı mikro yapı.
+ * Her konu kendi BlockNote içeriğine ve sıralı sorularına sahip.
+ */
+export interface Konu {
+  id: string;
+  uniteId: string;
+  ad: string;
+  aciklama: string | null;
+  /** BlockNote JSON dokümanı (admin panelinde yazılıyor). */
+  icerik?: unknown | null;
+  sira: number;
+  sorular: Soru[];
+}
+
 export interface Unite {
   id: string;
   ad: string;
   thiingsIcon: string;
   aciklama: string;
+  /** BlockNote JSON dökümanı (admin panelinde yazılıyor). Boşsa içerik henüz hazırlanmadı. */
+  icerik?: unknown | null;
   sorular: Soru[];
+  /** Alt-konular — sırayla. Boşsa eski yapı (sorular doğrudan ünitede). */
+  konular?: Konu[];
 }
 
 export interface UserRow {
@@ -189,6 +209,19 @@ export interface FisBilgi {
 export interface CozulenKayit {
   tarih: string;
   zorluk: Zorluk;
+  /**
+   * Bu çözümden gerçekten kazanılan puan (0..ZORLUK_PUAN[zorluk]).
+   * Eski (migration öncesi) kayıtlarda eksik olabilir → ZORLUK_PUAN
+   * üzerinden geriye dönük türetilir.
+   */
+  puan?: number;
+  /**
+   * Çözüm sırasında kullanılan yardımlar (analitik + UI için).
+   */
+  yardim?: {
+    kullanilanAi?: boolean;
+    cozumGosterildi?: boolean;
+  };
 }
 
 export interface Ilerleme {
@@ -221,4 +254,20 @@ export interface Rozet {
   aciklama: string;
   icon: string;
   kontrol: (s: Istatistik) => boolean;
+  /** Sayısal hedefli rozetlerde "ne kadar yakınım" göstergesi.
+   *  Binary rozetlerde (ünite tamamla vb.) tanımlanmaz. */
+  ilerleme?: (s: Istatistik) => { mevcut: number; hedef: number };
 }
+
+export interface LiderlikRow {
+  id: string;
+  kullaniciAdi: string;
+  universite: string | null;
+  sinif: string | null;
+  avatarUrl: string | null;
+  cozulenSoru: number;
+  toplamPuan: number;
+  rozetSayisi: number;
+}
+
+export type LiderlikDonem = 'tum' | 'ay' | 'hafta';

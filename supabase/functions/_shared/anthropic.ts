@@ -25,9 +25,10 @@ interface GeminiResponse {
   error?: { message?: string };
 }
 
-// Gemini 2.0 Flash stabil kapasite. 2.5 Flash daha akıllı ama 503 sıkça veriyor.
-const PRIMARY_MODEL = 'gemini-2.0-flash';
-const FALLBACK_MODEL = 'gemini-2.5-flash';
+// 2026 itibariyle aktif Gemini v1beta modelleri.
+// gemini-1.5-* artık 404 veriyor (Google deprecate etti).
+const PRIMARY_MODEL = 'gemini-2.5-flash';
+const FALLBACK_MODEL = 'gemini-2.0-flash';
 
 const uyku = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -47,6 +48,9 @@ const geminiCagirDene = async (
   const generationConfig: Record<string, unknown> = {
     maxOutputTokens: maxTokens,
     temperature: 0.7,
+    // Gemini 2.5 Flash "thinking" özelliği output budget'ını yiyebiliyor;
+    // hız + tahmin edilebilir uzunluk için kapatıyoruz. 2.0 Flash'ta yok sayılır.
+    thinkingConfig: { thinkingBudget: 0 },
   };
   if (jsonMode) generationConfig.responseMimeType = 'application/json';
   return fetch(url, {
@@ -74,11 +78,11 @@ export const anthropicCagir = async (
     parts: [{ text: m.content }],
   }));
 
-  // Sırasıyla: primary → fallback → yedek. Her biri retry ile.
+  // Sırasıyla: primary → fallback → lite yedek. Her biri retry ile.
   const modeller: [string, number[]][] = [
     [PRIMARY_MODEL, [0, 1000, 3000]],
     [FALLBACK_MODEL, [0, 2000]],
-    ['gemini-1.5-flash', [0, 1500, 4000]],
+    ['gemini-2.5-flash-lite', [0, 1500]],
   ];
 
   let sonHata = '';

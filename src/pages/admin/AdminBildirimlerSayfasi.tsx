@@ -1,0 +1,290 @@
+import { useEffect, useState } from 'react';
+import { Icon } from '../../components/Icon';
+import { AdminYanMenu } from '../../components/AdminYanMenu';
+import {
+  bildirimGuncelle,
+  bildirimSil,
+  bildirimYarat,
+  tumBildirimleriYukleAdmin,
+  type Bildirim,
+  type BildirimTip,
+} from '../../lib/bildirimler';
+
+const TIPLER: BildirimTip[] = ['duyuru', 'bilgi', 'uyari', 'guncelleme'];
+const TIP_LABEL: Record<BildirimTip, string> = {
+  duyuru: 'Duyuru',
+  bilgi: 'Bilgi',
+  uyari: 'Uyarı',
+  guncelleme: 'Güncelleme',
+};
+
+export const AdminBildirimlerSayfasi = () => {
+  const [list, setList] = useState<Bildirim[]>([]);
+  const [yukleniyor, setYukleniyor] = useState(true);
+  const [hata, setHata] = useState<string | null>(null);
+  const [basarili, setBasarili] = useState<string | null>(null);
+
+  // Form state
+  const [baslik, setBaslik] = useState('');
+  const [metin, setMetin] = useState('');
+  const [tip, setTip] = useState<BildirimTip>('duyuru');
+  const [link, setLink] = useState('');
+  const [yayinda, setYayinda] = useState(true);
+  const [gonderiliyor, setGonderiliyor] = useState(false);
+
+  const yukle = async () => {
+    setYukleniyor(true);
+    setHata(null);
+    try {
+      const data = await tumBildirimleriYukleAdmin();
+      setList(data);
+    } catch (e) {
+      setHata(`Yüklenemedi: ${(e as Error).message}`);
+    } finally {
+      setYukleniyor(false);
+    }
+  };
+
+  useEffect(() => {
+    yukle();
+  }, []);
+
+  const formuTemizle = () => {
+    setBaslik('');
+    setMetin('');
+    setTip('duyuru');
+    setLink('');
+    setYayinda(true);
+  };
+
+  const yarat = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!baslik.trim() || !metin.trim()) return;
+    setGonderiliyor(true);
+    setHata(null);
+    setBasarili(null);
+    try {
+      await bildirimYarat({
+        baslik: baslik.trim(),
+        metin: metin.trim(),
+        tip,
+        link: link.trim() || null,
+        yayinda,
+      });
+      setBasarili(yayinda ? 'Bildirim yayınlandı.' : 'Taslak kaydedildi.');
+      formuTemizle();
+      await yukle();
+      setTimeout(() => setBasarili(null), 3000);
+    } catch (e) {
+      setHata(`Gönderilemedi: ${(e as Error).message}`);
+    } finally {
+      setGonderiliyor(false);
+    }
+  };
+
+  const sil = async (id: string) => {
+    if (!confirm('Bu bildirimi silmek istiyor musun? Geri alınamaz.')) return;
+    try {
+      await bildirimSil(id);
+      setList((prev) => prev.filter((b) => b.id !== id));
+    } catch (e) {
+      alert(`Silinemedi: ${(e as Error).message}`);
+    }
+  };
+
+  const yayinDegistir = async (b: Bildirim) => {
+    try {
+      await bildirimGuncelle(b.id, { yayinda: !b.yayinda });
+      setList((prev) =>
+        prev.map((x) => (x.id === b.id ? { ...x, yayinda: !x.yayinda } : x)),
+      );
+    } catch (e) {
+      alert(`Güncellenemedi: ${(e as Error).message}`);
+    }
+  };
+
+  return (
+    <div className="max-w-[1240px] mx-auto px-5 sm:px-8 py-8">
+      <div className="flex gap-8">
+        <AdminYanMenu />
+        <main className="flex-1 min-w-0 space-y-8">
+          <div>
+            <h1 className="font-display text-3xl font-bold tracking-tight">Bildirimler</h1>
+            <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
+              Yayınladığın bildirim, oturum açmış tüm kullanıcıların çan ikonunda görünür.
+            </p>
+          </div>
+
+          {/* Yeni bildirim formu */}
+          <section className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6">
+            <h2 className="font-display text-lg font-bold mb-4">Yeni Bildirim</h2>
+            <form onSubmit={yarat} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_180px] gap-4">
+                <div>
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                    Başlık
+                  </label>
+                  <input
+                    type="text"
+                    value={baslik}
+                    onChange={(e) => setBaslik(e.target.value)}
+                    maxLength={200}
+                    required
+                    placeholder="Örn: Yeni soru paketi yayında"
+                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/15"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                    Tip
+                  </label>
+                  <select
+                    value={tip}
+                    onChange={(e) => setTip(e.target.value as BildirimTip)}
+                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                  >
+                    {TIPLER.map((t) => (
+                      <option key={t} value={t}>
+                        {TIP_LABEL[t]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                  Metin
+                </label>
+                <textarea
+                  value={metin}
+                  onChange={(e) => setMetin(e.target.value)}
+                  maxLength={2000}
+                  required
+                  rows={4}
+                  placeholder="Kullanıcıya gösterilecek mesaj..."
+                  className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/15 resize-none"
+                />
+                <div className="text-[10px] text-stone-400 dark:text-zinc-600 mt-1 text-right font-mono">
+                  {metin.length} / 2000
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
+                <div>
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                    Link <span className="text-stone-400">(opsiyonel)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    placeholder="/uniteler/3 — tıklanırsa bu route'a gider"
+                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-mono outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                  />
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer pb-3">
+                  <input
+                    type="checkbox"
+                    checked={yayinda}
+                    onChange={(e) => setYayinda(e.target.checked)}
+                    className="w-4 h-4 rounded border-stone-300 dark:border-zinc-600 cursor-pointer"
+                  />
+                  <span className="text-sm font-medium">Hemen yayınla</span>
+                </label>
+              </div>
+              {hata && (
+                <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+                  <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
+                  <span>{hata}</span>
+                </div>
+              )}
+              {basarili && (
+                <div className="flex items-start gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-lg text-[13px] text-emerald-800 dark:text-emerald-300 font-medium">
+                  <Icon name="CheckCircle2" size={16} className="flex-shrink-0 mt-0.5" />
+                  <span>{basarili}</span>
+                </div>
+              )}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={gonderiliyor || !baslik.trim() || !metin.trim()}
+                  className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Icon
+                    name={gonderiliyor ? 'Loader2' : 'Send'}
+                    size={12}
+                    className={gonderiliyor ? 'animate-spin' : ''}
+                  />
+                  {gonderiliyor ? 'Gönderiliyor' : yayinda ? 'Yayınla' : 'Taslak Kaydet'}
+                </button>
+              </div>
+            </form>
+          </section>
+
+          {/* Mevcut bildirimler */}
+          <section>
+            <h2 className="font-display text-lg font-bold mb-4">Geçmiş Bildirimler</h2>
+            {yukleniyor ? (
+              <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+            ) : list.length === 0 ? (
+              <div className="text-sm text-stone-400 dark:text-zinc-600">
+                Henüz bildirim yok.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {list.map((b) => (
+                  <div
+                    key={b.id}
+                    className={`flex items-start gap-3 p-4 bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl ${
+                      !b.yayinda ? 'opacity-60' : ''
+                    }`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-stone-500 dark:text-zinc-500">
+                          {TIP_LABEL[b.tip]}
+                        </span>
+                        {!b.yayinda && (
+                          <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-amber-700 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">
+                            Taslak
+                          </span>
+                        )}
+                        <span className="text-[10px] text-stone-400 dark:text-zinc-600 font-mono ml-auto">
+                          {new Date(b.created_at).toLocaleString('tr-TR')}
+                        </span>
+                      </div>
+                      <div className="font-bold text-[14px] mb-1">{b.baslik}</div>
+                      <div className="text-[13px] text-stone-600 dark:text-zinc-400 leading-snug whitespace-pre-wrap">
+                        {b.metin}
+                      </div>
+                      {b.link && (
+                        <div className="text-[11px] text-blue-600 dark:text-blue-400 mt-1 font-mono">
+                          → {b.link}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => yayinDegistir(b)}
+                        title={b.yayinda ? 'Yayından kaldır' : 'Yayınla'}
+                        className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-700 rounded-lg transition"
+                      >
+                        <Icon name={b.yayinda ? 'EyeOff' : 'Eye'} size={14} />
+                      </button>
+                      <button
+                        onClick={() => sil(b.id)}
+                        title="Sil"
+                        className="p-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-700 dark:text-rose-400 rounded-lg transition"
+                      >
+                        <Icon name="Trash2" size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
+    </div>
+  );
+};

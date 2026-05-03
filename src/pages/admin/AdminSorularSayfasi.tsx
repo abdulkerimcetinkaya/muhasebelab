@@ -5,10 +5,18 @@ import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { EmptyState } from '../../components/EmptyState';
 import { SkeletonSatirlar } from '../../components/Skeleton';
 import { supabase } from '../../lib/supabase';
-import type { SoruDurum, SorularRow, UnitesRow, Zorluk } from '../../lib/database.types';
+import type {
+  SoruDurum,
+  SorularRow,
+  UniteKonusuRow,
+  UnitesRow,
+  Zorluk,
+} from '../../lib/database.types';
 
 type DurumFiltre = 'hepsi' | SoruDurum;
 type ZorlukFiltre = 'hepsi' | Zorluk;
+// Konu filtresi: 'hepsi' (tümü), 'baglanti-yok' (sadece konuya bağlı olmayanlar), veya konu id
+type KonuFiltre = 'hepsi' | 'baglanti-yok' | string;
 
 const DURUM_RENK: Record<SoruDurum, string> = {
   taslak: 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300',
@@ -26,18 +34,21 @@ const ZORLUK_RENK: Record<Zorluk, string> = {
 export const AdminSorularSayfasi = () => {
   const [sorular, setSorular] = useState<SorularRow[]>([]);
   const [uniteler, setUniteler] = useState<UnitesRow[]>([]);
+  const [konular, setKonular] = useState<UniteKonusuRow[]>([]);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState<string | null>(null);
   const [arama, setArama] = useState('');
   const [durumFiltre, setDurumFiltre] = useState<DurumFiltre>('hepsi');
   const [zorlukFiltre, setZorlukFiltre] = useState<ZorlukFiltre>('hepsi');
   const [uniteFiltre, setUniteFiltre] = useState<string>('hepsi');
+  const [konuFiltre, setKonuFiltre] = useState<KonuFiltre>('hepsi');
 
   const yukle = async () => {
     setYukleniyor(true);
-    const [soruR, uniteR] = await Promise.all([
+    const [soruR, uniteR, konuR] = await Promise.all([
       supabase.from('sorular').select('*').order('created_at', { ascending: false }),
       supabase.from('unites').select('*').order('sira'),
+      supabase.from('unite_konulari').select('*').order('sira'),
     ]);
     if (soruR.error) {
       setHata(soruR.error.message);
@@ -45,6 +56,7 @@ export const AdminSorularSayfasi = () => {
       setSorular(soruR.data ?? []);
     }
     if (uniteR.data) setUniteler(uniteR.data);
+    if (konuR.data) setKonular(konuR.data);
     setYukleniyor(false);
   };
 
@@ -69,16 +81,46 @@ export const AdminSorularSayfasi = () => {
     return m;
   }, [uniteler]);
 
+  const konuAdMap = useMemo(() => {
+    const m: Record<string, string> = {};
+    konular.forEach((k) => {
+      m[k.id] = k.ad;
+    });
+    return m;
+  }, [konular]);
+
+  // Ünite filtresi seçiliyse o ünitenin konuları, değilse tüm konular
+  const konuSecenekleri = useMemo(() => {
+    if (uniteFiltre === 'hepsi') return konular;
+    return konular.filter((k) => k.unite_id === uniteFiltre);
+  }, [konular, uniteFiltre]);
+
+  // Ünite değişince konu filtresi geçersizse sıfırla
+  useEffect(() => {
+    if (konuFiltre === 'hepsi' || konuFiltre === 'baglanti-yok') return;
+    if (!konuSecenekleri.some((k) => k.id === konuFiltre)) {
+      setKonuFiltre('hepsi');
+    }
+  }, [konuSecenekleri, konuFiltre]);
+
   const filtreli = useMemo(() => {
     const q = arama.trim().toLowerCase();
     return sorular.filter((s) => {
       if (durumFiltre !== 'hepsi' && s.durum !== durumFiltre) return false;
       if (zorlukFiltre !== 'hepsi' && s.zorluk !== zorlukFiltre) return false;
       if (uniteFiltre !== 'hepsi' && s.unite_id !== uniteFiltre) return false;
+      if (konuFiltre === 'baglanti-yok' && s.konu_id !== null) return false;
+      if (
+        konuFiltre !== 'hepsi' &&
+        konuFiltre !== 'baglanti-yok' &&
+        s.konu_id !== konuFiltre
+      ) {
+        return false;
+      }
       if (q && !s.baslik.toLowerCase().includes(q) && !s.id.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [sorular, arama, durumFiltre, zorlukFiltre, uniteFiltre]);
+  }, [sorular, arama, durumFiltre, zorlukFiltre, uniteFiltre, konuFiltre]);
 
   const sil = async (id: string, baslik: string) => {
     if (!confirm(`"${baslik}" silinecek. Çözümleri ve kullanıcı ilerlemesi de silinir. Emin misin?`)) {
@@ -164,6 +206,22 @@ export const AdminSorularSayfasi = () => {
               </option>
             ))}
           </select>
+
+          <select
+            value={konuFiltre}
+            onChange={(e) => setKonuFiltre(e.target.value as KonuFiltre)}
+            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+          >
+            <option value="hepsi">Tüm konular</option>
+            <option value="baglanti-yok">— Konu bağlantısı yok —</option>
+            {konuSecenekleri.map((k) => (
+              <option key={k.id} value={k.id}>
+                {uniteFiltre === 'hepsi'
+                  ? `${uniteAdMap[k.unite_id] ?? k.unite_id} · ${k.ad}`
+                  : k.ad}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Hata / Yükleniyor */}
@@ -189,6 +247,7 @@ export const AdminSorularSayfasi = () => {
                 <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
                   <th className="px-4 py-3">Başlık</th>
                   <th className="px-4 py-3">Ünite</th>
+                  <th className="px-4 py-3">Konu</th>
                   <th className="px-4 py-3">Zorluk</th>
                   <th className="px-4 py-3">Durum</th>
                   <th className="px-4 py-3 text-right">İşlem</th>
@@ -210,6 +269,17 @@ export const AdminSorularSayfasi = () => {
                     </td>
                     <td className="px-4 py-3 text-stone-600 dark:text-zinc-400 font-medium">
                       {uniteAdMap[s.unite_id] ?? s.unite_id}
+                    </td>
+                    <td className="px-4 py-3">
+                      {s.konu_id ? (
+                        <span className="text-stone-600 dark:text-zinc-400 font-medium">
+                          {konuAdMap[s.konu_id] ?? s.konu_id}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 font-bold">
+                          —
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-xs font-bold uppercase ${ZORLUK_RENK[s.zorluk]}`}>

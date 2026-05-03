@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Admin paneli indekslenmesin
+Disallow: /admin
+Disallow: /admin/
+
+Sitemap: /sitemap.xml

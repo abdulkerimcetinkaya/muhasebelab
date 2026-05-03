@@ -324,9 +324,20 @@ export const GirisSayfasi = () => {
             </div>
 
             <div>
-              <label className="block font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold mb-1.5">
-                Şifre
-              </label>
+              <div className="flex items-baseline justify-between mb-1.5">
+                <label className="block font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                  Şifre
+                </label>
+                {mod === 'giris' && (
+                  <button
+                    type="button"
+                    onClick={() => nav('/sifre-sifirla')}
+                    className="text-[11px] text-blue-700 dark:text-blue-400 hover:underline font-bold"
+                  >
+                    Şifremi unuttum
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <input
                   type={sifreGoster ? 'text' : 'password'}

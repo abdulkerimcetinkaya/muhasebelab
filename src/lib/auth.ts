@@ -54,6 +54,28 @@ export const cikisYap = async (): Promise<AuthSonuc> => {
   return { basarili: true };
 };
 
+/**
+ * Kullanıcıya şifre sıfırlama e-postası yollar. Link kullanıcıyı
+ * `${origin}/#/sifre-yenile` rotasına götürür; recovery oturumu
+ * Supabase tarafından otomatik kurulur, kullanıcı yeni şifresini girer.
+ */
+export const sifreSifirlamaIste = async (email: string): Promise<AuthSonuc> => {
+  const redirectTo = `${window.location.origin}/#/sifre-yenile`;
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+  if (error) return { basarili: false, hata: cevirHata(error.message) };
+  return { basarili: true };
+};
+
+/**
+ * Recovery oturumu açıkken kullanıcının yeni şifresini set eder.
+ * SifreYenileSayfasi'nda kullanılır.
+ */
+export const sifreyiYenile = async (yeniSifre: string): Promise<AuthSonuc> => {
+  const { data, error } = await supabase.auth.updateUser({ password: yeniSifre });
+  if (error) return { basarili: false, hata: cevirHata(error.message) };
+  return { basarili: true, user: data.user };
+};
+
 export const oturumAl = async (): Promise<Session | null> => {
   const { data } = await supabase.auth.getSession();
   return data.session;

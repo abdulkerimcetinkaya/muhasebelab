@@ -28,8 +28,8 @@ supabase/.temp
 .idea
 .DS_Store
 
-# Claude local settings
-.claude/settings.local.json
+# Claude local settings + worktree state
+.claude/
 *.suo
 *.ntvs*
 *.njsproj

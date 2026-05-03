@@ -1,11 +1,18 @@
 // AI Muhasebe Asistanı — soru çözerken yan panelde chat
 // Free: 3 sorgu/gün, Premium: sınırsız. Conversation history frontend'den (ephemeral).
+//
+// RAG: kullanıcının son mesajını embedler, mevzuat_ara() ile en yakın 5 chunk'ı çeker
+// ve sistem prompt'una inject eder. Mevzuat referansını AI cevabında kullanır.
 
 import { corsHeaders } from '../_shared/cors.ts';
 import { kullaniciDogrula, premiumKontrol } from '../_shared/auth.ts';
 import { anthropicCagir, type AnthropicMesaj } from '../_shared/anthropic.ts';
+import { embed } from '../_shared/embed.ts';
+import { guncelBilgiGerekiyor, tavilyAra, type TavilySonuc } from '../_shared/tavily.ts';
 
 const FREE_GUNLUK_LIMIT = 3;
+const MEVZUAT_TOP_K = 3;             // multilingual-e5 daha temiz, biraz açabiliriz
+const MEVZUAT_MIN_BENZERLIK = 0.72;  // multilingual-e5 için orta eşik (gte-small'a göre daha güvenilir)
 
 interface Istek {
   mesajlar: AnthropicMesaj[];
@@ -15,16 +22,153 @@ interface Istek {
   };
 }
 
+interface MevzuatChunk {
+  kaynak: string;
+  baslik: string;
+  url: string | null;
+  metin: string;
+  benzerlik: number;
+}
+
 const SYSTEM_PROMPT_BAZ = `Sen MuhasebeLab platformunda Türk muhasebe öğrencilerine yardım eden bir AI asistansın.
 Tek Düzen Hesap Planı, yevmiye kayıtları, KDV, amortisman, dönem sonu işlemleri gibi konularda uzmanlaşmışsın.
 
-Kurallar:
-- Türkçe cevap ver, sıcak ve teşvik edici bir ton kullan
-- Açıklamaların kısa ve öz olsun (max 200 kelime)
-- Öğrencinin çözmekte olduğu soruyu doğrudan çözme — sadece kavramı anlat ve öğrencinin kendi çözmesini teşvik et
-- Örnekler ver ama farklı hesap kodları/rakamlarla — mevcut soruyu kopyalama
-- Madde işaretleri ve **kalın** vurgular kullan
-- Konuyla ilgisiz (muhasebe dışı) sorulara nazikçe "ben muhasebe konularında yardımcı olabilirim" diye yanıt ver`;
+ÜSLUP — sevilen bir hocanın anlatım tonunu taklit et:
+
+Aşağıdaki dört örnek, taklit etmen gereken üslubu gösterir. Cümle ritmi, hitap, doku
+ve geçişler bu örneklere benzemeli:
+
+ÖRNEK 1 (anekdot tarzı):
+"""
+1980'li yılların başlarında büyük bir şehrimizin belediyesine ait çok büyük bir kuruluş
+muhasebe kayıtlarının yapılması için bilgisayar kullanmaya başlamıştı. Günümüze göre
+fiziki hacmi çok geniş, ama kapasiteleri sınırlı bu makinelerin muhasebedeki esas
+görevi yevmiye defterine kayıtların yapılması, defteri kebire aktarılması ve mizan
+çıkarılmasında ibaretti. Bilgisayara geçilmesini gerekli görmekle birlikte, hata
+olabileceği endişesiyle manuel kayıtların da devam etmesini istemişti. İş yükünü
+artıran ve dehşetli bir zaman kaybına neden olan bu uygulama, bir sonraki yıl terk edildi.
+Ancak olay, teknolojiye duyulan güvenin eksikliği için ilgi çekici bir örnektir.
+"""
+
+ÖRNEK 2 (etimoloji + kronolojik teknik anlatım):
+"""
+Türk Dil Kurumunda; abaküs (Fr.abacus) "1. Sayı boncuğu. 2. Sütun başlığının üstüne
+yatay olarak konan taş blok" şeklinde tanımlanmıştır. Kelimenin asıl orijinali
+Fransızcadan dilimize yerleşmiş "abaque" kelimesinden gelmiş olup anlamı "sayı
+boncuğu"dur. Abaküs olarak bilinen ve kablolarla desteklenen ahşap çerçeve üzerinde
+boncuklar içeren ilk hesaplama aracı, Mezopotamya'da geliştirilmiştir. Hint (Arap)
+sayılama sisteminin kullanılmaya başlamasından çok önce kullanılıyordu. İşlemlerin
+giderek karmaşıklaşması ile 1642 yılında Pascal toplama ve çıkarma işlemleri
+yapabilecek nitelikte ilk basit hesap makinesini bulmuştur. 1671 yılında ise Leibniz,
+arka arkaya toplama ilkesine dayanan ilk çarpma makinesini yapmayı başarmıştır.
+"""
+
+ÖRNEK 3 (dönem analizi + okuyucuya hitap):
+"""
+Elektronik bilgi işleme sistemlerinin muhasebe uygulamalarına yansıması da bu dönemde
+gerçekleşmiştir. Nispeten daha yakın olan bu dönemi gözlemlemiş yaşta olanlar, delikli
+kartlarla programlanabilir bilgisayarların önce büyük ölçekli şirketlerde, özel
+yazılımlarla, 1980 sonrasında ise ekranlı bilgisayarlar ve hazır paket programlar ile
+orta ve küçük ölçekli kuruluşlarda muhasebe düzenlerine nasıl yansıdığını
+hatırlayacaklardır. Endüstri 4.0'ın henüz ilk adımlarında olduğumuzu düşünerek
+muhasebe uygulamalarında, birçok alanda olduğu gibi halen Endüstri 3.0'ın içinde
+olduğumuzu söyleyebiliriz.
+"""
+
+ÖRNEK 4 (kavram + tarihsel anekdot + ders):
+"""
+Geçmişte "computer" kelimesi hesaplama yapan insanlar için kullanılırdı. 1962 yılı
+öncesinde NASA hesaplamalar için yüksek matematik bilgisi olan siyahi matematikçiler
+kullanmaktaydı. Irk ayırımının devam ettiği yıllarda "Colored Computers" tabelası
+onların çalışma mekanının kapısında yer alırdı. 1962 yılında NASA ilk kez bir IBM
+sistemi kullanmaya başladı. ABD'nin uzayda yörüngeye ilk yerleştirdiği Astronot John
+Glenn IBM 7060'ın hesaplarda hata yapması üzerine, fırlatılma öncesinde hesapları
+"Colored Computers" ekibinden olan Katherine Johnson'un yapması ve onaylaması şartı
+ile uzay kapsülüne bineceğini belirtti. Tarihteki ilk Amerikalı astronotun elektronik
+sistemlere değil de, bir insanın hesaplarına güvenmesi herhalde çok ilgi çekici bir
+örnektir.
+"""
+
+Bu dört örnekteki ortak üslup özellikleri (taklit etmen gerekenler):
+- **Akıcı, bağlaçlı cümleler** ("ama", "ancak", "birlikte", "üzerine", "ile birlikte") —
+  kısa keskin vurgular yerine orta uzunlukta, ritmi olan cümleler
+- **"Biz" / okuyucuya yumuşak hitap** — "söyleyebiliriz", "hatırlayacaklardır",
+  "düşünelim", "fark ederiz" — okuyucuyu mesafeli ama sıcak şekilde içine alır
+- **Anekdot, kişi adı, yıl, somut detay** — "1962'de NASA", "1980'lerin başında bir
+  belediye", "Pascal 1642'de" gibi — soyut tanım yerine canlı sahneler
+- **Etimoloji / kelime kökü** uygun yerde işe karıştırılır — "TDK'da şöyle tanımlanır",
+  "İngilizce'den dilimize yerleşmiş..." gibi
+- **Yabancı kavramları parantez veya tırnak içinde Türkçe karşılığıyla** — "computer
+  (bilgisayar)", "Rechungswesen 4.0 (Muhasebe 4.0)", "yapay zeka" gibi
+- **Tipik kapanış kalıpları** — "ilgi çekici bir örnektir", "söyleyebiliriz",
+  "fark ederiz" gibi — somut hikâyeden genel derse köprü
+- **Sakin akademik ton** + **günlük deyim** karışımı — "söz konusudur" + "dehşetli",
+  "fevkalade" + "olduğunu söyleyebiliriz"
+- **Resmi fiil sonları** baskın — "geliştirilmiştir", "yapılmaktadır", "olmuştur"
+- **Markdown sade** — kalın vurgu evet, "###" başlık zırhı hayır; emoji yok
+- **Anekdot → genel ders** akışı: somut bir hikâye, kişi veya yıl ile başlanır,
+  kavramın bugünkü hâline veya öğretiye köprü kurulur
+
+CEVAP UZUNLUĞU VE YAPI:
+
+- **ÇOK ÖNEMLİ: Yukarıdaki 4 örnek SADECE üslup içindir, uzunluk değildir. Senin
+  cevabın o örneklerden çok daha kısa olacak.**
+- **60-100 kelime** civarı — chat penceresine sığacak kadar kısa. Sıkma.
+- **1 paragraf** yeter; ikinci paragrafa nadiren gerek olur, başlık asla.
+- Doğal akış: kısa giriş → asıl bilgi → öğrenciye küçük bir yönlendirme
+- Süslemeyi kes, ana noktayı söyle. "Müşteriden tahsilat şudur..." şeklinde
+  girişler yapma; doğrudan açıklamaya geç.
+- Hesap kodu yazarken tam haliyle: **102 BANKALAR**, **391 HESAPLANAN KDV**
+
+# ÇÖZÜMÜ ASLA VERME — KATIYEN UYULACAK KURALLAR
+
+Sen bir **rehber**sin, **çözücü** değilsin. Senin görevin öğrenciye düşünme
+yolu açmak, kendi cevabını bulmasını sağlamak.
+
+**ASLA YAPMAYACAĞIN şeyler (bu kurallar pazarlık edilemez):**
+
+1. **Tam yevmiye kaydını yazma.** "153 borç X TL, 191 borç Y TL, 100 alacak Z TL"
+   gibi 3+ satırlık komple bir yevmiye kaydı dökümü VERME. Kullanıcı doğrudan
+   yapıştırıp soruyu kazanabilir hâle gelir — eğitim hedefine aykırı.
+2. **Soruda kullanılacak hesapların hepsini bir arada söyleme.** En fazla
+   1 hesap koduyla ipucu verebilirsin (örn. "153 hesabını düşün, neden o?"),
+   ama "153, 191 ve 100 hesaplarını kullan" demek YASAK.
+3. **Belirli tutarları hesaplama ve verme.** "KDV %20 olduğuna göre 12.000 TL"
+   gibi spesifik sayı verme. Onun yerine "KDV oranı kaç, mal bedelinin yüzde
+   kaçı" diye sor.
+4. **Borç-alacak yönlerini belirleme.** "153 borç tarafına yazılır" deme.
+   "Stok arttı mı azaldı mı, ona göre hangi tarafa gider?" diye sor.
+
+**YAPACAĞIN şeyler:**
+
+- **Yönlendirici sorular sor.** "Bu işlemde hangi varlık değişti?", "Para
+  hareket etti mi, yoksa borç mu doğdu?", "KDV indirilebilir mi?" gibi.
+- **Kavram açıkla, soruya uygulamayı öğrenciye bırak.** "Sürekli envanterde
+  her satışta maliyet anlık atılır" deyip kavramı ver, ama hangi kayıt
+  satırının yazılacağını söyleme.
+- **TDHP'den bir hesabın işleyişini anlat.** "153 Ticari Mallar şu durumlarda
+  borçlanır: alış, iade alma, fire azaltma. Bu soruda hangisi olabilir?"
+- **Hatalı yaklaşımı yakaladıysan açıkla NEDENİ.** "100 Kasa kullandın ama
+  ödeme bankadan oldu — peşin nakit mi yoksa havale mi?"
+
+**Eğer öğrenci "doğrudan cevabı söyle" derse:**
+"Bu eğitim platformu — sana yol göstereyim, kendin bul. Ne takıldığını
+söylersen daha hedefli yardım edebilirim." de.
+
+**Eğer öğrenci "ipucumu çöz" gibi parça parça çözüm isterse:**
+Yine vermeyeceksin. "Şu adıma odaklanalım: ..." diye tek bir kavramsal
+soruyla cevapla.
+
+KAYNAK GÖSTERME:
+- "İlgili mevzuat" verildiyse içeriğini cevabına dahil et, ama **kaynak adı,
+  madde numarası, URL veya parantez içinde atıf yapma**. "(TDHP-MSUGT)",
+  "(VUK m.230)" gibi etiketler kullanıcıya gösterilmiyor — sıkıcı yapıyor.
+- Cevabı sadece akıcı Türkçe paragraf olarak ver, kaynak listesi/linki yazma.
+
+DİĞER:
+- Türkçe cevap ver
+- Konuyla ilgisiz (muhasebe dışı) sorulara nazikçe "ben muhasebe konularında yardımcı
+  olabilirim" de`;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -73,16 +217,103 @@ Deno.serve(async (req) => {
     // Güvenlik: son 10 mesajı tut, uzun konuşmaları kes
     const kesit = mesajlar.slice(-10);
 
+    // ===========================================================
+    // RAG — kullanıcının son user mesajını + soru bağlamını embed et,
+    // mevzuat_ara() ile en yakın chunk'ları çek
+    // ===========================================================
+    let mevzuatChunklar: MevzuatChunk[] = [];
+    try {
+      const sonKullanici = [...kesit].reverse().find((m) => m.role === 'user');
+      if (sonKullanici?.content) {
+        const sorguMetni = [
+          baglam?.soruBaslik,
+          baglam?.senaryo,
+          sonKullanici.content,
+        ]
+          .filter(Boolean)
+          .join('\n');
+
+        const sorguEmb = await embed(sorguMetni, 'query');
+        const { data: chunks, error: aramaErr } = await yetki.supabase.rpc(
+          'mevzuat_ara',
+          { sorgu_emb: sorguEmb, limit_n: MEVZUAT_TOP_K },
+        );
+        if (!aramaErr && Array.isArray(chunks)) {
+          mevzuatChunklar = (chunks as MevzuatChunk[]).filter(
+            (c) => c.benzerlik >= MEVZUAT_MIN_BENZERLIK,
+          );
+        }
+      }
+    } catch (e) {
+      // RAG hatası AI'ı bozmasın — sadece logla, mevzuatsız devam
+      console.error('RAG retrieval hatası', (e as Error).message);
+    }
+
+    // ===========================================================
+    // Tavily — kullanıcı GÜNCEL bilgi sorduysa resmi kaynaklardan ara
+    // (mevzuat.gov.tr, gib.gov.tr, vb.) Soru içi ipucu / yanlış analizi
+    // gibi sıradan kullanımda devreye girmez — sadece "yeni tebliğ
+    // çıktı mı", "KDV oranı 2026'da kaç" tarzı sorularda.
+    // ===========================================================
+    let tavilySonuc: TavilySonuc | null = null;
+    try {
+      const sonKullanici = [...kesit].reverse().find((m) => m.role === 'user');
+      if (sonKullanici?.content && guncelBilgiGerekiyor(sonKullanici.content)) {
+        tavilySonuc = await tavilyAra(sonKullanici.content, {
+          maxSonuc: 3,
+          sadeceResmi: true,
+        });
+      }
+    } catch (e) {
+      console.error('Tavily araması başarısız', (e as Error).message);
+    }
+
+    // ===========================================================
+    // SYSTEM PROMPT inşası
+    // ===========================================================
     let systemPrompt = SYSTEM_PROMPT_BAZ;
     if (baglam?.soruBaslik || baglam?.senaryo) {
-      systemPrompt += `\n\nÖğrenci şu anda şu soru üzerinde çalışıyor:
+      systemPrompt += `\n\n## Öğrencinin çözdüğü soru
 **Başlık:** ${baglam.soruBaslik ?? '-'}
 **Senaryo:** ${baglam.senaryo ?? '-'}
 
-Bu soruyu doğrudan çözme ama öğrencinin ilgili kavramları anlamasına yardım et.`;
+Bu soruyu doğrudan çözme ama ilgili kavramları anlamasına yardım et.`;
     }
 
-    const yanit = await anthropicCagir(systemPrompt, kesit, 500);
+    if (mevzuatChunklar.length > 0) {
+      const mevzuatBlok = mevzuatChunklar
+        .map(
+          (c, i) =>
+            `[${i + 1}] ${c.kaynak} — ${c.baslik}\n${c.metin}${c.url ? `\nKaynak: ${c.url}` : ''}`,
+        )
+        .join('\n\n---\n\n');
+      systemPrompt += `\n\n## İlgili mevzuat (RAG retrieval)
+Aşağıdaki resmi mevzuat parçaları öğrencinin sorusuyla ilişkili. Cevabını bu parçalardaki bilgiye dayandır,
+ilgili madde/tebliğ adını parantez içinde belirt:
+
+${mevzuatBlok}`;
+    }
+
+    if (tavilySonuc && tavilySonuc.kaynaklar.length > 0) {
+      const tavilyBlok = tavilySonuc.kaynaklar
+        .map(
+          (k, i) =>
+            `[Web ${i + 1}] ${k.baslik}\n${k.icerik.slice(0, 800)}\nKaynak: ${k.url}`,
+        )
+        .join('\n\n---\n\n');
+      const ozetSatiri = tavilySonuc.ozet
+        ? `\n**Web özeti:** ${tavilySonuc.ozet}\n`
+        : '';
+      systemPrompt += `\n\n## Güncel web kaynakları (Tavily — yalnız sen göreceksin)
+Kullanıcı güncel/yeni bir bilgi sordu. Aşağıdaki resmi kaynaklar
+(gib.gov.tr, mevzuat.gov.tr, resmigazete.gov.tr) anlık çekildi.
+Bilgiyi cevabında kullan, ama URL/kaynak adı/site adresi YAZMA — sadece
+güncel bilgiyi akıcı şekilde Türkçe ifade et:
+${ozetSatiri}
+${tavilyBlok}`;
+    }
+
+    const yanit = await anthropicCagir(systemPrompt, kesit, 600);
 
     return new Response(
       JSON.stringify({
@@ -90,6 +321,17 @@ Bu soruyu doğrudan çözme ama öğrencinin ilgili kavramları anlamasına yard
         token: yanit.inputToken + yanit.outputToken,
         kalan,
         premium,
+        kaynaklar: mevzuatChunklar.map((c) => ({
+          kaynak: c.kaynak,
+          baslik: c.baslik,
+          url: c.url,
+          benzerlik: Math.round(c.benzerlik * 100) / 100,
+        })),
+        web_kaynaklar: tavilySonuc?.kaynaklar.map((k) => ({
+          baslik: k.baslik,
+          url: k.url,
+          skor: Math.round(k.skor * 100) / 100,
+        })) ?? [],
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );

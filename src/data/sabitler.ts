@@ -85,6 +85,20 @@ export const ZORLUK_PUAN: Record<Zorluk, number> = {
   zor: 20,
 };
 
+/**
+ * Soru çözümünde kazanılan puanı yardım kullanımına göre hesaplar.
+ * - Çözüm gösterildiyse 0 (kilitli)
+ * - Aksi halde tam puan (AI asistan kullanımı puanı etkilemez —
+ *   AI flag'i analitik amaçlı tutulur, ödüllendirme bozulmaz)
+ */
+export const puanHesapla = (
+  zorluk: Zorluk,
+  yardim: { kullanilanAi?: boolean; cozumGosterildi?: boolean } = {},
+): number => {
+  if (yardim.cozumGosterildi) return 0;
+  return ZORLUK_PUAN[zorluk];
+};
+
 export const ZORLUK_STIL: Record<Zorluk, string> = {
   kolay: 'text-emerald-700 dark:text-emerald-400',
   orta: 'text-amber-700 dark:text-amber-400',
