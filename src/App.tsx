@@ -1,5 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { SiteLoader } from './components/SiteLoader';
@@ -488,6 +490,9 @@ const App = () => {
             onKapat={() => setRozetKuyrugu((prev) => prev.slice(1))}
           />
         )}
+
+        <Analytics />
+        <SpeedInsights />
       </div>
     </HashRouter>
   );
