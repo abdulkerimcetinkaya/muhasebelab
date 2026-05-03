@@ -43,7 +43,7 @@ export const sozlukTerimYukle = async (slug: string): Promise<SozlukTerimi | nul
     .eq('yayinda', true)
     .maybeSingle();
   if (error) throw error;
-  return (data as SozlukTerimi) ?? null;
+  return data ? (data as unknown as SozlukTerimi) : null;
 };
 
 /** Görüntüleme sayacını artır (anon da çağırabilir). */

@@ -164,7 +164,7 @@ export const HesapView = ({
       return;
     }
 
-    const { error } = await supabase.rpc('hesap_sil' as never);
+    const { error } = await supabase.rpc('hesap_sil');
     if (error) {
       setSiliniyor(false);
       setSilHata(`Hesap silinemedi: ${error.message}`);
