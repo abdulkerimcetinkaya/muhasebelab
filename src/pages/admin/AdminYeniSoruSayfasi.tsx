@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { SoruForm, bosForm } from '../../components/SoruForm';
 import type { SoruFormDegerleri } from '../../components/SoruForm';
+import { useUniteler } from '../../contexts/UnitelerContext';
 import { supabase } from '../../lib/supabase';
 
 // 8 haneli rastgele alfanumerik ID. 36^8 ≈ 2.8 trilyon kombinasyon.
@@ -30,6 +31,7 @@ const benzersizId = async (): Promise<string> => {
 
 export const AdminYeniSoruSayfasi = () => {
   const nav = useNavigate();
+  const { yenile } = useUniteler();
 
   const kaydet = async (d: SoruFormDegerleri) => {
     const dolular = d.cozumler.filter((c) => c.kod.trim());
@@ -39,6 +41,7 @@ export const AdminYeniSoruSayfasi = () => {
     const { error: soruErr } = await supabase.from('sorular').insert({
       id: yeniId,
       unite_id: d.unite_id,
+      konu_id: d.konu_id || null,
       baslik: d.baslik,
       zorluk: d.zorluk,
       senaryo: d.senaryo,
@@ -66,6 +69,8 @@ export const AdminYeniSoruSayfasi = () => {
       throw new Error('Çözüm eklenemedi: ' + cozErr.message);
     }
 
+    // Public sayfaların güncel veriyi göstermesi için context cache'ini yenile
+    await yenile();
     nav('/admin/sorular');
   };
 

@@ -11,28 +11,40 @@ interface Props {
   baglam?: { soruBaslik?: string; senaryo?: string };
 }
 
-const HOSGELDIN: AIMesaj = {
+const ilkMesaj = (baglam?: { soruBaslik?: string; senaryo?: string }): AIMesaj => ({
   role: 'assistant',
-  content:
-    'Merhaba! Tek Düzen Hesap Planı, yevmiye kayıtları, KDV, amortisman ve dönem sonu işlemleri konularında sana yardımcı olabilirim. Üzerinde çalıştığın soruyu doğrudan çözmem ama kavramları açıklayabilirim.',
-};
+  content: baglam?.soruBaslik
+    ? `Merhaba! Şu an **${baglam.soruBaslik}** üzerinde çalışıyorsun. Bu soruyu doğrudan çözmem ama takıldığın kavramı, hesap kodunu, KDV oranını veya yevmiye kuralını sorabilirsin — yol göstereyim.`
+    : 'Merhaba! Tek Düzen Hesap Planı, yevmiye kayıtları, KDV, amortisman ve dönem sonu işlemleri konularında sana yardımcı olabilirim.',
+});
 
 export const AIAsistanYanPanel = ({ acik, onKapat, baglam }: Props) => {
   const nav = useNavigate();
   const isPremium = useIsPremium();
-  const [mesajlar, setMesajlar] = useState<AIMesaj[]>([HOSGELDIN]);
+  const [mesajlar, setMesajlar] = useState<AIMesaj[]>(() => [ilkMesaj(baglam)]);
   const [girdi, setGirdi] = useState('');
   const [yukleniyor, setYukleniyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
   const [kotaBitti, setKotaBitti] = useState(false);
   const [kalan, setKalan] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const oncekiSoruRef = useRef<string | undefined>(baglam?.soruBaslik);
 
   useEffect(() => {
     if (!acik) {
       setHata(null);
     }
   }, [acik]);
+
+  // Soru değişirse konuşmayı sıfırla — yeni sorunun bağlamıyla taze hoşgeldin
+  useEffect(() => {
+    if (baglam?.soruBaslik !== oncekiSoruRef.current) {
+      oncekiSoruRef.current = baglam?.soruBaslik;
+      setMesajlar([ilkMesaj(baglam)]);
+      setKotaBitti(false);
+      setHata(null);
+    }
+  }, [baglam?.soruBaslik, baglam]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -50,10 +62,14 @@ export const AIAsistanYanPanel = ({ acik, onKapat, baglam }: Props) => {
     setYukleniyor(true);
     try {
       const sonuc = await aiAsistan({
-        mesajlar: yeni.filter((m) => m !== HOSGELDIN),
+        // İlk hoşgeldin mesajı backend'e geçmesin (her oturumda yeni oluşur)
+        mesajlar: yeni.slice(1),
         baglam,
       });
-      setMesajlar((prev) => [...prev, { role: 'assistant', content: sonuc.metin }]);
+      setMesajlar((prev) => [
+        ...prev,
+        { role: 'assistant' as const, content: sonuc.metin },
+      ]);
       if (sonuc.kalan != null) setKalan(sonuc.kalan);
     } catch (e) {
       if (e instanceof AIKotaHatasi) {
@@ -103,27 +119,46 @@ export const AIAsistanYanPanel = ({ acik, onKapat, baglam }: Props) => {
           </button>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-          {mesajlar.map((m, i) => (
-            <div
-              key={i}
-              className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
-                  m.role === 'user'
-                    ? 'bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900'
-                    : 'bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700'
-                }`}
-              >
-                {m.role === 'user' ? (
-                  <div className="text-sm font-medium whitespace-pre-wrap">{m.content}</div>
-                ) : (
-                  <MarkdownLite text={m.content} />
-                )}
+        {/* Aktif soru bağlamı — AI bu soruyu hafızaya aldı */}
+        {baglam?.soruBaslik && (
+          <div className="px-5 py-2.5 border-b border-stone-200 dark:border-zinc-800 bg-stone-50/60 dark:bg-zinc-900/40">
+            <div className="flex items-baseline gap-2">
+              <Icon name="Bookmark" size={11} className="text-stone-500 dark:text-zinc-500 flex-shrink-0 self-center" />
+              <div className="min-w-0 flex-1">
+                <div className="text-[9px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold leading-none mb-0.5">
+                  Aktif soru
+                </div>
+                <div className="text-[12px] font-semibold text-stone-900 dark:text-zinc-100 line-clamp-1">
+                  {baglam.soruBaslik}
+                </div>
               </div>
             </div>
-          ))}
+          </div>
+        )}
+
+        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+          {mesajlar.map((m, i) => {
+            return (
+              <div
+                key={i}
+                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
+                    m.role === 'user'
+                      ? 'bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900'
+                      : 'bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700'
+                  }`}
+                >
+                  {m.role === 'user' ? (
+                    <div className="text-sm font-medium whitespace-pre-wrap">{m.content}</div>
+                  ) : (
+                    <MarkdownLite text={m.content} />
+                  )}
+                </div>
+              </div>
+            );
+          })}
           {yukleniyor && (
             <div className="flex justify-start">
               <div className="bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 rounded-2xl px-4 py-2.5 flex items-center gap-2 text-sm text-stone-500 dark:text-zinc-400 font-medium">

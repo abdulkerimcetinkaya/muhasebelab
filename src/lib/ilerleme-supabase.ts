@@ -1,8 +1,13 @@
 import { supabase } from './supabase';
-import { ZORLUK_PUAN } from '../data/sabitler';
+import { ZORLUK_PUAN, puanHesapla } from '../data/sabitler';
 import { bugununTarihi } from './format';
 import { varsayilanIlerleme } from './ilerleme';
 import type { CozulenKayit, Ilerleme, SoruWithUnite, Zorluk } from '../types';
+
+export interface CozumYardim {
+  kullanilanAi?: boolean;
+  cozumGosterildi?: boolean;
+}
 
 const dunTarihi = (gun: string): string => {
   const d = new Date(gun);
@@ -41,7 +46,10 @@ export const ilerlemeYukleSupabase = async (
 ): Promise<Ilerleme> => {
   const [profilSonuc, ilerlemeSonuc, rozetlerSonuc, aktiviteSonuc] = await Promise.all([
     supabase.from('kullanicilar').select('kullanici_adi, tema').eq('id', userId).maybeSingle(),
-    supabase.from('ilerleme').select('soru_id, dogru_mu, created_at').eq('user_id', userId),
+    supabase
+      .from('ilerleme')
+      .select('soru_id, dogru_mu, created_at, kullanilan_ai, cozum_gosterildi, kazanilan_puan')
+      .eq('user_id', userId),
     supabase.from('kazanilan_rozetler').select('rozet_id, kazanilan_tarih').eq('user_id', userId),
     supabase.from('aktivite').select('tarih, cozulen_sayi').eq('user_id', userId),
   ]);
@@ -55,21 +63,38 @@ export const ilerlemeYukleSupabase = async (
 
   const soruZorluk = soruZorlukMap(tumSorular);
 
-  // Çözülenler: dogru_mu=true olanlardan en eski tarihi tutuyoruz (ilk çözüm tarihi)
+  // Best-score mantığı: aynı soru için birden fazla doğru kayıt varsa
+  // en yüksek puanlı olanı seç. Eski kayıtlarda kazanilan_puan null,
+  // o zaman tam puan (yardımsız varsay).
   const cozulenler: Record<string, CozulenKayit> = {};
   const yanlislar: Record<string, number> = {};
-  let puan = 0;
   for (const row of ilerlemeSonuc.data ?? []) {
     if (row.dogru_mu) {
-      if (!cozulenler[row.soru_id]) {
-        const zorluk = soruZorluk[row.soru_id] ?? 'kolay';
-        cozulenler[row.soru_id] = { tarih: row.created_at.split('T')[0], zorluk };
-        puan += ZORLUK_PUAN[zorluk];
+      const zorluk = soruZorluk[row.soru_id] ?? 'kolay';
+      const yardim: CozulenKayit['yardim'] = {
+        kullanilanAi: row.kullanilan_ai ?? false,
+        cozumGosterildi: row.cozum_gosterildi ?? false,
+      };
+      const puan =
+        row.kazanilan_puan ??
+        puanHesapla(zorluk, yardim);
+      const mevcut = cozulenler[row.soru_id];
+      if (!mevcut || puan > (mevcut.puan ?? 0)) {
+        cozulenler[row.soru_id] = {
+          tarih: row.created_at.split('T')[0],
+          zorluk,
+          puan,
+          yardim,
+        };
       }
     } else {
       yanlislar[row.soru_id] = (yanlislar[row.soru_id] ?? 0) + 1;
     }
   }
+  const puan = Object.values(cozulenler).reduce(
+    (s, c) => s + (c.puan ?? ZORLUK_PUAN[c.zorluk]),
+    0,
+  );
 
   const aktiviteTarihleri: Record<string, number> = {};
   for (const row of aktiviteSonuc.data ?? []) {
@@ -105,8 +130,18 @@ export const soruCozumKaydetSupabase = async (
   userId: string,
   soruId: string,
   bugun: string,
+  zorluk: Zorluk,
+  yardim: CozumYardim = {},
 ): Promise<void> => {
-  await supabase.from('ilerleme').insert({ user_id: userId, soru_id: soruId, dogru_mu: true });
+  const kazanilanPuan = puanHesapla(zorluk, yardim);
+  await supabase.from('ilerleme').insert({
+    user_id: userId,
+    soru_id: soruId,
+    dogru_mu: true,
+    kullanilan_ai: yardim.kullanilanAi ?? false,
+    cozum_gosterildi: yardim.cozumGosterildi ?? false,
+    kazanilan_puan: kazanilanPuan,
+  });
   // aktivite upsert: aynı (user_id, tarih) varsa cozulen_sayi'yı +1 yap
   const { data: mevcut } = await supabase
     .from('aktivite')
@@ -118,6 +153,29 @@ export const soruCozumKaydetSupabase = async (
     user_id: userId,
     tarih: bugun,
     cozulen_sayi: (mevcut?.cozulen_sayi ?? 0) + 1,
+  });
+};
+
+/**
+ * Günlük giriş kaydı — streak için. Aktivite'ye bugün kaydı yoksa
+ * cozulen_sayi=0 ile ekler. Streak artık soru çözümüne değil
+ * günlük girişe bağlı: kullanıcı her gün siteye girerse seri devam eder.
+ */
+export const gunlukGirisKaydetSupabase = async (
+  userId: string,
+  bugun: string,
+): Promise<void> => {
+  const { data: mevcut } = await supabase
+    .from('aktivite')
+    .select('tarih')
+    .eq('user_id', userId)
+    .eq('tarih', bugun)
+    .maybeSingle();
+  if (mevcut) return;
+  await supabase.from('aktivite').insert({
+    user_id: userId,
+    tarih: bugun,
+    cozulen_sayi: 0,
   });
 };
 

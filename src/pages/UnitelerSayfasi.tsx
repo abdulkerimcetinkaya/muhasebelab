@@ -20,37 +20,35 @@ export const UnitelerSayfasi = ({ ilerleme }: Props) => {
 
   return (
     <main className="mufredat-sayfa relative min-h-screen overflow-hidden">
-      {/* HERO — büyük editorial başlık */}
-      <header className="relative max-w-[1240px] mx-auto px-5 sm:px-8 pt-20 pb-20">
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-8">
-            <div className="font-mono text-[10.5px] tracking-[0.32em] uppercase text-ink-mute font-bold mb-5">
-              § 00 · Müfredat
+      {/* HERO — sade başlık + dinamik sayaç */}
+      <header className="relative max-w-[1240px] mx-auto px-5 sm:px-8 pt-16 pb-12">
+        <div className="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <div className="font-mono text-[10.5px] tracking-[0.32em] uppercase text-ink-mute font-bold mb-4">
+              Üniteler
             </div>
-            <h1 className="font-display font-bold tracking-[-0.02em] text-ink leading-[0.86]"
-                style={{ fontSize: 'clamp(72px, 12vw, 168px)' }}>
-              Müfredat
+            <h1
+              className="font-display font-bold tracking-[-0.02em] text-ink leading-[0.9]"
+              style={{ fontSize: 'clamp(48px, 7vw, 96px)' }}
+            >
+              {uniteler.length > 0 ? uniteler.length : '—'}{' '}
+              <span className="font-display-italic text-ink-soft font-normal">
+                ünite
+              </span>
             </h1>
-            <div className="mt-5 font-display-italic text-copper-deep leading-tight"
-                 style={{ fontSize: 'clamp(22px, 2.6vw, 32px)' }}>
-              On beş ünite, <span className="text-ink-soft not-italic font-display font-normal">staja giriş yolu</span>.
-            </div>
           </div>
 
-          <div className="col-span-12 md:col-span-4 flex md:items-end">
-            <div className="border-l border-line pl-6 py-3 max-w-[320px]">
-              <p className="text-[14px] text-ink-soft leading-relaxed font-medium">
-                Tek Düzen Hesap Planı omurgası üzerine kurulu, Türkiye'deki muhasebe öğretiminin standart sıralaması — kolaydan zora.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-x-5 gap-y-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-mute font-bold">
-                <span className="tabular-nums">{uniteler.length} bölüm</span>
-                <span className="text-line-strong">·</span>
-                <span className="tabular-nums">{toplamSoru} senaryo</span>
-                <span className="text-line-strong">·</span>
-                <span>TDHP tabanlı</span>
-              </div>
+          {toplamSoru > 0 && (
+            <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-ink-mute font-bold flex flex-wrap gap-x-4 gap-y-1.5 pb-2">
+              <span className="tabular-nums">{toplamSoru} senaryo</span>
+              <span className="text-line-strong">·</span>
+              <span className="tabular-nums">
+                {toplamCozulen}/{toplamSoru} çözüldü
+              </span>
+              <span className="text-line-strong">·</span>
+              <span className="tabular-nums">%{toplamYuzde}</span>
             </div>
-          </div>
+          )}
         </div>
       </header>
 

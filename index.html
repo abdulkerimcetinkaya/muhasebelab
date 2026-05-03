@@ -4,7 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#F4F5F8" />
-    <title>MuhasebeLab · Tek Düzen Hesap Planı Atölyesi</title>
+    <title>MuhasebeLab · Muhasebe Pratik Platformu</title>
+    <meta
+      name="description"
+      content="Türkiye'deki muhasebe öğrencileri için interaktif yevmiye kaydı pratik platformu. Senaryolu sorular, gerçek belgeler, anında geri bildirim. Tek Düzen Hesap Planı tabanlı."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:site_name" content="MuhasebeLab" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:title" content="MuhasebeLab · Muhasebe Pratik Platformu" />
+    <meta
+      property="og:description"
+      content="Türkiye'deki muhasebe öğrencileri için interaktif yevmiye kaydı pratik platformu."
+    />
+    <meta name="twitter:card" content="summary" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,7 +29,20 @@
     />
   </head>
   <body>
+    <div id="splash" class="ml-splash">
+      <span>muhasebelab</span>
+      <span class="ml-splash-dot">·</span>
+      <span>yükleniyor…</span>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          document.getElementById('splash')?.classList.add('gone');
+          setTimeout(() => document.getElementById('splash')?.remove(), 500);
+        }, 220);
+      });
+    </script>
   </body>
 </html>

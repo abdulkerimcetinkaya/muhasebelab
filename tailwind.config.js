@@ -49,6 +49,11 @@ export default {
           deep: 'var(--premium-deep)',
           soft: 'var(--premium-soft)',
         },
+        copper: {
+          DEFAULT: 'var(--copper)',
+          deep: 'var(--copper-deep)',
+          soft: 'var(--copper-soft)',
+        },
         success: {
           DEFAULT: 'var(--success)',
           soft: 'var(--success-soft)',

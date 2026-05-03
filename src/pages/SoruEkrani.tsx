@@ -10,8 +10,7 @@ import { PremiumGate } from '../components/PremiumGate';
 import { AIAsistanYanPanel } from '../components/AIAsistanYanPanel';
 import { MarkdownLite } from '../components/MarkdownLite';
 import { KocTuru, type KocTuruAdim } from '../components/KocTuru';
-import { KonuAnlatimKart } from '../components/KonuAnlatimKart';
-import { konuAnlatimGetir } from '../data/konu-anlatim';
+import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
 import { useAuth } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { HESAP_PLANI } from '../data/hesap-plani';
@@ -24,9 +23,14 @@ import type { CozumSatir, FisBilgi, FisTuru, Soru, SoruWithUnite, UserRow } from
 
 type Durum = 'bos' | 'dogru' | 'yanlis';
 
+interface CozumYardim {
+  kullanilanAi?: boolean;
+  cozumGosterildi?: boolean;
+}
+
 interface Props {
   soru: SoruWithUnite;
-  onCozuldu: (soru: Soru) => void;
+  onCozuldu: (soru: Soru, yardim?: CozumYardim) => void;
   onYanlis: (soruId: string) => void;
   cozulmusMu: boolean;
   onHesapPlaniYanPanel: () => void;
@@ -93,17 +97,21 @@ const SoruEkraniIci = ({
   const [satirSonuclari, setSatirSonuclari] = useState<(boolean | null)[]>([]);
   const [yanlisAnaliz, setYanlisAnaliz] = useState<YanlisAnaliz | null>(null);
   const [kontrolHatasi, setKontrolHatasi] = useState<string | null>(null);
-  const [ipucuAcik, setIpucuAcik] = useState(false);
   const [cozumAcik, setCozumAcik] = useState(false);
+  const [cozumOnayAcik, setCozumOnayAcik] = useState(false);
   const [hataAcik, setHataAcik] = useState(false);
   const [belgeAcik, setBelgeAcik] = useState(false);
   const [aiAsistanAcik, setAiAsistanAcik] = useState(false);
   const [aiYukleniyor, setAiYukleniyor] = useState(false);
+  // Yardım takibi — puanlama için. AI açıldıysa veya çözüm gösterildiyse
+  // soru çözüldüğünde bu flag'ler onCozuldu'ya iletilir.
+  const [kullanilanAi, setKullanilanAi] = useState(false);
+  const [cozumGosterildi, setCozumGosterildi] = useState(false);
   const [aiMetin, setAiMetin] = useState<string | null>(null);
   const [aiHata, setAiHata] = useState<string | null>(null);
   const [kocTuruAcik, setKocTuruAcik] = useState(false);
   const [konuModalAcik, setKonuModalAcik] = useState(false);
-  const konuAnlatim = konuAnlatimGetir(soru.uniteId);
+  const konuIcerikVar = Array.isArray(unite?.icerik) && (unite?.icerik as unknown[]).length > 0;
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -160,12 +168,14 @@ const SoruEkraniIci = ({
     setSatirSonuclari([]);
     setYanlisAnaliz(null);
     setKontrolHatasi(null);
-    setIpucuAcik(false);
     setCozumAcik(false);
+    setCozumOnayAcik(false);
     setHataAcik(false);
     setBelgeAcik(false);
     setAiMetin(null);
     setAiHata(null);
+    setKullanilanAi(false);
+    setCozumGosterildi(false);
   }, [soru.id]);
 
   const aiAnalizCalistir = async () => {
@@ -255,23 +265,16 @@ const SoruEkraniIci = ({
     if (hepsiDogru) {
       setDurum('dogru');
       setYanlisAnaliz(null);
-      onCozuldu(soru);
+      onCozuldu(soru, { kullanilanAi, cozumGosterildi });
     } else {
       setDurum('yanlis');
       setYanlisAnaliz(analiz);
       onYanlis(soru.id);
     }
-  }, [kayitlar, soru, onCozuldu, onYanlis]);
+  }, [kayitlar, soru, onCozuldu, onYanlis, kullanilanAi, cozumGosterildi]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      const formAlanindaMi =
-        target?.tagName === 'INPUT' ||
-        target?.tagName === 'TEXTAREA' ||
-        target?.tagName === 'SELECT' ||
-        target?.isContentEditable;
-
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         kontrol();
@@ -279,19 +282,15 @@ const SoruEkraniIci = ({
       }
       if (e.key === 'Escape') {
         if (cozumAcik) { setCozumAcik(false); return; }
+        if (cozumOnayAcik) { setCozumOnayAcik(false); return; }
         if (belgeAcik) { setBelgeAcik(false); return; }
         if (hataAcik) { setHataAcik(false); return; }
         if (aiAsistanAcik) { setAiAsistanAcik(false); return; }
-        if (ipucuAcik) { setIpucuAcik(false); return; }
-      }
-      if (e.key === '?' && !formAlanindaMi) {
-        e.preventDefault();
-        setIpucuAcik((v) => !v);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [kontrol, cozumAcik, belgeAcik, hataAcik, aiAsistanAcik, ipucuAcik]);
+  }, [kontrol, cozumAcik, cozumOnayAcik, belgeAcik, hataAcik, aiAsistanAcik]);
 
   const bulunanHesap = (kod: string) => HESAP_PLANI.find((h) => h.kod === kod)?.ad || '';
   const handleTutarKey = (e: React.KeyboardEvent<HTMLInputElement>, i: number, col: string) => {
@@ -363,15 +362,6 @@ const SoruEkraniIci = ({
               {soru.senaryo}
             </p>
           </div>
-          {ipucuAcik && (
-            <div className="mt-3 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-stone-700 dark:text-zinc-300 leading-relaxed font-medium rounded-xl text-sm">
-              <div className="flex items-center gap-2 mb-1.5 text-[10px] tracking-[0.2em] uppercase font-bold text-amber-700 dark:text-amber-400">
-                <Icon name="Lightbulb" size={11} />
-                İpucu
-              </div>
-              {soru.ipucu}
-            </div>
-          )}
         </div>
 
         {/* YAN TOOLBAR */}
@@ -393,24 +383,13 @@ const SoruEkraniIci = ({
             </button>
           )}
           <button
-            onClick={() => setIpucuAcik(!ipucuAcik)}
-            className={`flex items-center gap-2.5 px-3 py-2.5 border rounded-lg text-left text-sm font-semibold transition ${
-              ipucuAcik
-                ? 'border-amber-400 bg-amber-50/50 dark:bg-amber-900/10 text-amber-800 dark:text-amber-300'
-                : 'border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400'
-            }`}
-          >
-            <Icon name="Lightbulb" size={14} className="text-amber-600 flex-shrink-0" />
-            <span>İpucu</span>
-          </button>
-          <button
             onClick={onHesapPlaniYanPanel}
             className="flex items-center gap-2.5 px-3 py-2.5 border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition text-left text-sm font-semibold rounded-lg"
           >
             <Icon name="BookOpen" size={14} className="flex-shrink-0" />
             <span>Hesap Planı</span>
           </button>
-          {konuAnlatim && (
+          {konuIcerikVar && (
             <button
               onClick={() => setKonuModalAcik(true)}
               className="flex items-center gap-2.5 px-3 py-2.5 border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition text-left text-sm font-semibold rounded-lg"
@@ -420,7 +399,10 @@ const SoruEkraniIci = ({
             </button>
           )}
           <button
-            onClick={() => setAiAsistanAcik(true)}
+            onClick={() => {
+              setAiAsistanAcik(true);
+              setKullanilanAi(true);
+            }}
             className="flex items-center gap-2.5 px-3 py-2.5 border border-amber-300/60 dark:border-amber-700/40 bg-gradient-to-r from-amber-50/40 to-transparent dark:from-amber-900/10 hover:border-amber-500 transition text-left text-sm font-semibold rounded-lg"
           >
             <Icon
@@ -434,11 +416,26 @@ const SoruEkraniIci = ({
             </span>
           </button>
           <button
-            onClick={() => setCozumAcik(true)}
-            className="flex items-center gap-2.5 px-3 py-2.5 border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition text-left text-sm font-semibold rounded-lg"
+            onClick={() => {
+              if (cozumGosterildi) {
+                setCozumAcik(true);
+              } else {
+                setCozumOnayAcik(true);
+              }
+            }}
+            className={`flex items-center gap-2.5 px-3 py-2.5 border rounded-lg text-left text-sm font-semibold transition ${
+              cozumGosterildi
+                ? 'border-rose-400 bg-rose-50/40 dark:bg-rose-950/20 text-rose-800 dark:text-rose-300'
+                : 'border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400'
+            }`}
           >
             <Icon name="Eye" size={14} className="flex-shrink-0" />
             <span>Çözümü Gör</span>
+            {cozumGosterildi && (
+              <span className="ml-auto text-[8px] tracking-[0.2em] uppercase font-bold text-rose-700 dark:text-rose-400">
+                0 puan
+              </span>
+            )}
           </button>
           <button
             onClick={() => setHataAcik(true)}
@@ -676,7 +673,15 @@ const SoruEkraniIci = ({
       )}
 
       {/* Sonuç paneli */}
-      {durum === 'dogru' && (
+      {durum === 'dogru' && (() => {
+        // Bu çözümden kazanılan gerçek puan (sadece çözüm gör cezasını uygular)
+        const kazanilan = cozumGosterildi ? 0 : ZORLUK_PUAN[soru.zorluk];
+        const puanMesaji = cozulmusMu
+          ? ''
+          : kazanilan > 0
+            ? `+${kazanilan} puan`
+            : 'Çözümü gördüğün için puan kazanamadın.';
+        return (
         <div className="mt-4 p-5 border-l-4 border-emerald-700 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl">
           <div className="flex items-center gap-3 mb-2">
             <Icon
@@ -685,7 +690,7 @@ const SoruEkraniIci = ({
               className="text-emerald-700 dark:text-emerald-400"
             />
             <div className="font-display text-lg font-bold">
-              Doğru kayıt. {cozulmusMu ? '' : `+${ZORLUK_PUAN[soru.zorluk]} puan`}
+              Doğru kayıt. {puanMesaji}
             </div>
           </div>
           <p className="text-sm text-stone-700 dark:text-zinc-300 leading-relaxed mb-4 font-medium">
@@ -698,7 +703,8 @@ const SoruEkraniIci = ({
             Sıradaki Soru <Icon name="ArrowRight" size={14} />
           </button>
         </div>
-      )}
+        );
+      })()}
       {durum === 'yanlis' && yanlisAnaliz && (
         <div className="mt-4 space-y-4">
           <div className="p-5 border-l-4 border-red-700 dark:border-red-400 bg-red-50 dark:bg-red-900/10 rounded-xl">
@@ -798,6 +804,60 @@ const SoruEkraniIci = ({
       )}
 
       {cozumAcik && <CozumModal soru={soru} onKapat={() => setCozumAcik(false)} />}
+      {cozumOnayAcik && (
+        <div
+          className="fixed inset-0 z-[110] bg-stone-950/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8"
+          onClick={() => setCozumOnayAcik(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-white dark:bg-zinc-900 border border-rose-300 dark:border-rose-800 rounded-2xl shadow-2xl my-auto"
+          >
+            <div className="p-5 border-b border-stone-200 dark:border-zinc-700">
+              <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300 mb-2">
+                <Icon name="AlertTriangle" size={18} />
+                <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-bold">
+                  Puan kaybı
+                </span>
+              </div>
+              <h2 className="font-display text-xl font-bold tracking-tight">
+                Çözümü görmek üzeresin
+              </h2>
+            </div>
+            <div className="p-5 space-y-3">
+              <p className="text-[14px] text-stone-700 dark:text-zinc-300 leading-relaxed">
+                Çözümü görürsen bu sorudan{' '}
+                <strong className="text-rose-700 dark:text-rose-400">0 puan</strong> alırsın
+                (normalde {ZORLUK_PUAN[soru.zorluk]} puan).
+              </p>
+              <p className="text-[13px] text-stone-600 dark:text-zinc-400 leading-relaxed">
+                Önce kendin denemeyi tercih edersen modalı kapatabilirsin.
+                Yardım için <span className="font-bold">AI Asistan</span> seçeneği var
+                — puana etkisi yok.
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-stone-200 dark:border-zinc-700">
+              <button
+                onClick={() => setCozumOnayAcik(false)}
+                className="px-4 py-2 text-[12px] font-bold text-stone-700 dark:text-zinc-300 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
+              >
+                Vazgeç
+              </button>
+              <button
+                onClick={() => {
+                  setCozumGosterildi(true);
+                  setCozumOnayAcik(false);
+                  setCozumAcik(true);
+                }}
+                className="inline-flex items-center gap-2 bg-rose-700 hover:bg-rose-800 dark:bg-rose-600 dark:hover:bg-rose-500 text-white px-4 py-2 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition"
+              >
+                <Icon name="Eye" size={13} />
+                Çözümü Göster (0 puan)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {belgeAcik && soru.belgeler && (
         <BelgeModal belgeler={soru.belgeler} onKapat={() => setBelgeAcik(false)} />
       )}
@@ -818,14 +878,14 @@ const SoruEkraniIci = ({
         acik={kocTuruAcik}
         onKapat={kocTuruKapat}
       />
-      {konuModalAcik && konuAnlatim && unite && (
+      {konuModalAcik && konuIcerikVar && unite && (
         <div
           className="fixed inset-0 z-[90] bg-stone-950/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8 animate-[koc-tour-pop_0.28s_cubic-bezier(0.22,1,0.36,1)_both]"
           onClick={() => setKonuModalAcik(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl my-auto"
+            className="relative w-full max-w-3xl my-auto bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6 sm:p-8 shadow-2xl"
           >
             <button
               onClick={() => setKonuModalAcik(false)}
@@ -834,12 +894,15 @@ const SoruEkraniIci = ({
             >
               <Icon name="X" size={14} />
             </button>
-            <KonuAnlatimKart
-              anlatim={konuAnlatim}
-              uniteId={unite.id}
-              uniteAd={unite.ad}
-              davranis="acik"
-            />
+            <div className="flex items-baseline gap-3 mb-5">
+              <span className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+                Konu Anlatımı
+              </span>
+              <h3 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-zinc-100">
+                {unite.ad}
+              </h3>
+            </div>
+            <IcerikGoruntuleyici icerik={unite.icerik} />
           </div>
         </div>
       )}
@@ -849,7 +912,7 @@ const SoruEkraniIci = ({
 
 interface WrapperProps {
   ilerleme: { cozulenler: Record<string, unknown> };
-  onCozuldu: (soru: Soru) => void;
+  onCozuldu: (soru: Soru, yardim?: CozumYardim) => void;
   onYanlis: (soruId: string) => void;
   onHesapPlaniYanPanel: () => void;
 }

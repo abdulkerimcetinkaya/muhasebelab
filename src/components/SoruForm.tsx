@@ -3,12 +3,13 @@ import { Icon } from './Icon';
 import { HesapKoduInput } from './HesapKoduInput';
 import { BelgeEditor } from './BelgeEditor';
 import { supabase } from '../lib/supabase';
-import type { SoruDurum, UnitesRow, Zorluk } from '../lib/database.types';
+import type { SoruDurum, UniteKonusuRow, UnitesRow, Zorluk } from '../lib/database.types';
 import type { Belge } from '../types';
 
 export interface SoruFormDegerleri {
   id: string;
   unite_id: string;
+  konu_id: string;
   baslik: string;
   zorluk: Zorluk;
   senaryo: string;
@@ -23,6 +24,7 @@ export interface SoruFormDegerleri {
 export const bosForm = (): SoruFormDegerleri => ({
   id: '',
   unite_id: '',
+  konu_id: '',
   baslik: '',
   zorluk: 'kolay',
   senaryo: '',
@@ -47,6 +49,7 @@ interface Props {
 export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => {
   const [d, setD] = useState<SoruFormDegerleri>(baslangic);
   const [uniteler, setUniteler] = useState<UnitesRow[]>([]);
+  const [konular, setKonular] = useState<UniteKonusuRow[]>([]);
   const [kaydediliyor, setKaydediliyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
 
@@ -59,6 +62,34 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
         if (data) setUniteler(data);
       });
   }, []);
+
+  // Ünite değişince o ünitenin konularını yükle. konu_id, ünite ile uyumsuzsa sıfırlar.
+  useEffect(() => {
+    if (!d.unite_id) {
+      setKonular([]);
+      if (d.konu_id) setD((p) => ({ ...p, konu_id: '' }));
+      return;
+    }
+    let iptal = false;
+    supabase
+      .from('unite_konulari')
+      .select('*')
+      .eq('unite_id', d.unite_id)
+      .order('sira')
+      .then(({ data }) => {
+        if (iptal) return;
+        const liste = (data ?? []) as UniteKonusuRow[];
+        setKonular(liste);
+        // Mevcut konu_id bu ünitede yoksa sıfırla
+        if (d.konu_id && !liste.some((k) => k.id === d.konu_id)) {
+          setD((p) => ({ ...p, konu_id: '' }));
+        }
+      });
+    return () => {
+      iptal = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [d.unite_id]);
 
   const toplamBorc = useMemo(
     () => d.cozumler.reduce((acc, c) => acc + (parseFloat(c.borc) || 0), 0),
@@ -175,6 +206,34 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
 
         <div>
           <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+            Alt-konu{' '}
+            <span className="text-stone-400 dark:text-zinc-600 font-normal normal-case tracking-normal">
+              (opsiyonel — LeetCode-tarzı sol nav için)
+            </span>
+          </label>
+          <select
+            value={d.konu_id}
+            onChange={(e) => setD({ ...d, konu_id: e.target.value })}
+            disabled={!d.unite_id || konular.length === 0}
+            className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium disabled:opacity-50"
+          >
+            <option value="">
+              {!d.unite_id
+                ? '— Önce ünite seç —'
+                : konular.length === 0
+                  ? '— Bu ünitede konu yok —'
+                  : '— Konu seçme (ünite seviyesinde kalsın) —'}
+            </option>
+            {konular.map((k) => (
+              <option key={k.id} value={k.id}>
+                {k.sira}. {k.ad}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
             Başlık *
           </label>
           <input
@@ -201,29 +260,16 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
-              İpucu
-            </label>
-            <textarea
-              value={d.ipucu}
-              onChange={(e) => setD({ ...d, ipucu: e.target.value })}
-              rows={3}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
-              Açıklama
-            </label>
-            <textarea
-              value={d.aciklama}
-              onChange={(e) => setD({ ...d, aciklama: e.target.value })}
-              rows={3}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
-            />
-          </div>
+        <div>
+          <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+            Açıklama (doğru kayıt sonrası gösterilir)
+          </label>
+          <textarea
+            value={d.aciklama}
+            onChange={(e) => setD({ ...d, aciklama: e.target.value })}
+            rows={3}
+            className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

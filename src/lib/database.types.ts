@@ -23,12 +23,15 @@ export type UnitesRow = {
   aciklama: string | null;
   thiings_icon: string | null;
   sira: number;
+  icerik: unknown | null;
+  icerik_guncellendi: string | null;
   created_at: string;
 };
 
 export type SorularRow = {
   id: string;
   unite_id: string;
+  konu_id: string | null;
   baslik: string;
   zorluk: Zorluk;
   senaryo: string;
@@ -38,6 +41,18 @@ export type SorularRow = {
   kaynak: string | null;
   yayinlanma_tarihi: string | null;
   belgeler: unknown;
+  created_at: string;
+  updated_at: string;
+};
+
+export type UniteKonusuRow = {
+  id: string;
+  unite_id: string;
+  ad: string;
+  aciklama: string | null;
+  icerik: unknown | null;
+  icerik_guncellendi: string | null;
+  sira: number;
   created_at: string;
   updated_at: string;
 };
@@ -130,6 +145,17 @@ export type PlanRow = {
   sira: number;
 };
 
+export type MevzuatChunkRow = {
+  id: string;
+  kaynak: string;
+  baslik: string;
+  url: string | null;
+  metin: string;
+  embedding: unknown;          // pgvector — TS tarafında opaque
+  guncellendi: string | null;
+  created_at: string;
+};
+
 export type SoruHataRow = {
   id: string;
   soru_id: string;
@@ -153,7 +179,11 @@ export type Database = {
       };
       unites: {
         Row: UnitesRow;
-        Insert: Omit<UnitesRow, 'created_at'> & { created_at?: string };
+        Insert: Omit<UnitesRow, 'created_at' | 'icerik' | 'icerik_guncellendi'> & {
+          created_at?: string;
+          icerik?: unknown | null;
+          icerik_guncellendi?: string | null;
+        };
         Update: Partial<UnitesRow>;
         Relationships: [];
       };
@@ -231,6 +261,28 @@ export type Database = {
         Row: PlanRow;
         Insert: PlanRow;
         Update: Partial<PlanRow>;
+        Relationships: [];
+      };
+      mevzuat_chunklar: {
+        Row: MevzuatChunkRow;
+        Insert: Omit<MevzuatChunkRow, 'id' | 'created_at'> & {
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<MevzuatChunkRow>;
+        Relationships: [];
+      };
+      unite_konulari: {
+        Row: UniteKonusuRow;
+        Insert: Omit<UniteKonusuRow, 'created_at' | 'updated_at' | 'icerik' | 'icerik_guncellendi' | 'aciklama' | 'sira'> & {
+          created_at?: string;
+          updated_at?: string;
+          icerik?: unknown | null;
+          icerik_guncellendi?: string | null;
+          aciklama?: string | null;
+          sira?: number;
+        };
+        Update: Partial<UniteKonusuRow>;
         Relationships: [];
       };
     };

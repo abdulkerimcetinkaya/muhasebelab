@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
+import { BildirimDropdown } from './BildirimDropdown';
 import { useAuth, useIsAdmin, useIsPremium } from '../contexts/AuthContext';
 import { cikisYap } from '../lib/auth';
 import type { Ilerleme } from '../types';
@@ -27,6 +28,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
   const aktifAna = pathname === '/';
   const aktifUnite = pathname === '/uniteler' || pathname.startsWith('/uniteler/');
   const aktifProblem = pathname === '/problemler' || pathname.startsWith('/problemler/');
+  const aktifLiderlik = pathname === '/liderlik';
   const aktifProfil = pathname === '/profil';
   const aktifAdmin = pathname.startsWith('/admin');
 
@@ -34,6 +36,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
     { id: '/', ad: 'Anasayfa', aktif: aktifAna },
     { id: '/uniteler', ad: 'Üniteler', aktif: aktifUnite },
     { id: '/problemler', ad: 'Problemler', aktif: aktifProblem },
+    { id: '/liderlik', ad: 'Liderlik', aktif: aktifLiderlik },
     ...(user ? [{ id: '/profil', ad: 'Profil', aktif: aktifProfil }] : []),
   ];
 
@@ -110,6 +113,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
             >
               <Icon name={ilerleme.tema === 'dark' ? 'Sun' : 'Moon'} size={15} />
             </button>
+
+            {user && <BildirimDropdown />}
 
             {user &&
               (isPremium ? (
@@ -199,6 +204,16 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
             >
               <Icon name="BookOpen" size={14} />
               Hesap Planı
+            </button>
+            <button
+              onClick={() => {
+                nav('/sozluk');
+                setMobilMenuAcik(false);
+              }}
+              className="w-full px-2 py-3 text-left text-[14px] text-ink-soft flex items-center gap-2.5"
+            >
+              <Icon name="Search" size={14} />
+              Mali Sözlük
             </button>
             {user && (
               <button

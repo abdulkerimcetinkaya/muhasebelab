@@ -50,6 +50,7 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
   });
   const [seciliUnite, setSeciliUnite] = useState<string | null>(null);
   const [kaydediliyor, setKaydediliyor] = useState(false);
+  const [hata, setHata] = useState<string | null>(null);
 
   useEffect(() => {
     if (!yukleniyor && !user) nav('/giris', { replace: true });
@@ -58,6 +59,7 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
   const tamamla = async () => {
     if (!user) return;
     setKaydediliyor(true);
+    setHata(null);
 
     // Profil bilgilerini Supabase'e yaz — boş alanlar atlanır
     const guncelleme: {
@@ -76,7 +78,13 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
         .from('kullanicilar')
         .update(guncelleme)
         .eq('id', user.id);
-      if (error) console.error('Profil kaydedilemedi:', error.message);
+      if (error) {
+        // Sessiz başarısızlık eskisinde "kaydedildi sandı, kayıt yok" yaratıyordu;
+        // şimdi kullanıcıya hata göster + akışı bloke et, retry imkanı bırak.
+        setHata(`Profil kaydedilemedi: ${error.message}. Tekrar dene.`);
+        setKaydediliyor(false);
+        return;
+      }
     }
 
     onTamamla(mevcutAd);
@@ -302,6 +310,12 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
               );
             })}
           </div>
+          {hata && (
+            <div className="mb-3 flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300 font-medium">
+              <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
+              <span>{hata}</span>
+            </div>
+          )}
           <div className="flex gap-3">
             <button
               onClick={() => setAdim('tani')}
