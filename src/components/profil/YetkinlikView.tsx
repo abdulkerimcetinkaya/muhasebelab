@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Icon } from '../Icon';
 import { Thiings } from '../Thiings';
 import { yillikAktivite } from '../../lib/profil-rekorlar';
 import { uniteYetkinlikleri } from '../../lib/yetkinlik';

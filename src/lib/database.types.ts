@@ -101,6 +101,10 @@ export type IlerlemeRow = {
   soru_id: string;
   dogru_mu: boolean;
   sure_saniye: number | null;
+  // 20260503000007 migration — yardım takibi + best-score puanlama
+  kullanilan_ai: boolean;
+  cozum_gosterildi: boolean;
+  kazanilan_puan: number | null;
   created_at: string;
 };
 
@@ -165,6 +169,40 @@ export type SoruHataRow = {
   created_at: string;
 };
 
+export type BildirimTip = 'duyuru' | 'bilgi' | 'uyari' | 'guncelleme';
+
+export type BildirimRow = {
+  id: string;
+  baslik: string;
+  metin: string;
+  tip: BildirimTip;
+  link: string | null;
+  yayinda: boolean;
+  olusturan_id: string | null;
+  created_at: string;
+};
+
+export type BildirimOkunduRow = {
+  bildirim_id: string;
+  user_id: string;
+  okundu_at: string;
+};
+
+export type SozlukTerimiRow = {
+  slug: string;
+  baslik: string;
+  kisa_aciklama: string;
+  uzun_icerik: string;
+  ornek: string | null;
+  ilgili_terimler: string[];
+  ilgili_unite_ids: number[];
+  ilgili_hesap_kodlari: string[];
+  goruntuleme_sayisi: number;
+  yayinda: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   __InternalSupabase: {
     PostgrestVersion: '12';
@@ -221,10 +259,21 @@ export type Database = {
       };
       ilerleme: {
         Row: IlerlemeRow;
-        Insert: Omit<IlerlemeRow, 'id' | 'created_at' | 'sure_saniye'> & {
+        Insert: Omit<
+          IlerlemeRow,
+          | 'id'
+          | 'created_at'
+          | 'sure_saniye'
+          | 'kullanilan_ai'
+          | 'cozum_gosterildi'
+          | 'kazanilan_puan'
+        > & {
           id?: string;
           created_at?: string;
           sure_saniye?: number | null;
+          kullanilan_ai?: boolean;
+          cozum_gosterildi?: boolean;
+          kazanilan_puan?: number | null;
         };
         Update: Partial<IlerlemeRow>;
         Relationships: [];
@@ -285,6 +334,50 @@ export type Database = {
         Update: Partial<UniteKonusuRow>;
         Relationships: [];
       };
+      bildirimler: {
+        Row: BildirimRow;
+        Insert: Omit<BildirimRow, 'id' | 'created_at' | 'olusturan_id' | 'tip' | 'link' | 'yayinda'> & {
+          id?: string;
+          created_at?: string;
+          olusturan_id?: string | null;
+          tip?: BildirimTip;
+          link?: string | null;
+          yayinda?: boolean;
+        };
+        Update: Partial<BildirimRow>;
+        Relationships: [];
+      };
+      bildirim_okundu: {
+        Row: BildirimOkunduRow;
+        Insert: Omit<BildirimOkunduRow, 'okundu_at'> & { okundu_at?: string };
+        Update: Partial<BildirimOkunduRow>;
+        Relationships: [];
+      };
+      sozluk_terimleri: {
+        Row: SozlukTerimiRow;
+        Insert: Omit<
+          SozlukTerimiRow,
+          | 'created_at'
+          | 'updated_at'
+          | 'goruntuleme_sayisi'
+          | 'yayinda'
+          | 'ilgili_terimler'
+          | 'ilgili_unite_ids'
+          | 'ilgili_hesap_kodlari'
+          | 'ornek'
+        > & {
+          created_at?: string;
+          updated_at?: string;
+          goruntuleme_sayisi?: number;
+          yayinda?: boolean;
+          ilgili_terimler?: string[];
+          ilgili_unite_ids?: number[];
+          ilgili_hesap_kodlari?: string[];
+          ornek?: string | null;
+        };
+        Update: Partial<SozlukTerimiRow>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -299,6 +392,14 @@ export type Database = {
       kullanici_adi_uygun: {
         Args: { _ad: string };
         Returns: boolean;
+      };
+      sozluk_goruntule: {
+        Args: { _slug: string };
+        Returns: void;
+      };
+      hesap_sil: {
+        Args: Record<string, never>;
+        Returns: void;
       };
     };
     Enums: {

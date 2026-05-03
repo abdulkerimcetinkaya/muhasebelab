@@ -197,6 +197,7 @@ export const AdminTopluEkleSayfasi = () => {
     const soruSatirlari = gecerli.map((s) => ({
       id: s.yeniId,
       unite_id: s.veri.unite_id,
+      konu_id: null,
       baslik: s.veri.baslik,
       zorluk: s.veri.zorluk,
       senaryo: s.veri.senaryo,
