@@ -52,7 +52,7 @@ src/
 └── types/index.ts
 
 supabase/
-├── migrations/               — 20 migration:
+├── migrations/               — 21 migration:
 │   ├── 20260422000001_init                — şema + RLS
 │   ├── 20260422000002_admin_rls           — admin politikaları
 │   ├── 20260422000003_premium_rpc         — erken erişim aktivasyon RPC (ilk 100 kişiye 1 yıl)
@@ -72,7 +72,8 @@ supabase/
 │   ├── 20260504000004_admin_kullanici_select — admin RLS: ilerleme, aktivite, rozet, ödeme tablolarına SELECT
 │   ├── 20260504000005_admin_premium_yonetimi — admin_premium_ayarla RPC (hediye/uzat/iptal)
 │   ├── 20260504000006_admin_moderasyon — ban kolonları + banla/unbanla/sil RPC + RLS güçlendirme
-│   └── 20260504000007_bildirim_hedefleme — bildirim hedef_tipi + bildirim_hedef tablosu
+│   ├── 20260504000007_bildirim_hedefleme — bildirim hedef_tipi + bildirim_hedef tablosu
+│   └── 20260504000008_bildirim_segment_hedefleme — premium/free segment desteği
 ├── functions/                — Edge Functions:
 │   ├── ai-asistan            — soru içinde AI rehber
 │   ├── ai-belge-uret         — belge üretimi
