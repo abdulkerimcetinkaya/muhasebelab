@@ -19,6 +19,7 @@ import { bugununTarihi, paraFormat } from '../lib/format';
 import { yanlisAnaliziYap, type YanlisAnaliz } from '../lib/kontrol';
 import { aiYanlisAnalizi } from '../lib/ai';
 import { authDonusYaz } from '../lib/auth-donus';
+import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
 import type { CozumSatir, FisBilgi, FisTuru, Soru, SoruWithUnite, UserRow } from '../types';
 
 type Durum = 'bos' | 'dogru' | 'yanlis';
@@ -94,6 +95,7 @@ const SoruEkraniIci = ({
     aciklama: '',
   }));
   const [durum, setDurum] = useState<Durum>('bos');
+  const [muavinler, setMuavinler] = useState<MuavinHesap[]>([]);
   const [satirSonuclari, setSatirSonuclari] = useState<(boolean | null)[]>([]);
   const [yanlisAnaliz, setYanlisAnaliz] = useState<YanlisAnaliz | null>(null);
   const [kontrolHatasi, setKontrolHatasi] = useState<string | null>(null);
@@ -118,6 +120,14 @@ const SoruEkraniIci = ({
     if (localStorage.getItem('koc-turu-tamam') === '1') return;
     const t = setTimeout(() => setKocTuruAcik(true), 500);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    aktifMuavinleriYukle()
+      .then(setMuavinler)
+      .catch(() => {
+        // sessizce geç — muavin yoksa eski davranış (sadece ana hesap) korunur
+      });
   }, []);
 
   const kocTuruKapat = () => {
@@ -553,6 +563,7 @@ const SoruEkraniIci = ({
                   value={k.kod}
                   onChange={(v) => satirGuncelle(i, 'kod', v)}
                   rowIndex={i}
+                  muavinler={muavinler}
                 />
               </div>
               <div
