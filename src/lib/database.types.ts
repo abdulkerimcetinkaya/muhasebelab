@@ -189,6 +189,13 @@ export type SoruHataRow = {
 export type BildirimTip = 'duyuru' | 'bilgi' | 'uyari' | 'guncelleme';
 export type BildirimHedefTipi = 'herkes' | 'premium' | 'free' | 'belirli';
 
+export type AdminRow = {
+  user_id: string;
+  email: string;
+  eklenen_at: string;
+  ekleyen_id: string | null;
+};
+
 export type BildirimRow = {
   id: string;
   baslik: string;
@@ -237,6 +244,15 @@ export type Database = {
         Row: HesapPlaniRow;
         Insert: HesapPlaniRow;
         Update: Partial<HesapPlaniRow>;
+        Relationships: [];
+      };
+      adminler: {
+        Row: AdminRow;
+        Insert: Omit<AdminRow, 'eklenen_at' | 'ekleyen_id'> & {
+          eklenen_at?: string;
+          ekleyen_id?: string | null;
+        };
+        Update: Partial<AdminRow>;
         Relationships: [];
       };
       muavin_hesaplar: {
@@ -457,6 +473,18 @@ export type Database = {
         Returns: void;
       };
       admin_kullanici_sil: {
+        Args: { _user_id: string };
+        Returns: void;
+      };
+      admin_ekle: {
+        Args: { _user_id: string };
+        Returns: void;
+      };
+      admin_cikar: {
+        Args: { _user_id: string };
+        Returns: void;
+      };
+      admin_ilerleme_sifirla: {
         Args: { _user_id: string };
         Returns: void;
       };

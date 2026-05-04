@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import type {
+  AdminRow,
   AktiviteRow,
   IlerlemeRow,
   KazanilanRozetRow,
@@ -154,6 +155,42 @@ export const kullaniciSil = async (userId: string): Promise<void> => {
   const { error } = await supabase.rpc('admin_kullanici_sil', {
     _user_id: userId,
   });
+  if (error) throw error;
+};
+
+/** Bir kullanıcının çözüm geçmişini sıfırla (ilerleme + aktivite + rozetler). */
+export const ilerlemeSifirla = async (userId: string): Promise<void> => {
+  const { error } = await supabase.rpc('admin_ilerleme_sifirla', {
+    _user_id: userId,
+  });
+  if (error) throw error;
+};
+
+// =====================================================================
+// Admin yetkilileri (Sprint 5)
+// =====================================================================
+
+export type Admin = AdminRow;
+
+/** Tüm admin yetkililerini yükle. */
+export const tumAdminleriYukle = async (): Promise<Admin[]> => {
+  const { data, error } = await supabase
+    .from('adminler')
+    .select('*')
+    .order('eklenen_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as Admin[];
+};
+
+/** Bir kullanıcıyı admin yap. */
+export const adminEkle = async (userId: string): Promise<void> => {
+  const { error } = await supabase.rpc('admin_ekle', { _user_id: userId });
+  if (error) throw error;
+};
+
+/** Bir kullanıcının admin yetkisini kaldır. */
+export const adminCikar = async (userId: string): Promise<void> => {
+  const { error } = await supabase.rpc('admin_cikar', { _user_id: userId });
   if (error) throw error;
 };
 

@@ -3,6 +3,7 @@ import { Icon } from './Icon';
 
 const linkler = [
   { to: '/admin', etiket: 'Genel Bakış', icon: 'LayoutDashboard', end: true },
+  { to: '/admin/istatistikler', etiket: 'İstatistikler', icon: 'BarChart3', end: true },
   { to: '/admin/uniteler', etiket: 'Üniteler', icon: 'LayoutGrid', end: true },
   { to: '/admin/sorular', etiket: 'Sorular', icon: 'FileText', end: true },
   { to: '/admin/sorular/yeni', etiket: 'Yeni Soru', icon: 'PlusCircle', end: true },
@@ -13,6 +14,7 @@ const linkler = [
   { to: '/admin/sozluk', etiket: 'Mali Sözlük', icon: 'BookOpen', end: true },
   { to: '/admin/bildirimler', etiket: 'Bildirimler', icon: 'Megaphone', end: true },
   { to: '/admin/hatalar', etiket: 'Hata Bildirimleri', icon: 'AlertCircle', end: true },
+  { to: '/admin/yetkililer', etiket: 'Yetkililer', icon: 'ShieldCheck', end: true },
 ];
 
 export const AdminYanMenu = () => {
