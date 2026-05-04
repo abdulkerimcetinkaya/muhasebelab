@@ -224,9 +224,11 @@ export const AdminKatkicilarSayfasi = () => {
                     </div>
                   </div>
 
-                  <div className="mt-3 text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-700 rounded-lg p-3 whitespace-pre-wrap">
-                    {b.aciklama}
-                  </div>
+                  {b.aciklama && (
+                    <div className="mt-3 text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-700 rounded-lg p-3 whitespace-pre-wrap">
+                      {b.aciklama}
+                    </div>
+                  )}
 
                   {b.red_sebep && (
                     <div className="mt-2 text-[12.5px] text-rose-800 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg p-3">
