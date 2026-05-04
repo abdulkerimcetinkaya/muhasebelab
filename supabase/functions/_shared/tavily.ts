@@ -95,6 +95,15 @@ const GUNCELLIK_KELIMELERI = [
   'oran ne', 'oranı ne', 'limiti ne', 'limiti kaç', 'tutarı kaç',
   'tutarı ne', 'sınırı ne', 'sınırı kaç',
   'yeni bütçe', 'yeni dönem',
+  // Spesifik oran/tutar/limit sorgulamaları (sayı uydurma riski yüksek)
+  'kdv oranı', 'kdv oranlari', 'kdv oranları',
+  'asgari ücret', 'brüt asgari', 'net asgari',
+  'damga vergisi', 'gelir vergisi dilim', 'gelir vergisi tarif',
+  'kurumlar vergisi oranı', 'stopaj oranı', 'tevkifat oranı',
+  'amortisman oranı', 'amortisman süresi', 'amortisman listesi',
+  'fatura sınırı', 'fatura limiti', 'amortisman alt sınırı',
+  'kdv tevkifat', 'gecikme zammı', 'gecikme faizi',
+  'sgk tavan', 'sgk taban', 'prim tavan', 'prim taban',
 ];
 
 // Yıl referansı (örn. "2026", "2025")
