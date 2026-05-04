@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 export type BildirimTip = 'duyuru' | 'bilgi' | 'uyari' | 'guncelleme';
-export type BildirimHedefTipi = 'herkes' | 'belirli';
+export type BildirimHedefTipi = 'herkes' | 'premium' | 'free' | 'belirli';
 
 export interface Bildirim {
   id: string;

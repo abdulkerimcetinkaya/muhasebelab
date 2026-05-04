@@ -187,7 +187,7 @@ export type SoruHataRow = {
 };
 
 export type BildirimTip = 'duyuru' | 'bilgi' | 'uyari' | 'guncelleme';
-export type BildirimHedefTipi = 'herkes' | 'belirli';
+export type BildirimHedefTipi = 'herkes' | 'premium' | 'free' | 'belirli';
 
 export type BildirimRow = {
   id: string;

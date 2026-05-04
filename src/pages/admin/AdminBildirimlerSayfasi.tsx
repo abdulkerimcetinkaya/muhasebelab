@@ -244,28 +244,54 @@ export const AdminBildirimlerSayfasi = () => {
                   <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-2">
                     Hedef
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <button
                       type="button"
                       onClick={() => setHedefTipi('herkes')}
-                      className={`px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
+                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
                         hedefTipi === 'herkes'
                           ? 'bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-stone-900 dark:border-zinc-100'
                           : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
                       }`}
                     >
+                      <Icon name="Users" size={12} />
                       Herkese
                     </button>
                     <button
                       type="button"
+                      onClick={() => setHedefTipi('premium')}
+                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
+                        hedefTipi === 'premium'
+                          ? 'bg-emerald-600 text-white border-emerald-600'
+                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
+                      }`}
+                    >
+                      <Icon name="Sparkles" size={12} />
+                      Premium
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHedefTipi('free')}
+                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
+                        hedefTipi === 'free'
+                          ? 'bg-stone-600 text-white border-stone-600'
+                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
+                      }`}
+                    >
+                      <Icon name="User" size={12} />
+                      Free
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setHedefTipi('belirli')}
-                      className={`px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
+                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
                         hedefTipi === 'belirli'
                           ? 'bg-blue-600 text-white border-blue-600'
                           : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
                       }`}
                     >
-                      Belirli Kullanıcılar ({hedefUserIds.length})
+                      <Icon name="UserPlus" size={12} />
+                      Belirli ({hedefUserIds.length})
                     </button>
                   </div>
                 </div>
