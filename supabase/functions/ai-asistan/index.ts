@@ -165,6 +165,30 @@ KAYNAK GÖSTERME:
   "(VUK m.230)" gibi etiketler kullanıcıya gösterilmiyor — sıkıcı yapıyor.
 - Cevabı sadece akıcı Türkçe paragraf olarak ver, kaynak listesi/linki yazma.
 
+GÜNCEL VERİ KORUMASI — UYDURMA YASAK:
+
+Bu kural HAYATİ önemde. Yanlış sayı vermek, hiç vermemekten çok daha kötü —
+biz bir eğitim platformuyuz, öğrenci senin verdiğin sayıya inanır.
+
+- Sana sistem prompt'unda "**Güncel web kaynakları**" bloğu **verilmediyse**,
+  spesifik **oran / tutar / limit / dilim** ASLA söyleme. Örnekler:
+  - "KDV %X" — YASAK (web kaynağı yoksa)
+  - "Asgari ücret X TL" — YASAK
+  - "Amortisman süresi X yıl" — YASAK (genel listeler için)
+  - "Damga vergisi %X" — YASAK
+  - "Gelir vergisi dilimi X-Y arası %Z" — YASAK
+- "Güncel veri çekilemedi" uyarısı verildiyse de **rakam söyleme**.
+- Bu durumda uygun cevap:
+  > "Güncel oranı **gib.gov.tr** veya **mevzuat.gov.tr**'den teyit et,
+  > ben şu an kesin sayı veremem. Ama mantığı anlatabilirim: KDV satıştan
+  > tahsil edilen vergidir, alıştan ödenen KDV ile mahsuplaştırılır..."
+- **Genel kavramı, mantığı, kayıt mekaniğini** anlatabilirsin — sayı vermesen de.
+  Eğitim için kavram yeter; rakam mevzuatta nasılsa öyle.
+- **Eğer "Güncel web kaynakları" verildiyse**: oradaki rakamları kullan, ama
+  kaynak adı yazma (yukarıdaki kural geçerli).
+- Tarihi sayılar (ör. "2018'de KDV %18'di") söylenebilir ama "şu anki/güncel"
+  diye iddia etme.
+
 DİĞER:
 - Türkçe cevap ver
 - Konuyla ilgisiz (muhasebe dışı) sorulara nazikçe "ben muhasebe konularında yardımcı
@@ -256,9 +280,11 @@ Deno.serve(async (req) => {
     // çıktı mı", "KDV oranı 2026'da kaç" tarzı sorularda.
     // ===========================================================
     let tavilySonuc: TavilySonuc | null = null;
+    let guncelVeriIsteniyor = false;
     try {
       const sonKullanici = [...kesit].reverse().find((m) => m.role === 'user');
       if (sonKullanici?.content && guncelBilgiGerekiyor(sonKullanici.content)) {
+        guncelVeriIsteniyor = true;
         tavilySonuc = await tavilyAra(sonKullanici.content, {
           maxSonuc: 3,
           sadeceResmi: true,
@@ -311,6 +337,14 @@ Bilgiyi cevabında kullan, ama URL/kaynak adı/site adresi YAZMA — sadece
 güncel bilgiyi akıcı şekilde Türkçe ifade et:
 ${ozetSatiri}
 ${tavilyBlok}`;
+    } else if (guncelVeriIsteniyor) {
+      // Kullanıcı güncel oran/tutar sordu ama Tavily sonuç dönmedi (key yok,
+      // whitelist boş, vs.) — AI'a açıkça uyarı ver, sayı UYDURMASIN.
+      systemPrompt += `\n\n## ⚠️ GÜNCEL VERİ ÇEKİLEMEDİ
+Kullanıcı güncel/yeni bir oran, tutar veya limit sordu ama resmi
+kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
+"GÜNCEL VERİ KORUMASI" kuralını uygula. Genel kavramı anlat ve
+"güncel rakamı gib.gov.tr'den teyit et" yönlendirmesi yap.`;
     }
 
     const yanit = await anthropicCagir(systemPrompt, kesit, 600);
