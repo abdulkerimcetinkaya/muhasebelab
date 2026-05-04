@@ -5,8 +5,10 @@ import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { PremiumAyarlaModal } from '../../components/PremiumAyarlaModal';
 import { ModerasyonModal } from '../../components/ModerasyonModal';
 import { EmailGonderModal } from '../../components/EmailGonderModal';
+import { AktiviteIsiHaritasi } from '../../components/AktiviteIsiHaritasi';
 import { paraFormat } from '../../lib/format';
 import {
+  ilerlemeSifirla,
   kullaniciDetayYukle,
   sifreSifirlamaTetikle,
   supheliPatternleriBul,
@@ -87,6 +89,26 @@ export const AdminKullaniciDetaySayfasi = () => {
     () => (detay ? supheliPatternleriBul(detay.cozumler) : []),
     [detay],
   );
+
+  const ilerlemeSifirlaTiklandi = async () => {
+    if (!detay) return;
+    if (
+      !confirm(
+        `${detay.kullanici_adi} kullanıcısının çözüm geçmişi (${detay.cozumler.length} çözüm + ${detay.rozetler.length} rozet + ${detay.aktivite.length} aktivite günü) silinecek.\n\nBu işlem geri alınamaz. Devam edilsin mi?`,
+      )
+    ) {
+      return;
+    }
+    try {
+      await ilerlemeSifirla(detay.id);
+      // Sayfayı yenile
+      const yeni = await kullaniciDetayYukle(detay.id);
+      setDetay(yeni);
+      alert('İlerleme sıfırlandı.');
+    } catch (e) {
+      alert(`Sıfırlanamadı: ${(e as Error).message}`);
+    }
+  };
 
   const sifreSifirlaTiklandi = async () => {
     if (!detay?.email) {
@@ -242,6 +264,13 @@ export const AdminKullaniciDetaySayfasi = () => {
                           className={sifreSifirlaniyor ? 'animate-spin' : ''}
                         />
                         Şifre Sıfırla
+                      </button>
+                      <button
+                        onClick={ilerlemeSifirlaTiklandi}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition"
+                      >
+                        <Icon name="RotateCcw" size={11} />
+                        İlerleme Sıfırla
                       </button>
                     </div>
                     {sifreOnay && (
@@ -455,28 +484,15 @@ export const AdminKullaniciDetaySayfasi = () => {
                 )}
               </section>
 
-              {/* Aktivite */}
+              {/* Aktivite ısı haritası */}
               <section>
-                <h2 className="font-display text-lg font-bold mb-3">
-                  Son Aktivite ({detay.aktivite.length} gün)
-                </h2>
+                <h2 className="font-display text-lg font-bold mb-3">Aktivite</h2>
                 {detay.aktivite.length === 0 ? (
                   <div className="text-sm text-stone-400 dark:text-zinc-600 text-center py-6 border border-dashed border-stone-300 dark:border-zinc-700 rounded-xl">
                     Aktivite kaydı yok.
                   </div>
                 ) : (
-                  <div className="flex flex-wrap gap-1.5">
-                    {detay.aktivite.slice(0, 30).map((a) => (
-                      <div
-                        key={a.tarih}
-                        className="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 rounded text-[11px] font-mono"
-                        title={`${a.cozulen_sayi} soru çözüldü`}
-                      >
-                        {tarihFormat(a.tarih)}
-                        <span className="font-bold">{a.cozulen_sayi}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <AktiviteIsiHaritasi aktivite={detay.aktivite} haftaSayisi={26} />
                 )}
               </section>
             </>

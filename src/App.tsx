@@ -43,6 +43,8 @@ const AdminSozlukSayfasi = lazy(() => import('./pages/admin/AdminSozlukSayfasi')
 const AdminMuavinHesaplarSayfasi = lazy(() => import('./pages/admin/AdminMuavinHesaplarSayfasi').then((m) => ({ default: m.AdminMuavinHesaplarSayfasi })));
 const AdminKullanicilarSayfasi = lazy(() => import('./pages/admin/AdminKullanicilarSayfasi').then((m) => ({ default: m.AdminKullanicilarSayfasi })));
 const AdminKullaniciDetaySayfasi = lazy(() => import('./pages/admin/AdminKullaniciDetaySayfasi').then((m) => ({ default: m.AdminKullaniciDetaySayfasi })));
+const AdminYetkilileriSayfasi = lazy(() => import('./pages/admin/AdminYetkilileriSayfasi').then((m) => ({ default: m.AdminYetkilileriSayfasi })));
+const AdminIstatistiklerSayfasi = lazy(() => import('./pages/admin/AdminIstatistiklerSayfasi').then((m) => ({ default: m.AdminIstatistiklerSayfasi })));
 const SozlukSayfasi = lazy(() => import('./pages/SozlukSayfasi').then((m) => ({ default: m.SozlukSayfasi })));
 const SozlukTerimSayfasi = lazy(() => import('./pages/SozlukTerimSayfasi').then((m) => ({ default: m.SozlukTerimSayfasi })));
 const KonuSayfasi = lazy(() => import('./pages/KonuSayfasi').then((m) => ({ default: m.KonuSayfasi })));
@@ -460,6 +462,22 @@ const App = () => {
               element={
                 <ProtectedAdminRoute>
                   <AdminKullaniciDetaySayfasi />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/yetkililer"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminYetkilileriSayfasi />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/istatistikler"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminIstatistiklerSayfasi />
                 </ProtectedAdminRoute>
               }
             />
