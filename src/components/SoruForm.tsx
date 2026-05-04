@@ -4,6 +4,7 @@ import { HesapKoduInput } from './HesapKoduInput';
 import { BelgeEditor } from './BelgeEditor';
 import { supabase } from '../lib/supabase';
 import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
+import { hesapAdiBul } from '../lib/hesap';
 import type { SoruDurum, UniteKonusuRow, UnitesRow, Zorluk } from '../lib/database.types';
 import type { Belge } from '../types';
 
@@ -330,7 +331,8 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
-              <th className="pb-2">Hesap</th>
+              <th className="pb-2 w-44">Hesap Kodu</th>
+              <th className="pb-2">Hesap Adı</th>
               <th className="pb-2 w-32">Borç</th>
               <th className="pb-2 w-32">Alacak</th>
               <th className="pb-2 w-10"></th>
@@ -348,6 +350,11 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
                     yeniMuavinEkleyebilir
                     onMuavinEklendi={muavinEklendi}
                   />
+                </td>
+                <td className="py-1 pr-2 text-[12.5px] text-stone-700 dark:text-zinc-300 font-medium truncate">
+                  {hesapAdiBul(c.kod, muavinler) || (
+                    <span className="text-stone-300 dark:text-zinc-700">—</span>
+                  )}
                 </td>
                 <td className="py-1 pr-2">
                   <input

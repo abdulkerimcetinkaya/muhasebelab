@@ -13,7 +13,6 @@ import { KocTuru, type KocTuruAdim } from '../components/KocTuru';
 import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
 import { useAuth } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
-import { HESAP_PLANI } from '../data/hesap-plani';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
 import { bugununTarihi, paraFormat } from '../lib/format';
 import { yanlisAnaliziYap, type YanlisAnaliz } from '../lib/kontrol';
@@ -21,6 +20,7 @@ import { aiYanlisAnalizi } from '../lib/ai';
 import { authDonusYaz } from '../lib/auth-donus';
 import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
 import { UNVAN_ETIKETLERI } from '../lib/katkici';
+import { hesapAdiBul } from '../lib/hesap';
 import { supabase } from '../lib/supabase';
 import type { CozumSatir, FisBilgi, FisTuru, Soru, SoruWithUnite, UserRow } from '../types';
 
@@ -334,7 +334,7 @@ const SoruEkraniIci = ({
     return () => window.removeEventListener('keydown', handler);
   }, [kontrol, cozumAcik, cozumOnayAcik, belgeAcik, hataAcik, aiAsistanAcik]);
 
-  const bulunanHesap = (kod: string) => HESAP_PLANI.find((h) => h.kod === kod)?.ad || '';
+  const bulunanHesap = (kod: string) => hesapAdiBul(kod, muavinler);
   const handleTutarKey = (e: React.KeyboardEvent<HTMLInputElement>, i: number, col: string) => {
     if (e.key === 'Enter') {
       e.preventDefault();
