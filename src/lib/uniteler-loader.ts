@@ -64,6 +64,7 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       cozum: cozumById[s.id] ?? [],
       belgeler: belgeler && belgeler.length > 0 ? belgeler : undefined,
       konuId: s.konu_id ?? null,
+      ekleyenId: s.ekleyen_id ?? null,
     };
     sorularByUnite[s.unite_id].push(soru);
     if (s.konu_id) {

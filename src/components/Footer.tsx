@@ -73,6 +73,12 @@ export const Footer = () => {
               >
                 Premium
               </button>
+              <button
+                onClick={() => nav('/katkici-basvuru')}
+                className="block transition"
+              >
+                Katkıcı Programı
+              </button>
             </div>
           </div>
 

@@ -20,6 +20,8 @@ import { yanlisAnaliziYap, type YanlisAnaliz } from '../lib/kontrol';
 import { aiYanlisAnalizi } from '../lib/ai';
 import { authDonusYaz } from '../lib/auth-donus';
 import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
+import { UNVAN_ETIKETLERI } from '../lib/katkici';
+import { supabase } from '../lib/supabase';
 import type { CozumSatir, FisBilgi, FisTuru, Soru, SoruWithUnite, UserRow } from '../types';
 
 type Durum = 'bos' | 'dogru' | 'yanlis';
@@ -96,6 +98,7 @@ const SoruEkraniIci = ({
   }));
   const [durum, setDurum] = useState<Durum>('bos');
   const [muavinler, setMuavinler] = useState<MuavinHesap[]>([]);
+  const [yazar, setYazar] = useState<{ ad: string; unvan: string | null } | null>(null);
   const [satirSonuclari, setSatirSonuclari] = useState<(boolean | null)[]>([]);
   const [yanlisAnaliz, setYanlisAnaliz] = useState<YanlisAnaliz | null>(null);
   const [kontrolHatasi, setKontrolHatasi] = useState<string | null>(null);
@@ -129,6 +132,35 @@ const SoruEkraniIci = ({
         // sessizce geç — muavin yoksa eski davranış (sadece ana hesap) korunur
       });
   }, []);
+
+  // Yazar (katkıcı) bilgilerini yükle — soru kimlik değişince
+  useEffect(() => {
+    if (!soru?.ekleyenId) {
+      setYazar(null);
+      return;
+    }
+    let iptal = false;
+    supabase
+      .from('katkici_basvurulari')
+      .select('ad_soyad, unvan')
+      .eq('user_id', soru.ekleyenId)
+      .eq('durum', 'onayli')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (iptal) return;
+        if (data) {
+          setYazar({
+            ad: data.ad_soyad,
+            unvan: UNVAN_ETIKETLERI[data.unvan as keyof typeof UNVAN_ETIKETLERI] ?? null,
+          });
+        } else {
+          setYazar(null);
+        }
+      });
+    return () => {
+      iptal = true;
+    };
+  }, [soru?.ekleyenId]);
 
   const kocTuruKapat = () => {
     setKocTuruAcik(false);
@@ -361,9 +393,18 @@ const SoruEkraniIci = ({
               </span>
             )}
           </div>
-          <h1 className="font-display text-2xl md:text-3xl tracking-tight mb-4 font-bold">
+          <h1 className="font-display text-2xl md:text-3xl tracking-tight mb-2 font-bold">
             {soru.baslik}
           </h1>
+          {yazar && (
+            <div className="flex items-center gap-1.5 text-[12px] text-stone-500 dark:text-zinc-500 mb-4">
+              <Icon name="BadgeCheck" size={11} className="text-emerald-600 dark:text-emerald-400" />
+              <span>
+                <strong>{yazar.ad}</strong> tarafından önerildi
+                {yazar.unvan && <span className="text-stone-400 dark:text-zinc-600"> · {yazar.unvan}</span>}
+              </span>
+            </div>
+          )}
           <div data-tour="senaryo" className="border-l-4 border-stone-900 dark:border-zinc-100 pl-5 py-1">
             <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 mb-2 font-bold">
               Senaryo
