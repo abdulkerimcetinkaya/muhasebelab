@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Icon } from '../../components/Icon';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
 import {
@@ -7,8 +7,13 @@ import {
   bildirimYarat,
   tumBildirimleriYukleAdmin,
   type Bildirim,
+  type BildirimHedefTipi,
   type BildirimTip,
 } from '../../lib/bildirimler';
+import {
+  tumKullanicilariYukle,
+  type KullaniciOzet,
+} from '../../lib/admin-kullanicilar';
 
 const TIPLER: BildirimTip[] = ['duyuru', 'bilgi', 'uyari', 'guncelleme'];
 const TIP_LABEL: Record<BildirimTip, string> = {
@@ -30,7 +35,14 @@ export const AdminBildirimlerSayfasi = () => {
   const [tip, setTip] = useState<BildirimTip>('duyuru');
   const [link, setLink] = useState('');
   const [yayinda, setYayinda] = useState(true);
+  const [hedefTipi, setHedefTipi] = useState<BildirimHedefTipi>('herkes');
+  const [hedefUserIds, setHedefUserIds] = useState<string[]>([]);
+  const [hedefArama, setHedefArama] = useState('');
   const [gonderiliyor, setGonderiliyor] = useState(false);
+
+  // Kullanıcı listesi (hedef seçici için, lazy yüklenir)
+  const [kullaniciList, setKullaniciList] = useState<KullaniciOzet[]>([]);
+  const [kullaniciYukleniyor, setKullaniciYukleniyor] = useState(false);
 
   const yukle = async () => {
     setYukleniyor(true);
@@ -49,17 +61,45 @@ export const AdminBildirimlerSayfasi = () => {
     yukle();
   }, []);
 
+  // Hedef "belirli" seçilince kullanıcıları lazy yükle
+  useEffect(() => {
+    if (hedefTipi === 'belirli' && kullaniciList.length === 0 && !kullaniciYukleniyor) {
+      setKullaniciYukleniyor(true);
+      tumKullanicilariYukle()
+        .then(setKullaniciList)
+        .catch(() => setKullaniciList([]))
+        .finally(() => setKullaniciYukleniyor(false));
+    }
+  }, [hedefTipi, kullaniciList.length, kullaniciYukleniyor]);
+
+  const filtreliKullanici = useMemo(() => {
+    if (!hedefArama.trim()) return kullaniciList;
+    const q = hedefArama.toLowerCase();
+    return kullaniciList.filter(
+      (k) =>
+        k.kullanici_adi.toLowerCase().includes(q) ||
+        (k.email ?? '').toLowerCase().includes(q),
+    );
+  }, [kullaniciList, hedefArama]);
+
   const formuTemizle = () => {
     setBaslik('');
     setMetin('');
     setTip('duyuru');
     setLink('');
     setYayinda(true);
+    setHedefTipi('herkes');
+    setHedefUserIds([]);
+    setHedefArama('');
   };
 
   const yarat = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!baslik.trim() || !metin.trim()) return;
+    if (hedefTipi === 'belirli' && hedefUserIds.length === 0) {
+      setHata('Belirli kullanıcı hedeflemesi seçildi ama hiç kullanıcı seçilmedi.');
+      return;
+    }
     setGonderiliyor(true);
     setHata(null);
     setBasarili(null);
@@ -70,8 +110,14 @@ export const AdminBildirimlerSayfasi = () => {
         tip,
         link: link.trim() || null,
         yayinda,
+        hedef_tipi: hedefTipi,
+        hedef_user_ids: hedefTipi === 'belirli' ? hedefUserIds : undefined,
       });
-      setBasarili(yayinda ? 'Bildirim yayınlandı.' : 'Taslak kaydedildi.');
+      const hedefAck =
+        hedefTipi === 'belirli' ? ` (${hedefUserIds.length} kişiye)` : '';
+      setBasarili(
+        yayinda ? `Bildirim yayınlandı${hedefAck}.` : 'Taslak kaydedildi.',
+      );
       formuTemizle();
       await yukle();
       setTimeout(() => setBasarili(null), 3000);
@@ -190,6 +236,98 @@ export const AdminBildirimlerSayfasi = () => {
                   />
                   <span className="text-sm font-medium">Hemen yayınla</span>
                 </label>
+              </div>
+
+              {/* Hedefleme */}
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-2">
+                    Hedef
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setHedefTipi('herkes')}
+                      className={`px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
+                        hedefTipi === 'herkes'
+                          ? 'bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-stone-900 dark:border-zinc-100'
+                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
+                      }`}
+                    >
+                      Herkese
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHedefTipi('belirli')}
+                      className={`px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
+                        hedefTipi === 'belirli'
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
+                      }`}
+                    >
+                      Belirli Kullanıcılar ({hedefUserIds.length})
+                    </button>
+                  </div>
+                </div>
+
+                {hedefTipi === 'belirli' && (
+                  <div className="border border-stone-200 dark:border-zinc-700 rounded-lg p-3 space-y-2 max-h-72 overflow-auto">
+                    <input
+                      type="text"
+                      value={hedefArama}
+                      onChange={(e) => setHedefArama(e.target.value)}
+                      placeholder="Ara: kullanıcı adı veya email"
+                      className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded text-[12px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                    />
+                    {kullaniciYukleniyor ? (
+                      <div className="text-[12px] text-stone-400 dark:text-zinc-600 py-2">
+                        Yükleniyor…
+                      </div>
+                    ) : filtreliKullanici.length === 0 ? (
+                      <div className="text-[12px] text-stone-400 dark:text-zinc-600 py-2">
+                        Eşleşen kullanıcı yok.
+                      </div>
+                    ) : (
+                      filtreliKullanici.slice(0, 50).map((k) => (
+                        <label
+                          key={k.id}
+                          className="flex items-center gap-2 px-2 py-1 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={hedefUserIds.includes(k.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setHedefUserIds((p) => [...p, k.id]);
+                              } else {
+                                setHedefUserIds((p) => p.filter((id) => id !== k.id));
+                              }
+                            }}
+                            className="w-3.5 h-3.5 rounded border-stone-300 dark:border-zinc-600"
+                          />
+                          <span className="text-[12.5px] font-medium flex-1 truncate">
+                            {k.kullanici_adi}
+                          </span>
+                          <span className="text-[11px] font-mono text-stone-500 dark:text-zinc-500 truncate">
+                            {k.email ?? '—'}
+                          </span>
+                          {k.premium_aktif && (
+                            <Icon
+                              name="Sparkles"
+                              size={11}
+                              className="text-emerald-600 dark:text-emerald-400 flex-shrink-0"
+                            />
+                          )}
+                        </label>
+                      ))
+                    )}
+                    {filtreliKullanici.length > 50 && (
+                      <div className="text-[10px] text-stone-400 text-center py-1">
+                        İlk 50 sonuç gösteriliyor — daha fazlası için arama daralt
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               {hata && (
                 <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">

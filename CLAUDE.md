@@ -52,7 +52,7 @@ src/
 └── types/index.ts
 
 supabase/
-├── migrations/               — 19 migration:
+├── migrations/               — 20 migration:
 │   ├── 20260422000001_init                — şema + RLS
 │   ├── 20260422000002_admin_rls           — admin politikaları
 │   ├── 20260422000003_premium_rpc         — erken erişim aktivasyon RPC (ilk 100 kişiye 1 yıl)
@@ -71,11 +71,13 @@ supabase/
 │   ├── 20260504000003_sozluk_muavin_terimleri — 4 sözlük terimi (muavin/cari/yardımcı defter/muavin mizanı)
 │   ├── 20260504000004_admin_kullanici_select — admin RLS: ilerleme, aktivite, rozet, ödeme tablolarına SELECT
 │   ├── 20260504000005_admin_premium_yonetimi — admin_premium_ayarla RPC (hediye/uzat/iptal)
-│   └── 20260504000006_admin_moderasyon — ban kolonları + banla/unbanla/sil RPC + RLS güçlendirme
+│   ├── 20260504000006_admin_moderasyon — ban kolonları + banla/unbanla/sil RPC + RLS güçlendirme
+│   └── 20260504000007_bildirim_hedefleme — bildirim hedef_tipi + bildirim_hedef tablosu
 ├── functions/                — Edge Functions:
 │   ├── ai-asistan            — soru içinde AI rehber
 │   ├── ai-belge-uret         — belge üretimi
-│   └── ai-yanlis-analizi     — yanlış cevap açıklaması
+│   ├── ai-yanlis-analizi     — yanlış cevap açıklaması
+│   └── gonder-email          — admin → kullanıcı email (Resend, env: RESEND_API_KEY + RESEND_FROM_EMAIL)
 └── seed.sql
 ```
 
