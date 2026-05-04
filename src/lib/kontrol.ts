@@ -6,6 +6,21 @@ export interface KontrolSonuc {
   hepsiDogru: boolean;
 }
 
+/**
+ * Kod eşleşme kuralı:
+ *   - Tam eşleşme  →  doğru
+ *   - Beklenen ana hesap (örn 120), kullanıcı bu ana hesabın altındaki muavin
+ *     (örn 120.001)  →  doğru (daha detaylı, kabul)
+ *   - Diğer durumlar  →  yanlış
+ */
+const kodEsler = (beklenen: string, verilen: string): boolean => {
+  if (beklenen === verilen) return true;
+  if (/^[0-9]{3}$/.test(beklenen) && verilen.startsWith(beklenen + '.')) {
+    return true;
+  }
+  return false;
+};
+
 export const satirlariKontrolEt = (
   userRows: UserRow[],
   cozumRows: CozumSatir[],
@@ -18,7 +33,7 @@ export const satirlariKontrolEt = (
       const userBorc = typeof u.borc === 'number' ? u.borc : Number(u.borc) || 0;
       const userAlacak = typeof u.alacak === 'number' ? u.alacak : Number(u.alacak) || 0;
       return (
-        c.kod === u.kod &&
+        kodEsler(c.kod, u.kod) &&
         Math.abs(userBorc - (c.borc || 0)) < 0.01 &&
         Math.abs(userAlacak - (c.alacak || 0)) < 0.01
       );
@@ -41,7 +56,8 @@ export type SatirHataTipi =
   | 'taraf_ters' // hesap doğru, borç/alacak ters
   | 'tutar_yanlis' // hesap doğru, taraf doğru ama tutar yanlış
   | 'fazla' // bu hesap cevapta yok
-  | 'kod_gecersiz' // hesap planında yok
+  | 'muavin_gerekli' // beklenen muavin, kullanıcı ana hesap yazmış
+  | 'kod_gecersiz' // hesap planında ve muavinlerde yok
   | 'kod_bos'
   | 'tutar_bos';
 
@@ -76,13 +92,35 @@ const sayi = (v: string | number): number =>
 const para = (n: number): string =>
   new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 
+/** Bir muavin kodunun ait olduğu ana hesap kodunu döner ('120.001' → '120'). */
+const anaKodCikar = (kod: string): string => kod.split('.')[0];
+
 export const yanlisAnaliziYap = (
   userRows: UserRow[],
   cozumRows: CozumSatir[],
+  /**
+   * Aktif muavinler — opsiyonel. Muavin desteği için geçilirse:
+   *   - Muavin kodları "geçersiz" sayılmaz
+   *   - Beklenen muavinken kullanıcı ana hesap yazarsa "muavin_gerekli" uyarısı
+   */
+  muavinler?: { kod: string; ad: string; ana_kod: string }[],
 ): YanlisAnaliz => {
+  const muavinKodMap = new Map<string, { ad: string; ana_kod: string }>();
+  (muavinler ?? []).forEach((m) =>
+    muavinKodMap.set(m.kod, { ad: m.ad, ana_kod: m.ana_kod }),
+  );
+  // Hangi ana hesapların muavini var? (uyarı için)
+  const muaviniOlanAnaKodlar = new Set(
+    (muavinler ?? []).map((m) => m.ana_kod),
+  );
+
   const tumKodlar = new Set(HESAP_PLANI.map((h) => h.kod));
-  const hesapAd = (kod: string): string =>
-    HESAP_PLANI.find((h) => h.kod === kod)?.ad || kod;
+  const hesapAd = (kod: string): string => {
+    if (muavinKodMap.has(kod)) return muavinKodMap.get(kod)!.ad;
+    return HESAP_PLANI.find((h) => h.kod === kod)?.ad || kod;
+  };
+  const kodGecerli = (kod: string): boolean =>
+    tumKodlar.has(kod) || muavinKodMap.has(kod);
 
   const satirAnalizleri: SatirAnaliz[] = [];
   const eslesilen = new Set<number>(); // çözüm satır indeksleri
@@ -112,7 +150,7 @@ export const yanlisAnaliziYap = (
       });
       return;
     }
-    if (!tumKodlar.has(kod)) {
+    if (!kodGecerli(kod)) {
       satirAnalizleri.push({
         satirIdx: i,
         tip: 'kod_gecersiz',
@@ -121,11 +159,11 @@ export const yanlisAnaliziYap = (
       return;
     }
 
-    // 1) Tam eşleşme ara (kod + tutar + taraf)
+    // 1) Tam eşleşme veya muavin → ana hesap eşleşmesi (kod + tutar + taraf)
     const tamIdx = cozumRows.findIndex(
       (c, ci) =>
         !eslesilen.has(ci) &&
-        c.kod === kod &&
+        kodEsler(c.kod, kod) &&
         Math.abs(userBorc - (c.borc || 0)) < 0.01 &&
         Math.abs(userAlacak - (c.alacak || 0)) < 0.01,
     );
@@ -135,11 +173,33 @@ export const yanlisAnaliziYap = (
       return;
     }
 
-    // 2) Kod aynı ama taraf ters? (örn cevapta borç, kullanıcıda alacak)
+    // 2) Beklenen muavin, kullanıcı ana hesap yazmış (örn beklenen 120.001, verilen 120)
+    const muavinGerekliIdx = cozumRows.findIndex(
+      (c, ci) =>
+        !eslesilen.has(ci) &&
+        c.kod.startsWith(kod + '.') &&
+        muavinKodMap.has(c.kod),
+    );
+    if (muavinGerekliIdx !== -1) {
+      const c = cozumRows[muavinGerekliIdx];
+      eslesilen.add(muavinGerekliIdx);
+      const beklenenAd = hesapAd(c.kod);
+      satirAnalizleri.push({
+        satirIdx: i,
+        tip: 'muavin_gerekli',
+        mesaj: `Ana hesaba kayıt yapılamaz — alt muaviniyle (${c.kod} ${beklenenAd}) yazmalıydın.`,
+        beklenenKod: c.kod,
+        beklenenBorc: c.borc,
+        beklenenAlacak: c.alacak,
+      });
+      return;
+    }
+
+    // 3) Kod aynı ama taraf ters
     const tersIdx = cozumRows.findIndex(
       (c, ci) =>
         !eslesilen.has(ci) &&
-        c.kod === kod &&
+        kodEsler(c.kod, kod) &&
         Math.abs(userBorc - (c.alacak || 0)) < 0.01 &&
         Math.abs(userAlacak - (c.borc || 0)) < 0.01 &&
         userBorc + userAlacak > 0,
@@ -150,7 +210,7 @@ export const yanlisAnaliziYap = (
       satirAnalizleri.push({
         satirIdx: i,
         tip: 'taraf_ters',
-        mesaj: `${hesapAd(kod)} hesabı ${c.borc > 0 ? 'BORÇ' : 'ALACAK'} tarafına yazılmalı, sen ${userBorc > 0 ? 'BORÇ' : 'ALACAK'} yazmışsın.`,
+        mesaj: `${hesapAd(c.kod)} hesabı ${c.borc > 0 ? 'BORÇ' : 'ALACAK'} tarafına yazılmalı, sen ${userBorc > 0 ? 'BORÇ' : 'ALACAK'} yazmışsın.`,
         beklenenKod: c.kod,
         beklenenBorc: c.borc,
         beklenenAlacak: c.alacak,
@@ -158,9 +218,9 @@ export const yanlisAnaliziYap = (
       return;
     }
 
-    // 3) Kod aynı, taraf aynı, tutar yanlış
+    // 4) Kod aynı, taraf aynı, tutar yanlış
     const tutarIdx = cozumRows.findIndex((c, ci) => {
-      if (eslesilen.has(ci) || c.kod !== kod) return false;
+      if (eslesilen.has(ci) || !kodEsler(c.kod, kod)) return false;
       const ayniTaraf =
         (userBorc > 0 && (c.borc || 0) > 0) || (userAlacak > 0 && (c.alacak || 0) > 0);
       return ayniTaraf;
@@ -174,7 +234,7 @@ export const yanlisAnaliziYap = (
       satirAnalizleri.push({
         satirIdx: i,
         tip: 'tutar_yanlis',
-        mesaj: `${hesapAd(kod)} hesabının tutarı yanlış. Beklenen ${para(beklenen)} TL, ${fark > 0 ? `${para(fark)} TL eksik` : `${para(-fark)} TL fazla`}.`,
+        mesaj: `${hesapAd(c.kod)} hesabının tutarı yanlış. Beklenen ${para(beklenen)} TL, ${fark > 0 ? `${para(fark)} TL eksik` : `${para(-fark)} TL fazla`}.`,
         beklenenKod: c.kod,
         beklenenBorc: c.borc,
         beklenenAlacak: c.alacak,
@@ -182,7 +242,32 @@ export const yanlisAnaliziYap = (
       return;
     }
 
-    // 4) Bu hesap cevapta hiç yok
+    // 5) Kullanıcı yanlış muavin yazmış (aynı ana hesap, farklı muavin)
+    if (muavinKodMap.has(kod)) {
+      const userAnaKod = anaKodCikar(kod);
+      const yanlisMuavinIdx = cozumRows.findIndex(
+        (c, ci) =>
+          !eslesilen.has(ci) &&
+          (c.kod === userAnaKod || c.kod.startsWith(userAnaKod + '.')),
+      );
+      if (yanlisMuavinIdx !== -1) {
+        const c = cozumRows[yanlisMuavinIdx];
+        eslesilen.add(yanlisMuavinIdx);
+        const beklenenAd = hesapAd(c.kod);
+        const verilenAd = hesapAd(kod);
+        satirAnalizleri.push({
+          satirIdx: i,
+          tip: 'fazla',
+          mesaj: `Yanlış cari: ${verilenAd} (${kod}) yazmışsın, beklenen ${beklenenAd} (${c.kod}).`,
+          beklenenKod: c.kod,
+          beklenenBorc: c.borc,
+          beklenenAlacak: c.alacak,
+        });
+        return;
+      }
+    }
+
+    // 6) Bu hesap cevapta hiç yok
     satirAnalizleri.push({
       satirIdx: i,
       tip: 'fazla',
@@ -224,9 +309,14 @@ export const yanlisAnaliziYap = (
   const tutarYanlis = satirAnalizleri.filter((s) => s.tip === 'tutar_yanlis').length;
   const fazla = satirAnalizleri.filter((s) => s.tip === 'fazla').length;
   const gecersiz = satirAnalizleri.filter((s) => s.tip === 'kod_gecersiz').length;
+  const muavinGerekli = satirAnalizleri.filter((s) => s.tip === 'muavin_gerekli').length;
 
   if (gecersiz > 0)
     ozet.push(`${gecersiz} satırda hesap planında olmayan kod var.`);
+  if (muavinGerekli > 0)
+    ozet.push(
+      `${muavinGerekli} satırda ana hesap kullanılmış — muavin (alt cari) gerekli.`,
+    );
   if (tarafTers > 0)
     ozet.push(`${tarafTers} satır doğru hesapta ama yanlış tarafta (borç/alacak ters).`);
   if (tutarYanlis > 0) ozet.push(`${tutarYanlis} satırda tutar hatalı.`);
@@ -236,6 +326,10 @@ export const yanlisAnaliziYap = (
     ozet.push(
       `${eksikHesaplar.length} hesap eksik: ${eksikHesaplar.map((e) => e.ad).join(', ')}.`,
     );
+
+  // muaviniOlanAnaKodlar şu an analiz mantığında kullanılmıyor, ama gelecekte
+  // proaktif uyarı için (ör. "bu ana hesabın muavinleri var") kullanılabilir.
+  void muaviniOlanAnaKodlar;
 
   return {
     satirAnalizleri,

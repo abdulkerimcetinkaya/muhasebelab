@@ -255,7 +255,7 @@ const SoruEkraniIci = ({
       return;
     }
 
-    const analiz = yanlisAnaliziYap(kayitlar, soru.cozum);
+    const analiz = yanlisAnaliziYap(kayitlar, soru.cozum, muavinler);
 
     // En iyi senaryo: tüm satırlar doğru ve eksik yok
     const hepsiDogru =
