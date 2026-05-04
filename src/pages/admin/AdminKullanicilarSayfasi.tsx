@@ -7,7 +7,7 @@ import {
   type KullaniciOzet,
 } from '../../lib/admin-kullanicilar';
 
-type TipFiltresi = 'hepsi' | 'premium' | 'free';
+type TipFiltresi = 'hepsi' | 'premium' | 'free' | 'banli';
 
 const tarihFormat = (s: string | null): string => {
   if (!s) return '—';
@@ -38,6 +38,7 @@ export const AdminKullanicilarSayfasi = () => {
     return list.filter((k) => {
       if (tipFiltresi === 'premium' && !k.premium_aktif) return false;
       if (tipFiltresi === 'free' && k.premium_aktif) return false;
+      if (tipFiltresi === 'banli' && !k.banli) return false;
       if (arama.trim()) {
         const q = arama.toLowerCase();
         if (
@@ -53,6 +54,7 @@ export const AdminKullanicilarSayfasi = () => {
   }, [list, arama, tipFiltresi]);
 
   const premiumSayisi = list.filter((k) => k.premium_aktif).length;
+  const banliSayisi = list.filter((k) => k.banli).length;
 
   return (
     <div className="max-w-[1240px] mx-auto px-5 sm:px-8 py-8">
@@ -67,6 +69,14 @@ export const AdminKullanicilarSayfasi = () => {
               <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
                 Toplam <strong>{list.length}</strong> kullanıcı —{' '}
                 <strong>{premiumSayisi}</strong> aktif premium
+                {banliSayisi > 0 && (
+                  <>
+                    {' '}
+                    · <strong className="text-rose-700 dark:text-rose-400">
+                      {banliSayisi}
+                    </strong> banlı
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -87,6 +97,7 @@ export const AdminKullanicilarSayfasi = () => {
               <option value="hepsi">Tüm kullanıcılar</option>
               <option value="premium">Sadece premium</option>
               <option value="free">Sadece free</option>
+              <option value="banli">Sadece banlı</option>
             </select>
           </div>
 
@@ -122,10 +133,17 @@ export const AdminKullanicilarSayfasi = () => {
                   {filtreli.map((k) => (
                     <tr
                       key={k.id}
-                      className="border-t border-stone-200 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800/40 transition"
+                      className={`border-t border-stone-200 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800/40 transition ${k.banli ? 'opacity-60' : ''}`}
                     >
                       <td className="p-3">
-                        <div className="font-bold">{k.kullanici_adi}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold">{k.kullanici_adi}</span>
+                          {k.banli && (
+                            <span className="inline-flex items-center text-[9px] tracking-wider uppercase font-mono font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 px-1.5 py-0.5 rounded">
+                              Banlı
+                            </span>
+                          )}
+                        </div>
                         {k.universite && (
                           <div className="text-[11px] text-stone-500 dark:text-zinc-500">
                             {k.universite}
