@@ -125,6 +125,101 @@ export const premiumIptal = async (userId: string): Promise<void> => {
   await premiumAyarla(userId, null);
 };
 
+// =====================================================================
+// Moderasyon (Sprint 3)
+// =====================================================================
+
+/** Bir kullanıcıyı banla. Banlı kullanıcı yeni soru çözemez, hata bildiremez. */
+export const kullaniciBanla = async (
+  userId: string,
+  sebep: string,
+): Promise<void> => {
+  const { error } = await supabase.rpc('admin_kullanici_banla', {
+    _user_id: userId,
+    _sebep: sebep,
+  });
+  if (error) throw error;
+};
+
+/** Banı kaldır. */
+export const kullaniciUnbanla = async (userId: string): Promise<void> => {
+  const { error } = await supabase.rpc('admin_kullanici_unbanla', {
+    _user_id: userId,
+  });
+  if (error) throw error;
+};
+
+/** Kullanıcıyı kalıcı olarak sil (KVKK madde 11). auth.users cascade ile temizler. */
+export const kullaniciSil = async (userId: string): Promise<void> => {
+  const { error } = await supabase.rpc('admin_kullanici_sil', {
+    _user_id: userId,
+  });
+  if (error) throw error;
+};
+
+// =====================================================================
+// Şüpheli aktivite tespiti (deterministik kurallar)
+// =====================================================================
+
+export interface SupheliFlag {
+  tip: 'hizli_cozum' | 'bot_benzeri' | 'yardim_bagimlisi';
+  mesaj: string;
+}
+
+/**
+ * Bir kullanıcının çözüm geçmişine bakarak şüpheli pattern'leri tespit eder.
+ * Detay sayfasında yardımcı uyarı için kullanılır.
+ */
+export const supheliPatternleriBul = (
+  cozumler: { created_at: string; sure_saniye: number | null; kullanilan_ai: boolean; cozum_gosterildi: boolean }[],
+): SupheliFlag[] => {
+  const flagler: SupheliFlag[] = [];
+  if (cozumler.length === 0) return flagler;
+
+  // 1) Hızlı çözüm — son 24 saatte 30+ çözüm
+  const son24Saat = Date.now() - 24 * 60 * 60 * 1000;
+  const son24SaatCozumler = cozumler.filter(
+    (c) => new Date(c.created_at).getTime() > son24Saat,
+  );
+  if (son24SaatCozumler.length >= 30) {
+    flagler.push({
+      tip: 'hizli_cozum',
+      mesaj: `Son 24 saatte ${son24SaatCozumler.length} çözüm — alışılmadık yüksek hız.`,
+    });
+  }
+
+  // 2) Bot benzeri — çözüm süresi medyanı < 5 saniye (en az 10 çözüm gerekli)
+  const sureli = cozumler
+    .filter((c): c is typeof c & { sure_saniye: number } => c.sure_saniye !== null && c.sure_saniye > 0)
+    .map((c) => c.sure_saniye)
+    .sort((a, b) => a - b);
+  if (sureli.length >= 10) {
+    const medyan = sureli[Math.floor(sureli.length / 2)];
+    if (medyan < 5) {
+      flagler.push({
+        tip: 'bot_benzeri',
+        mesaj: `Çözüm süresi medyanı ${medyan}s — manipülasyon veya bot ihtimali.`,
+      });
+    }
+  }
+
+  // 3) Yardım bağımlılığı — çözümlerin %80+'ı AI veya çözüm gösterildi
+  if (cozumler.length >= 20) {
+    const yardimAlinan = cozumler.filter(
+      (c) => c.kullanilan_ai || c.cozum_gosterildi,
+    ).length;
+    const oran = yardimAlinan / cozumler.length;
+    if (oran >= 0.8) {
+      flagler.push({
+        tip: 'yardim_bagimlisi',
+        mesaj: `Çözümlerin %${Math.round(oran * 100)}'inde AI veya çözüm gösterildi.`,
+      });
+    }
+  }
+
+  return flagler;
+};
+
 /** Bir kullanıcının tüm detayları (ilerleme, rozet, aktivite, ödemeler). */
 export const kullaniciDetayYukle = async (
   userId: string,

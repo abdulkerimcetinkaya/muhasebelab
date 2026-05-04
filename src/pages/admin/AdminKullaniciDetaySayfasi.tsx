@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../../components/Icon';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { PremiumAyarlaModal } from '../../components/PremiumAyarlaModal';
+import { ModerasyonModal } from '../../components/ModerasyonModal';
 import { paraFormat } from '../../lib/format';
 import {
   kullaniciDetayYukle,
+  supheliPatternleriBul,
   type KullaniciDetay,
 } from '../../lib/admin-kullanicilar';
 
@@ -39,10 +41,12 @@ const ODEME_DURUM_RENKLERI: Record<string, string> = {
 
 export const AdminKullaniciDetaySayfasi = () => {
   const { id } = useParams<{ id: string }>();
+  const nav = useNavigate();
   const [detay, setDetay] = useState<KullaniciDetay | null>(null);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState<string | null>(null);
   const [premiumModalAcik, setPremiumModalAcik] = useState(false);
+  const [moderasyonModalAcik, setModerasyonModalAcik] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -73,6 +77,11 @@ export const AdminKullaniciDetaySayfasi = () => {
   const toplamOdeme = detay?.odemeler
     .filter((o) => o.durum === 'basarili')
     .reduce((acc, o) => acc + Number(o.tutar), 0) ?? 0;
+
+  const supheliFlagler = useMemo(
+    () => (detay ? supheliPatternleriBul(detay.cozumler) : []),
+    [detay],
+  );
 
   return (
     <div className="max-w-[1240px] mx-auto px-5 sm:px-8 py-8">
@@ -154,26 +163,77 @@ export const AdminKullaniciDetaySayfasi = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    {premiumAktif ? (
-                      <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-2 py-1 rounded">
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      {premiumAktif ? (
+                        <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-2 py-1 rounded">
+                          <Icon name="Sparkles" size={11} />
+                          Premium · {tarihFormat(detay.premium_bitis)} bitiyor
+                        </div>
+                      ) : (
+                        <div className="inline-flex items-center text-[11px] tracking-wider uppercase font-mono font-bold text-stone-500 dark:text-zinc-500 bg-stone-100 dark:bg-zinc-800 px-2 py-1 rounded">
+                          Free
+                        </div>
+                      )}
+                      {detay.banli && (
+                        <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-rose-800 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border border-rose-300 dark:border-rose-800 px-2 py-1 rounded">
+                          <Icon name="Lock" size={11} />
+                          Banlı
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setPremiumModalAcik(true)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition"
+                      >
                         <Icon name="Sparkles" size={11} />
-                        Premium · {tarihFormat(detay.premium_bitis)} bitiyor
-                      </div>
-                    ) : (
-                      <div className="inline-flex items-center text-[11px] tracking-wider uppercase font-mono font-bold text-stone-500 dark:text-zinc-500 bg-stone-100 dark:bg-zinc-800 px-2 py-1 rounded">
-                        Free
-                      </div>
-                    )}
-                    <button
-                      onClick={() => setPremiumModalAcik(true)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition"
-                    >
-                      <Icon name="Sparkles" size={11} />
-                      Premium Yönetimi
-                    </button>
+                        Premium
+                      </button>
+                      <button
+                        onClick={() => setModerasyonModalAcik(true)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition"
+                      >
+                        <Icon name="Shield" size={11} />
+                        Moderasyon
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Ban bilgisi */}
+              {detay.banli && (
+                <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-xl text-[13px] text-rose-800 dark:text-rose-300">
+                  <Icon name="Lock" size={16} className="flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="font-bold">Banlı kullanıcı</div>
+                    <div className="text-[12px] mt-0.5">
+                      Sebep: {detay.ban_sebep ?? '—'} ·{' '}
+                      <span className="opacity-70">{tarihFormat(detay.ban_tarihi)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Şüpheli aktivite uyarıları */}
+              {supheliFlagler.length > 0 && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-[12px] tracking-[0.2em] uppercase font-bold text-amber-800 dark:text-amber-300 mb-2">
+                    <Icon name="AlertTriangle" size={13} />
+                    Şüpheli Aktivite ({supheliFlagler.length})
+                  </div>
+                  <ul className="space-y-1 text-[13px] text-amber-900 dark:text-amber-200">
+                    {supheliFlagler.map((f) => (
+                      <li key={f.tip} className="flex items-start gap-2">
+                        <span className="font-mono text-[10px] tracking-wider uppercase font-bold mt-0.5 opacity-70">
+                          {f.tip.replace('_', ' ')}
+                        </span>
+                        <span>{f.mesaj}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* İstatistikler */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -375,6 +435,25 @@ export const AdminKullaniciDetaySayfasi = () => {
           onKapat={() => setPremiumModalAcik(false)}
           onGuncellendi={(yeniBitis) => {
             setDetay((d) => (d ? { ...d, premium_bitis: yeniBitis } : d));
+          }}
+        />
+      )}
+
+      {detay && moderasyonModalAcik && (
+        <ModerasyonModal
+          userId={detay.id}
+          kullaniciAd={detay.kullanici_adi}
+          banli={detay.banli}
+          banSebep={detay.ban_sebep}
+          onKapat={() => setModerasyonModalAcik(false)}
+          onBanGuncellendi={(banli, sebep, tarih) => {
+            setDetay((d) =>
+              d ? { ...d, banli, ban_sebep: sebep, ban_tarihi: tarih } : d,
+            );
+          }}
+          onSilindi={() => {
+            setModerasyonModalAcik(false);
+            nav('/admin/kullanicilar', { replace: true });
           }}
         />
       )}

@@ -104,6 +104,10 @@ export type KullaniciRow = {
   avatar_url: string | null;
   bulten_izni: boolean;
   kvkk_kabul_tarihi: string | null;
+  // Moderasyon — 20260504000006 migration
+  banli: boolean;
+  ban_sebep: string | null;
+  ban_tarihi: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -429,6 +433,18 @@ export type Database = {
       admin_premium_ayarla: {
         Args: { _user_id: string; _yeni_bitis: string | null };
         Returns: string | null;
+      };
+      admin_kullanici_banla: {
+        Args: { _user_id: string; _sebep: string };
+        Returns: void;
+      };
+      admin_kullanici_unbanla: {
+        Args: { _user_id: string };
+        Returns: void;
+      };
+      admin_kullanici_sil: {
+        Args: { _user_id: string };
+        Returns: void;
       };
     };
     Enums: {
