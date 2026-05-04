@@ -187,6 +187,7 @@ export type SoruHataRow = {
 };
 
 export type BildirimTip = 'duyuru' | 'bilgi' | 'uyari' | 'guncelleme';
+export type BildirimHedefTipi = 'herkes' | 'belirli';
 
 export type BildirimRow = {
   id: string;
@@ -195,8 +196,14 @@ export type BildirimRow = {
   tip: BildirimTip;
   link: string | null;
   yayinda: boolean;
+  hedef_tipi: BildirimHedefTipi;
   olusturan_id: string | null;
   created_at: string;
+};
+
+export type BildirimHedefRow = {
+  bildirim_id: string;
+  user_id: string;
 };
 
 export type BildirimOkunduRow = {
@@ -365,15 +372,22 @@ export type Database = {
       };
       bildirimler: {
         Row: BildirimRow;
-        Insert: Omit<BildirimRow, 'id' | 'created_at' | 'olusturan_id' | 'tip' | 'link' | 'yayinda'> & {
+        Insert: Omit<BildirimRow, 'id' | 'created_at' | 'olusturan_id' | 'tip' | 'link' | 'yayinda' | 'hedef_tipi'> & {
           id?: string;
           created_at?: string;
           olusturan_id?: string | null;
           tip?: BildirimTip;
           link?: string | null;
           yayinda?: boolean;
+          hedef_tipi?: BildirimHedefTipi;
         };
         Update: Partial<BildirimRow>;
+        Relationships: [];
+      };
+      bildirim_hedef: {
+        Row: BildirimHedefRow;
+        Insert: BildirimHedefRow;
+        Update: Partial<BildirimHedefRow>;
         Relationships: [];
       };
       bildirim_okundu: {

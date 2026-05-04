@@ -166,6 +166,40 @@ export interface SupheliFlag {
   mesaj: string;
 }
 
+// =====================================================================
+// İletişim (Sprint 4) — şifre sıfırlama, e-posta gönderme
+// =====================================================================
+
+/**
+ * Bir kullanıcı için şifre sıfırlama e-postasını tetikler.
+ * Supabase Auth built-in resetPasswordForEmail kullanır — kullanıcı email
+ * ile reset linki alır.
+ */
+export const sifreSifirlamaTetikle = async (email: string): Promise<void> => {
+  const redirectUrl = `${window.location.origin}/#/giris?reset=1`;
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectUrl,
+  });
+  if (error) throw error;
+};
+
+/**
+ * Admin → kullanıcı e-posta gönderir (Edge Function: gonder-email).
+ * RESEND_API_KEY ve RESEND_FROM_EMAIL Supabase secret'larında olmalı.
+ */
+export const adminEmailGonder = async (
+  to: string,
+  subject: string,
+  body: string,
+  isHtml = false,
+): Promise<void> => {
+  const { data, error } = await supabase.functions.invoke('gonder-email', {
+    body: { to, subject, body, isHtml },
+  });
+  if (error) throw error;
+  if (data?.hata) throw new Error(data.hata);
+};
+
 /**
  * Bir kullanıcının çözüm geçmişine bakarak şüpheli pattern'leri tespit eder.
  * Detay sayfasında yardımcı uyarı için kullanılır.

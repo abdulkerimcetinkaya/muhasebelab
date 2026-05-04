@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 
 export type BildirimTip = 'duyuru' | 'bilgi' | 'uyari' | 'guncelleme';
+export type BildirimHedefTipi = 'herkes' | 'belirli';
 
 export interface Bildirim {
   id: string;
@@ -9,6 +10,7 @@ export interface Bildirim {
   tip: BildirimTip;
   link: string | null;
   yayinda: boolean;
+  hedef_tipi: BildirimHedefTipi;
   olusturan_id: string | null;
   created_at: string;
 }
@@ -84,16 +86,39 @@ export interface YeniBildirim {
   tip: BildirimTip;
   link: string | null;
   yayinda: boolean;
+  hedef_tipi: BildirimHedefTipi;
+  /** hedef_tipi='belirli' ise zorunlu — hedeflenen user_id listesi. */
+  hedef_user_ids?: string[];
 }
 
 export const bildirimYarat = async (input: YeniBildirim): Promise<Bildirim> => {
+  const { hedef_user_ids, ...bildirimDegerleri } = input;
+
   const { data, error } = await supabase
     .from(TABLO)
-    .insert(input)
+    .insert(bildirimDegerleri)
     .select()
     .single();
   if (error) throw error;
-  return data as Bildirim;
+
+  const bildirim = data as Bildirim;
+
+  // Hedef listesini ekle (hedef_tipi='belirli' ise)
+  if (input.hedef_tipi === 'belirli' && hedef_user_ids && hedef_user_ids.length > 0) {
+    const { error: hedefHata } = await supabase.from('bildirim_hedef').insert(
+      hedef_user_ids.map((uid) => ({
+        bildirim_id: bildirim.id,
+        user_id: uid,
+      })),
+    );
+    if (hedefHata) {
+      // Bildirim oluşturuldu ama hedef eklenemedi — bildirimi sil ki tutarlı kalsın
+      await supabase.from(TABLO).delete().eq('id', bildirim.id);
+      throw hedefHata;
+    }
+  }
+
+  return bildirim;
 };
 
 export const bildirimGuncelle = async (

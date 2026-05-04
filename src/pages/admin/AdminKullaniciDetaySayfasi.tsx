@@ -4,9 +4,11 @@ import { Icon } from '../../components/Icon';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { PremiumAyarlaModal } from '../../components/PremiumAyarlaModal';
 import { ModerasyonModal } from '../../components/ModerasyonModal';
+import { EmailGonderModal } from '../../components/EmailGonderModal';
 import { paraFormat } from '../../lib/format';
 import {
   kullaniciDetayYukle,
+  sifreSifirlamaTetikle,
   supheliPatternleriBul,
   type KullaniciDetay,
 } from '../../lib/admin-kullanicilar';
@@ -47,6 +49,9 @@ export const AdminKullaniciDetaySayfasi = () => {
   const [hata, setHata] = useState<string | null>(null);
   const [premiumModalAcik, setPremiumModalAcik] = useState(false);
   const [moderasyonModalAcik, setModerasyonModalAcik] = useState(false);
+  const [emailModalAcik, setEmailModalAcik] = useState(false);
+  const [sifreSifirlaniyor, setSifreSifirlaniyor] = useState(false);
+  const [sifreOnay, setSifreOnay] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -82,6 +87,27 @@ export const AdminKullaniciDetaySayfasi = () => {
     () => (detay ? supheliPatternleriBul(detay.cozumler) : []),
     [detay],
   );
+
+  const sifreSifirlaTiklandi = async () => {
+    if (!detay?.email) {
+      setSifreOnay('Bu kullanıcının email adresi yok.');
+      return;
+    }
+    if (!confirm(`${detay.email} adresine şifre sıfırlama linki gönderilsin mi?`)) {
+      return;
+    }
+    setSifreSifirlaniyor(true);
+    setSifreOnay(null);
+    try {
+      await sifreSifirlamaTetikle(detay.email);
+      setSifreOnay('Şifre sıfırlama linki gönderildi.');
+      setTimeout(() => setSifreOnay(null), 4000);
+    } catch (e) {
+      setSifreOnay(`Hata: ${(e as Error).message}`);
+    } finally {
+      setSifreSifirlaniyor(false);
+    }
+  };
 
   return (
     <div className="max-w-[1240px] mx-auto px-5 sm:px-8 py-8">
@@ -181,7 +207,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap justify-end">
                       <button
                         onClick={() => setPremiumModalAcik(true)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition"
@@ -196,7 +222,39 @@ export const AdminKullaniciDetaySayfasi = () => {
                         <Icon name="Shield" size={11} />
                         Moderasyon
                       </button>
+                      <button
+                        onClick={() => setEmailModalAcik(true)}
+                        disabled={!detay.email}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        title={!detay.email ? 'Email adresi yok' : ''}
+                      >
+                        <Icon name="Send" size={11} />
+                        E-posta
+                      </button>
+                      <button
+                        onClick={sifreSifirlaTiklandi}
+                        disabled={sifreSifirlaniyor || !detay.email}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <Icon
+                          name={sifreSifirlaniyor ? 'Loader2' : 'Lock'}
+                          size={11}
+                          className={sifreSifirlaniyor ? 'animate-spin' : ''}
+                        />
+                        Şifre Sıfırla
+                      </button>
                     </div>
+                    {sifreOnay && (
+                      <div
+                        className={`text-[11px] mt-1 ${
+                          sifreOnay.startsWith('Hata')
+                            ? 'text-rose-600 dark:text-rose-400'
+                            : 'text-emerald-600 dark:text-emerald-400'
+                        }`}
+                      >
+                        {sifreOnay}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -455,6 +513,14 @@ export const AdminKullaniciDetaySayfasi = () => {
             setModerasyonModalAcik(false);
             nav('/admin/kullanicilar', { replace: true });
           }}
+        />
+      )}
+
+      {detay?.email && emailModalAcik && (
+        <EmailGonderModal
+          to={detay.email}
+          kullaniciAd={detay.kullanici_adi}
+          onKapat={() => setEmailModalAcik(false)}
         />
       )}
     </div>
