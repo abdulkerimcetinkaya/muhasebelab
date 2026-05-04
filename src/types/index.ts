@@ -154,6 +154,8 @@ export interface Soru {
   cozum: CozumSatir[];
   belgeler?: Belge[];
   konuId?: string | null;
+  /** Katkıcı ekledi ise yazar user_id'si. Adı/unvanı ek sorguyla çekilir. */
+  ekleyenId?: string | null;
 }
 
 export interface SoruWithUnite extends Soru {

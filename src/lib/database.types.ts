@@ -54,6 +54,8 @@ export type SorularRow = {
   kaynak: string | null;
   yayinlanma_tarihi: string | null;
   belgeler: unknown;
+  // Katkıcı sistemi — 20260504000010 migration (yazar)
+  ekleyen_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -108,6 +110,8 @@ export type KullaniciRow = {
   banli: boolean;
   ban_sebep: string | null;
   ban_tarihi: string | null;
+  // Katkıcı sistemi — 20260504000010 migration
+  is_katkici: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -196,6 +200,24 @@ export type AdminRow = {
   ekleyen_id: string | null;
 };
 
+export type KatkiciUnvan = 'akademisyen' | 'smmm' | 'smmm_stajer' | 'diger';
+export type KatkiciDurum = 'beklemede' | 'onayli' | 'reddedildi';
+
+export type KatkiciBasvuruRow = {
+  id: string;
+  user_id: string;
+  ad_soyad: string;
+  unvan: KatkiciUnvan;
+  kurum: string | null;
+  iletisim_email: string | null;
+  aciklama: string;
+  durum: KatkiciDurum;
+  red_sebep: string | null;
+  created_at: string;
+  karar_at: string | null;
+  karar_veren_id: string | null;
+};
+
 export type BildirimRow = {
   id: string;
   baslik: string;
@@ -279,13 +301,29 @@ export type Database = {
       };
       sorular: {
         Row: SorularRow;
-        Insert: Omit<SorularRow, 'created_at' | 'updated_at' | 'belgeler' | 'durum'> & {
+        Insert: Omit<SorularRow, 'created_at' | 'updated_at' | 'belgeler' | 'durum' | 'ekleyen_id'> & {
           created_at?: string;
           updated_at?: string;
           belgeler?: unknown;
           durum?: SoruDurum;
+          ekleyen_id?: string | null;
         };
         Update: Partial<SorularRow>;
+        Relationships: [];
+      };
+      katkici_basvurulari: {
+        Row: KatkiciBasvuruRow;
+        Insert: Omit<KatkiciBasvuruRow, 'id' | 'created_at' | 'durum' | 'red_sebep' | 'karar_at' | 'karar_veren_id' | 'kurum' | 'iletisim_email'> & {
+          id?: string;
+          created_at?: string;
+          durum?: KatkiciDurum;
+          red_sebep?: string | null;
+          karar_at?: string | null;
+          karar_veren_id?: string | null;
+          kurum?: string | null;
+          iletisim_email?: string | null;
+        };
+        Update: Partial<KatkiciBasvuruRow>;
         Relationships: [];
       };
       cozumler: {
@@ -485,6 +523,28 @@ export type Database = {
         Returns: void;
       };
       admin_ilerleme_sifirla: {
+        Args: { _user_id: string };
+        Returns: void;
+      };
+      katkici_basvur: {
+        Args: {
+          _ad_soyad: string;
+          _unvan: KatkiciUnvan;
+          _kurum: string | null;
+          _iletisim_email: string | null;
+          _aciklama: string;
+        };
+        Returns: string;
+      };
+      admin_katkici_onayla: {
+        Args: { _basvuru_id: string };
+        Returns: void;
+      };
+      admin_katkici_reddet: {
+        Args: { _basvuru_id: string; _sebep: string };
+        Returns: void;
+      };
+      admin_katkici_yetki_kaldir: {
         Args: { _user_id: string };
         Returns: void;
       };
