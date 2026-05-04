@@ -200,7 +200,7 @@ export type AdminRow = {
   ekleyen_id: string | null;
 };
 
-export type KatkiciUnvan = 'akademisyen' | 'smmm' | 'smmm_stajer' | 'diger';
+export type KatkiciUnvan = 'akademisyen' | 'ymm' | 'smmm';
 export type KatkiciDurum = 'beklemede' | 'onayli' | 'reddedildi';
 
 export type KatkiciBasvuruRow = {
@@ -208,9 +208,9 @@ export type KatkiciBasvuruRow = {
   user_id: string;
   ad_soyad: string;
   unvan: KatkiciUnvan;
-  kurum: string | null;
-  iletisim_email: string | null;
-  aciklama: string;
+  kurum: string;
+  iletisim_email: string;
+  aciklama: string | null;
   durum: KatkiciDurum;
   red_sebep: string | null;
   created_at: string;
@@ -530,9 +530,9 @@ export type Database = {
         Args: {
           _ad_soyad: string;
           _unvan: KatkiciUnvan;
-          _kurum: string | null;
-          _iletisim_email: string | null;
-          _aciklama: string;
+          _kurum: string;
+          _iletisim_email: string;
+          _aciklama: string | null;
         };
         Returns: string;
       };

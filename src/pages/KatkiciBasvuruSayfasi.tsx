@@ -49,9 +49,9 @@ export const KatkiciBasvuruSayfasi = () => {
         if (b) {
           setAdSoyad(b.ad_soyad);
           setUnvan(b.unvan);
-          setKurum(b.kurum ?? '');
-          setIletisim(b.iletisim_email ?? '');
-          setAciklama(b.aciklama);
+          setKurum(b.kurum);
+          setIletisim(b.iletisim_email);
+          setAciklama(b.aciklama ?? '');
         }
       })
       .catch(() => setMevcut(null))
@@ -60,12 +60,16 @@ export const KatkiciBasvuruSayfasi = () => {
 
   const gonder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (aciklama.trim().length < 50) {
-      setHata('Açıklama en az 50 karakter olmalı (uzmanlık alanın, deneyim).');
-      return;
-    }
     if (adSoyad.trim().length < 3) {
       setHata('Ad-soyad gerekli.');
+      return;
+    }
+    if (kurum.trim().length === 0) {
+      setHata('Kurum gerekli.');
+      return;
+    }
+    if (iletisim.trim().length === 0) {
+      setHata('İletişim email gerekli.');
       return;
     }
     setGonderiliyor(true);
@@ -74,9 +78,9 @@ export const KatkiciBasvuruSayfasi = () => {
       const yeni: YeniBasvuru = {
         ad_soyad: adSoyad.trim(),
         unvan,
-        kurum: kurum.trim() || null,
-        iletisim_email: iletisim.trim() || null,
-        aciklama: aciklama.trim(),
+        kurum: kurum.trim(),
+        iletisim_email: iletisim.trim(),
+        aciklama: aciklama.trim() || null,
       };
       await basvuruGonder(yeni);
       setBasarili(true);
@@ -101,21 +105,28 @@ export const KatkiciBasvuruSayfasi = () => {
       </Link>
 
       <h1 className="font-display text-4xl font-bold tracking-tight">
-        Katkıcı Programı
+        Bir Öğrenciye Dokunun
       </h1>
       <p className="text-stone-600 dark:text-zinc-400 mt-3 leading-relaxed">
-        Akademisyen, SMMM veya stajyer SMMM iseniz, MuhasebeLab'a soru ekleyerek
-        binlerce öğrenciye ulaşabilirsin. Eklediğin sorular admin tarafından
-        incelendikten sonra yayınlanır.{' '}
-        <strong>5 onaylı sorudan sonra otomatik olarak 1 yıl ücretsiz Premium</strong>{' '}
-        hediye edilir.
+        Yıllarınızı bu mesleğe verdiniz. Yevmiye defterindeki bir kaydın
+        arkasındaki mantığı, bir kursta öğrenilemeyen tecrübeyi, mesleğin
+        içinde edindiniz. Şimdi <strong>aynı yola çıkmak üzere olan binlerce
+        öğrenci</strong> var — bir akademisyenin, bir YMM'nin, bir SMMM'nin
+        elinden çıkmış bir soruya, bir senaryoya ihtiyacı olan binlerce öğrenci.
+        MuhasebeLab'a ekleyeceğiniz her soru, onlardan birinin kafasında
+        çakacak bir kıvılcım.
+      </p>
+      <p className="text-stone-500 dark:text-zinc-500 mt-3 text-[13.5px] leading-relaxed">
+        Küçük bir teşekkür olarak —
+        <strong className="text-stone-700 dark:text-zinc-300"> 5 onaylı sorudan
+        sonra 1 yıl Premium hediyemizdir.</strong>
       </p>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
         {[
-          { ikon: 'GraduationCap', baslik: 'Akademik Katkı', metin: 'Üniversite müfredatına uygun, doğru cevaplı sorular ekle' },
-          { ikon: 'BadgeCheck', baslik: 'Yazar Kredisi', metin: 'Eklediğin sorularda adın ve unvanın görünür' },
-          { ikon: 'Sparkles', baslik: 'Premium Hediye', metin: '5 onaylı katkıdan sonra 1 yıl Premium ücretsiz' },
+          { ikon: 'GraduationCap', baslik: 'Bir Tecrübeyi Aktarın', metin: 'Yıllar içinde edindiğiniz sezgi, bir öğrenciye yıllar kazandırır' },
+          { ikon: 'BadgeCheck', baslik: 'Adınız Anılır', metin: 'Eklediğiniz her soruda adınız ve unvanınız öğrencinin önünde durur' },
+          { ikon: 'Sparkles', baslik: 'Küçük Teşekkürümüz', metin: '5 onaylı katkıdan sonra 1 yıl Premium — değil değer, kıymet bilmek' },
         ].map((k) => (
           <div
             key={k.baslik}
@@ -158,7 +169,7 @@ export const KatkiciBasvuruSayfasi = () => {
             </div>
             <div className="mt-2 text-[13.5px]">
               <strong>{mevcut.ad_soyad}</strong> · {UNVAN_ETIKETLERI[mevcut.unvan]}
-              {mevcut.kurum && ` · ${mevcut.kurum}`}
+              {mevcut.kurum && mevcut.kurum !== '—' && ` · ${mevcut.kurum}`}
             </div>
             <div className="text-[12px] text-stone-600 dark:text-zinc-400 mt-1">
               Başvuru: {tarihFormat(mevcut.created_at)}
@@ -226,35 +237,36 @@ export const KatkiciBasvuruSayfasi = () => {
                 className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
               >
                 <option value="akademisyen">Akademisyen</option>
+                <option value="ymm">YMM</option>
                 <option value="smmm">SMMM</option>
-                <option value="smmm_stajer">SMMM Stajyeri</option>
-                <option value="diger">Diğer (mesleki)</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
-              Kurum / Bağlı Olduğu Yer (opsiyonel)
+              Kurum / Bağlı Olduğunuz Yer *
             </label>
             <input
               type="text"
               value={kurum}
               onChange={(e) => setKurum(e.target.value)}
+              required
               maxLength={200}
               className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
-              placeholder="Boğaziçi Üniversitesi · Ankara SMMM Odası"
+              placeholder="Boğaziçi Üniversitesi · Ankara SMMM Odası · X YMM Bürosu"
             />
           </div>
 
           <div>
             <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
-              İletişim Email (opsiyonel)
+              İletişim Email *
             </label>
             <input
               type="email"
               value={iletisim}
               onChange={(e) => setIletisim(e.target.value)}
+              required
               maxLength={200}
               className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-mono outline-none focus:border-stone-900 dark:focus:border-zinc-400"
               placeholder="profesyonel@kurum.edu.tr"
@@ -266,20 +278,18 @@ export const KatkiciBasvuruSayfasi = () => {
 
           <div>
             <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
-              Açıklama (uzmanlık + deneyim) *
+              Açıklama (opsiyonel)
             </label>
             <textarea
               value={aciklama}
               onChange={(e) => setAciklama(e.target.value)}
-              required
-              rows={6}
-              minLength={50}
+              rows={5}
               maxLength={2000}
               className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 resize-none leading-relaxed"
-              placeholder="Hangi konularda soru hazırlamak istiyorsun? Akademik / mesleki deneyimini kısaca anlat. (Doğrulama amaçlı)"
+              placeholder="Eklemek istediğin bir not varsa — uzmanlık alanın, hangi konularda soru hazırlamayı düşünüyorsun?"
             />
             <div className="text-[11px] text-stone-400 dark:text-zinc-600 mt-1 text-right font-mono">
-              {aciklama.length} / 2000 (en az 50)
+              {aciklama.length} / 2000
             </div>
           </div>
 

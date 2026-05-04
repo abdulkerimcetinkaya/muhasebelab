@@ -9,9 +9,8 @@ export type KatkiciBasvuru = KatkiciBasvuruRow;
 
 export const UNVAN_ETIKETLERI: Record<KatkiciUnvan, string> = {
   akademisyen: 'Akademisyen',
+  ymm: 'YMM',
   smmm: 'SMMM',
-  smmm_stajer: 'SMMM Stajyeri',
-  diger: 'Diğer',
 };
 
 export const DURUM_ETIKETLERI: Record<KatkiciDurum, string> = {
@@ -27,9 +26,9 @@ export const DURUM_ETIKETLERI: Record<KatkiciDurum, string> = {
 export interface YeniBasvuru {
   ad_soyad: string;
   unvan: KatkiciUnvan;
-  kurum: string | null;
-  iletisim_email: string | null;
-  aciklama: string;
+  kurum: string;
+  iletisim_email: string;
+  aciklama: string | null;
 }
 
 /** Kendi başvurum (varsa). */
