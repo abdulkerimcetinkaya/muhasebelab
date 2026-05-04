@@ -52,7 +52,7 @@ src/
 └── types/index.ts
 
 supabase/
-├── migrations/               — 13 migration:
+├── migrations/               — 14 migration:
 │   ├── 20260422000001_init                — şema + RLS
 │   ├── 20260422000002_admin_rls           — admin politikaları
 │   ├── 20260422000003_premium_rpc         — erken erişim aktivasyon RPC (ilk 100 kişiye 1 yıl)
@@ -65,7 +65,8 @@ supabase/
 │   ├── 20260426000001_rls_sikilastir      — RLS policy güçlendirme
 │   ├── 20260427000001_kullanici_profil_alanlari — onboarding profil alanları
 │   ├── 20260427000002_kullanici_adi_unique      — username UNIQUE constraint
-│   └── 20260427000003_yeni_unite_yapisi          — 11→15 ünite restructure
+│   ├── 20260427000003_yeni_unite_yapisi          — 11→15 ünite restructure
+│   └── 20260504000001_hesap_plani_eksik_hesaplar — 4 eksik hesap (440, 449, 472, 479) → 272
 ├── functions/                — Edge Functions:
 │   ├── ai-asistan            — soru içinde AI rehber
 │   ├── ai-belge-uret         — belge üretimi
@@ -74,7 +75,7 @@ supabase/
 ```
 
 ## Veri Yapısı
-- `HESAP_PLANI` — Tek Düzen Hesap Planı, **268 hesap** (kod, ad, sınıf, tür);
+- `HESAP_PLANI` — Tek Düzen Hesap Planı, **272 hesap** (kod, ad, sınıf, tür);
   hem kodda (`src/data/hesap-plani.ts`) hem Supabase `hesap_plani` tablosunda
   (FK için zorunlu). PDF referansı: Fuat Hoca broşürü.
 - `GRUP_ISIMLERI` — 58 grup başlığı (10. Hazır Değerler, 11. Menkul Kıymetler…)
@@ -113,7 +114,7 @@ supabase/
 - Hata bildir: kullanıcı UI + admin moderasyon listesi
 - Günün sorusu, "devam et" önerisi, yanlış yapılanları tekrar et
 - Onboarding akışı
-- **TDHP tam entegrasyon:** 268 hesap (PDF birebir), 58 grup başlığı, 3
+- **TDHP tam entegrasyon:** 272 hesap (TDHP standart, eksik 4 hesap eklendi), 58 grup başlığı, 3
   seviyeli hiyerarşi (sınıf > grup > hesap)
 - **11 ünite, 213 soru** — pazar pilot eşiği (150) aşıldı
 - Ventriloc/qvery esinli major reskin (slate blue + cool pearl + bakır accent)

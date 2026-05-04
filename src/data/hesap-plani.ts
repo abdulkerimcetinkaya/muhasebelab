@@ -227,8 +227,13 @@ export const HESAP_PLANI: Hesap[] = [
   { kod: '437', ad: 'DİĞER BORÇ SENETLERİ REESKONTU (-)', sinif: '4', tur: 'PASİF' },
   { kod: '438', ad: 'KAMUYA OLAN ERTELENMİŞ VEYA TAKSİTLENDİRİLMİŞ BORÇLAR', sinif: '4', tur: 'PASİF' },
 
-  // 44. Alınan Avanslar — PDF'de bu başlık altında kod listelenmemiş
-  // 47. Borç ve Gider Karşılıkları — PDF'de bu başlık altında kod listelenmemiş
+  // 44. Alınan Avanslar
+  { kod: '440', ad: 'ALINAN SİPARİŞ AVANSLARI', sinif: '4', tur: 'PASİF' },
+  { kod: '449', ad: 'ALINAN DİĞER AVANSLAR', sinif: '4', tur: 'PASİF' },
+
+  // 47. Borç ve Gider Karşılıkları
+  { kod: '472', ad: 'KIDEM TAZMİNATI KARŞILIĞI', sinif: '4', tur: 'PASİF' },
+  { kod: '479', ad: 'DİĞER BORÇ VE GİDER KARŞILIKLARI', sinif: '4', tur: 'PASİF' },
 
   // 48. Gelecek Yıllara Ait Gelirler ve Gider Tahakkukları
   { kod: '480', ad: 'GELECEK YILLARA AİT GELİRLER', sinif: '4', tur: 'PASİF' },
