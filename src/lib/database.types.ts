@@ -8,6 +8,7 @@ export type SoruDurum = 'taslak' | 'inceleme' | 'onayli' | 'arsiv';
 export type Zorluk = 'kolay' | 'orta' | 'zor';
 export type OdemeDurum = 'beklemede' | 'basarili' | 'iptal' | 'iade' | 'hata';
 export type OdemeDonem = 'aylik' | 'yillik';
+export type MuavinTip = 'musteri' | 'tedarikci' | 'banka' | 'personel' | 'kasa' | 'stok' | 'diger';
 
 export type HesapPlaniRow = {
   kod: string;
@@ -15,6 +16,18 @@ export type HesapPlaniRow = {
   sinif: Sinif;
   tur: HesapTur;
   sira: number;
+};
+
+export type MuavinHesapRow = {
+  kod: string;
+  ana_kod: string;
+  ad: string;
+  tip: MuavinTip;
+  aciklama: string | null;
+  sira: number;
+  aktif: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
 export type UnitesRow = {
@@ -213,6 +226,18 @@ export type Database = {
         Row: HesapPlaniRow;
         Insert: HesapPlaniRow;
         Update: Partial<HesapPlaniRow>;
+        Relationships: [];
+      };
+      muavin_hesaplar: {
+        Row: MuavinHesapRow;
+        Insert: Omit<MuavinHesapRow, 'created_at' | 'updated_at' | 'aciklama' | 'sira' | 'aktif'> & {
+          created_at?: string;
+          updated_at?: string;
+          aciklama?: string | null;
+          sira?: number;
+          aktif?: boolean;
+        };
+        Update: Partial<MuavinHesapRow>;
         Relationships: [];
       };
       unites: {

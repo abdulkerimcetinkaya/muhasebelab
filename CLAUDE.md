@@ -52,7 +52,7 @@ src/
 └── types/index.ts
 
 supabase/
-├── migrations/               — 14 migration:
+├── migrations/               — 15 migration:
 │   ├── 20260422000001_init                — şema + RLS
 │   ├── 20260422000002_admin_rls           — admin politikaları
 │   ├── 20260422000003_premium_rpc         — erken erişim aktivasyon RPC (ilk 100 kişiye 1 yıl)
@@ -66,7 +66,8 @@ supabase/
 │   ├── 20260427000001_kullanici_profil_alanlari — onboarding profil alanları
 │   ├── 20260427000002_kullanici_adi_unique      — username UNIQUE constraint
 │   ├── 20260427000003_yeni_unite_yapisi          — 11→15 ünite restructure
-│   └── 20260504000001_hesap_plani_eksik_hesaplar — 4 eksik hesap (440, 449, 472, 479) → 272
+│   ├── 20260504000001_hesap_plani_eksik_hesaplar — 4 eksik hesap (440, 449, 472, 479) → 272
+│   └── 20260504000002_muavin_hesaplar — alt/yardımcı hesaplar tablosu (120.001 vb.)
 ├── functions/                — Edge Functions:
 │   ├── ai-asistan            — soru içinde AI rehber
 │   ├── ai-belge-uret         — belge üretimi
