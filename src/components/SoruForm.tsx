@@ -3,6 +3,7 @@ import { Icon } from './Icon';
 import { HesapKoduInput } from './HesapKoduInput';
 import { BelgeEditor } from './BelgeEditor';
 import { supabase } from '../lib/supabase';
+import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
 import type { SoruDurum, UniteKonusuRow, UnitesRow, Zorluk } from '../lib/database.types';
 import type { Belge } from '../types';
 
@@ -50,6 +51,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
   const [d, setD] = useState<SoruFormDegerleri>(baslangic);
   const [uniteler, setUniteler] = useState<UnitesRow[]>([]);
   const [konular, setKonular] = useState<UniteKonusuRow[]>([]);
+  const [muavinler, setMuavinler] = useState<MuavinHesap[]>([]);
   const [kaydediliyor, setKaydediliyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
 
@@ -61,7 +63,16 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
       .then(({ data }) => {
         if (data) setUniteler(data);
       });
+    aktifMuavinleriYukle()
+      .then(setMuavinler)
+      .catch(() => {
+        // sessizce geç — muavin yoksa form yine çalışır
+      });
   }, []);
+
+  const muavinEklendi = (yeni: MuavinHesap) => {
+    setMuavinler((p) => [...p, yeni].sort((a, b) => a.kod.localeCompare(b.kod)));
+  };
 
   // Ünite değişince o ünitenin konularını yükle. konu_id, ünite ile uyumsuzsa sıfırlar.
   useEffect(() => {
@@ -333,6 +344,9 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
                     value={c.kod}
                     onChange={(v) => guncelleCozum(i, 'kod', v)}
                     rowIndex={i}
+                    muavinler={muavinler}
+                    yeniMuavinEkleyebilir
+                    onMuavinEklendi={muavinEklendi}
                   />
                 </td>
                 <td className="py-1 pr-2">
