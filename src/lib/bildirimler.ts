@@ -123,7 +123,7 @@ export const bildirimYarat = async (input: YeniBildirim): Promise<Bildirim> => {
 
 export const bildirimGuncelle = async (
   id: string,
-  patch: Partial<YeniBildirim>,
+  patch: Partial<Omit<YeniBildirim, 'hedef_user_ids'>>,
 ): Promise<void> => {
   const { error } = await supabase.from(TABLO).update(patch).eq('id', id);
   if (error) throw error;
