@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../../components/Icon';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
+import { PremiumAyarlaModal } from '../../components/PremiumAyarlaModal';
 import { paraFormat } from '../../lib/format';
 import {
   kullaniciDetayYukle,
@@ -41,6 +42,7 @@ export const AdminKullaniciDetaySayfasi = () => {
   const [detay, setDetay] = useState<KullaniciDetay | null>(null);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState<string | null>(null);
+  const [premiumModalAcik, setPremiumModalAcik] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -151,7 +153,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                       </div>
                     </div>
                   </div>
-                  <div>
+                  <div className="flex flex-col items-end gap-2">
                     {premiumAktif ? (
                       <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-2 py-1 rounded">
                         <Icon name="Sparkles" size={11} />
@@ -162,6 +164,13 @@ export const AdminKullaniciDetaySayfasi = () => {
                         Free
                       </div>
                     )}
+                    <button
+                      onClick={() => setPremiumModalAcik(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition"
+                    >
+                      <Icon name="Sparkles" size={11} />
+                      Premium Yönetimi
+                    </button>
                   </div>
                 </div>
               </div>
@@ -356,6 +365,19 @@ export const AdminKullaniciDetaySayfasi = () => {
           ) : null}
         </main>
       </div>
+
+      {detay && premiumModalAcik && (
+        <PremiumAyarlaModal
+          userId={detay.id}
+          kullaniciAd={detay.kullanici_adi}
+          mevcutBitis={detay.premium_bitis}
+          premiumAktif={!!premiumAktif}
+          onKapat={() => setPremiumModalAcik(false)}
+          onGuncellendi={(yeniBitis) => {
+            setDetay((d) => (d ? { ...d, premium_bitis: yeniBitis } : d));
+          }}
+        />
+      )}
     </div>
   );
 };

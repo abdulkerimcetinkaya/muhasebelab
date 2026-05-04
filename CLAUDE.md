@@ -52,7 +52,7 @@ src/
 └── types/index.ts
 
 supabase/
-├── migrations/               — 17 migration:
+├── migrations/               — 18 migration:
 │   ├── 20260422000001_init                — şema + RLS
 │   ├── 20260422000002_admin_rls           — admin politikaları
 │   ├── 20260422000003_premium_rpc         — erken erişim aktivasyon RPC (ilk 100 kişiye 1 yıl)
@@ -69,7 +69,8 @@ supabase/
 │   ├── 20260504000001_hesap_plani_eksik_hesaplar — 4 eksik hesap (440, 449, 472, 479) → 272
 │   ├── 20260504000002_muavin_hesaplar — alt/yardımcı hesaplar tablosu (120.001 vb.)
 │   ├── 20260504000003_sozluk_muavin_terimleri — 4 sözlük terimi (muavin/cari/yardımcı defter/muavin mizanı)
-│   └── 20260504000004_admin_kullanici_select — admin RLS: ilerleme, aktivite, rozet, ödeme tablolarına SELECT
+│   ├── 20260504000004_admin_kullanici_select — admin RLS: ilerleme, aktivite, rozet, ödeme tablolarına SELECT
+│   └── 20260504000005_admin_premium_yonetimi — admin_premium_ayarla RPC (hediye/uzat/iptal)
 ├── functions/                — Edge Functions:
 │   ├── ai-asistan            — soru içinde AI rehber
 │   ├── ai-belge-uret         — belge üretimi

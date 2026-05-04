@@ -73,6 +73,58 @@ export const tumKullanicilariYukle = async (): Promise<KullaniciOzet[]> => {
   }));
 };
 
+// =====================================================================
+// Premium yönetimi (Sprint 2)
+// =====================================================================
+
+/**
+ * Admin: bir kullanıcının premium_bitis tarihini ayarlar.
+ * SECURITY DEFINER RPC ile koru_kullanici_kolonlar trigger'ı bypass edilir.
+ * @param yeniBitis null = premium iptal, tarih = o tarihte bitecek premium
+ */
+export const premiumAyarla = async (
+  userId: string,
+  yeniBitis: Date | null,
+): Promise<string | null> => {
+  const { data, error } = await supabase.rpc('admin_premium_ayarla', {
+    _user_id: userId,
+    _yeni_bitis: yeniBitis ? yeniBitis.toISOString() : null,
+  });
+  if (error) throw error;
+  return data as string | null;
+};
+
+/** Bugünden başlayarak _ay_ ay süre veren premium hediye et. */
+export const premiumHediyeEt = async (
+  userId: string,
+  ay: number,
+): Promise<string | null> => {
+  const bitis = new Date();
+  bitis.setMonth(bitis.getMonth() + ay);
+  return premiumAyarla(userId, bitis);
+};
+
+/**
+ * Mevcut premium bitişine ay ekler. Premium yoksa veya geçmişse bugünden başlar.
+ */
+export const premiumUzat = async (
+  userId: string,
+  mevcutBitis: string | null,
+  ekAy: number,
+): Promise<string | null> => {
+  const baslangic =
+    mevcutBitis && new Date(mevcutBitis) > new Date()
+      ? new Date(mevcutBitis)
+      : new Date();
+  baslangic.setMonth(baslangic.getMonth() + ekAy);
+  return premiumAyarla(userId, baslangic);
+};
+
+/** Premium'u tamamen iptal et (premium_bitis = null). */
+export const premiumIptal = async (userId: string): Promise<void> => {
+  await premiumAyarla(userId, null);
+};
+
 /** Bir kullanıcının tüm detayları (ilerleme, rozet, aktivite, ödemeler). */
 export const kullaniciDetayYukle = async (
   userId: string,

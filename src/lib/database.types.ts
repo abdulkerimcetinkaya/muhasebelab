@@ -426,6 +426,10 @@ export type Database = {
         Args: Record<string, never>;
         Returns: void;
       };
+      admin_premium_ayarla: {
+        Args: { _user_id: string; _yeni_bitis: string | null };
+        Returns: string | null;
+      };
     };
     Enums: {
       soru_durum: SoruDurum;
