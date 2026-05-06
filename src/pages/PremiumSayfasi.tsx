@@ -160,23 +160,9 @@ export const PremiumSayfasi = () => {
   const kurumBirimAylik = donem === 'aylik' ? aylikFiyat : Math.round(yillikAylikEsdeger);
   const kurumYillikTekSefer = yillikFiyat;
 
-  // Kurum talebi mailto (kişi sayısı ödeme adımında belirlenecek; şimdilik
-  // mail ile manuel akış)
-  const kurumMailtoBody = `Merhaba,
-
-Kurumum / sınıfım için MuhasebeLab Premium toplu satın almak istiyorum.
-
-Kurum / sınıf adı:
-Yaklaşık öğrenci sayısı:
-Faturalandırma tercihi: ${donem === 'aylik' ? 'Aylık' : 'Yıllık'}
-İlgili kişi adı:
-Telefon:
-E-fatura için VKN/TCKN:
-
-Teşekkürler.`;
-  const kurumMailtoUrl = `mailto:${KURUM_EMAIL}?subject=${encodeURIComponent(
-    'Sınıf · Kurum Premium Talebi',
-  )}&body=${encodeURIComponent(kurumMailtoBody)}`;
+  // Kurum talebine tıklayınca: kişi sayısı + iletişim bilgisi
+  // ödeme adımında alınır → /premium/kurum-odeme rotası
+  const kurumOdemeUrl = `/premium/kurum-odeme?donem=${donem}`;
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-20">
@@ -555,15 +541,16 @@ Teşekkürler.`;
               </li>
             </ul>
 
-            <a
-              href={kurumMailtoUrl}
+            <button
+              type="button"
+              onClick={() => nav(kurumOdemeUrl)}
               className="w-full inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-stone-900 px-5 py-3.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl transition"
             >
-              <Icon name="Mail" size={13} />
-              Kurum Talebi Gönder
-            </a>
+              <Icon name="ArrowRight" size={13} />
+              Devam Et
+            </button>
             <div className="mt-3 text-center text-[11px] opacity-50 font-mono">
-              {KURUM_EMAIL} · kişi sayısı ve fatura bilgileri ödeme adımında
+              Kişi sayısı ve fatura bilgileri sonraki adımda
             </div>
           </div>
         </div>
