@@ -26,15 +26,6 @@ const PREMIUM_OZELLIKLER = [
   'Detaylı ilerleme raporu (yakında)',
 ];
 
-const KURUM_OZELLIKLER = [
-  'Premium\'un tüm özellikleri',
-  'Toplu lisans %35\'e varan indirim',
-  'Kurumsal e-fatura',
-  'Tek noktadan öğrenci yönetimi',
-  'Öğretmen paneli (yakında)',
-  'Sınıf ortalaması raporu (yakında)',
-];
-
 const SSS: { soru: string; cevap: string }[] = [
   {
     soru: 'Ücretsiz hesapla nereye kadar gidebilirim?',
@@ -79,7 +70,6 @@ export const PremiumSayfasi = () => {
   const [acikSoru, setAcikSoru] = useState<number | null>(null);
   const [mod, setMod] = useState<'bireysel' | 'kurum'>('bireysel');
   const [donem, setDonem] = useState<'aylik' | 'yillik'>('yillik');
-  const [kurumKisi, setKurumKisi] = useState<number>(30);
 
   useEffect(() => {
     if (!yukleniyor && !user) nav('/giris', { replace: true });
@@ -166,33 +156,27 @@ export const PremiumSayfasi = () => {
 
   const fmt = (n: number) => n.toLocaleString('tr-TR');
 
-  // Kurum hesaplama
-  const baseAylikKurum = aylikFiyat || 99;
-  const baseYillikAylikKurum = yillikAylikEsdeger || 79;
-  const kurumDonemAy = donem === 'aylik' ? 1 : 12;
-  const kurumBirim = donem === 'aylik' ? baseAylikKurum : baseYillikAylikKurum;
-  const indirimYuzde =
-    kurumKisi >= 250 ? 35 : kurumKisi >= 100 ? 25 : kurumKisi >= 30 ? 15 : 0;
-  const bireyselToplam = Math.round(kurumBirim * kurumDonemAy * kurumKisi);
-  const kurumFiyat = Math.round(bireyselToplam * (1 - indirimYuzde / 100));
-  const tasarruf = bireyselToplam - kurumFiyat;
-  const mailtoBody = `Merhaba,
+  // Kurum birim fiyat (kişi başı, bireyselle aynı — toplu indirim YOK)
+  const kurumBirimAylik = donem === 'aylik' ? aylikFiyat : Math.round(yillikAylikEsdeger);
+  const kurumYillikTekSefer = yillikFiyat;
 
-Kurumum / sınıfım için MuhasebeLab toplu lisans almak istiyorum.
+  // Kurum talebi mailto (kişi sayısı ödeme adımında belirlenecek; şimdilik
+  // mail ile manuel akış)
+  const kurumMailtoBody = `Merhaba,
 
-Kurum adı:
-Kişi sayısı: ${kurumKisi}
-Faturalandırma: ${donem === 'aylik' ? 'Aylık' : 'Yıllık'}
-İlgili kişi telefonu:
+Kurumum / sınıfım için MuhasebeLab Premium toplu satın almak istiyorum.
 
-Sayfada gösterilen tahminî tutar: ₺${fmt(kurumFiyat)} (${
-    donem === 'aylik' ? 'aylık' : 'yıllık toplam'
-  })
+Kurum / sınıf adı:
+Yaklaşık öğrenci sayısı:
+Faturalandırma tercihi: ${donem === 'aylik' ? 'Aylık' : 'Yıllık'}
+İlgili kişi adı:
+Telefon:
+E-fatura için VKN/TCKN:
 
 Teşekkürler.`;
-  const mailtoUrl = `mailto:${KURUM_EMAIL}?subject=${encodeURIComponent(
-    `Toplu Lisans Talebi — ${kurumKisi} kişi`,
-  )}&body=${encodeURIComponent(mailtoBody)}`;
+  const kurumMailtoUrl = `mailto:${KURUM_EMAIL}?subject=${encodeURIComponent(
+    'Sınıf · Kurum Premium Talebi',
+  )}&body=${encodeURIComponent(kurumMailtoBody)}`;
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-20">
@@ -482,177 +466,104 @@ Teşekkürler.`;
         </div>
       )}
 
-      {/* ─── SINIF · KURUM CONFIGURATOR ───────────────────────── */}
+      {/* ─── SINIF · KURUM (sade kart) ─────────────────────────── */}
       {mod === 'kurum' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 mb-12">
-          {/* ── Card 1: Tier breakdown ── */}
-          <div className="rounded-3xl border-2 border-stone-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-7 md:p-8 flex flex-col">
-            <div className="flex items-baseline gap-1.5 mb-1">
-              <h3 className="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
-                <Icon name="Users" size={18} />
-                Tier
-              </h3>
-            </div>
-            <div className="text-[12.5px] text-stone-500 dark:text-zinc-500 font-medium mb-6">
-              Kişi sayısına göre indirim
-            </div>
-            <div className="space-y-2.5">
-              {[
-                { kisi: '30+', indirim: '%15' },
-                { kisi: '100+', indirim: '%25' },
-                { kisi: '250+', indirim: '%35' },
-              ].map((t) => {
-                const aktif =
-                  (t.kisi === '30+' && kurumKisi >= 30 && kurumKisi < 100) ||
-                  (t.kisi === '100+' && kurumKisi >= 100 && kurumKisi < 250) ||
-                  (t.kisi === '250+' && kurumKisi >= 250);
-                return (
-                  <div
-                    key={t.kisi}
-                    className={`flex items-center justify-between p-3 rounded-xl border transition ${
-                      aktif
-                        ? 'border-amber-400 bg-amber-50/60 dark:bg-amber-950/20'
-                        : 'border-stone-200 dark:border-zinc-800 bg-stone-50/50 dark:bg-zinc-900/30'
-                    }`}
-                  >
-                    <span className="font-mono text-sm font-semibold tracking-tight text-stone-700 dark:text-zinc-300">
-                      {t.kisi} kişi
-                    </span>
-                    <span
-                      className="font-display text-base font-bold"
-                      style={{ color: 'var(--copper, #b87333)' }}
-                    >
-                      −{t.indirim}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-6 pt-6 border-t border-stone-200 dark:border-zinc-800">
-              <ul className="space-y-2 text-[12.5px] text-stone-600 dark:text-zinc-400">
-                {KURUM_OZELLIKLER.slice(0, 3).map((o) => (
-                  <li key={o} className="flex items-start gap-2">
-                    <Icon
-                      name="Check"
-                      size={12}
-                      className="text-stone-400 flex-shrink-0 mt-1"
-                    />
-                    <span>{o}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* ── Card 2: Configurator (HIGHLIGHTED) ── */}
-          <div className="md:col-span-2 rounded-3xl border-2 border-stone-900 dark:border-amber-400 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 p-7 md:p-8 flex flex-col shadow-2xl shadow-stone-900/20 dark:shadow-amber-500/20">
-            <div className="flex items-start justify-between mb-1">
-              <div>
-                <h3 className="font-display text-2xl font-bold tracking-tight flex items-center gap-2 mb-1">
-                  Sınıf · Kurum
-                </h3>
-                <div className="text-[12.5px] opacity-70 font-medium">
-                  Sayıyı seç, indirim otomatik uygulansın
-                </div>
-              </div>
+        <div className="mb-12">
+          <div className="max-w-2xl mx-auto rounded-3xl border-2 border-stone-900 dark:border-amber-400 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 p-8 md:p-10 shadow-2xl shadow-stone-900/20 dark:shadow-amber-500/20 relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <span
-                className="text-[10px] tracking-[0.25em] uppercase font-bold px-2.5 py-1 rounded-full"
+                className="text-[10px] tracking-[0.25em] uppercase font-bold px-3 py-1 rounded-full"
                 style={{ backgroundColor: 'var(--copper, #b87333)', color: '#fff' }}
               >
-                Otomatik
+                Sınıf · Kurum
               </span>
             </div>
 
-            {/* Quantity */}
-            <div className="mt-7 mb-6">
-              <div className="flex items-baseline justify-between mb-3">
-                <label className="text-[10px] tracking-[0.25em] uppercase font-bold opacity-60">
-                  Kişi sayısı
-                </label>
-                <span className="text-[11px] opacity-50 font-mono">10 – 500</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setKurumKisi(Math.max(10, kurumKisi - 5))}
-                  className="w-11 h-11 rounded-xl bg-white/10 dark:bg-zinc-900/10 hover:bg-white/20 dark:hover:bg-zinc-900/20 transition flex items-center justify-center"
-                >
-                  <Icon name="Minus" size={14} />
-                </button>
-                <input
-                  type="number"
-                  min={10}
-                  max={500}
-                  value={kurumKisi}
-                  onChange={(e) => {
-                    const v = parseInt(e.target.value, 10);
-                    if (Number.isNaN(v)) return;
-                    setKurumKisi(Math.min(500, Math.max(10, v)));
-                  }}
-                  className="flex-1 h-11 text-center font-display text-2xl font-bold tracking-tight bg-white/5 dark:bg-zinc-900/5 border border-white/15 dark:border-zinc-900/15 rounded-xl outline-none focus:border-amber-400 text-stone-50 dark:text-zinc-900"
-                />
-                <button
-                  type="button"
-                  onClick={() => setKurumKisi(Math.min(500, kurumKisi + 5))}
-                  className="w-11 h-11 rounded-xl bg-white/10 dark:bg-zinc-900/10 hover:bg-white/20 dark:hover:bg-zinc-900/20 transition flex items-center justify-center"
-                >
-                  <Icon name="Plus" size={14} />
-                </button>
-              </div>
-              <input
-                type="range"
-                min={10}
-                max={300}
-                step={5}
-                value={Math.min(300, kurumKisi)}
-                onChange={(e) => setKurumKisi(parseInt(e.target.value, 10))}
-                className="w-full mt-4 accent-amber-400"
-              />
+            <div className="text-center mb-7">
+              <h3 className="font-display text-3xl font-bold tracking-tight mb-2 flex items-center justify-center gap-2">
+                <Icon name="Users" size={22} />
+                Tek seferde, tüm öğrenciler
+              </h3>
+              <p className="text-[13.5px] opacity-70 font-medium leading-relaxed max-w-md mx-auto">
+                Akademisyen, SMMM staj merkezi veya dershanesin?
+                Premium’u öğrencilerine bir kerede aç.
+              </p>
             </div>
 
-            {/* Calculation breakdown */}
-            <div className="space-y-2 py-4 border-t border-white/10 dark:border-zinc-900/10 text-[13px]">
-              <div className="flex items-baseline justify-between opacity-70">
-                <span>
-                  Bireysel toplam — {fmt(kurumKisi)} ×{' '}
-                  ₺{fmt(Math.round(kurumBirim * kurumDonemAy))}
-                </span>
-                <span className="font-mono">₺{fmt(bireyselToplam)}</span>
+            {/* Fiyat — kişi başı, bireyselle aynı */}
+            <div className="text-center py-5 border-y border-white/10 dark:border-zinc-900/10 mb-6">
+              <div className="text-[10px] tracking-[0.3em] uppercase font-bold opacity-60 mb-2">
+                Kişi başı fiyat
               </div>
-              {indirimYuzde > 0 ? (
-                <div className="flex items-baseline justify-between text-amber-400 dark:text-amber-600 font-medium">
-                  <span>Toplu indirim −%{indirimYuzde}</span>
-                  <span className="font-mono">−₺{fmt(tasarruf)}</span>
-                </div>
-              ) : (
-                <div className="text-[12px] opacity-50 italic">
-                  30+ kişiden itibaren indirim devreye girer
+              <div className="flex items-baseline justify-center gap-1.5">
+                <span className="font-display text-5xl font-bold tracking-tight">
+                  ₺{fmt(kurumBirimAylik)}
+                </span>
+                <span className="text-sm opacity-60 font-medium">/ ay</span>
+              </div>
+              {donem === 'yillik' && kurumYillikTekSefer > 0 && (
+                <div className="text-[12px] opacity-60 font-mono mt-1.5">
+                  Yıllık ₺{fmt(kurumYillikTekSefer)} kişi başı, tek seferde
                 </div>
               )}
+              <div className="text-[11.5px] opacity-50 italic mt-2">
+                Bireyselle aynı tarife · toplu indirim yok
+              </div>
             </div>
 
-            {/* Final price */}
-            <div className="flex items-baseline justify-between py-4 border-t border-white/10 dark:border-zinc-900/10">
-              <span className="text-[10px] tracking-[0.25em] uppercase font-bold opacity-60">
-                {donem === 'aylik' ? 'Aylık tutar' : 'Yıllık toplam'}
-              </span>
-              <span
-                className="font-display text-4xl font-bold tracking-tight"
-                style={{ color: 'var(--copper, #d4a574)' }}
-              >
-                ₺{fmt(kurumFiyat)}
-              </span>
-            </div>
+            <ul className="space-y-2.5 text-[13.5px] mb-7">
+              <li className="flex items-start gap-2.5">
+                <Icon
+                  name="Check"
+                  size={14}
+                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                />
+                <span className="leading-relaxed">
+                  Premium’un <strong>tüm özellikleri</strong> her öğrenci için açılır
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Icon
+                  name="Check"
+                  size={14}
+                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                />
+                <span className="leading-relaxed">
+                  <strong>Kişi sayısını ödeme adımında</strong> belirleyeceksin
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Icon
+                  name="Check"
+                  size={14}
+                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                />
+                <span className="leading-relaxed">Kurumsal e-fatura desteği</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Icon
+                  name="Check"
+                  size={14}
+                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                />
+                <span className="leading-relaxed">
+                  Öğretmen yönetim paneli{' '}
+                  <span className="opacity-50 font-mono text-[11px]">
+                    (yakında)
+                  </span>
+                </span>
+              </li>
+            </ul>
 
             <a
-              href={mailtoUrl}
-              className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-stone-900 px-5 py-3.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl transition"
+              href={kurumMailtoUrl}
+              className="w-full inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-stone-900 px-5 py-3.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl transition"
             >
               <Icon name="Mail" size={13} />
-              Teklif İste
+              Kurum Talebi Gönder
             </a>
-            <div className="mt-2.5 text-center text-[11px] opacity-50 font-mono">
-              {KURUM_EMAIL} · 1 iş günü içinde dönüş
+            <div className="mt-3 text-center text-[11px] opacity-50 font-mono">
+              {KURUM_EMAIL} · kişi sayısı ve fatura bilgileri ödeme adımında
             </div>
           </div>
         </div>
