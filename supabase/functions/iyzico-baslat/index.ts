@@ -10,6 +10,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 interface Istek {
   plan_kodu: string;
+  adet?: number;
 }
 
 interface PlanRow {
@@ -30,9 +31,17 @@ Deno.serve(async (req) => {
     const yetki = await kullaniciDogrula(req);
     if (yetki instanceof Response) return yetki;
 
-    const { plan_kodu }: Istek = await req.json();
+    const { plan_kodu, adet: adetRaw }: Istek = await req.json();
     if (!plan_kodu) {
       return new Response(JSON.stringify({ hata: 'plan_kodu gerekli' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    // adet: 1-500 arası tam sayı, default 1 (bireysel)
+    const adet = Math.min(500, Math.max(1, Math.floor(Number(adetRaw) || 1)));
+    if (!Number.isFinite(adet) || adet < 1) {
+      return new Response(JSON.stringify({ hata: 'adet 1-500 arası olmalı' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -81,16 +90,18 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       { auth: { persistSession: false } },
     );
+    const toplamTutar = Number(plan.tutar) * adet;
     const { error: odErr } = await adminSupabase.from('odemeler').insert({
       user_id: yetki.user.id,
       conversation_id: conversationId,
       plan_kodu: plan.kod,
-      tutar: plan.tutar,
+      tutar: toplamTutar,
       para_birimi: plan.para_birimi,
       // mevcut odeme_donem enum: 'aylik' | 'yillik' — donemlik plan da 'aylik' enum'a yazılır,
       // ay_sayisi kolonu kanonik kaynak.
       donem: 'aylik',
       durum: 'beklemede',
+      adet,
     });
     if (odErr) {
       return new Response(
@@ -99,7 +110,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const fiyatStr = formatTutar(Number(plan.tutar));
+    const fiyatStr = formatTutar(toplamTutar);
     const istek: CFInitIstek = {
       locale: 'tr',
       conversationId,
@@ -136,7 +147,10 @@ Deno.serve(async (req) => {
       basketItems: [
         {
           id: `plan-${plan.kod}`,
-          name: `MuhasebeLab Premium — ${plan.ad}`,
+          name:
+            adet > 1
+              ? `MuhasebeLab Premium — ${plan.ad} (${adet} kullanıcı)`
+              : `MuhasebeLab Premium — ${plan.ad}`,
           category1: 'Eğitim',
           itemType: 'VIRTUAL',
           price: fiyatStr,

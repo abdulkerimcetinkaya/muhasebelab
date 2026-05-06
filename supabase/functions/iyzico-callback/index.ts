@@ -13,10 +13,15 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const APP_BASE_URL =
   Deno.env.get('APP_BASE_URL') ?? 'http://localhost:5173';
 
-const redirect = (durum: 'basarili' | 'hata' | 'iptal', detay?: string): Response => {
+const redirect = (
+  durum: 'basarili' | 'hata' | 'iptal',
+  detay?: string,
+  adet?: number,
+): Response => {
   // HashRouter — query parametresini hash'in içine yazmamız lazım
   const hashParams = new URLSearchParams({ durum });
   if (detay) hashParams.set('detay', detay);
+  if (adet && adet > 1) hashParams.set('adet', String(adet));
   return Response.redirect(`${APP_BASE_URL}/#/premium/sonuc?${hashParams.toString()}`, 302);
 };
 
@@ -56,7 +61,7 @@ Deno.serve(async (req) => {
 
     const { data: odeme } = await admin
       .from('odemeler')
-      .select('user_id, plan_kodu, durum')
+      .select('user_id, plan_kodu, durum, adet')
       .eq('conversation_id', conversationId)
       .maybeSingle();
 
@@ -89,7 +94,7 @@ Deno.serve(async (req) => {
       return redirect('hata', 'aktivasyon-hatasi');
     }
 
-    return redirect('basarili');
+    return redirect('basarili', undefined, odeme.adet ?? 1);
   } catch (e) {
     console.error(e);
     return redirect('hata', (e as Error).message);
