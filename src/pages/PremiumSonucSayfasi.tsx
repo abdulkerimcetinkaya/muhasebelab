@@ -5,15 +5,19 @@ import { Thiings } from '../components/Thiings';
 import { useAuth } from '../contexts/AuthContext';
 
 // İyzico callback Edge Function bizi bu sayfaya yönlendirir.
-// Query: ?durum=basarili | hata | iptal & detay=...
+// Query: ?durum=basarili | hata | iptal & detay=... & adet=N (kurum bulk için)
 type SyncDurum = 'yukleniyor' | 'tamam' | 'hata';
+
+const KURUM_EMAIL = 'kurum@muhasebelab.com';
 
 export const PremiumSonucSayfasi = () => {
   const [params] = useSearchParams();
   const nav = useNavigate();
-  const { premiumYenile } = useAuth();
+  const { user, premiumYenile } = useAuth();
   const durum = (params.get('durum') ?? 'hata') as 'basarili' | 'hata' | 'iptal';
   const detay = params.get('detay');
+  const adet = Math.max(1, parseInt(params.get('adet') ?? '1', 10) || 1);
+  const isBulk = adet > 1;
   const [syncDurum, setSyncDurum] = useState<SyncDurum>('yukleniyor');
 
   useEffect(() => {
@@ -43,6 +47,23 @@ export const PremiumSonucSayfasi = () => {
   };
 
   if (durum === 'basarili') {
+    // Bulk/kurum ödeme: öğrenci listesini admin'e ileten mailto
+    const bulkMailtoBody = `Merhaba,
+
+MuhasebeLab kurum Premium ödememi tamamladım — ${adet} kullanıcı için.
+Aşağıdaki öğrencilere Premium tanımlanmasını rica ederim:
+
+(öğrenci email'lerini her satıra bir tane yapıştırın)
+1. ad.soyad@example.com
+2. ...
+
+Ödeme yapan: ${user?.email ?? '—'}
+
+Teşekkürler.`;
+    const bulkMailto = `mailto:${KURUM_EMAIL}?subject=${encodeURIComponent(
+      `Kurum Premium öğrenci listesi — ${adet} kullanıcı`,
+    )}&body=${encodeURIComponent(bulkMailtoBody)}`;
+
     return (
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-200 to-amber-100 dark:from-amber-800/40 dark:to-amber-900/40 mb-6">
@@ -52,11 +73,12 @@ export const PremiumSonucSayfasi = () => {
           Ödeme Başarılı
         </div>
         <h1 className="font-display text-4xl md:text-5xl tracking-tight font-bold mb-4">
-          Premium üyeliğin aktif!
+          {isBulk ? `${adet} kullanıcı için Premium alındı!` : 'Premium üyeliğin aktif!'}
         </h1>
         <p className="text-lg text-stone-600 dark:text-zinc-400 leading-relaxed font-medium mb-6">
-          Tüm Premium özellikler artık açık. AI yanlış analizi, sınırsız asistan, hesap kodu
-          otomatik tamamlama hemen kullanıma hazır.
+          {isBulk
+            ? 'Ödemen başarıyla tahsil edildi. Öğrenci dağıtımı için bir adım daha kaldı 👇'
+            : 'Tüm Premium özellikler artık açık. AI yanlış analizi, sınırsız asistan, hesap kodu otomatik tamamlama hemen kullanıma hazır.'}
         </p>
 
         {syncDurum === 'yukleniyor' && (
@@ -94,21 +116,55 @@ export const PremiumSonucSayfasi = () => {
           </div>
         )}
 
+        {isBulk && (
+          <div className="max-w-md mx-auto mb-6 p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 text-left">
+            <div className="flex items-start gap-3">
+              <Icon
+                name="Mail"
+                size={20}
+                className="text-amber-700 dark:text-amber-400 flex-shrink-0 mt-0.5"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="font-display text-base font-bold text-amber-900 dark:text-amber-100 mb-1">
+                  Öğrenci listeni gönder
+                </div>
+                <div className="text-[13px] text-amber-800 dark:text-amber-200/90 font-medium leading-relaxed mb-4">
+                  Premium’u tanımlayabilmemiz için <strong>{adet}</strong>{' '}
+                  öğrencinin email adresini bize ileti olarak gönder. 1 iş günü
+                  içinde her hesaba Premium tanımlanır.
+                </div>
+                <a
+                  href={bulkMailto}
+                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
+                >
+                  <Icon name="Mail" size={12} />
+                  Öğrenci Listesi Hazırla
+                </a>
+                <div className="mt-2.5 text-[11px] text-amber-700/80 dark:text-amber-300/70 font-mono">
+                  {KURUM_EMAIL}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center justify-center gap-3">
           <button
-            onClick={() => nav('/problemler')}
+            onClick={() => nav(isBulk ? '/profil' : '/problemler')}
             className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition"
           >
-            <Icon name="ListChecks" size={14} />
-            Soru Çöz
+            <Icon name={isBulk ? 'User' : 'ListChecks'} size={14} />
+            {isBulk ? 'Profilim' : 'Soru Çöz'}
           </button>
-          <Link
-            to="/profil"
-            className="inline-flex items-center gap-2 border border-stone-300 dark:border-zinc-700 px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:bg-stone-100 dark:hover:bg-zinc-800 transition"
-          >
-            <Icon name="User" size={14} />
-            Profilim
-          </Link>
+          {!isBulk && (
+            <Link
+              to="/profil"
+              className="inline-flex items-center gap-2 border border-stone-300 dark:border-zinc-700 px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:bg-stone-100 dark:hover:bg-zinc-800 transition"
+            >
+              <Icon name="User" size={14} />
+              Profilim
+            </Link>
+          )}
         </div>
       </main>
     );

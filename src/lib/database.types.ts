@@ -156,6 +156,8 @@ export type OdemeRow = {
   plan_kodu: string | null;
   callback_token: string | null;
   hata_mesaji: string | null;
+  /** Bulk/kurum ödeme için kullanıcı sayısı; bireysel için 1. */
+  adet: number;
 };
 
 export type PlanRow = {

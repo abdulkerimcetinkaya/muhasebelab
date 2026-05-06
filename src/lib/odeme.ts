@@ -28,10 +28,18 @@ export const planlariYukle = async (): Promise<Plan[]> => {
 };
 
 // Edge Function -> iyzico CF init -> paymentPageUrl
-export const odemeBaslat = async (planKodu: string): Promise<OdemeBaslatYanit> => {
+//
+// adet: bireysel ödeme için 1 (default), kurum/sınıf bulk için >1.
+// adet > 1 olduğunda Edge Function plan tutarını adet ile çarpar ve
+// odemeler.adet kolonuna yazar. Öğrenci dağıtımı şu an manuel
+// (admin panel üzerinden admin_premium_ayarla RPC ile).
+export const odemeBaslat = async (
+  planKodu: string,
+  adet: number = 1,
+): Promise<OdemeBaslatYanit> => {
   const { data, error } = await supabase.functions.invoke<OdemeBaslatYanit & { hata?: string }>(
     'iyzico-baslat',
-    { body: { plan_kodu: planKodu } },
+    { body: { plan_kodu: planKodu, adet } },
   );
   if (error) {
     const ctx = (error as { context?: Response }).context;
