@@ -24,6 +24,7 @@ const SifreYenileSayfasi = lazy(() => import('./pages/SifreYenileSayfasi').then(
 const OnboardingSayfasi = lazy(() => import('./pages/OnboardingSayfasi').then((m) => ({ default: m.OnboardingSayfasi })));
 const PremiumSayfasi = lazy(() => import('./pages/PremiumSayfasi').then((m) => ({ default: m.PremiumSayfasi })));
 const PremiumSonucSayfasi = lazy(() => import('./pages/PremiumSonucSayfasi').then((m) => ({ default: m.PremiumSonucSayfasi })));
+const KurumOdemeSayfasi = lazy(() => import('./pages/KurumOdemeSayfasi').then((m) => ({ default: m.KurumOdemeSayfasi })));
 const ProfilSayfasi = lazy(() => import('./pages/ProfilSayfasi').then((m) => ({ default: m.ProfilSayfasi })));
 const KvkkSayfasi = lazy(() => import('./pages/KvkkSayfasi').then((m) => ({ default: m.KvkkSayfasi })));
 const LiderlikSayfasi = lazy(() => import('./pages/LiderlikSayfasi').then((m) => ({ default: m.LiderlikSayfasi })));
@@ -350,6 +351,7 @@ const App = () => {
             <Route path="/sozluk/:slug" element={<SozlukTerimSayfasi />} />
             <Route path="/premium" element={<PremiumSayfasi />} />
             <Route path="/premium/sonuc" element={<PremiumSonucSayfasi />} />
+            <Route path="/premium/kurum-odeme" element={<KurumOdemeSayfasi />} />
             <Route path="/uniteler" element={<UnitelerSayfasi ilerleme={ilerleme} />} />
             <Route path="/uniteler/:uniteId" element={<UniteSayfasi ilerleme={ilerleme} />} />
             <Route
