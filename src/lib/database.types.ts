@@ -115,6 +115,9 @@ export type KullaniciRow = {
   // Admin/kullanıcı kimlik ayrımı — 20260507000004 migration
   // true → leaderboard ve istatistik dışı; bu hesap sadece admin işleri için
   admin_only: boolean;
+  // Onboarding tamam mı? — 20260507000007 migration
+  // null = henüz tamamlamadı, timestamp = ne zaman tamamlandı
+  onboarding_tamam_at: string | null;
   created_at: string;
   updated_at: string;
 };
