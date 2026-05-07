@@ -5,6 +5,7 @@ import { Thiings } from '../components/Thiings';
 import { useAuth, useIsPremium } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { odemeBaslat, planlariYukle, type Plan } from '../lib/odeme';
+import { indirimDogrula } from '../lib/indirim';
 
 const KURUM_EMAIL = 'kurum@muhasebelab.com';
 
@@ -70,6 +71,12 @@ export const PremiumSayfasi = () => {
   const [acikSoru, setAcikSoru] = useState<number | null>(null);
   const [mod, setMod] = useState<'bireysel' | 'kurum'>('bireysel');
   const [donem, setDonem] = useState<'aylik' | 'yillik'>('yillik');
+  // İndirim kodu (bireysel)
+  const [indirimKodu, setIndirimKodu] = useState('');
+  const [indirimYuzde, setIndirimYuzde] = useState(0);
+  const [indirimMesaj, setIndirimMesaj] = useState<string | null>(null);
+  const [indirimDoğrulanıyor, setIndirimDoğrulanıyor] = useState(false);
+  const [indirimAcik, setIndirimAcik] = useState(false);
 
   useEffect(() => {
     if (!yukleniyor && !user) nav('/giris', { replace: true });
@@ -109,12 +116,47 @@ export const PremiumSayfasi = () => {
     setSecilenPlan(kod);
     setHata(null);
     try {
-      const yanit = await odemeBaslat(kod);
-      window.location.assign(yanit.paymentPageUrl);
+      const yanit = await odemeBaslat(
+        kod,
+        1,
+        indirimYuzde > 0 ? indirimKodu : undefined,
+      );
+      if (yanit.ucretsiz) {
+        nav('/premium/sonuc?durum=basarili&ucretsiz=1');
+      } else {
+        window.location.assign(yanit.paymentPageUrl);
+      }
     } catch (e) {
       setHata((e as Error).message);
       setSecilenPlan(null);
     }
+  };
+
+  const indirimUygula = async () => {
+    if (!indirimKodu.trim()) return;
+    setIndirimDoğrulanıyor(true);
+    setIndirimMesaj(null);
+    try {
+      const sonuc = await indirimDogrula(indirimKodu, aktifPlan?.kod);
+      if (sonuc.gecerli) {
+        setIndirimYuzde(sonuc.indirim_yuzde);
+        setIndirimMesaj(`%${sonuc.indirim_yuzde} indirim uygulandı`);
+      } else {
+        setIndirimYuzde(0);
+        setIndirimMesaj(sonuc.sebep);
+      }
+    } catch (e) {
+      setIndirimMesaj((e as Error).message);
+    } finally {
+      setIndirimDoğrulanıyor(false);
+    }
+  };
+
+  const indirimKaldir = () => {
+    setIndirimKodu('');
+    setIndirimYuzde(0);
+    setIndirimMesaj(null);
+    setIndirimAcik(false);
   };
 
   const erkenAktivasyon = async () => {
@@ -321,15 +363,31 @@ export const PremiumSayfasi = () => {
             <div className="text-[12.5px] opacity-70 font-medium mb-6">
               Yapay zeka rehberli öğrenme
             </div>
-            <div className="mb-1">
-              <span className="font-display text-5xl font-bold tracking-tight">
-                ₺{donem === 'aylik' ? fmt(aylikFiyat) : fmt(Math.round(yillikAylikEsdeger))}
-              </span>
-              <span className="text-sm opacity-60 font-medium ml-1">/ ay</span>
-            </div>
-            <div className="text-[12px] opacity-60 font-mono mb-6 h-4">
-              {donem === 'yillik' && yillikFiyat > 0 && `Yıllık ₺${fmt(yillikFiyat)} tek seferde`}
-            </div>
+            {(() => {
+              const ayFiyat = donem === 'aylik' ? aylikFiyat : Math.round(yillikAylikEsdeger);
+              const indirimliAy = Math.round(ayFiyat * (1 - indirimYuzde / 100));
+              return (
+                <>
+                  <div className="mb-1 flex items-baseline gap-2">
+                    <span className="font-display text-5xl font-bold tracking-tight">
+                      ₺{fmt(indirimYuzde > 0 ? indirimliAy : ayFiyat)}
+                    </span>
+                    {indirimYuzde > 0 && (
+                      <span className="text-base opacity-50 line-through font-mono">
+                        ₺{fmt(ayFiyat)}
+                      </span>
+                    )}
+                    <span className="text-sm opacity-60 font-medium ml-1">/ ay</span>
+                  </div>
+                  <div className="text-[12px] opacity-60 font-mono mb-6 h-4">
+                    {donem === 'yillik' && yillikFiyat > 0 &&
+                      (indirimYuzde > 0
+                        ? `Yıllık ₺${fmt(Math.round(yillikFiyat * (1 - indirimYuzde / 100)))} tek seferde`
+                        : `Yıllık ₺${fmt(yillikFiyat)} tek seferde`)}
+                  </div>
+                </>
+              );
+            })()}
             <button
               type="button"
               onClick={() => aktifPlan && planSatinAl(aktifPlan.kod)}
@@ -447,8 +505,83 @@ export const PremiumSayfasi = () => {
 
       {/* ─── HATA (BİREYSEL) ──────────────────────────────────── */}
       {mod === 'bireysel' && hata && (
-        <div className="mb-12 text-center text-sm text-red-700 dark:text-red-400 font-medium">
+        <div className="mb-6 text-center text-sm text-red-700 dark:text-red-400 font-medium">
           {hata}
+        </div>
+      )}
+
+      {/* ─── İNDİRİM KODU (BİREYSEL) ─────────────────────────── */}
+      {mod === 'bireysel' && !isPremium && (
+        <div className="mb-12 max-w-md mx-auto">
+          {!indirimAcik && indirimYuzde === 0 ? (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setIndirimAcik(true)}
+                className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-stone-700 dark:text-zinc-300 hover:text-stone-900 dark:hover:text-zinc-100 transition"
+              >
+                <Icon name="Tag" size={13} />
+                İndirim kodum var
+              </button>
+            </div>
+          ) : indirimYuzde > 0 ? (
+            <div className="flex items-center justify-between gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
+              <div className="flex items-center gap-2 min-w-0">
+                <Icon
+                  name="BadgeCheck"
+                  size={15}
+                  className="text-emerald-700 dark:text-emerald-400 flex-shrink-0"
+                />
+                <span className="text-[13px] font-mono font-semibold text-emerald-800 dark:text-emerald-200 truncate">
+                  {indirimKodu.toUpperCase()}
+                </span>
+                <span className="text-[12px] text-emerald-700 dark:text-emerald-400">
+                  −%{indirimYuzde}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={indirimKaldir}
+                className="text-[12px] text-emerald-700 dark:text-emerald-400 hover:underline flex-shrink-0"
+              >
+                Kaldır
+              </button>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-stone-200 dark:border-zinc-800 p-4 bg-white dark:bg-zinc-900/40">
+              <label className="block text-[10px] tracking-[0.25em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-2">
+                İndirim kodu
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={indirimKodu}
+                  onChange={(e) => setIndirimKodu(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      indirimUygula();
+                    }
+                  }}
+                  placeholder="Kodunu yaz"
+                  className="flex-1 h-10 px-3 text-[13px] font-mono uppercase bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                />
+                <button
+                  type="button"
+                  onClick={indirimUygula}
+                  disabled={indirimDoğrulanıyor || !indirimKodu.trim()}
+                  className="px-4 h-10 text-[11px] tracking-[0.15em] uppercase font-bold rounded-lg bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {indirimDoğrulanıyor ? '…' : 'Uygula'}
+                </button>
+              </div>
+              {indirimMesaj && (
+                <div className="mt-2 text-[11.5px] text-rose-700 dark:text-rose-400">
+                  {indirimMesaj}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

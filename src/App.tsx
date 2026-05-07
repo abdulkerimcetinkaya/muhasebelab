@@ -47,6 +47,7 @@ const AdminKullaniciDetaySayfasi = lazy(() => import('./pages/admin/AdminKullani
 const AdminYetkilileriSayfasi = lazy(() => import('./pages/admin/AdminYetkilileriSayfasi').then((m) => ({ default: m.AdminYetkilileriSayfasi })));
 const AdminIstatistiklerSayfasi = lazy(() => import('./pages/admin/AdminIstatistiklerSayfasi').then((m) => ({ default: m.AdminIstatistiklerSayfasi })));
 const AdminKatkicilarSayfasi = lazy(() => import('./pages/admin/AdminKatkicilarSayfasi').then((m) => ({ default: m.AdminKatkicilarSayfasi })));
+const AdminIndirimKodlariSayfasi = lazy(() => import('./pages/admin/AdminIndirimKodlariSayfasi').then((m) => ({ default: m.AdminIndirimKodlariSayfasi })));
 const KatkiciBasvuruSayfasi = lazy(() => import('./pages/KatkiciBasvuruSayfasi').then((m) => ({ default: m.KatkiciBasvuruSayfasi })));
 const KatkiciSoruEkleSayfasi = lazy(() => import('./pages/KatkiciSoruEkleSayfasi').then((m) => ({ default: m.KatkiciSoruEkleSayfasi })));
 const SozlukSayfasi = lazy(() => import('./pages/SozlukSayfasi').then((m) => ({ default: m.SozlukSayfasi })));
@@ -491,6 +492,14 @@ const App = () => {
               element={
                 <ProtectedAdminRoute>
                   <AdminKatkicilarSayfasi />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/indirim-kodlari"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminIndirimKodlariSayfasi />
                 </ProtectedAdminRoute>
               }
             />

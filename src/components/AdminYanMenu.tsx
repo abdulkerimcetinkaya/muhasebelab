@@ -16,6 +16,7 @@ const linkler = [
   { to: '/admin/hatalar', etiket: 'Hata Bildirimleri', icon: 'AlertCircle', end: true },
   { to: '/admin/yetkililer', etiket: 'Yetkililer', icon: 'ShieldCheck', end: true },
   { to: '/admin/katkicilar', etiket: 'Katkıcı Başvuruları', icon: 'BadgeCheck', end: true },
+  { to: '/admin/indirim-kodlari', etiket: 'İndirim Kodları', icon: 'Tag', end: true },
 ];
 
 export const AdminYanMenu = () => {
