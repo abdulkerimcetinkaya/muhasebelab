@@ -8,10 +8,11 @@ interface Props {
 }
 
 export const ProtectedAdminRoute = ({ children }: Props) => {
-  const { user, yukleniyor } = useAuth();
+  const { user, yukleniyor, adminRoller } = useAuth();
   const isAdmin = useIsAdmin();
 
-  if (yukleniyor) {
+  // Auth yüklenirken VEYA kullanıcı var ama admin rolleri henüz çekilmediyse bekle
+  if (yukleniyor || (user && adminRoller === null)) {
     return (
       <main className="max-w-7xl mx-auto px-6 py-16 flex items-center justify-center">
         <Icon name="Loader2" size={20} className="animate-spin text-stone-500" />
