@@ -73,18 +73,21 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
     if (profil.sinif) guncelleme.sinif = profil.sinif;
     if (profil.hedef) guncelleme.hedef = profil.hedef;
 
-    if (Object.keys(guncelleme).length > 0) {
-      const { error } = await supabase
-        .from('kullanicilar')
-        .update(guncelleme)
-        .eq('id', user.id);
-      if (error) {
-        // Sessiz başarısızlık eskisinde "kaydedildi sandı, kayıt yok" yaratıyordu;
-        // şimdi kullanıcıya hata göster + akışı bloke et, retry imkanı bırak.
-        setHata(`Profil kaydedilemedi: ${error.message}. Tekrar dene.`);
-        setKaydediliyor(false);
-        return;
-      }
+    // Onboarding tamamlandı flag'i — boş profille bile bir kez set edilir.
+    // Bu sayede sonraki giriş'te onboarding'e tekrar gönderilmez.
+    const finalGuncelleme = {
+      ...guncelleme,
+      onboarding_tamam_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from('kullanicilar')
+      .update(finalGuncelleme)
+      .eq('id', user.id);
+    if (error) {
+      setHata(`Profil kaydedilemedi: ${error.message}. Tekrar dene.`);
+      setKaydediliyor(false);
+      return;
     }
 
     onTamamla(mevcutAd);

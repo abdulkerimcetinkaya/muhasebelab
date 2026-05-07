@@ -45,7 +45,7 @@ export const ilerlemeYukleSupabase = async (
   tumSorular: SoruWithUnite[],
 ): Promise<Ilerleme> => {
   const [profilSonuc, ilerlemeSonuc, rozetlerSonuc, aktiviteSonuc] = await Promise.all([
-    supabase.from('kullanicilar').select('kullanici_adi, tema').eq('id', userId).maybeSingle(),
+    supabase.from('kullanicilar').select('kullanici_adi, tema, onboarding_tamam_at').eq('id', userId).maybeSingle(),
     supabase
       .from('ilerleme')
       .select('soru_id, dogru_mu, created_at, kullanilan_ai, cozum_gosterildi, kazanilan_puan')
@@ -108,8 +108,9 @@ export const ilerlemeYukleSupabase = async (
 
   const { streak, sonTarih } = streakHesapla(aktiviteTarihleri);
 
-  // Onboarding durumunu veriden türet: çözümü veya özel adı varsa tamamlanmış say
+  // Onboarding durumu: önce kalıcı flag, yoksa türet (legacy uyumu)
   const onboardingTamam =
+    !!profil?.onboarding_tamam_at ||
     Object.keys(cozulenler).length > 0 ||
     (!!baslangic.kullaniciAdi && baslangic.kullaniciAdi !== 'Öğrenci');
 
