@@ -11,6 +11,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 interface Istek {
   plan_kodu: string;
   adet?: number;
+  indirim_kodu?: string;
 }
 
 interface PlanRow {
@@ -31,7 +32,7 @@ Deno.serve(async (req) => {
     const yetki = await kullaniciDogrula(req);
     if (yetki instanceof Response) return yetki;
 
-    const { plan_kodu, adet: adetRaw }: Istek = await req.json();
+    const { plan_kodu, adet: adetRaw, indirim_kodu }: Istek = await req.json();
     if (!plan_kodu) {
       return new Response(JSON.stringify({ hata: 'plan_kodu gerekli' }), {
         status: 400,
@@ -46,6 +47,7 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    const indirimKoduTrim = (indirim_kodu ?? '').trim().toUpperCase();
 
     // Plan bilgisi (RLS public okuma açık)
     const { data: plan, error: pErr } = await yetki.supabase
@@ -90,7 +92,67 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       { auth: { persistSession: false } },
     );
-    const toplamTutar = Number(plan.tutar) * adet;
+    const indirimOncesi = Number(plan.tutar) * adet;
+    let indirimYuzde = 0;
+    let indirimId: string | null = null;
+
+    // İndirim kodu varsa: kullanıcı JWT'siyle doğrula (RPC SECURITY DEFINER
+    // olduğu için kendi user_id'sini görebilir)
+    if (indirimKoduTrim) {
+      const { data: dogr, error: dogrErr } = await yetki.supabase.rpc(
+        'indirim_dogrula',
+        { _kod: indirimKoduTrim, _plan_kodu: plan.kod },
+      );
+      if (dogrErr) {
+        return new Response(
+          JSON.stringify({ hata: 'İndirim doğrulanamadı', detay: dogrErr.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      const sonuc = Array.isArray(dogr) ? dogr[0] : dogr;
+      if (!sonuc?.gecerli) {
+        return new Response(
+          JSON.stringify({ hata: sonuc?.sebep ?? 'Geçersiz indirim kodu' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      indirimYuzde = Number(sonuc.indirim_yuzde) || 0;
+      indirimId = sonuc.indirim_id ?? null;
+
+      // %100 indirim: iyzico atla, doğrudan ücretsiz aktive
+      if (indirimYuzde >= 100) {
+        const { data: ucr, error: ucrErr } = await yetki.supabase.rpc(
+          'indirim_kullan_ucretsiz',
+          { _kod: indirimKoduTrim, _plan_kodu: plan.kod },
+        );
+        if (ucrErr) {
+          return new Response(
+            JSON.stringify({ hata: 'Ücretsiz aktivasyon başarısız', detay: ucrErr.message }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          );
+        }
+        const ucrSonuc = Array.isArray(ucr) ? ucr[0] : ucr;
+        if (!ucrSonuc?.basarili) {
+          return new Response(
+            JSON.stringify({ hata: ucrSonuc?.hata ?? 'Aktivasyon başarısız' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          );
+        }
+        // Frontend ucretsiz=true görünce HashRouter ile sonuç sayfasına gidecek
+        return new Response(
+          JSON.stringify({
+            token: 'free-' + crypto.randomUUID(),
+            paymentPageUrl: '',
+            conversationId: 'free-' + crypto.randomUUID(),
+            ucretsiz: true,
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+    }
+
+    const toplamTutar = Math.round(indirimOncesi * (1 - indirimYuzde / 100) * 100) / 100;
+
     const { error: odErr } = await adminSupabase.from('odemeler').insert({
       user_id: yetki.user.id,
       conversation_id: conversationId,
@@ -102,6 +164,9 @@ Deno.serve(async (req) => {
       donem: 'aylik',
       durum: 'beklemede',
       adet,
+      indirim_id: indirimId,
+      indirim_yuzde: indirimYuzde > 0 ? indirimYuzde : null,
+      indirim_oncesi_tutar: indirimYuzde > 0 ? indirimOncesi : null,
     });
     if (odErr) {
       return new Response(

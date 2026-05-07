@@ -15,6 +15,8 @@ export interface OdemeBaslatYanit {
   token: string;
   paymentPageUrl: string;
   conversationId: string;
+  /** %100 indirim ile ücretsiz aktivasyon: paymentPageUrl boş, frontend doğrudan sonuç sayfasına gider. */
+  ucretsiz?: boolean;
 }
 
 export const planlariYukle = async (): Promise<Plan[]> => {
@@ -30,16 +32,23 @@ export const planlariYukle = async (): Promise<Plan[]> => {
 // Edge Function -> iyzico CF init -> paymentPageUrl
 //
 // adet: bireysel ödeme için 1 (default), kurum/sınıf bulk için >1.
-// adet > 1 olduğunda Edge Function plan tutarını adet ile çarpar ve
-// odemeler.adet kolonuna yazar. Öğrenci dağıtımı şu an manuel
-// (admin panel üzerinden admin_premium_ayarla RPC ile).
+// indirimKodu: opsiyonel, varsa Edge Function indirim_dogrula RPC ile validate
+//   eder ve fiyatı düşürür. %100 indirim için iyzico'ya gidilmez, doğrudan
+//   /premium/sonuc?ucretsiz=1 redirect URL'si döner.
 export const odemeBaslat = async (
   planKodu: string,
   adet: number = 1,
+  indirimKodu?: string,
 ): Promise<OdemeBaslatYanit> => {
   const { data, error } = await supabase.functions.invoke<OdemeBaslatYanit & { hata?: string }>(
     'iyzico-baslat',
-    { body: { plan_kodu: planKodu, adet } },
+    {
+      body: {
+        plan_kodu: planKodu,
+        adet,
+        ...(indirimKodu ? { indirim_kodu: indirimKodu } : {}),
+      },
+    },
   );
   if (error) {
     const ctx = (error as { context?: Response }).context;

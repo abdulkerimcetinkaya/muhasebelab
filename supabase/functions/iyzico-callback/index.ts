@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
 
     const { data: odeme } = await admin
       .from('odemeler')
-      .select('user_id, plan_kodu, durum, adet')
+      .select('id, user_id, plan_kodu, durum, adet, indirim_id')
       .eq('conversation_id', conversationId)
       .maybeSingle();
 
@@ -92,6 +92,19 @@ Deno.serve(async (req) => {
     if (rpcErr) {
       console.error('odeme_premium_aktive', rpcErr);
       return redirect('hata', 'aktivasyon-hatasi');
+    }
+
+    // İndirim kullanımını kaydet (idempotent — UNIQUE constraint zaten var)
+    if (odeme.indirim_id) {
+      const { error: kullErr } = await admin.from('indirim_kullanimlari').insert({
+        indirim_id: odeme.indirim_id,
+        user_id: odeme.user_id,
+        odeme_id: odeme.id,
+      });
+      if (kullErr && !kullErr.message.includes('duplicate')) {
+        console.error('indirim kullanım kaydı', kullErr);
+        // Aktivasyon zaten yapıldı, kullanım kaydı hatası kullanıcıyı bloklamasın
+      }
     }
 
     return redirect('basarili', undefined, odeme.adet ?? 1);
