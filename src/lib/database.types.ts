@@ -112,6 +112,9 @@ export type KullaniciRow = {
   ban_tarihi: string | null;
   // Katkıcı sistemi — 20260504000010 migration
   is_katkici: boolean;
+  // Admin/kullanıcı kimlik ayrımı — 20260507000004 migration
+  // true → leaderboard ve istatistik dışı; bu hesap sadece admin işleri için
+  admin_only: boolean;
   created_at: string;
   updated_at: string;
 };

@@ -36,7 +36,7 @@ export const AdminAnaSayfa = () => {
         supabase.from('sorular').select('id', { count: 'exact', head: true }).eq('durum', 'inceleme'),
         supabase.from('sorular').select('id', { count: 'exact', head: true }).eq('durum', 'onayli'),
         supabase.from('sorular').select('id', { count: 'exact', head: true }).eq('durum', 'arsiv'),
-        supabase.from('kullanicilar').select('id', { count: 'exact', head: true }),
+        supabase.from('kullanicilar').select('id', { count: 'exact', head: true }).eq('admin_only', false),
         supabase.from('soru_hatalari').select('id', { count: 'exact', head: true }).eq('durum', 'acik'),
       ]);
       setSayilar({
