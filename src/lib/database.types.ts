@@ -158,6 +158,33 @@ export type OdemeRow = {
   hata_mesaji: string | null;
   /** Bulk/kurum ödeme için kullanıcı sayısı; bireysel için 1. */
   adet: number;
+  /** İndirim kodu kullanıldıysa kodun id'si. */
+  indirim_id: string | null;
+  /** İndirim yüzdesi (0-100). */
+  indirim_yuzde: number | null;
+  /** İndirim öncesi tutar (audit için). */
+  indirim_oncesi_tutar: number | null;
+};
+
+export type IndirimKoduRow = {
+  id: string;
+  kod: string;
+  indirim_yuzde: number;
+  max_kullanim: number | null;
+  bitis_tarihi: string | null;
+  aktif: boolean;
+  aciklama: string | null;
+  plan_kodu: string | null;
+  created_at: string;
+  olusturan_id: string | null;
+};
+
+export type IndirimKullanimRow = {
+  id: string;
+  indirim_id: string;
+  user_id: string;
+  odeme_id: string | null;
+  kullanildi_at: string;
 };
 
 export type PlanRow = {
@@ -477,6 +504,26 @@ export type Database = {
         Update: Partial<SozlukTerimiRow>;
         Relationships: [];
       };
+      indirim_kodlari: {
+        Row: IndirimKoduRow;
+        Insert: Omit<IndirimKoduRow, 'id' | 'created_at' | 'olusturan_id' | 'aktif'> & {
+          id?: string;
+          created_at?: string;
+          olusturan_id?: string | null;
+          aktif?: boolean;
+        };
+        Update: Partial<IndirimKoduRow>;
+        Relationships: [];
+      };
+      indirim_kullanimlari: {
+        Row: IndirimKullanimRow;
+        Insert: Omit<IndirimKullanimRow, 'id' | 'kullanildi_at'> & {
+          id?: string;
+          kullanildi_at?: string;
+        };
+        Update: Partial<IndirimKullanimRow>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -549,6 +596,27 @@ export type Database = {
       admin_katkici_yetki_kaldir: {
         Args: { _user_id: string };
         Returns: void;
+      };
+      indirim_dogrula: {
+        Args: { _kod: string; _plan_kodu?: string | null };
+        Returns: {
+          gecerli: boolean;
+          indirim_yuzde: number;
+          sebep: string;
+          indirim_id: string | null;
+        }[];
+      };
+      indirim_kullan_ucretsiz: {
+        Args: { _kod: string; _plan_kodu: string };
+        Returns: {
+          basarili: boolean;
+          yeni_premium_bitis: string | null;
+          hata: string | null;
+        }[];
+      };
+      admin_indirim_kullanim_sayisi: {
+        Args: { _indirim_id: string };
+        Returns: number;
       };
     };
     Enums: {
