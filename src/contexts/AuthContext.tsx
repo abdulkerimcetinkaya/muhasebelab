@@ -2,14 +2,15 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { oturumAl, oturumDinle } from '../lib/auth';
-import { adminMi } from '../lib/admin';
 import { supabase } from '../lib/supabase';
+import type { AdminRol } from '../lib/database.types';
 
 interface AuthDurumu {
   user: User | null;
   session: Session | null;
   yukleniyor: boolean;
   premiumBitis: string | null;
+  adminRoller: AdminRol[] | null; // null = henüz yüklenmedi, [] = admin değil
   premiumYenile: () => Promise<void>;
 }
 
@@ -18,6 +19,7 @@ const baslangic: AuthDurumu = {
   session: null,
   yukleniyor: true,
   premiumBitis: null,
+  adminRoller: null,
   premiumYenile: async () => {},
 };
 
@@ -33,6 +35,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .eq('id', userId)
       .maybeSingle();
     return data?.premium_bitis ?? null;
+  };
+
+  const adminRollerGetir = async (userId: string): Promise<AdminRol[]> => {
+    const { data } = await supabase
+      .from('adminler')
+      .select('roller')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return ((data?.roller as AdminRol[]) ?? []);
   };
 
   // Closure'a takılmaması için user'ı her çağrıda supabase.auth'tan al
@@ -60,13 +71,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user: u,
         yukleniyor: false,
         premiumBitis: u ? prev.premiumBitis : null,
+        adminRoller: u ? prev.adminRoller : null,
         premiumYenile,
       }));
       if (u) {
         setTimeout(() => {
-          premiumGetir(u.id).then((bitis) => {
+          Promise.all([premiumGetir(u.id), adminRollerGetir(u.id)]).then(([bitis, roller]) => {
             if (!aktif) return;
-            setDurum((prev) => ({ ...prev, premiumBitis: bitis }));
+            setDurum((prev) => ({ ...prev, premiumBitis: bitis, adminRoller: roller }));
           });
         }, 0);
       }
@@ -86,9 +98,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => useContext(AuthContext);
 
+/**
+ * Kullanıcının herhangi bir admin rolü var mı? (super, icerik, operasyon)
+ * adminler tablosundan dinamik olarak okunur. Hardcoded email kontrolü artık yok.
+ */
 export const useIsAdmin = (): boolean => {
-  const { user } = useAuth();
-  return useMemo(() => adminMi(user), [user]);
+  const { adminRoller } = useAuth();
+  return useMemo(() => (adminRoller ?? []).length > 0, [adminRoller]);
+};
+
+/** Spesifik bir role sahip mi? (super her şeyi kapsar) */
+export const useHasAdminRol = (rol: AdminRol): boolean => {
+  const { adminRoller } = useAuth();
+  return useMemo(() => {
+    if (!adminRoller) return false;
+    return adminRoller.includes('super') || adminRoller.includes(rol);
+  }, [adminRoller, rol]);
 };
 
 export const useIsPremium = (): boolean => {
