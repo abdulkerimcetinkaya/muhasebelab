@@ -163,47 +163,47 @@ export const AdminKullaniciDetaySayfasi = () => {
                     <div className="text-[13px] font-mono text-stone-500 dark:text-zinc-500 mt-1">
                       {detay.email}
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 text-[12px]">
+                    <div className="flex flex-wrap gap-x-6 gap-y-3 mt-4 text-[12px]">
                       {detay.universite && (
-                        <div>
-                          <div className="text-[10px] tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-600">
+                        <div className="min-w-[140px]">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
                             Üniversite
                           </div>
                           <div className="font-medium">{detay.universite}</div>
                         </div>
                       )}
                       {detay.bolum && (
-                        <div>
-                          <div className="text-[10px] tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-600">
+                        <div className="min-w-[120px]">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
                             Bölüm
                           </div>
                           <div className="font-medium">{detay.bolum}</div>
                         </div>
                       )}
                       {detay.sinif && (
-                        <div>
-                          <div className="text-[10px] tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-600">
+                        <div className="min-w-[80px]">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
                             Sınıf
                           </div>
                           <div className="font-medium">{detay.sinif}</div>
                         </div>
                       )}
                       {detay.hedef && (
-                        <div>
-                          <div className="text-[10px] tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-600">
+                        <div className="min-w-[100px]">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
                             Hedef
                           </div>
                           <div className="font-medium">{detay.hedef}</div>
                         </div>
                       )}
-                      <div>
-                        <div className="text-[10px] tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-600">
+                      <div className="min-w-[120px]">
+                        <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
                           Kayıt Tarihi
                         </div>
                         <div className="font-medium">{tarihFormat(detay.created_at)}</div>
                       </div>
-                      <div>
-                        <div className="text-[10px] tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-600">
+                      <div className="min-w-[120px]">
+                        <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
                           KVKK Kabul
                         </div>
                         <div className="font-medium">{tarihFormat(detay.kvkk_kabul_tarihi)}</div>
