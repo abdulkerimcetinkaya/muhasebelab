@@ -190,6 +190,17 @@ export type IndirimKullanimRow = {
   kullanildi_at: string;
 };
 
+export type AdminLogRow = {
+  id: string;
+  admin_id: string | null;
+  admin_email: string;
+  islem: string;
+  hedef_user_id: string | null;
+  hedef_email: string | null;
+  detay: Record<string, unknown> | null;
+  yapilan_at: string;
+};
+
 export type PlanRow = {
   kod: string;
   ad: string;
@@ -528,6 +539,15 @@ export type Database = {
           kullanildi_at?: string;
         };
         Update: Partial<IndirimKullanimRow>;
+        Relationships: [];
+      };
+      admin_log: {
+        Row: AdminLogRow;
+        Insert: Omit<AdminLogRow, 'id' | 'yapilan_at'> & {
+          id?: string;
+          yapilan_at?: string;
+        };
+        Update: Partial<AdminLogRow>;
         Relationships: [];
       };
     };
