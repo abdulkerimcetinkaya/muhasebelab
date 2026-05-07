@@ -182,15 +182,33 @@ export const tumAdminleriYukle = async (): Promise<Admin[]> => {
   return (data ?? []) as Admin[];
 };
 
-/** Bir kullanıcıyı admin yap. */
-export const adminEkle = async (userId: string): Promise<void> => {
-  const { error } = await supabase.rpc('admin_ekle', { _user_id: userId });
+/** Bir kullanıcıyı admin yap. Default rol: ['operasyon']. Sadece super admin çağırabilir. */
+export const adminEkle = async (
+  userId: string,
+  roller: import('./database.types').AdminRol[] = ['operasyon'],
+): Promise<void> => {
+  const { error } = await supabase.rpc('admin_ekle', {
+    _user_id: userId,
+    _roller: roller,
+  });
   if (error) throw error;
 };
 
 /** Bir kullanıcının admin yetkisini kaldır. */
 export const adminCikar = async (userId: string): Promise<void> => {
   const { error } = await supabase.rpc('admin_cikar', { _user_id: userId });
+  if (error) throw error;
+};
+
+/** Bir admin'in rollerini güncelle. Sadece super admin çağırabilir. */
+export const adminRolleriGuncelle = async (
+  userId: string,
+  roller: import('./database.types').AdminRol[],
+): Promise<void> => {
+  const { error } = await supabase.rpc('admin_rolleri_guncelle', {
+    _user_id: userId,
+    _roller: roller,
+  });
   if (error) throw error;
 };
 

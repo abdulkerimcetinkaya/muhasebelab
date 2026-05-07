@@ -225,11 +225,14 @@ export type SoruHataRow = {
 export type BildirimTip = 'duyuru' | 'bilgi' | 'uyari' | 'guncelleme';
 export type BildirimHedefTipi = 'herkes' | 'premium' | 'free' | 'belirli';
 
+export type AdminRol = 'super' | 'icerik' | 'operasyon';
+
 export type AdminRow = {
   user_id: string;
   email: string;
   eklenen_at: string;
   ekleyen_id: string | null;
+  roller: AdminRol[];
 };
 
 export type KatkiciUnvan = 'akademisyen' | 'ymm' | 'smmm';
@@ -567,11 +570,15 @@ export type Database = {
         Returns: void;
       };
       admin_ekle: {
-        Args: { _user_id: string };
+        Args: { _user_id: string; _roller?: AdminRol[] };
         Returns: void;
       };
       admin_cikar: {
         Args: { _user_id: string };
+        Returns: void;
+      };
+      admin_rolleri_guncelle: {
+        Args: { _user_id: string; _roller: AdminRol[] };
         Returns: void;
       };
       admin_ilerleme_sifirla: {
