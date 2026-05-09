@@ -822,10 +822,8 @@ input[type='number'] { -moz-appearance: textfield; }
    Müfredat sayfası — editorial liste estetiği
 --------------------------------------------------------------- */
 .mufredat-sayfa {
-  background:
-    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--copper) 4%, transparent), transparent 40%),
-    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--sky-deep, #5a87b0) 5%, transparent), transparent 50%),
-    var(--bg);
+  /* AnaSayfa ile aynı zemin: düz kirli beyaz, gradient yok */
+  background: var(--bg);
 }
 
 .mufredat-satir {
