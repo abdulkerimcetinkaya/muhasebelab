@@ -825,22 +825,27 @@ input[type='number'] { -moz-appearance: textfield; }
    (var(--bg)) miras alır — diğer sayfalarla birebir aynı. */
 
 .mufredat-satir {
-  background: transparent;
-  transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-              padding 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  /* DNA: surface kartı (white) + hairline + DNA aksent (mavi) */
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  transition: background 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   cursor: pointer;
 }
 .mufredat-satir:hover {
-  background: color-mix(in srgb, var(--copper) 5%, transparent);
-  padding-left: 36px;
+  background: var(--surface);
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
 }
 .mufredat-satir:focus-visible {
-  outline: 2px solid var(--copper-deep);
-  outline-offset: -4px;
+  outline: 2px solid var(--blue-deep);
+  outline-offset: 2px;
 }
 
 .mufredat-baslik {
-  background-image: linear-gradient(to right, var(--copper-deep), var(--copper-deep));
+  background-image: linear-gradient(to right, var(--blue-deep), var(--blue-deep));
   background-size: 0% 1px;
   background-position: 0 calc(100% - 0.06em);
   background-repeat: no-repeat;
@@ -848,17 +853,18 @@ input[type='number'] { -moz-appearance: textfield; }
               color 0.3s ease;
 }
 .mufredat-satir:hover .mufredat-baslik {
-  color: var(--copper-deep);
+  color: var(--blue-deep);
   background-size: 100% 1px;
 }
 
 .mufredat-accent {
   position: absolute;
-  left: 0;
+  left: -1px;
   top: 12%;
   bottom: 12%;
   width: 0;
-  background: var(--copper-deep);
+  background: var(--blue-deep);
+  border-radius: 12px 0 0 12px;
   transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
@@ -870,18 +876,12 @@ input[type='number'] { -moz-appearance: textfield; }
   transition: color 0.3s, gap 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .mufredat-satir:hover .mufredat-ok {
-  color: var(--copper-deep);
+  color: var(--blue-deep);
   transform: translateX(4px);
 }
 
-.mufredat-hairline {
-  height: 1px;
-  background: linear-gradient(to right,
-    transparent 0%,
-    color-mix(in srgb, var(--ink) 12%, transparent) 5%,
-    color-mix(in srgb, var(--ink) 12%, transparent) 95%,
-    transparent 100%);
-}
+/* .mufredat-hairline kaldırıldı: kartlar artık ayrı `surface` parçalar,
+   aralarına gap (space-y-3) konuyor — divider çizgisine gerek yok. */
 
 /* Koç turu — kart sabit alt-orta yerleşim, halka aktif elementi vurgular */
 .koc-turu-kart {

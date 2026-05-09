@@ -62,7 +62,7 @@ export const UnitelerSayfasi = ({ ilerleme }: Props) => {
           <div className="col-span-2 text-right">İlerleme</div>
         </div>
 
-        <ol>
+        <ol className="space-y-3">
           {uniteler.map((u, i) => {
             const toplam = u.sorular.length;
             const cozulen = u.sorular.filter((s) => ilerleme.cozulenler[s.id]).length;
@@ -114,7 +114,7 @@ export const UnitelerSayfasi = ({ ilerleme }: Props) => {
                           <Icon name="Check" size={9} /> Bitti
                         </span>
                       ) : baslandi ? (
-                        <span className="text-copper-deep">Devam ediyor</span>
+                        <span className="text-brand-deep">Devam ediyor</span>
                       ) : (
                         <span className="text-ink-quiet">Başlamadı</span>
                       )}
@@ -134,7 +134,7 @@ export const UnitelerSayfasi = ({ ilerleme }: Props) => {
                             className="absolute inset-y-0 left-0 transition-all duration-500"
                             style={{
                               width: `${yuzde}%`,
-                              background: tamamlandi ? 'var(--success, #047857)' : 'var(--copper-deep)',
+                              background: tamamlandi ? 'var(--success)' : 'var(--blue-deep)',
                             }}
                           />
                         </div>
@@ -146,10 +146,9 @@ export const UnitelerSayfasi = ({ ilerleme }: Props) => {
                     </div>
                   </div>
 
-                  {/* hover bakır accent çubuk (left edge) */}
+                  {/* hover mavi accent çubuk (left edge) */}
                   <span className="mufredat-accent" aria-hidden />
                 </button>
-                <div className="mufredat-hairline" aria-hidden />
               </li>
             );
           })}
