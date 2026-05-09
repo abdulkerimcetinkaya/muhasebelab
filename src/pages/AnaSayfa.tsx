@@ -872,7 +872,7 @@ const AnonimAnaSayfa = () => {
             {[...MARQUEE_KODLAR, ...MARQUEE_KODLAR, ...MARQUEE_KODLAR].map((k, i) => (
               <span
                 key={i}
-                className="font-mono text-[14px] sm:text-[16px] tracking-[0.12em] text-white whitespace-nowrap inline-flex items-center gap-3"
+                className="font-mono text-[14px] sm:text-[16px] tracking-[0.12em] text-bg whitespace-nowrap inline-flex items-center gap-3"
               >
                 <span className="w-1 h-1 rounded-full bg-copper-deep flex-shrink-0" />
                 {k}

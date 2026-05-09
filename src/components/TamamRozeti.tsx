@@ -14,7 +14,7 @@ export const TamamRozeti = ({ size = 16, className = '' }: Props) => {
   const ikonBoyut = Math.max(8, Math.round(size * 0.6));
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-full bg-blue-900 dark:bg-blue-700 text-white ${className}`}
+      className={`inline-flex items-center justify-center rounded-full bg-brand-deep dark:bg-brand-deep text-bg ${className}`}
       style={{ width: size, height: size }}
       aria-label="Tamamlandı"
     >

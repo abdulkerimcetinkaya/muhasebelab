@@ -51,32 +51,32 @@ export const GenelView = ({ ilerleme, stat, onYetkinligeGit }: Props) => {
         <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold mb-4">
           Karne Özeti
         </h2>
-        <div className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 rounded-2xl p-5 sm:p-7">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 divide-x-0 md:divide-x divide-stone-200 dark:divide-zinc-700">
+        <div className="bg-surface border border-line rounded-2xl p-5 sm:p-7">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 divide-x-0 md:divide-x divide-stone-200">
             <KarneStat
               ikon="ListChecks"
-              ikonRenk="text-blue-700 dark:text-blue-400"
+              ikonRenk="text-brand dark:text-brand-mute"
               etiket="Toplam Çözüm"
               deger={stat.cozulenSayi}
               altMetin={`/ ${stat.toplamSoru} soru`}
             />
             <KarneStat
               ikon="Star"
-              ikonRenk="text-amber-600 dark:text-amber-400"
+              ikonRenk="text-premium"
               etiket="Toplam Puan"
               deger={ilerleme.puan}
               altMetin="kazanılan"
             />
             <KarneStat
               ikon="Award"
-              ikonRenk="text-violet-700 dark:text-violet-400"
+              ikonRenk="text-brand-deep"
               etiket="Rozet"
               deger={kazanilanRozetSayi}
               altMetin={`/ ${ROZETLER.length} rozet`}
             />
             <KarneStat
               ikon="Flame"
-              ikonRenk="text-rose-600 dark:text-rose-400"
+              ikonRenk="text-danger dark:text-danger"
               etiket="En Uzun Streak"
               deger={rekorlar.enUzunStreak}
               altMetin={rekorlar.enUzunStreak === 1 ? 'gün' : 'gün'}
@@ -89,10 +89,10 @@ export const GenelView = ({ ilerleme, stat, onYetkinligeGit }: Props) => {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Yaklaşan Rozet */}
         {yakin ? (
-          <div className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
+          <div className="bg-surface border border-line rounded-xl p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <Icon name="Award" size={12} className="text-amber-600 dark:text-amber-400" />
-              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+              <Icon name="Award" size={12} className="text-premium" />
+              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
                 Yaklaşan Rozet
               </span>
             </div>
@@ -100,36 +100,36 @@ export const GenelView = ({ ilerleme, stat, onYetkinligeGit }: Props) => {
               <Icon
                 name={yakin.rozet.icon}
                 size={20}
-                className="text-amber-700 dark:text-amber-400 flex-shrink-0"
+                className="text-premium-deep flex-shrink-0"
               />
               <div className="min-w-0">
                 <div className="font-display text-[15px] font-bold tracking-tight leading-tight truncate">
                   {yakin.rozet.ad}
                 </div>
-                <div className="text-[10.5px] text-stone-500 dark:text-zinc-500 font-medium truncate">
+                <div className="text-[10.5px] text-ink-mute font-medium truncate">
                   {yakin.rozet.aciklama}
                 </div>
               </div>
             </div>
-            <div className="h-1.5 bg-stone-100 dark:bg-zinc-800 rounded overflow-hidden">
+            <div className="h-1.5 bg-surface-2 rounded overflow-hidden">
               <div
-                className="h-full bg-amber-500 dark:bg-amber-400 transition-all"
+                className="h-full bg-premium dark:bg-premium transition-all"
                 style={{ width: `${yakin.yuzde}%` }}
               />
             </div>
-            <div className="text-[11px] text-stone-500 dark:text-zinc-500 font-mono font-bold tabular-nums mt-1">
+            <div className="text-[11px] text-ink-mute font-mono font-bold tabular-nums mt-1">
               {yakin.mevcut}/{yakin.hedef} (%{yakin.yuzde})
             </div>
           </div>
         ) : (
-          <div className="bg-white dark:bg-zinc-800/40 border border-dashed border-stone-200 dark:border-zinc-700 rounded-xl p-4">
+          <div className="bg-surface border border-dashed border-line rounded-xl p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <Icon name="Award" size={12} className="text-stone-400 dark:text-zinc-600" />
-              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-400 dark:text-zinc-600">
+              <Icon name="Award" size={12} className="text-ink-quiet" />
+              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-quiet">
                 Yaklaşan Rozet
               </span>
             </div>
-            <p className="text-[12.5px] text-stone-500 dark:text-zinc-500 leading-relaxed">
+            <p className="text-[12.5px] text-ink-mute leading-relaxed">
               {kazanilanRozetSayi === ROZETLER.length
                 ? 'Tüm rozetleri kazandın.'
                 : 'Bir soru çöz, ilk rozet için ilerlemen başlasın.'}
@@ -140,38 +140,38 @@ export const GenelView = ({ ilerleme, stat, onYetkinligeGit }: Props) => {
         {/* Yetkinlik Özeti */}
         <button
           onClick={onYetkinligeGit}
-          className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 rounded-xl p-4 text-left transition active:scale-[0.99] group"
+          className="bg-surface border border-line hover:border-ink rounded-xl p-4 text-left transition active:scale-[0.99] group"
           aria-label="Yetkinlik bölümüne git"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-1.5">
-              <Icon name="BarChart3" size={12} className="text-emerald-700 dark:text-emerald-400" />
-              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+              <Icon name="BarChart3" size={12} className="text-success dark:text-success" />
+              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
                 Yetkinlik Özeti
               </span>
             </div>
             <Icon
               name="ArrowRight"
               size={12}
-              className="text-stone-400 dark:text-zinc-600 group-hover:text-stone-900 dark:group-hover:text-zinc-300 transition"
+              className="text-ink-quiet group-hover:text-ink dark:group-hover:text-ink-soft transition"
             />
           </div>
           <div className="flex items-baseline gap-1">
             <span className="font-display text-3xl font-bold tabular-nums leading-none">
               {yetkinlikOrt}
             </span>
-            <span className="text-[11px] text-stone-400 dark:text-zinc-600 font-bold">%</span>
+            <span className="text-[11px] text-ink-quiet font-bold">%</span>
           </div>
-          <div className="text-[11px] text-stone-500 dark:text-zinc-500 font-semibold mt-1">
+          <div className="text-[11px] text-ink-mute font-semibold mt-1">
             ortalama mastery
           </div>
-          <div className="h-1.5 bg-stone-100 dark:bg-zinc-800 rounded overflow-hidden mt-3">
+          <div className="h-1.5 bg-surface-2 rounded overflow-hidden mt-3">
             <div
-              className="h-full bg-emerald-500 dark:bg-emerald-400 transition-all"
+              className="h-full bg-success transition-all"
               style={{ width: `${yetkinlikOrt}%` }}
             />
           </div>
-          <div className="text-[10.5px] text-stone-500 dark:text-zinc-500 font-medium mt-1">
+          <div className="text-[10.5px] text-ink-mute font-medium mt-1">
             {uniteler.length} ünite üzerinden
           </div>
         </button>
@@ -183,14 +183,14 @@ export const GenelView = ({ ilerleme, stat, onYetkinligeGit }: Props) => {
           <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold">
             Kişisel Rekorlar
           </h2>
-          <span className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+          <span className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
             Vitrin
           </span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Rekor
             ikon="TrendingDown"
-            ikonRenk="text-blue-700 dark:text-blue-400"
+            ikonRenk="text-brand dark:text-brand-mute"
             etiket="Tek günde rekor"
             deger={`${rekorlar.enCokGun.sayi}`}
             altMetin={
@@ -204,14 +204,14 @@ export const GenelView = ({ ilerleme, stat, onYetkinligeGit }: Props) => {
           />
           <Rekor
             ikon="Calendar"
-            ikonRenk="text-emerald-700 dark:text-emerald-400"
+            ikonRenk="text-success dark:text-success"
             etiket="Aktif gün"
             deger={`${rekorlar.toplamAktifGun}`}
             altMetin="toplam"
           />
           <Rekor
             ikon="Sparkles"
-            ikonRenk="text-violet-700 dark:text-violet-400"
+            ikonRenk="text-brand-deep"
             etiket="İlk soru"
             deger={
               rekorlar.ilkSoruTarihi
@@ -231,7 +231,7 @@ export const GenelView = ({ ilerleme, stat, onYetkinligeGit }: Props) => {
           />
           <Rekor
             ikon="Trophy"
-            ikonRenk="text-amber-700 dark:text-amber-400"
+            ikonRenk="text-premium-deep"
             etiket="Bitirilen ünite"
             deger={`${
               uniteler.filter((u) => {
@@ -263,14 +263,14 @@ const KarneStat = ({
   <div className="md:px-5 first:md:pl-0 last:md:pr-0">
     <div className="flex items-center gap-1.5 mb-2">
       <Icon name={ikon} size={14} className={ikonRenk} />
-      <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+      <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
         {etiket}
       </span>
     </div>
     <div className="font-display text-4xl sm:text-5xl font-bold tabular-nums leading-none">
       {deger}
     </div>
-    <div className="text-[12px] text-stone-500 dark:text-zinc-500 font-semibold mt-1.5">
+    <div className="text-[12px] text-ink-mute font-semibold mt-1.5">
       {altMetin}
     </div>
   </div>
@@ -289,17 +289,17 @@ const Rekor = ({
   deger: string;
   altMetin: string;
 }) => (
-  <div className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
+  <div className="bg-surface border border-line rounded-xl p-4">
     <div className="flex items-center gap-1.5 mb-2">
       <Icon name={ikon} size={12} className={ikonRenk} />
-      <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+      <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
         {etiket}
       </span>
     </div>
     <div className="font-display text-2xl sm:text-3xl font-bold tabular-nums leading-none">
       {deger}
     </div>
-    <div className="text-[11px] text-stone-500 dark:text-zinc-500 font-semibold mt-1">
+    <div className="text-[11px] text-ink-mute font-semibold mt-1">
       {altMetin}
     </div>
   </div>

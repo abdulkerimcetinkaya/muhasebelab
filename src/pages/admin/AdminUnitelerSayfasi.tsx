@@ -130,7 +130,7 @@ export const AdminUnitelerSayfasi = () => {
             Yeni Ünite
           </button>
         </div>
-        <p className="text-sm text-stone-600 dark:text-zinc-400 font-medium mb-6">
+        <p className="text-sm text-ink-soft font-medium mb-6">
           Üniteleri ekle, düzenle, sil ve sıralarını değiştir. Sorular bağlı olan üniteler
           silinemez.
         </p>
@@ -140,19 +140,19 @@ export const AdminUnitelerSayfasi = () => {
             <Icon
               name="Search"
               size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 dark:text-zinc-600"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-quiet"
             />
             <input
               value={arama}
               onChange={(e) => setArama(e.target.value)}
               placeholder="Ad, ID veya açıklama ara…"
-              className="w-full pl-9 pr-3 py-2.5 text-sm bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+              className="w-full pl-9 pr-3 py-2.5 text-sm bg-surface border border-line rounded-lg focus:outline-none focus:border-ink"
             />
           </div>
         </div>
 
         {hata && (
-          <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300">
+          <div className="mb-4 p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger">
             {hata}
           </div>
         )}
@@ -166,8 +166,8 @@ export const AdminUnitelerSayfasi = () => {
             aciklama={arama ? 'Aramana uygun ünite yok.' : 'Henüz hiç ünite yok. Yeni Ünite ile başla.'}
           />
         ) : (
-          <div className="border border-stone-200 dark:border-zinc-700 rounded-xl overflow-hidden bg-white dark:bg-zinc-900/50">
-            <div className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-2.5 bg-stone-50 dark:bg-zinc-800/40 border-b border-stone-200 dark:border-zinc-700 text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+          <div className="border border-line rounded-xl overflow-hidden bg-surface">
+            <div className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <div>Sıra</div>
               <div>İkon</div>
               <div>Ünite</div>
@@ -177,38 +177,38 @@ export const AdminUnitelerSayfasi = () => {
             {filtreli.map((u) => (
               <div
                 key={u.id}
-                className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-3 items-center border-b border-stone-200 dark:border-zinc-800 last:border-b-0 hover:bg-stone-50/60 dark:hover:bg-zinc-800/30 transition"
+                className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
               >
                 <div>
                   <input
                     type="number"
                     defaultValue={u.sira}
                     onBlur={(e) => siraDegistir(u, parseInt(e.target.value, 10) || u.sira)}
-                    className="w-12 px-2 py-1 text-sm font-mono bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded text-center focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                    className="w-12 px-2 py-1 text-sm font-mono bg-surface border border-line rounded text-center focus:outline-none focus:border-ink"
                   />
                 </div>
                 <div>
                   <Thiings name={u.thiings_icon ?? 'square'} size={36} />
                 </div>
                 <div className="min-w-0">
-                  <div className="font-display font-bold text-[15px] tracking-tight text-stone-900 dark:text-zinc-100 truncate">
+                  <div className="font-display font-bold text-[15px] tracking-tight text-ink truncate">
                     {u.ad}
                   </div>
-                  <div className="font-mono text-[11px] text-stone-400 dark:text-zinc-600 mt-0.5">
+                  <div className="font-mono text-[11px] text-ink-quiet mt-0.5">
                     {u.id}
                   </div>
                   {u.aciklama && (
-                    <div className="text-[12.5px] text-stone-500 dark:text-zinc-500 line-clamp-1 mt-1 max-w-2xl">
+                    <div className="text-[12.5px] text-ink-mute line-clamp-1 mt-1 max-w-2xl">
                       {u.aciklama}
                     </div>
                   )}
                 </div>
                 <div className="text-right">
-                  <span className="font-mono text-[14px] font-bold text-stone-700 dark:text-zinc-300 tabular-nums">
+                  <span className="font-mono text-[14px] font-bold text-ink-soft tabular-nums">
                     {u.soruSayisi}
                   </span>
                   {u.soruSayisi === 0 && (
-                    <div className="text-[9.5px] tracking-[0.2em] uppercase text-amber-700 dark:text-amber-400 font-bold mt-0.5">
+                    <div className="text-[9.5px] tracking-[0.2em] uppercase text-premium-deep font-bold mt-0.5">
                       Boş
                     </div>
                   )}
@@ -216,7 +216,7 @@ export const AdminUnitelerSayfasi = () => {
                 <div className="flex items-center justify-end gap-1.5">
                   <button
                     onClick={() => nav(`/admin/uniteler/${u.id}/konular`)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-100 dark:bg-zinc-800 text-stone-900 dark:text-zinc-100 text-[11.5px] font-bold tracking-wide hover:bg-stone-200 dark:hover:bg-zinc-700 transition"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 text-ink text-[11.5px] font-bold tracking-wide hover:bg-line-soft transition"
                     title="Alt-konular (LeetCode-tarzı mikro yapı)"
                   >
                     <Icon name="LayoutList" size={12} />
@@ -224,7 +224,7 @@ export const AdminUnitelerSayfasi = () => {
                   </button>
                   <button
                     onClick={() => nav(`/admin/uniteler/${u.id}/icerik`)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[11.5px] font-bold tracking-wide hover:opacity-90 transition"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-ink text-bg text-[11.5px] font-bold tracking-wide hover:opacity-90 transition"
                     title="Notion-tarzı ünite içerik editörü"
                   >
                     <Icon name="FileText" size={12} />
@@ -232,7 +232,7 @@ export const AdminUnitelerSayfasi = () => {
                   </button>
                   <button
                     onClick={() => setForm({ acik: true, duzenleniyor: u })}
-                    className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded transition"
+                    className="p-2 hover:bg-surface-2 rounded transition"
                     title="Üst meta düzenle (ad, ikon, sıra)"
                   >
                     <Icon name="Pencil" size={14} />
@@ -240,7 +240,7 @@ export const AdminUnitelerSayfasi = () => {
                   <button
                     onClick={() => sil(u, u.soruSayisi)}
                     disabled={u.soruSayisi > 0}
-                    className="p-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded transition text-rose-600 dark:text-rose-400 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                    className="p-2 hover:bg-danger-soft rounded transition text-danger dark:text-danger disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                     title={u.soruSayisi > 0 ? `${u.soruSayisi} soru bağlı, silemezsin` : 'Sil'}
                   >
                     <Icon name="Trash2" size={14} />
@@ -319,16 +319,16 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
 
   return (
     <div
-      className="fixed inset-0 z-[120] bg-stone-950/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8"
+      className="fixed inset-0 z-[120] bg-ink/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8"
       onClick={onKapat}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-xl bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-2xl shadow-2xl my-auto"
+        className="w-full max-w-xl bg-surface border border-line-strong rounded-2xl shadow-2xl my-auto"
       >
-        <div className="flex items-center justify-between p-5 border-b border-stone-200 dark:border-zinc-700">
+        <div className="flex items-center justify-between p-5 border-b border-line">
           <div>
-            <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1">
+            <div className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold mb-1">
               {yeni ? 'Yeni' : 'Düzenle'}
             </div>
             <h2 className="font-display text-xl font-bold tracking-tight">
@@ -337,7 +337,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
           </div>
           <button
             onClick={onKapat}
-            className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
+            className="p-2 hover:bg-surface-2 rounded-lg transition"
           >
             <Icon name="X" size={16} />
           </button>
@@ -357,7 +357,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
               onChange={(e) => setId(e.target.value)}
               disabled={!yeni}
               placeholder="hazir-degerler"
-              className="w-full px-3 py-2 text-sm font-mono bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg disabled:opacity-60 focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+              className="w-full px-3 py-2 text-sm font-mono bg-surface border border-line rounded-lg disabled:opacity-60 focus:outline-none focus:border-ink"
             />
           </Alan>
 
@@ -366,7 +366,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
               value={ad}
               onChange={(e) => setAd(e.target.value)}
               placeholder="Hazır Değerler (Kasa, Banka, Çekler)"
-              className="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+              className="w-full px-3 py-2 text-sm bg-surface border border-line rounded-lg focus:outline-none focus:border-ink"
             />
           </Alan>
 
@@ -376,7 +376,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
               onChange={(e) => setAciklama(e.target.value)}
               rows={3}
               placeholder="100, 101, 102, 103, 108 hesapları — günlük tahsilat ve ödemeler…"
-              className="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg resize-none focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+              className="w-full px-3 py-2 text-sm bg-surface border border-line rounded-lg resize-none focus:outline-none focus:border-ink"
             />
           </Alan>
 
@@ -386,7 +386,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
                 type="number"
                 value={sira}
                 onChange={(e) => setSira(parseInt(e.target.value, 10) || 0)}
-                className="w-full px-3 py-2 text-sm font-mono bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                className="w-full px-3 py-2 text-sm font-mono bg-surface border border-line rounded-lg focus:outline-none focus:border-ink"
               />
             </Alan>
 
@@ -395,7 +395,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
                 <select
                   value={thiingsIcon}
                   onChange={(e) => setThiingsIcon(e.target.value)}
-                  className="flex-1 px-3 py-2 text-sm font-mono bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                  className="flex-1 px-3 py-2 text-sm font-mono bg-surface border border-line rounded-lg focus:outline-none focus:border-ink"
                 >
                   {IKON_SECENEK.map((i) => (
                     <option key={i} value={i}>
@@ -409,13 +409,13 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
           </div>
 
           {hata && (
-            <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300">
+            <div className="p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger">
               {hata}
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 p-5 border-t border-stone-200 dark:border-zinc-700">
+        <div className="flex items-center justify-end gap-2 p-5 border-t border-line">
           <button
             onClick={onKapat}
             className="btn"
@@ -446,12 +446,12 @@ const Alan = ({
   children: React.ReactNode;
 }) => (
   <label className="block">
-    <span className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1.5 block">
+    <span className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-1.5 block">
       {etiket}
     </span>
     {children}
     {yardim && (
-      <span className="block text-[11.5px] text-stone-500 dark:text-zinc-500 mt-1.5 leading-snug">
+      <span className="block text-[11.5px] text-ink-mute mt-1.5 leading-snug">
         {yardim}
       </span>
     )}

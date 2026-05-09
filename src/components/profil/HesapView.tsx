@@ -215,8 +215,8 @@ export const HesapView = ({
         <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold mb-4">
           Görünen Ad
         </h2>
-        <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6">
-          <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+        <div className="bg-surface border border-line rounded-2xl p-6">
+          <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
             Profilde gözüken ad
           </label>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -226,12 +226,12 @@ export const HesapView = ({
               onChange={(e) => setAdTaslak(e.target.value)}
               maxLength={30}
               placeholder="Öğrenci"
-              className="flex-1 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+              className="flex-1 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
             />
             <button
               onClick={adKaydet}
               disabled={!adDegisti || adKaydediliyor}
-              className="inline-flex items-center justify-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 bg-ink text-bg px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {adKaydediliyor ? (
                 <Icon name="Loader2" size={12} className="animate-spin" />
@@ -242,7 +242,7 @@ export const HesapView = ({
             </button>
           </div>
           {adMesaj && (
-            <div className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-emerald-700 dark:text-emerald-400 font-bold">
+            <div className="mt-3 inline-flex items-center gap-1.5 text-[12px] text-success dark:text-success font-bold">
               <Icon name="Check" size={12} />
               {adMesaj}
             </div>
@@ -257,14 +257,14 @@ export const HesapView = ({
               Eğitim Bilgileri
             </h2>
             {profilYukleniyor && (
-              <Icon name="Loader2" size={14} className="animate-spin text-stone-400" />
+              <Icon name="Loader2" size={14} className="animate-spin text-ink-quiet" />
             )}
           </div>
 
-          <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6 space-y-5">
+          <div className="bg-surface border border-line rounded-2xl p-6 space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                   Üniversite
                 </label>
                 <input
@@ -273,11 +273,11 @@ export const HesapView = ({
                   onChange={(e) => onProfilDegis({ ...profil, universite: e.target.value })}
                   maxLength={80}
                   placeholder="Örn: Boğaziçi, ODTÜ..."
-                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
                 />
               </div>
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                   Bölüm
                 </label>
                 <input
@@ -286,13 +286,13 @@ export const HesapView = ({
                   onChange={(e) => onProfilDegis({ ...profil, bolum: e.target.value })}
                   maxLength={80}
                   placeholder="Örn: İşletme, İktisat..."
-                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+              <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                 Sınıf
               </label>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -304,10 +304,10 @@ export const HesapView = ({
                       onProfilDegis({ ...profil, sinif: profil.sinif === kod ? '' : kod })
                     }
                     className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
-                      profil.sinif === kod
-                        ? 'border-stone-900 dark:border-zinc-100 bg-stone-50 dark:bg-zinc-800 text-stone-900 dark:text-zinc-100'
-                        : 'border-stone-200 dark:border-zinc-700 hover:border-stone-400 dark:hover:border-zinc-600 text-stone-600 dark:text-zinc-400'
-                    }`}
+ profil.sinif === kod
+ ? 'border-ink bg-bg-tint text-ink'
+ : 'border-line hover:border-ink text-ink-soft'
+ }`}
                   >
                     {SINIF_LABEL[kod]}
                   </button>
@@ -316,7 +316,7 @@ export const HesapView = ({
             </div>
 
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+              <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                 Hedef
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -328,10 +328,10 @@ export const HesapView = ({
                       onProfilDegis({ ...profil, hedef: profil.hedef === kod ? '' : kod })
                     }
                     className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
-                      profil.hedef === kod
-                        ? 'border-stone-900 dark:border-zinc-100 bg-stone-50 dark:bg-zinc-800 text-stone-900 dark:text-zinc-100'
-                        : 'border-stone-200 dark:border-zinc-700 hover:border-stone-400 dark:hover:border-zinc-600 text-stone-600 dark:text-zinc-400'
-                    }`}
+ profil.hedef === kod
+ ? 'border-ink bg-bg-tint text-ink'
+ : 'border-line hover:border-ink text-ink-soft'
+ }`}
                   >
                     {HEDEF_LABEL[kod]}
                   </button>
@@ -341,9 +341,9 @@ export const HesapView = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                   Doğum Yılı{' '}
-                  <span className="text-stone-400 dark:text-zinc-600">(opsiyonel)</span>
+                  <span className="text-ink-quiet">(opsiyonel)</span>
                 </label>
                 <input
                   type="number"
@@ -352,7 +352,7 @@ export const HesapView = ({
                   min={1950}
                   max={2015}
                   placeholder="1998"
-                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium font-mono"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium font-mono"
                 />
               </div>
             </div>
@@ -362,9 +362,9 @@ export const HesapView = ({
                 type="checkbox"
                 checked={profil.bultenIzni}
                 onChange={(e) => onProfilDegis({ ...profil, bultenIzni: e.target.checked })}
-                className="mt-0.5 h-4 w-4 rounded border-stone-300 dark:border-zinc-600 text-blue-700 focus:ring-blue-500/30 cursor-pointer"
+                className="mt-0.5 h-4 w-4 rounded border-line-strong text-brand focus:ring-blue-500/30 cursor-pointer"
               />
-              <span className="text-sm text-stone-700 dark:text-zinc-300 font-medium leading-snug">
+              <span className="text-sm text-ink-soft font-medium leading-snug">
                 Yeni özellikler ve içerik güncellemelerinden e-posta ile haberdar olmak istiyorum.
               </span>
             </label>
@@ -372,10 +372,10 @@ export const HesapView = ({
             {mesaj && (
               <div
                 className={`flex items-start gap-2 p-3 rounded-lg text-sm font-medium ${
-                  mesaj.tip === 'basarili'
-                    ? 'bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300'
-                    : 'bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300'
-                }`}
+ mesaj.tip === 'basarili'
+ ? 'bg-success-soft border border-success-soft text-success'
+ : 'bg-danger-soft border border-danger-soft text-danger'
+ }`}
               >
                 <Icon
                   name={mesaj.tip === 'basarili' ? 'CheckCircle2' : 'AlertCircle'}
@@ -390,7 +390,7 @@ export const HesapView = ({
               <button
                 onClick={kaydet}
                 disabled={kaydediliyor || profilYukleniyor}
-                className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {kaydediliyor ? (
                   <>
@@ -415,9 +415,9 @@ export const HesapView = ({
           <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold mb-4">
             Şifre Değiştir
           </h2>
-          <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6 space-y-4">
+          <div className="bg-surface border border-line rounded-2xl p-6 space-y-4">
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+              <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                 Mevcut Şifre
               </label>
               <div className="relative">
@@ -426,12 +426,12 @@ export const HesapView = ({
                   value={eskiSifre}
                   onChange={(e) => setEskiSifre(e.target.value)}
                   autoComplete="current-password"
-                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium pr-10"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setSifreGoster((v) => !v)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-stone-400 hover:text-stone-700 dark:hover:text-zinc-300 transition"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-ink-quiet hover:text-ink-soft transition"
                   tabIndex={-1}
                 >
                   <Icon name={sifreGoster ? 'EyeOff' : 'Eye'} size={14} />
@@ -441,7 +441,7 @@ export const HesapView = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                   Yeni Şifre
                 </label>
                 <input
@@ -450,12 +450,12 @@ export const HesapView = ({
                   onChange={(e) => setYeniSifre(e.target.value)}
                   autoComplete="new-password"
                   minLength={6}
-                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
                   placeholder="En az 6 karakter"
                 />
               </div>
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                   Yeni Şifre (Tekrar)
                 </label>
                 <input
@@ -464,7 +464,7 @@ export const HesapView = ({
                   onChange={(e) => setYeniSifreTekrar(e.target.value)}
                   autoComplete="new-password"
                   minLength={6}
-                  className="w-full bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
                 />
               </div>
             </div>
@@ -472,10 +472,10 @@ export const HesapView = ({
             {sifreMesaj && (
               <div
                 className={`flex items-start gap-2 p-3 rounded-lg text-sm font-medium ${
-                  sifreMesaj.tip === 'basarili'
-                    ? 'bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-300'
-                    : 'bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300'
-                }`}
+ sifreMesaj.tip === 'basarili'
+ ? 'bg-success-soft border border-success-soft text-success'
+ : 'bg-danger-soft border border-danger-soft text-danger'
+ }`}
               >
                 <Icon
                   name={sifreMesaj.tip === 'basarili' ? 'CheckCircle2' : 'AlertCircle'}
@@ -495,7 +495,7 @@ export const HesapView = ({
                   !yeniSifre ||
                   !yeniSifreTekrar
                 }
-                className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sifreKaydediliyor ? (
                   <>
@@ -521,7 +521,7 @@ export const HesapView = ({
         <div className="space-y-2">
           <button
             onClick={onTemaDegistir}
-            className="w-full flex items-center justify-between py-4 px-4 border border-stone-200 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition active:scale-[0.998] text-left rounded-xl"
+            className="w-full flex items-center justify-between py-4 px-4 border border-line hover:border-ink transition active:scale-[0.998] text-left rounded-xl"
           >
             <div className="flex items-center gap-3">
               <Icon name={ilerleme.tema === 'dark' ? 'Moon' : 'Sun'} size={16} />
@@ -529,12 +529,12 @@ export const HesapView = ({
                 Görünüm · {ilerleme.tema === 'dark' ? 'Karanlık' : 'Açık'}
               </span>
             </div>
-            <Icon name="ChevronRight" size={14} className="text-stone-400" />
+            <Icon name="ChevronRight" size={14} className="text-ink-quiet" />
           </button>
           <button
             onClick={karneIndir}
             disabled={karneYukleniyor}
-            className="w-full flex items-center justify-between py-4 px-4 border border-stone-200 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition active:scale-[0.998] text-left rounded-xl disabled:opacity-60 disabled:cursor-wait"
+            className="w-full flex items-center justify-between py-4 px-4 border border-line hover:border-ink transition active:scale-[0.998] text-left rounded-xl disabled:opacity-60 disabled:cursor-wait"
           >
             <div className="flex items-center gap-3">
               {karneYukleniyor ? (
@@ -544,38 +544,38 @@ export const HesapView = ({
               )}
               <div>
                 <div className="font-semibold">Karneyi PDF olarak indir</div>
-                <div className="text-[11.5px] text-stone-500 dark:text-zinc-500 font-medium mt-0.5">
+                <div className="text-[11.5px] text-ink-mute font-medium mt-0.5">
                   Akademik karne · yetkinlik haritası · rozetler · rekorlar
                 </div>
               </div>
             </div>
-            <Icon name="ChevronRight" size={14} className="text-stone-400" />
+            <Icon name="ChevronRight" size={14} className="text-ink-quiet" />
           </button>
           {karneHata && (
-            <div className="px-4 py-2 text-[12px] text-rose-700 dark:text-rose-400 font-medium">
+            <div className="px-4 py-2 text-[12px] text-danger dark:text-danger font-medium">
               {karneHata}
             </div>
           )}
           <button
             onClick={onSifirla}
-            className="w-full flex items-center justify-between py-4 px-4 border border-stone-200 dark:border-zinc-700 hover:border-rose-600 transition active:scale-[0.998] text-left group rounded-xl"
+            className="w-full flex items-center justify-between py-4 px-4 border border-line hover:border-danger transition active:scale-[0.998] text-left group rounded-xl"
           >
-            <div className="flex items-center gap-3 text-rose-700 dark:text-rose-400 group-hover:text-rose-600">
+            <div className="flex items-center gap-3 text-danger dark:text-danger group-hover:text-danger">
               <Icon name="Trash2" size={16} />
               <span className="font-semibold">Tüm ilerlemeyi sıfırla</span>
             </div>
-            <Icon name="ChevronRight" size={14} className="text-stone-400" />
+            <Icon name="ChevronRight" size={14} className="text-ink-quiet" />
           </button>
         </div>
       </section>
 
       {/* Tehlikeli bölge — hesap silme (KVKK madde 11) */}
       {user && (
-        <section className="pt-8 border-t border-rose-200 dark:border-rose-900/40">
-          <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold text-rose-800 dark:text-rose-300 mb-2">
+        <section className="pt-8 border-t border-danger-soft">
+          <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold text-danger mb-2">
             Tehlikeli Bölge
           </h2>
-          <p className="text-[13px] text-stone-600 dark:text-zinc-400 mb-4 leading-relaxed">
+          <p className="text-[13px] text-ink-soft mb-4 leading-relaxed">
             Hesabını silersen tüm ilerlemen, rozetlerin, çözümlerin geri dönülmez şekilde silinir.
             Mali kayıtlar (ödeme geçmişi) saklanır ama seninle bağlantısı kopar.
           </p>
@@ -586,7 +586,7 @@ export const HesapView = ({
               setSilSifre('');
               setSilHata(null);
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-rose-300 dark:border-rose-800 bg-rose-50/40 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-800 dark:text-rose-300 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-danger-soft bg-danger-soft/40 hover:bg-danger-soft text-danger text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition"
           >
             <Icon name="Trash2" size={13} />
             Hesabımı Sil
@@ -596,15 +596,15 @@ export const HesapView = ({
 
       {silOnay && (
         <div
-          className="fixed inset-0 z-[120] bg-stone-950/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8"
+          className="fixed inset-0 z-[120] bg-ink/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8"
           onClick={() => !siliniyor && setSilOnay(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-white dark:bg-zinc-900 border border-rose-300 dark:border-rose-800 rounded-2xl shadow-2xl my-auto"
+            className="w-full max-w-md bg-surface border border-danger-soft rounded-2xl shadow-2xl my-auto"
           >
-            <div className="p-5 border-b border-stone-200 dark:border-zinc-700">
-              <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300 mb-2">
+            <div className="p-5 border-b border-line">
+              <div className="flex items-center gap-2 text-danger mb-2">
                 <Icon name="AlertTriangle" size={18} />
                 <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-bold">
                   Geri alınamaz
@@ -615,25 +615,25 @@ export const HesapView = ({
               </h2>
             </div>
             <div className="p-5 space-y-4">
-              <p className="text-[13.5px] text-stone-700 dark:text-zinc-300 leading-relaxed">
+              <p className="text-[13.5px] text-ink-soft leading-relaxed">
                 Bu işlem hesabını, çözümlerini, rozetlerini, profil bilgilerini kalıcı olarak siler.{' '}
                 <strong>Geri dönüşü yok.</strong>
               </p>
               <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
-                  Onaylamak için <span className="font-mono text-rose-700">SİL</span> yaz
+                <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
+                  Onaylamak için <span className="font-mono text-danger">SİL</span> yaz
                 </label>
                 <input
                   type="text"
                   value={silOnayMetni}
                   onChange={(e) => setSilOnayMetni(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 focus:border-rose-500 dark:focus:border-rose-500 rounded-lg text-sm font-mono outline-none"
+                  className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong focus:border-danger dark:focus:border-danger rounded-lg text-sm font-mono outline-none"
                   placeholder="SİL"
                   autoFocus
                 />
               </div>
               <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+                <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
                   Şifren
                 </label>
                 <input
@@ -641,22 +641,22 @@ export const HesapView = ({
                   value={silSifre}
                   onChange={(e) => setSilSifre(e.target.value)}
                   autoComplete="current-password"
-                  className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 focus:border-rose-500 dark:focus:border-rose-500 rounded-lg text-sm font-medium outline-none"
+                  className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong focus:border-danger dark:focus:border-danger rounded-lg text-sm font-medium outline-none"
                   placeholder="Mevcut şifreni gir"
                 />
               </div>
               {silHata && (
-                <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+                <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
                   <Icon name="AlertCircle" size={14} className="flex-shrink-0 mt-0.5" />
                   <span>{silHata}</span>
                 </div>
               )}
             </div>
-            <div className="flex items-center justify-end gap-2 p-5 border-t border-stone-200 dark:border-zinc-700">
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-line">
               <button
                 onClick={() => setSilOnay(false)}
                 disabled={siliniyor}
-                className="px-4 py-2 text-[12px] font-bold text-stone-700 dark:text-zinc-300 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition disabled:opacity-50"
+                className="px-4 py-2 text-[12px] font-bold text-ink-soft hover:bg-surface-2 rounded-lg transition disabled:opacity-50"
               >
                 Vazgeç
               </button>
@@ -667,7 +667,7 @@ export const HesapView = ({
                   !silSifre ||
                   siliniyor
                 }
-                className="inline-flex items-center gap-2 bg-rose-700 hover:bg-rose-800 dark:bg-rose-600 dark:hover:bg-rose-500 text-white px-4 py-2 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 bg-danger hover:bg-danger dark:bg-danger dark:hover:bg-danger text-bg px-4 py-2 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {siliniyor ? (
                   <>

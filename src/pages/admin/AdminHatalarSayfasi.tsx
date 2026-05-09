@@ -17,10 +17,10 @@ interface ZenginHata extends SoruHataRow {
 }
 
 const DURUM_RENK: Record<HataDurum, string> = {
-  acik: 'bg-rose-100 text-rose-900 dark:bg-rose-950/40 dark:text-rose-300',
-  incelemede: 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300',
-  duzeltildi: 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300',
-  reddedildi: 'bg-stone-200 text-stone-700 dark:bg-zinc-800 dark:text-zinc-400',
+  acik: 'bg-danger-soft text-danger',
+  incelemede: 'bg-premium-soft text-premium-deep',
+  duzeltildi: 'bg-success-soft text-success',
+  reddedildi: 'bg-line-soft text-ink-soft  ',
 };
 
 const DURUM_AD: Record<HataDurum, string> = {
@@ -157,10 +157,10 @@ export const AdminHatalarSayfasi = () => {
       <button
         onClick={() => setDurumFiltre(deger)}
         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
-          aktif
-            ? 'bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-            : 'bg-stone-100 dark:bg-zinc-800 text-stone-600 dark:text-zinc-400 hover:bg-stone-200 dark:hover:bg-zinc-700'
-        }`}
+ aktif
+ ? 'bg-ink text-bg '
+ : 'bg-surface-2 text-ink-soft hover:bg-line-soft '
+ }`}
       >
         {etiket}
         <span className={`text-[10px] font-mono ${aktif ? 'opacity-70' : 'opacity-50'}`}>
@@ -176,7 +176,7 @@ export const AdminHatalarSayfasi = () => {
       <div className="flex-1 min-w-0">
         <div className="mb-6">
           <h1 className="font-display text-3xl font-bold tracking-tight">Hata Bildirimleri</h1>
-          <p className="text-sm text-stone-600 dark:text-zinc-400 font-medium mt-1">
+          <p className="text-sm text-ink-soft font-medium mt-1">
             Kullanıcıların bildirdiği soru hatalarını incele ve durum güncelle.
           </p>
         </div>
@@ -190,7 +190,7 @@ export const AdminHatalarSayfasi = () => {
         </div>
 
         {hataMesaj && (
-          <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300 font-medium mb-4">
+          <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger font-medium mb-4">
             <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
             <span>{hataMesaj}</span>
           </div>
@@ -213,7 +213,7 @@ export const AdminHatalarSayfasi = () => {
             {filtreli.map((h) => (
               <div
                 key={h.id}
-                className="bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 rounded-xl p-5"
+                className="bg-surface border border-line rounded-xl p-5"
               >
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="min-w-0 flex-1">
@@ -223,7 +223,7 @@ export const AdminHatalarSayfasi = () => {
                       >
                         {DURUM_AD[h.durum]}
                       </span>
-                      <span className="text-xs text-stone-500 dark:text-zinc-500 font-medium">
+                      <span className="text-xs text-ink-mute font-medium">
                         {tarihFormat(h.created_at)}
                       </span>
                     </div>
@@ -233,7 +233,7 @@ export const AdminHatalarSayfasi = () => {
                     >
                       {h.soru_baslik}
                     </Link>
-                    <div className="text-xs text-stone-500 dark:text-zinc-500 font-mono mt-0.5">
+                    <div className="text-xs text-ink-mute font-mono mt-0.5">
                       {h.soru_id}
                       {h.kullanici_email && (
                         <span className="ml-3 font-sans">
@@ -246,7 +246,7 @@ export const AdminHatalarSayfasi = () => {
                     <select
                       value={h.durum}
                       onChange={(e) => durumGuncelle(h.id, e.target.value as HataDurum)}
-                      className="px-2 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-xs rounded font-semibold"
+                      className="px-2 py-1.5 bg-bg-tint border border-line-strong outline-none text-xs rounded font-semibold"
                     >
                       <option value="acik">Açık</option>
                       <option value="incelemede">İnceleniyor</option>
@@ -255,21 +255,21 @@ export const AdminHatalarSayfasi = () => {
                     </select>
                     <Link
                       to={`/admin/sorular/${h.soru_id}`}
-                      className="p-1.5 hover:bg-stone-200 dark:hover:bg-zinc-700 rounded transition"
+                      className="p-1.5 hover:bg-line-soft rounded transition"
                       title="Soruyu Düzenle"
                     >
                       <Icon name="Edit3" size={14} />
                     </Link>
                     <button
                       onClick={() => sil(h.id)}
-                      className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded transition"
+                      className="p-1.5 hover:bg-danger-soft text-danger dark:text-danger rounded transition"
                       title="Sil"
                     >
                       <Icon name="Trash2" size={14} />
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-stone-700 dark:text-zinc-300 leading-relaxed font-medium whitespace-pre-wrap break-words">
+                <p className="text-sm text-ink-soft leading-relaxed font-medium whitespace-pre-wrap break-words">
                   {h.aciklama}
                 </p>
               </div>

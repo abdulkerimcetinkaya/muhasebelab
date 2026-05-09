@@ -98,7 +98,7 @@ export const KatkiciBasvuruSayfasi = () => {
     <div className="max-w-3xl mx-auto px-5 sm:px-8 py-12">
       <Link
         to="/profil"
-        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 transition mb-6"
+        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-ink-mute hover:text-ink transition mb-6"
       >
         <Icon name="ArrowLeft" size={12} />
         Profil
@@ -107,7 +107,7 @@ export const KatkiciBasvuruSayfasi = () => {
       <h1 className="font-display text-4xl font-bold tracking-tight">
         Bir Öğrenciye Dokunun
       </h1>
-      <p className="text-stone-600 dark:text-zinc-400 mt-3 leading-relaxed">
+      <p className="text-ink-soft mt-3 leading-relaxed">
         Yıllarınızı bu mesleğe verdiniz. Yevmiye defterindeki bir kaydın
         arkasındaki mantığı, bir kursta öğrenilemeyen tecrübeyi, mesleğin
         içinde edindiniz. Şimdi <strong>aynı yola çıkmak üzere olan binlerce
@@ -116,9 +116,9 @@ export const KatkiciBasvuruSayfasi = () => {
         MuhasebeLab'a ekleyeceğiniz her soru, onlardan birinin kafasında
         çakacak bir kıvılcım.
       </p>
-      <p className="text-stone-500 dark:text-zinc-500 mt-3 text-[13.5px] leading-relaxed">
+      <p className="text-ink-mute mt-3 text-[13.5px] leading-relaxed">
         Küçük bir teşekkür olarak —
-        <strong className="text-stone-700 dark:text-zinc-300"> 5 onaylı sorudan
+        <strong className="text-ink-soft"> 5 onaylı sorudan
         sonra 1 yıl Premium hediyemizdir.</strong>
       </p>
 
@@ -130,11 +130,11 @@ export const KatkiciBasvuruSayfasi = () => {
         ].map((k) => (
           <div
             key={k.baslik}
-            className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4"
+            className="bg-surface border border-line rounded-xl p-4"
           >
-            <Icon name={k.ikon === 'GraduationCap' ? 'BadgeCheck' : k.ikon} size={20} className="text-blue-600 dark:text-blue-400" />
+            <Icon name={k.ikon === 'GraduationCap' ? 'BadgeCheck' : k.ikon} size={20} className="text-brand dark:text-brand-mute" />
             <div className="font-display text-[15px] font-bold mt-2">{k.baslik}</div>
-            <div className="text-[12.5px] text-stone-600 dark:text-zinc-400 mt-1 leading-relaxed">
+            <div className="text-[12.5px] text-ink-soft mt-1 leading-relaxed">
               {k.metin}
             </div>
           </div>
@@ -142,17 +142,17 @@ export const KatkiciBasvuruSayfasi = () => {
       </div>
 
       {yukleniyor ? (
-        <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+        <div className="text-sm text-ink-quiet">Yükleniyor…</div>
       ) : mevcut ? (
         <div className="space-y-4">
           <div
             className={`p-5 rounded-xl border ${
-              mevcut.durum === 'onayli'
-                ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900'
-                : mevcut.durum === 'reddedildi'
-                  ? 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900'
-                  : 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900'
-            }`}
+ mevcut.durum === 'onayli'
+ ? 'bg-success-soft border-success-soft'
+ : mevcut.durum === 'reddedildi'
+ ? 'bg-danger-soft border-danger-soft'
+ : 'bg-premium-soft border-premium-soft'
+ }`}
           >
             <div className="flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase font-bold">
               <Icon
@@ -171,12 +171,12 @@ export const KatkiciBasvuruSayfasi = () => {
               <strong>{mevcut.ad_soyad}</strong> · {UNVAN_ETIKETLERI[mevcut.unvan]}
               {mevcut.kurum && mevcut.kurum !== '—' && ` · ${mevcut.kurum}`}
             </div>
-            <div className="text-[12px] text-stone-600 dark:text-zinc-400 mt-1">
+            <div className="text-[12px] text-ink-soft mt-1">
               Başvuru: {tarihFormat(mevcut.created_at)}
               {mevcut.karar_at && ` · Karar: ${tarihFormat(mevcut.karar_at)}`}
             </div>
             {mevcut.red_sebep && (
-              <div className="mt-3 text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+              <div className="mt-3 text-[13px] text-danger font-medium">
                 <strong>Red sebebi:</strong> {mevcut.red_sebep}
               </div>
             )}
@@ -184,7 +184,7 @@ export const KatkiciBasvuruSayfasi = () => {
               <div className="mt-3 flex items-center gap-2">
                 <Link
                   to="/katkici/soru/yeni"
-                  className="inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
+                  className="inline-flex items-center gap-2 bg-success hover:bg-success text-bg px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
                 >
                   <Icon name="PlusCircle" size={12} />
                   Soru Ekle
@@ -194,7 +194,7 @@ export const KatkiciBasvuruSayfasi = () => {
           </div>
 
           {mevcut.durum === 'reddedildi' && (
-            <div className="text-[13px] text-stone-600 dark:text-zinc-400">
+            <div className="text-[13px] text-ink-soft">
               Red gerekçesini değerlendirip yeniden başvurabilirsin. Aşağıdaki formu
               güncelleyip tekrar gönder.
             </div>
@@ -205,7 +205,7 @@ export const KatkiciBasvuruSayfasi = () => {
       {(!mevcut || mevcut.durum === 'reddedildi') && !basarili && (
         <form
           onSubmit={gonder}
-          className="mt-8 bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6 space-y-4"
+          className="mt-8 bg-surface border border-line rounded-2xl p-6 space-y-4"
         >
           <h2 className="font-display text-xl font-bold tracking-tight">
             {mevcut ? 'Yeniden Başvur' : 'Başvuru Formu'}
@@ -213,7 +213,7 @@ export const KatkiciBasvuruSayfasi = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                 Ad Soyad *
               </label>
               <input
@@ -222,19 +222,19 @@ export const KatkiciBasvuruSayfasi = () => {
                 onChange={(e) => setAdSoyad(e.target.value)}
                 required
                 maxLength={120}
-                className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
                 placeholder="Doç. Dr. Ahmet Yılmaz"
               />
             </div>
             <div>
-              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                 Unvan *
               </label>
               <select
                 value={unvan}
                 onChange={(e) => setUnvan(e.target.value as KatkiciUnvan)}
                 required
-                className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
               >
                 <option value="akademisyen">Akademisyen</option>
                 <option value="ymm">YMM</option>
@@ -244,7 +244,7 @@ export const KatkiciBasvuruSayfasi = () => {
           </div>
 
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
               Kurum / Bağlı Olduğunuz Yer *
             </label>
             <input
@@ -253,13 +253,13 @@ export const KatkiciBasvuruSayfasi = () => {
               onChange={(e) => setKurum(e.target.value)}
               required
               maxLength={200}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
               placeholder="Boğaziçi Üniversitesi · Ankara SMMM Odası · X YMM Bürosu"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
               İletişim Email *
             </label>
             <input
@@ -268,16 +268,16 @@ export const KatkiciBasvuruSayfasi = () => {
               onChange={(e) => setIletisim(e.target.value)}
               required
               maxLength={200}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-mono outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-mono outline-none focus:border-ink"
               placeholder="profesyonel@kurum.edu.tr"
             />
-            <div className="text-[11px] text-stone-500 dark:text-zinc-500 mt-1">
+            <div className="text-[11px] text-ink-mute mt-1">
               Akademik veya mesleki email tercih edilir (doğrulama için).
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
               Açıklama (opsiyonel)
             </label>
             <textarea
@@ -285,16 +285,16 @@ export const KatkiciBasvuruSayfasi = () => {
               onChange={(e) => setAciklama(e.target.value)}
               rows={5}
               maxLength={2000}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 resize-none leading-relaxed"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink resize-none leading-relaxed"
               placeholder="Eklemek istediğin bir not varsa — uzmanlık alanın, hangi konularda soru hazırlamayı düşünüyorsun?"
             />
-            <div className="text-[11px] text-stone-400 dark:text-zinc-600 mt-1 text-right font-mono">
+            <div className="text-[11px] text-ink-quiet mt-1 text-right font-mono">
               {aciklama.length} / 2000
             </div>
           </div>
 
           {hata && (
-            <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+            <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
               <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
               <span>{hata}</span>
             </div>
@@ -303,7 +303,7 @@ export const KatkiciBasvuruSayfasi = () => {
           <button
             type="submit"
             disabled={gonderiliyor}
-            className="w-full inline-flex items-center justify-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-3 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition disabled:opacity-50"
+            className="w-full inline-flex items-center justify-center gap-2 bg-ink text-bg px-5 py-3 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition disabled:opacity-50"
           >
             <Icon
               name={gonderiliyor ? 'Loader2' : 'Send'}
@@ -316,7 +316,7 @@ export const KatkiciBasvuruSayfasi = () => {
       )}
 
       {basarili && (
-        <div className="mt-6 p-5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-xl text-emerald-800 dark:text-emerald-300">
+        <div className="mt-6 p-5 bg-success-soft border border-success-soft rounded-xl text-success">
           <Icon name="CheckCircle2" size={18} className="inline mr-2" />
           <strong>Başvurun alındı.</strong> Admin inceleyip karar verince haberdar olacaksın.
         </div>

@@ -26,13 +26,13 @@ const islemRengi = (islem: string): string => {
 const renkClass = (renk: string) => {
   switch (renk) {
     case 'amber':
-      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300';
+      return 'bg-premium-soft text-premium-deep';
     case 'rose':
-      return 'bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-300';
+      return 'bg-danger-soft text-danger';
     case 'blue':
-      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
+      return 'bg-brand-soft dark:bg-brand-deep/30 text-brand-deep dark:text-brand-mute';
     default:
-      return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300';
+      return 'bg-success-soft text-success';
   }
 };
 
@@ -88,7 +88,7 @@ export const AdminLogSayfasi = () => {
               <h1 className="font-display text-3xl font-bold tracking-tight">
                 Admin Log
               </h1>
-              <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
+              <p className="text-[13.5px] text-ink-soft mt-1">
                 Hangi admin ne zaman ne yaptı? Son <strong>{filtreli.length}</strong> işlem
                 {(filtreIslem || filtreAdmin) && ' (filtreli)'}.
               </p>
@@ -96,7 +96,7 @@ export const AdminLogSayfasi = () => {
             <button
               onClick={yukle}
               disabled={yukleniyor}
-              className="inline-flex items-center gap-2 border border-stone-300 dark:border-zinc-700 px-3 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:bg-stone-50 dark:hover:bg-zinc-800 transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 border border-line-strong px-3 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:bg-bg-tint transition disabled:opacity-50"
             >
               <Icon name="RefreshCw" size={12} className={yukleniyor ? 'animate-spin' : ''} />
               Yenile
@@ -108,7 +108,7 @@ export const AdminLogSayfasi = () => {
             <select
               value={filtreIslem}
               onChange={(e) => setFiltreIslem(e.target.value)}
-              className="px-3 py-2 bg-white dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-[12px] outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+              className="px-3 py-2 bg-surface border border-line-strong rounded-lg text-[12px] outline-none focus:border-ink"
             >
               <option value="">Tüm işlemler</option>
               {islemler.map((i) => (
@@ -120,7 +120,7 @@ export const AdminLogSayfasi = () => {
             <select
               value={filtreAdmin}
               onChange={(e) => setFiltreAdmin(e.target.value)}
-              className="px-3 py-2 bg-white dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-[12px] outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+              className="px-3 py-2 bg-surface border border-line-strong rounded-lg text-[12px] outline-none focus:border-ink"
             >
               <option value="">Tüm admin'ler</option>
               {adminler.map((a) => (
@@ -135,7 +135,7 @@ export const AdminLogSayfasi = () => {
                   setFiltreIslem('');
                   setFiltreAdmin('');
                 }}
-                className="text-[12px] text-stone-500 dark:text-zinc-500 hover:underline"
+                className="text-[12px] text-ink-mute hover:underline"
               >
                 Filtreleri temizle
               </button>
@@ -143,21 +143,21 @@ export const AdminLogSayfasi = () => {
           </div>
 
           {hata && (
-            <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-[13px] text-rose-800 dark:text-rose-300">
+            <div className="p-3 rounded-lg bg-danger-soft border border-danger-soft text-[13px] text-danger">
               {hata}
             </div>
           )}
 
           {yukleniyor ? (
-            <div className="text-stone-500 dark:text-zinc-500 text-sm">Yükleniyor…</div>
+            <div className="text-ink-mute text-sm">Yükleniyor…</div>
           ) : filtreli.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-stone-300 dark:border-zinc-700 p-10 text-center text-stone-500 dark:text-zinc-500 text-sm">
+            <div className="rounded-2xl border border-dashed border-line-strong p-10 text-center text-ink-mute text-sm">
               Kayıt yok.
             </div>
           ) : (
-            <div className="rounded-2xl border border-stone-200 dark:border-zinc-800 overflow-hidden">
+            <div className="rounded-2xl border border-line overflow-hidden">
               <table className="w-full text-[13px]">
-                <thead className="bg-stone-50 dark:bg-zinc-900 text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500">
+                <thead className="bg-bg-tint text-[10px] tracking-[0.2em] uppercase text-ink-mute">
                   <tr>
                     <th className="text-left px-4 py-3 font-bold">Tarih</th>
                     <th className="text-left px-4 py-3 font-bold">Admin</th>
@@ -166,15 +166,15 @@ export const AdminLogSayfasi = () => {
                     <th className="text-left px-4 py-3 font-bold">Detay</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-200 dark:divide-zinc-800">
+                <tbody className="divide-y divide-stone-200">
                   {filtreli.map((l) => {
                     const renk = islemRengi(l.islem);
                     return (
                       <tr
                         key={l.id}
-                        className="hover:bg-stone-50 dark:hover:bg-zinc-900/40"
+                        className="hover:bg-bg-tint"
                       >
-                        <td className="px-4 py-3 font-mono text-[12px] text-stone-600 dark:text-zinc-400 whitespace-nowrap">
+                        <td className="px-4 py-3 font-mono text-[12px] text-ink-soft whitespace-nowrap">
                           {tarihFormat(l.yapilan_at)}
                         </td>
                         <td className="px-4 py-3 font-mono text-[12px]">
@@ -187,10 +187,10 @@ export const AdminLogSayfasi = () => {
                             {ISLEM_ETIKETLERI[l.islem] ?? l.islem}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-mono text-[12px] text-stone-600 dark:text-zinc-400">
+                        <td className="px-4 py-3 font-mono text-[12px] text-ink-soft">
                           {l.hedef_email ?? '—'}
                         </td>
-                        <td className="px-4 py-3 text-[11.5px] text-stone-500 dark:text-zinc-500 max-w-[300px] truncate font-mono">
+                        <td className="px-4 py-3 text-[11.5px] text-ink-mute max-w-[300px] truncate font-mono">
                           {l.detay ? JSON.stringify(l.detay) : '—'}
                         </td>
                       </tr>

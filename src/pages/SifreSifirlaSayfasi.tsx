@@ -34,9 +34,9 @@ export const SifreSifirlaSayfasi = () => {
   if (gonderildi) {
     return (
       <main className="max-w-md mx-auto px-4 sm:px-6 py-16">
-        <div className="bg-white dark:bg-zinc-800/50 border border-line rounded-2xl p-6 sm:p-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 mb-4">
-            <Icon name="Check" size={20} className="text-emerald-700 dark:text-emerald-400" strokeWidth={3} />
+        <div className="bg-surface border border-line rounded-2xl p-6 sm:p-8 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-success-soft mb-4">
+            <Icon name="Check" size={20} className="text-success dark:text-success" strokeWidth={3} />
           </div>
           <h1 className="font-display text-2xl font-bold tracking-tight mb-2">E-posta yolda</h1>
           <p className="text-[14px] text-ink-soft leading-relaxed mb-6">
@@ -45,7 +45,7 @@ export const SifreSifirlaSayfasi = () => {
           </p>
           <Link
             to="/giris"
-            className="inline-flex items-center gap-2 text-[12px] font-bold text-blue-700 dark:text-blue-400 hover:underline"
+            className="inline-flex items-center gap-2 text-[12px] font-bold text-brand dark:text-brand-mute hover:underline"
           >
             <Icon name="ArrowLeft" size={12} />
             Giriş sayfasına dön
@@ -57,7 +57,7 @@ export const SifreSifirlaSayfasi = () => {
 
   return (
     <main className="max-w-md mx-auto px-4 sm:px-6 py-16">
-      <div className="bg-white dark:bg-zinc-800/50 border border-line rounded-2xl p-6 sm:p-8">
+      <div className="bg-surface border border-line rounded-2xl p-6 sm:p-8">
         <div className="mb-6">
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight mb-2">
             Şifremi unuttum
@@ -85,7 +85,7 @@ export const SifreSifirlaSayfasi = () => {
           </div>
 
           {hata && (
-            <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+            <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
               <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
               <span>{hata}</span>
             </div>
@@ -94,7 +94,7 @@ export const SifreSifirlaSayfasi = () => {
           <button
             type="submit"
             disabled={yukleniyor}
-            className="w-full bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-3 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+            className="w-full bg-ink text-bg px-5 py-3 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
           >
             {yukleniyor ? (
               <>

@@ -125,7 +125,7 @@ export const KurumOdemeSayfasi = () => {
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-12">
       <Link
         to="/premium"
-        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 transition mb-6"
+        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-ink-mute hover:text-ink transition mb-6"
       >
         <Icon name="ArrowLeft" size={12} />
         Premium
@@ -134,7 +134,7 @@ export const KurumOdemeSayfasi = () => {
       <h1 className="font-display text-3xl md:text-4xl tracking-tight font-bold mb-1">
         Planını yapılandır
       </h1>
-      <p className="text-stone-500 dark:text-zinc-500 text-[13.5px] font-medium mb-10">
+      <p className="text-ink-mute text-[13.5px] font-medium mb-10">
         Sınıf · Kurum için toplu ödeme
       </p>
 
@@ -153,15 +153,15 @@ export const KurumOdemeSayfasi = () => {
                 type="button"
                 onClick={() => setDonem('aylik')}
                 className={`text-left p-4 rounded-2xl border-2 transition ${
-                  donem === 'aylik'
-                    ? 'border-stone-900 dark:border-zinc-100 bg-white dark:bg-zinc-900/40'
-                    : 'border-stone-200 dark:border-zinc-800 bg-stone-50/40 dark:bg-zinc-900/20 hover:border-stone-300 dark:hover:border-zinc-700'
-                }`}
+ donem === 'aylik'
+ ? 'border-ink bg-surface'
+ : 'border-line bg-bg-tint/40 hover:border-line-strong '
+ }`}
               >
                 <div className="text-[13.5px] font-semibold tracking-tight mb-1">
                   Aylık faturalama
                 </div>
-                <div className="text-[12px] text-stone-500 dark:text-zinc-500 font-mono">
+                <div className="text-[12px] text-ink-mute font-mono">
                   ₺{fmt(aylikFiyat)} / kullanıcı / ay
                 </div>
               </button>
@@ -170,34 +170,34 @@ export const KurumOdemeSayfasi = () => {
                 type="button"
                 onClick={() => setDonem('yillik')}
                 className={`text-left p-4 rounded-2xl border-2 transition relative ${
-                  donem === 'yillik'
-                    ? 'border-stone-900 dark:border-zinc-100 bg-white dark:bg-zinc-900/40'
-                    : 'border-stone-200 dark:border-zinc-800 bg-stone-50/40 dark:bg-zinc-900/20 hover:border-stone-300 dark:hover:border-zinc-700'
-                }`}
+ donem === 'yillik'
+ ? 'border-ink bg-surface'
+ : 'border-line bg-bg-tint/40 hover:border-line-strong '
+ }`}
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[13.5px] font-semibold tracking-tight">
                     Yıllık faturalama
                   </span>
                   {tasarrufYuzde > 0 && (
-                    <span className="text-[9px] tracking-[0.15em] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                    <span className="text-[9px] tracking-[0.15em] uppercase font-bold px-1.5 py-0.5 rounded bg-success-soft text-success dark:text-success">
                       −%{tasarrufYuzde} TASARRUF
                     </span>
                   )}
                 </div>
-                <div className="text-[12px] text-stone-500 dark:text-zinc-500 font-mono">
+                <div className="text-[12px] text-ink-mute font-mono">
                   ₺{fmt(Math.round(yillikAylikEsdeger))} / kullanıcı / ay
                 </div>
               </button>
             </div>
 
             {/* Kullanıcı sayısı */}
-            <div className="rounded-2xl border-2 border-stone-200 dark:border-zinc-800 bg-stone-50/40 dark:bg-zinc-900/20 p-4">
+            <div className="rounded-2xl border-2 border-line bg-bg-tint/40 p-4">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] tracking-[0.25em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+                <label className="text-[10px] tracking-[0.25em] uppercase font-bold text-ink-mute">
                   Kullanıcılar
                 </label>
-                <span className="text-[11px] text-stone-400 dark:text-zinc-600 font-mono">
+                <span className="text-[11px] text-ink-quiet font-mono">
                   {MIN_KISI} – {MAX_KISI}
                 </span>
               </div>
@@ -205,7 +205,7 @@ export const KurumOdemeSayfasi = () => {
                 <button
                   type="button"
                   onClick={() => setKisi(Math.max(MIN_KISI, kisi - 1))}
-                  className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 hover:bg-stone-100 dark:hover:bg-zinc-700 transition flex items-center justify-center"
+                  className="w-10 h-10 rounded-xl bg-surface border border-line hover:bg-surface-2 transition flex items-center justify-center"
                   aria-label="Azalt"
                 >
                   <Icon name="Minus" size={14} />
@@ -220,12 +220,12 @@ export const KurumOdemeSayfasi = () => {
                     if (Number.isNaN(v)) return;
                     setKisi(Math.min(MAX_KISI, Math.max(MIN_KISI, v)));
                   }}
-                  className="flex-1 h-10 text-center font-display text-2xl font-bold tracking-tight bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 rounded-xl outline-none focus:border-stone-900 dark:focus:border-zinc-100"
+                  className="flex-1 h-10 text-center font-display text-2xl font-bold tracking-tight bg-surface border border-line rounded-xl outline-none focus:border-ink"
                 />
                 <button
                   type="button"
                   onClick={() => setKisi(Math.min(MAX_KISI, kisi + 1))}
-                  className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 hover:bg-stone-100 dark:hover:bg-zinc-700 transition flex items-center justify-center"
+                  className="w-10 h-10 rounded-xl bg-surface border border-line hover:bg-surface-2 transition flex items-center justify-center"
                   aria-label="Arttır"
                 >
                   <Icon name="Plus" size={14} />
@@ -241,13 +241,13 @@ export const KurumOdemeSayfasi = () => {
             </h2>
 
             <div>
-              <label className="block text-[10px] tracking-[0.25em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+              <label className="block text-[10px] tracking-[0.25em] uppercase font-bold text-ink-mute mb-1.5">
                 E-posta
               </label>
-              <div className="px-4 py-3 rounded-xl bg-stone-50 dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-800 text-[13.5px] font-mono text-stone-700 dark:text-zinc-300">
+              <div className="px-4 py-3 rounded-xl bg-bg-tint border border-line text-[13.5px] font-mono text-ink-soft">
                 {user?.email ?? '—'}
               </div>
-              <div className="text-[11px] text-stone-500 dark:text-zinc-500 mt-1.5 leading-relaxed">
+              <div className="text-[11px] text-ink-mute mt-1.5 leading-relaxed">
                 Ödeme onayı ve fatura bu adrese gönderilir. Öğrenci listesi ödeme
                 sonrası ayrıca alınır.
               </div>
@@ -257,89 +257,89 @@ export const KurumOdemeSayfasi = () => {
 
         {/* ─── SAĞ: sticky summary (nötr stil) ──────────────── */}
         <aside className="lg:sticky lg:top-8">
-          <div className="rounded-3xl border border-stone-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-7 md:p-8">
+          <div className="rounded-3xl border border-line bg-surface p-7 md:p-8">
             <h2 className="font-display text-xl font-bold tracking-tight mb-1">
               Kurum planı
             </h2>
-            <div className="text-[12px] text-stone-500 dark:text-zinc-500 font-medium mb-6">
+            <div className="text-[12px] text-ink-mute font-medium mb-6">
               {donem === 'aylik' ? 'Aylık faturalama' : 'Yıllık faturalama'} · {kisi} kullanıcı
             </div>
 
-            <div className="text-[10px] tracking-[0.25em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-3">
+            <div className="text-[10px] tracking-[0.25em] uppercase font-bold text-ink-mute mb-3">
               Öne çıkan özellikler
             </div>
             <ul className="space-y-2.5 text-[13px] mb-6">
               {PREMIUM_OZELLIKLER.map((o) => (
                 <li
                   key={o}
-                  className="flex items-start gap-2.5 text-stone-700 dark:text-zinc-300"
+                  className="flex items-start gap-2.5 text-ink-soft"
                 >
                   <Icon
                     name="Check"
                     size={13}
-                    className="text-stone-400 dark:text-zinc-600 flex-shrink-0 mt-1"
+                    className="text-ink-quiet flex-shrink-0 mt-1"
                   />
                   <span className="leading-relaxed">{o}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="border-t border-stone-200 dark:border-zinc-800 pt-5 space-y-2 text-[13px]">
-              <div className="flex items-baseline justify-between text-stone-700 dark:text-zinc-300">
+            <div className="border-t border-line pt-5 space-y-2 text-[13px]">
+              <div className="flex items-baseline justify-between text-ink-soft">
                 <span>
                   {kisi}× {donem === 'aylik' ? 'Aylık' : 'Yıllık'} abonelik
                 </span>
                 <span className="font-mono">₺{fmt(indirimsizToplam)}</span>
               </div>
               {indirimYuzde > 0 && (
-                <div className="flex items-baseline justify-between text-emerald-700 dark:text-emerald-400 font-medium">
+                <div className="flex items-baseline justify-between text-success dark:text-success font-medium">
                   <span>İndirim −%{indirimYuzde}</span>
                   <span className="font-mono">−₺{fmt(indirimMiktar)}</span>
                 </div>
               )}
-              <div className="flex items-baseline justify-between text-stone-500 dark:text-zinc-500">
+              <div className="flex items-baseline justify-between text-ink-mute">
                 <span>Tahminî vergi</span>
                 <span className="font-mono italic">KDV dahil</span>
               </div>
             </div>
 
             {/* İndirim kodu */}
-            <div className="border-t border-stone-200 dark:border-zinc-800 mt-4 pt-4">
+            <div className="border-t border-line mt-4 pt-4">
               {!indirimAcik && indirimYuzde === 0 ? (
                 <button
                   type="button"
                   onClick={() => setIndirimAcik(true)}
-                  className="text-[12px] font-semibold text-stone-700 dark:text-zinc-300 hover:text-stone-900 dark:hover:text-zinc-100 transition flex items-center gap-1.5"
+                  className="text-[12px] font-semibold text-ink-soft hover:text-ink transition flex items-center gap-1.5"
                 >
                   <Icon name="Tag" size={12} />
                   İndirim kodum var
                 </button>
               ) : indirimYuzde > 0 ? (
-                <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
+                <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-success-soft border border-success-soft">
                   <div className="flex items-center gap-2 min-w-0">
                     <Icon
                       name="BadgeCheck"
                       size={14}
-                      className="text-emerald-700 dark:text-emerald-400 flex-shrink-0"
+                      className="text-success dark:text-success flex-shrink-0"
                     />
-                    <span className="text-[12px] font-mono font-semibold text-emerald-800 dark:text-emerald-200 truncate">
+                    <span className="text-[12px] font-mono font-semibold text-success dark:text-success-soft truncate">
                       {indirimKodu.toUpperCase()}
                     </span>
-                    <span className="text-[11px] text-emerald-700 dark:text-emerald-400">
+                    <span className="text-[11px] text-success dark:text-success">
                       −%{indirimYuzde}
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={indirimKaldir}
-                    className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline flex-shrink-0"
+                    className="text-[11px] text-success dark:text-success hover:underline flex-shrink-0"
                   >
                     Kaldır
                   </button>
                 </div>
               ) : (
                 <div>
-                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                     İndirim kodu
                   </label>
                   <div className="flex gap-2">
@@ -354,19 +354,19 @@ export const KurumOdemeSayfasi = () => {
                         }
                       }}
                       placeholder="Kodunu yaz"
-                      className="flex-1 h-10 px-3 text-[13px] font-mono uppercase bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                      className="flex-1 h-10 px-3 text-[13px] font-mono uppercase bg-bg-tint border border-line rounded-lg outline-none focus:border-ink"
                     />
                     <button
                       type="button"
                       onClick={indirimUygula}
                       disabled={indirimDoğrulanıyor || !indirimKodu.trim()}
-                      className="px-4 h-10 text-[11px] tracking-[0.15em] uppercase font-bold rounded-lg bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="px-4 h-10 text-[11px] tracking-[0.15em] uppercase font-bold rounded-lg bg-ink text-bg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {indirimDoğrulanıyor ? '…' : 'Uygula'}
                     </button>
                   </div>
                   {indirimMesaj && (
-                    <div className="mt-2 text-[11px] text-rose-700 dark:text-rose-400">
+                    <div className="mt-2 text-[11px] text-danger dark:text-danger">
                       {indirimMesaj}
                     </div>
                   )}
@@ -374,8 +374,8 @@ export const KurumOdemeSayfasi = () => {
               )}
             </div>
 
-            <div className="border-t border-stone-200 dark:border-zinc-800 mt-5 pt-5 flex items-baseline justify-between mb-6">
-              <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+            <div className="border-t border-line mt-5 pt-5 flex items-baseline justify-between mb-6">
+              <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-ink-mute">
                 Bugün ödenmesi gereken
               </span>
               <span className="font-display text-2xl font-bold tracking-tight">
@@ -387,7 +387,7 @@ export const KurumOdemeSayfasi = () => {
               type="button"
               onClick={odemeyeGec}
               disabled={gonderiliyor || !aktifPlan}
-              className="w-full py-3.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-ink text-bg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Icon
                 name={gonderiliyor ? 'Loader2' : 'CreditCard'}
@@ -398,12 +398,12 @@ export const KurumOdemeSayfasi = () => {
             </button>
 
             {hata && (
-              <div className="mt-3 p-2.5 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-[12px] text-red-700 dark:text-red-300">
+              <div className="mt-3 p-2.5 rounded-lg bg-danger-soft dark:bg-danger/20 border border-danger-soft dark:border-danger text-[12px] text-danger dark:text-danger">
                 {hata}
               </div>
             )}
 
-            <div className="mt-4 text-[11px] text-stone-500 dark:text-zinc-500 leading-relaxed">
+            <div className="mt-4 text-[11px] text-ink-mute leading-relaxed">
               7 gün koşulsuz iade · İstediğin zaman iptal · iyzico ile güvenli
               ödeme · Kart bilgilerin MuhasebeLab’a iletilmez.
             </div>

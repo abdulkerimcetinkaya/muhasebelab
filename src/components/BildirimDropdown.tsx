@@ -13,10 +13,10 @@ import {
 const POLL_MS = 60_000;
 
 const TIP_RENGI: Record<BildirimTip, string> = {
-  duyuru: 'text-blue-600 dark:text-blue-400',
-  bilgi: 'text-stone-500 dark:text-zinc-400',
-  uyari: 'text-amber-600 dark:text-amber-400',
-  guncelleme: 'text-emerald-600 dark:text-emerald-400',
+  duyuru: 'text-brand dark:text-brand-mute',
+  bilgi: 'text-ink-mute',
+  uyari: 'text-premium',
+  guncelleme: 'text-success dark:text-success',
 };
 
 const TIP_IKON: Record<BildirimTip, string> = {
@@ -124,22 +124,22 @@ export const BildirimDropdown = () => {
       >
         <Icon name="Bell" size={15} />
         {okunmamisSayisi > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center font-mono">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 bg-danger text-bg text-[10px] font-bold rounded-full flex items-center justify-center font-mono">
             {okunmamisSayisi > 9 ? '9+' : okunmamisSayisi}
           </span>
         )}
       </button>
 
       {acik && (
-        <div className="absolute right-0 mt-2 w-[320px] sm:w-[380px] bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-xl shadow-2xl z-50 max-h-[70vh] overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between p-3 border-b border-stone-200 dark:border-zinc-800">
+        <div className="absolute right-0 mt-2 w-[320px] sm:w-[380px] bg-surface border border-line rounded-xl shadow-2xl z-50 max-h-[70vh] overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between p-3 border-b border-line">
             <span className="font-display text-[15px] font-bold tracking-tight">
               Bildirimler
             </span>
             {okunmamisSayisi > 0 && (
               <button
                 onClick={hepsiniOkunduIsaretle}
-                className="text-[10px] tracking-[0.15em] uppercase font-mono font-bold text-stone-500 dark:text-zinc-400 hover:text-ink dark:hover:text-zinc-100 transition"
+                className="text-[10px] tracking-[0.15em] uppercase font-mono font-bold text-ink-mute hover:text-ink transition"
               >
                 Hepsini okundu işaretle
               </button>
@@ -157,9 +157,9 @@ export const BildirimDropdown = () => {
                 <button
                   key={b.id}
                   onClick={() => bildirimeTik(b)}
-                  className={`w-full text-left p-3 border-b border-stone-100 dark:border-zinc-800 last:border-b-0 hover:bg-stone-50 dark:hover:bg-zinc-800/50 transition flex items-start gap-3 ${
-                    !b.okundu ? 'bg-blue-50/40 dark:bg-blue-950/10' : ''
-                  }`}
+                  className={`w-full text-left p-3 border-b border-line-soft last:border-b-0 hover:bg-bg-tint transition flex items-start gap-3 ${
+ !b.okundu ? 'bg-brand-soft/40' : ''
+ }`}
                 >
                   <div className={`flex-shrink-0 mt-0.5 ${TIP_RENGI[b.tip]}`}>
                     <Icon name={TIP_IKON[b.tip]} size={16} />
@@ -168,13 +168,13 @@ export const BildirimDropdown = () => {
                     <div className="flex items-baseline gap-2 mb-0.5">
                       <span
                         className={`text-[13.5px] font-bold leading-tight ${
-                          !b.okundu ? 'text-ink' : 'text-ink-soft'
-                        }`}
+ !b.okundu ? 'text-ink' : 'text-ink-soft'
+ }`}
                       >
                         {b.baslik}
                       </span>
                       {!b.okundu && (
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0 mt-1" />
+                        <span className="w-1.5 h-1.5 bg-brand rounded-full flex-shrink-0 mt-1" />
                       )}
                     </div>
                     <div className="text-[12.5px] text-ink-soft leading-snug whitespace-pre-wrap">

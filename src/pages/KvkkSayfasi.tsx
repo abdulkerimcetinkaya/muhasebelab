@@ -12,34 +12,34 @@ export const KvkkSayfasi = () => {
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
       <button
         onClick={() => nav(-1)}
-        className="flex items-center gap-2 text-sm text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 mb-8 font-semibold"
+        className="flex items-center gap-2 text-sm text-ink-mute hover:text-ink mb-8 font-semibold"
       >
         <Icon name="ArrowLeft" size={14} />
         <span>Geri</span>
       </button>
 
-      <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-3">
+      <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-3">
         KVKK · Aydınlatma Metni
       </div>
       <h1 className="font-display text-3xl md:text-4xl tracking-tight font-bold mb-2">
         Kişisel Verilerin Korunması
       </h1>
-      <p className="text-stone-600 dark:text-zinc-400 text-sm font-medium mb-10">
+      <p className="text-ink-soft text-sm font-medium mb-10">
         6698 Sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, MuhasebeLab
         olarak kullanıcılarımızın kişisel verilerinin işlenmesine dair sizi aydınlatmak
         istiyoruz.
       </p>
 
-      <div className="space-y-7 text-[15px] text-stone-700 dark:text-zinc-300 leading-relaxed">
+      <div className="space-y-7 text-[15px] text-ink-soft leading-relaxed">
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             1. Veri Sorumlusu
           </h2>
           <p>
             MuhasebeLab platformu için veri sorumlusu sıfatıyla iletişim adresi:{' '}
             <a
               href="mailto:bilgi@muhasebelab.com"
-              className="text-blue-700 dark:text-blue-400 underline"
+              className="text-brand dark:text-brand-mute underline"
             >
               bilgi@muhasebelab.com
             </a>
@@ -48,7 +48,7 @@ export const KvkkSayfasi = () => {
         </section>
 
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             2. İşlenen Kişisel Veriler
           </h2>
           <p className="mb-3">Hesap oluşturma ve hizmet sunumu sırasında aşağıdaki kişisel
@@ -65,7 +65,7 @@ export const KvkkSayfasi = () => {
         </section>
 
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             3. Verilerin İşleme Amaçları
           </h2>
           <ul className="space-y-2 list-disc pl-6">
@@ -78,7 +78,7 @@ export const KvkkSayfasi = () => {
         </section>
 
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             4. Hukuki Sebep
           </h2>
           <p>
@@ -89,7 +89,7 @@ export const KvkkSayfasi = () => {
         </section>
 
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             5. Veri Aktarımı
           </h2>
           <p className="mb-3">Verileriniz aşağıdaki üçüncü taraflara, yalnızca hizmet sunumu için gerekli olan kapsamla aktarılır:</p>
@@ -102,7 +102,7 @@ export const KvkkSayfasi = () => {
         </section>
 
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             6. Saklama Süresi
           </h2>
           <p>
@@ -112,7 +112,7 @@ export const KvkkSayfasi = () => {
         </section>
 
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             7. Haklarınız
           </h2>
           <p className="mb-3">KVKK Madde 11 kapsamında aşağıdaki haklara sahipsiniz:</p>
@@ -128,7 +128,7 @@ export const KvkkSayfasi = () => {
             Talepleriniz için{' '}
             <a
               href="mailto:bilgi@muhasebelab.com"
-              className="text-blue-700 dark:text-blue-400 underline"
+              className="text-brand dark:text-brand-mute underline"
             >
               bilgi@muhasebelab.com
             </a>{' '}
@@ -137,7 +137,7 @@ export const KvkkSayfasi = () => {
         </section>
 
         <section>
-          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100">
+          <h2 className="font-display text-xl font-bold tracking-tight mb-3 text-ink">
             8. Çerezler
           </h2>
           <p>
@@ -146,8 +146,8 @@ export const KvkkSayfasi = () => {
           </p>
         </section>
 
-        <section className="border-t border-stone-200 dark:border-zinc-800 pt-7">
-          <p className="text-xs text-stone-500 dark:text-zinc-500 font-medium">
+        <section className="border-t border-line pt-7">
+          <p className="text-xs text-ink-mute font-medium">
             Son güncelleme: 26 Nisan 2026 · Bu metin yasal değişiklikler ve hizmet
             kapsamımızdaki güncellemelere göre revize edilebilir; önemli değişiklikleri
             e-posta ile bildiririz.

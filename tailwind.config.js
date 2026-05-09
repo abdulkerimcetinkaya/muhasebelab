@@ -11,64 +11,69 @@ export default {
         serif: ['"Instrument Serif"', 'Georgia', 'serif'],
       },
       colors: {
-        bg: 'var(--bg)',
-        'bg-warm': 'var(--bg-warm)',
-        'bg-tint': 'var(--bg-tint)',
+        // Alpha modifier desteği için: rgb(var(--xxx-rgb) / <alpha-value>)
+        // Bu sayede `bg-brand/40` gibi class'lar çalışır
+        bg: {
+          DEFAULT: 'rgb(var(--bg-rgb) / <alpha-value>)',
+          warm: 'rgb(var(--bg-warm-rgb) / <alpha-value>)',
+          tint: 'rgb(var(--bg-tint-rgb) / <alpha-value>)',
+        },
+        'bg-warm': 'rgb(var(--bg-warm-rgb) / <alpha-value>)',
+        'bg-tint': 'rgb(var(--bg-tint-rgb) / <alpha-value>)',
         surface: {
-          DEFAULT: 'var(--surface)',
-          2: 'var(--surface-2)',
+          DEFAULT: 'rgb(var(--surface-rgb) / <alpha-value>)',
+          2: 'rgb(var(--surface-2-rgb) / <alpha-value>)',
           tint: 'var(--surface-tint)',
         },
         ink: {
-          DEFAULT: 'var(--ink)',
-          soft: 'var(--ink-soft)',
-          mute: 'var(--ink-mute)',
-          quiet: 'var(--ink-quiet)',
+          DEFAULT: 'rgb(var(--ink-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--ink-soft-rgb) / <alpha-value>)',
+          mute: 'rgb(var(--ink-mute-rgb) / <alpha-value>)',
+          quiet: 'rgb(var(--ink-quiet-rgb) / <alpha-value>)',
         },
         line: {
-          DEFAULT: 'var(--line)',
-          soft: 'var(--line-soft)',
-          strong: 'var(--line-strong)',
+          DEFAULT: 'rgb(var(--line-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--line-soft-rgb) / <alpha-value>)',
+          strong: 'rgb(var(--line-strong-rgb) / <alpha-value>)',
         },
         sky: {
-          DEFAULT: 'var(--sky)',
-          deep: 'var(--sky-deep)',
-          soft: 'var(--sky-soft)',
+          DEFAULT: 'rgb(var(--blue-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--blue-deep-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--blue-soft-rgb) / <alpha-value>)',
         },
         accent: {
-          DEFAULT: 'var(--accent)',
-          deep: 'var(--accent-deep)',
-          soft: 'var(--accent-soft)',
+          DEFAULT: 'rgb(var(--blue-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--blue-deep-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--blue-soft-rgb) / <alpha-value>)',
         },
-        // Yeni: tek tutarlı mavi accent (skill: max 1 accent, sat<80%)
-        // Kullanım: bg-brand, text-brand, border-brand, hover:bg-brand-deep
+        // Tek tutarlı mavi accent (skill: max 1 accent, sat<80%)
         brand: {
-          DEFAULT: 'var(--blue)',
-          deep: 'var(--blue-deep)',
-          soft: 'var(--blue-soft)',
-          mute: 'var(--blue-mute)',
+          DEFAULT: 'rgb(var(--blue-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--blue-deep-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--blue-soft-rgb) / <alpha-value>)',
+          mute: 'rgb(var(--blue-mute-rgb) / <alpha-value>)',
         },
         primary: {
-          DEFAULT: 'var(--primary)',
-          deep: 'var(--primary-deep)',
+          DEFAULT: 'rgb(var(--blue-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--blue-deep-rgb) / <alpha-value>)',
         },
         premium: {
-          DEFAULT: 'var(--premium)',
-          deep: 'var(--premium-deep)',
-          soft: 'var(--premium-soft)',
+          DEFAULT: 'rgb(var(--copper-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--copper-deep-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--copper-soft-rgb) / <alpha-value>)',
         },
         copper: {
-          DEFAULT: 'var(--copper)',
-          deep: 'var(--copper-deep)',
-          soft: 'var(--copper-soft)',
+          DEFAULT: 'rgb(var(--copper-rgb) / <alpha-value>)',
+          deep: 'rgb(var(--copper-deep-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--copper-soft-rgb) / <alpha-value>)',
         },
         success: {
-          DEFAULT: 'var(--success)',
-          soft: 'var(--success-soft)',
+          DEFAULT: 'rgb(var(--success-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--success-soft-rgb) / <alpha-value>)',
         },
         danger: {
-          DEFAULT: 'var(--danger)',
-          soft: 'var(--danger-soft)',
+          DEFAULT: 'rgb(var(--danger-rgb) / <alpha-value>)',
+          soft: 'rgb(var(--danger-soft-rgb) / <alpha-value>)',
         },
         // Geriye dönük
         mint: {

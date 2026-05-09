@@ -68,8 +68,8 @@ const FisField = ({
   className?: string;
   children: React.ReactNode;
 }) => (
-  <div className={`bg-white dark:bg-zinc-900 ${className ?? ''}`}>
-    <div className="text-[9px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold px-2 pt-1.5">
+  <div className={`bg-surface ${className ?? ''}`}>
+    <div className="text-[9px] tracking-[0.2em] uppercase text-ink-mute font-bold px-2 pt-1.5">
       {label}
     </div>
     {children}
@@ -368,7 +368,7 @@ const SoruEkraniIci = ({
     <main className="max-w-[1400px] mx-auto px-4 lg:px-8 py-6">
       <button
         onClick={() => nav('/problemler')}
-        className="flex items-center gap-2 text-sm text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 mb-5 font-semibold"
+        className="flex items-center gap-2 text-sm text-ink-mute hover:text-ink mb-5 font-semibold"
       >
         <Icon name="ArrowLeft" size={14} />
         <span>Tüm Problemler</span>
@@ -379,7 +379,7 @@ const SoruEkraniIci = ({
         <div>
           <div className="flex items-center gap-3 mb-3 flex-wrap">
             {unite && <Thiings name={unite.thiingsIcon} size={22} />}
-            <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold">
               {unite?.ad}
             </div>
             <span
@@ -388,7 +388,7 @@ const SoruEkraniIci = ({
               {ZORLUK_AD[soru.zorluk]} · {ZORLUK_PUAN[soru.zorluk]} puan
             </span>
             {cozulmusMu && (
-              <span className="text-[9px] tracking-[0.2em] uppercase font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded">
+              <span className="text-[9px] tracking-[0.2em] uppercase font-bold text-success dark:text-success bg-success-soft px-2 py-0.5 rounded">
                 Çözüldü
               </span>
             )}
@@ -397,19 +397,19 @@ const SoruEkraniIci = ({
             {soru.baslik}
           </h1>
           {yazar && (
-            <div className="flex items-center gap-1.5 text-[12px] text-stone-500 dark:text-zinc-500 mb-4">
-              <Icon name="BadgeCheck" size={11} className="text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center gap-1.5 text-[12px] text-ink-mute mb-4">
+              <Icon name="BadgeCheck" size={11} className="text-success dark:text-success" />
               <span>
                 <strong>{yazar.ad}</strong> tarafından önerildi
-                {yazar.unvan && <span className="text-stone-400 dark:text-zinc-600"> · {yazar.unvan}</span>}
+                {yazar.unvan && <span className="text-ink-quiet"> · {yazar.unvan}</span>}
               </span>
             </div>
           )}
-          <div data-tour="senaryo" className="border-l-4 border-stone-900 dark:border-zinc-100 pl-5 py-1">
-            <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 mb-2 font-bold">
+          <div data-tour="senaryo" className="border-l-4 border-ink pl-5 py-1">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute mb-2 font-bold">
               Senaryo
             </div>
-            <p className="text-base lg:text-lg leading-relaxed text-stone-800 dark:text-zinc-200 font-medium whitespace-pre-line">
+            <p className="text-base lg:text-lg leading-relaxed text-ink font-medium whitespace-pre-line">
               {soru.senaryo}
             </p>
           </div>
@@ -420,22 +420,22 @@ const SoruEkraniIci = ({
           {soru.belgeler && soru.belgeler.length > 0 && (
             <button
               onClick={() => setBelgeAcik(true)}
-              className="flex items-center gap-2.5 px-3 py-2.5 border border-blue-300 dark:border-blue-700/50 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20 hover:border-blue-500 transition text-left text-sm font-semibold rounded-lg col-span-2 lg:col-span-1"
+              className="flex items-center gap-2.5 px-3 py-2.5 border border-brand-soft dark:border-brand-deep/50 bg-gradient-to-r from-brand-soft to-transparent hover:border-brand transition text-left text-sm font-semibold rounded-lg col-span-2 lg:col-span-1"
             >
               <Icon
                 name="FileText"
                 size={14}
-                className="text-blue-700 dark:text-blue-400 flex-shrink-0"
+                className="text-brand dark:text-brand-mute flex-shrink-0"
               />
               <span>Belgeyi Görüntüle</span>
-              <span className="ml-auto text-[9px] tracking-[0.2em] uppercase font-bold text-blue-700 dark:text-blue-400 font-mono">
+              <span className="ml-auto text-[9px] tracking-[0.2em] uppercase font-bold text-brand dark:text-brand-mute font-mono">
                 {soru.belgeler.length}
               </span>
             </button>
           )}
           <button
             onClick={onHesapPlaniYanPanel}
-            className="flex items-center gap-2.5 px-3 py-2.5 border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition text-left text-sm font-semibold rounded-lg"
+            className="flex items-center gap-2.5 px-3 py-2.5 border border-line-strong hover:border-ink transition text-left text-sm font-semibold rounded-lg"
           >
             <Icon name="BookOpen" size={14} className="flex-shrink-0" />
             <span>Hesap Planı</span>
@@ -443,9 +443,9 @@ const SoruEkraniIci = ({
           {konuIcerikVar && (
             <button
               onClick={() => setKonuModalAcik(true)}
-              className="flex items-center gap-2.5 px-3 py-2.5 border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 transition text-left text-sm font-semibold rounded-lg"
+              className="flex items-center gap-2.5 px-3 py-2.5 border border-line-strong hover:border-ink transition text-left text-sm font-semibold rounded-lg"
             >
-              <Icon name="Info" size={14} className="text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <Icon name="Info" size={14} className="text-premium flex-shrink-0" />
               <span>Konuyu Hatırlat</span>
             </button>
           )}
@@ -454,15 +454,15 @@ const SoruEkraniIci = ({
               setAiAsistanAcik(true);
               setKullanilanAi(true);
             }}
-            className="flex items-center gap-2.5 px-3 py-2.5 border border-amber-300/60 dark:border-amber-700/40 bg-gradient-to-r from-amber-50/40 to-transparent dark:from-amber-900/10 hover:border-amber-500 transition text-left text-sm font-semibold rounded-lg"
+            className="flex items-center gap-2.5 px-3 py-2.5 border border-premium/60 dark:border-premium-deep/40 bg-gradient-to-r from-premium-soft to-transparent hover:border-premium transition text-left text-sm font-semibold rounded-lg"
           >
             <Icon
               name="Sparkles"
               size={14}
-              className="text-amber-600 dark:text-amber-400 flex-shrink-0"
+              className="text-premium flex-shrink-0"
             />
             <span>AI Asistan</span>
-            <span className="ml-auto text-[8px] tracking-[0.2em] uppercase font-bold text-amber-700 dark:text-amber-400">
+            <span className="ml-auto text-[8px] tracking-[0.2em] uppercase font-bold text-premium-deep">
               Pro
             </span>
           </button>
@@ -475,54 +475,54 @@ const SoruEkraniIci = ({
               }
             }}
             className={`flex items-center gap-2.5 px-3 py-2.5 border rounded-lg text-left text-sm font-semibold transition ${
-              cozumGosterildi
-                ? 'border-rose-400 bg-rose-50/40 dark:bg-rose-950/20 text-rose-800 dark:text-rose-300'
-                : 'border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400'
-            }`}
+ cozumGosterildi
+ ? 'border-danger bg-danger-soft/40 text-danger'
+ : 'border-line-strong hover:border-ink '
+ }`}
           >
             <Icon name="Eye" size={14} className="flex-shrink-0" />
             <span>Çözümü Gör</span>
             {cozumGosterildi && (
-              <span className="ml-auto text-[8px] tracking-[0.2em] uppercase font-bold text-rose-700 dark:text-rose-400">
+              <span className="ml-auto text-[8px] tracking-[0.2em] uppercase font-bold text-danger dark:text-danger">
                 0 puan
               </span>
             )}
           </button>
           <button
             onClick={() => setHataAcik(true)}
-            className="flex items-center gap-2.5 px-3 py-2.5 border border-stone-300 dark:border-zinc-700 hover:border-rose-400 dark:hover:border-rose-700 transition text-left text-sm font-semibold rounded-lg col-span-2 lg:col-span-1"
+            className="flex items-center gap-2.5 px-3 py-2.5 border border-line-strong hover:border-danger dark:hover:border-danger transition text-left text-sm font-semibold rounded-lg col-span-2 lg:col-span-1"
           >
-            <Icon name="AlertCircle" size={14} className="text-rose-500 flex-shrink-0" />
+            <Icon name="AlertCircle" size={14} className="text-danger flex-shrink-0" />
             <span>Hata Bildir</span>
           </button>
         </div>
       </div>
 
       {/* YEVMİYE FİŞİ — LUCA tarzı */}
-      <div data-tour="fis" className="bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm">
+      <div data-tour="fis" className="bg-surface border border-line-strong rounded-xl overflow-hidden shadow-sm">
         {/* Fiş başlığı */}
-        <div className="bg-stone-100 dark:bg-zinc-800 px-4 py-2 border-b-2 border-stone-300 dark:border-zinc-700 flex items-center justify-between">
+        <div className="bg-surface-2 px-4 py-2 border-b-2 border-line-strong flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="FileText" size={14} className="text-stone-600 dark:text-zinc-400" />
+            <Icon name="FileText" size={14} className="text-ink-soft" />
             <span className="font-display font-bold text-sm tracking-tight">YEVMİYE FİŞİ</span>
-            <span className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+            <span className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               · {fisTuruAd}
             </span>
           </div>
-          <div className="text-[10px] text-stone-500 dark:text-zinc-500 font-medium hidden sm:flex items-center gap-1.5">
+          <div className="text-[10px] text-ink-mute font-medium hidden sm:flex items-center gap-1.5">
             <Icon name="Info" size={11} />
             Sıralama serbest, istediğin satıra yazabilirsin
           </div>
         </div>
 
         {/* Fiş üst bilgi satırı */}
-        <div className="grid grid-cols-2 md:grid-cols-12 gap-px bg-stone-200 dark:bg-zinc-700">
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-px bg-line-soft">
           <FisField label="Yev. No" className="md:col-span-2">
             <input
               type="text"
               value={fis.yevmiyeNo}
               onChange={(e) => setFis({ ...fis, yevmiyeNo: e.target.value })}
-              className="w-full font-mono text-sm bg-white dark:bg-zinc-900 px-2 py-1.5 outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-semibold"
+              className="w-full font-mono text-sm bg-surface px-2 py-1.5 outline-none focus:bg-premium-soft transition font-semibold"
             />
           </FisField>
           <FisField label="Tarih" className="md:col-span-2">
@@ -530,14 +530,14 @@ const SoruEkraniIci = ({
               type="date"
               value={fis.tarih}
               onChange={(e) => setFis({ ...fis, tarih: e.target.value })}
-              className="w-full font-mono text-sm bg-white dark:bg-zinc-900 px-2 py-1.5 outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-semibold"
+              className="w-full font-mono text-sm bg-surface px-2 py-1.5 outline-none focus:bg-premium-soft transition font-semibold"
             />
           </FisField>
           <FisField label="Fiş Türü" className="md:col-span-2">
             <select
               value={fis.fisTuru}
               onChange={(e) => setFis({ ...fis, fisTuru: e.target.value as FisTuru })}
-              className="w-full font-mono text-sm bg-white dark:bg-zinc-900 px-2 py-1.5 outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-semibold cursor-pointer"
+              className="w-full font-mono text-sm bg-surface px-2 py-1.5 outline-none focus:bg-premium-soft transition font-semibold cursor-pointer"
             >
               {FIS_TURLERI.map((f) => (
                 <option key={f.kod} value={f.kod}>
@@ -552,7 +552,7 @@ const SoruEkraniIci = ({
               value={fis.belgeNo}
               onChange={(e) => setFis({ ...fis, belgeNo: e.target.value })}
               placeholder="—"
-              className="w-full font-mono text-sm bg-white dark:bg-zinc-900 px-2 py-1.5 outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-semibold placeholder:text-stone-300 dark:placeholder:text-zinc-700"
+              className="w-full font-mono text-sm bg-surface px-2 py-1.5 outline-none focus:bg-premium-soft transition font-semibold placeholder:text-ink-quiet"
             />
           </FisField>
           <FisField label="Açıklama" className="md:col-span-4">
@@ -561,7 +561,7 @@ const SoruEkraniIci = ({
               value={fis.aciklama}
               onChange={(e) => setFis({ ...fis, aciklama: e.target.value })}
               placeholder="Fiş açıklaması..."
-              className="w-full text-sm bg-white dark:bg-zinc-900 px-2 py-1.5 outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-medium placeholder:text-stone-300 dark:placeholder:text-zinc-700"
+              className="w-full text-sm bg-surface px-2 py-1.5 outline-none focus:bg-premium-soft transition font-medium placeholder:text-ink-quiet"
             />
           </FisField>
         </div>
@@ -569,13 +569,13 @@ const SoruEkraniIci = ({
         <div className="overflow-x-auto">
         <div data-tour="satir" className="min-w-[680px]">
         {/* Satır başlıkları */}
-        <div className="grid grid-cols-[40px_120px_1fr_1.5fr_140px_140px_40px] gap-px bg-stone-300 dark:bg-zinc-700 border-t-2 border-stone-300 dark:border-zinc-700">
+        <div className="grid grid-cols-[40px_120px_1fr_1.5fr_140px_140px_40px] gap-px bg-line border-t-2 border-line-strong">
           {['Sıra', 'Hesap Kodu', 'Hesap Adı', 'Açıklama', 'Borç', 'Alacak', ''].map((h, i) => (
             <div
               key={i}
-              className={`bg-stone-100 dark:bg-zinc-800 px-2 py-2 text-[10px] tracking-[0.2em] uppercase text-stone-600 dark:text-zinc-400 font-bold ${
-                i >= 4 && i <= 5 ? 'text-right' : i === 0 ? 'text-center' : ''
-              }`}
+              className={`bg-surface-2 px-2 py-2 text-[10px] tracking-[0.2em] uppercase text-ink-soft font-bold ${
+ i >= 4 && i <= 5 ? 'text-right' : i === 0 ? 'text-center' : ''
+ }`}
             >
               {h}
             </div>
@@ -585,17 +585,17 @@ const SoruEkraniIci = ({
         {/* Satırlar */}
         {kayitlar.map((k, i) => {
           const sonuc = satirSonuclari[i];
-          let satirBg = 'bg-white dark:bg-zinc-900';
-          if (durum === 'yanlis' && sonuc === false) satirBg = 'bg-red-50 dark:bg-red-900/10';
+          let satirBg = 'bg-surface';
+          if (durum === 'yanlis' && sonuc === false) satirBg = 'bg-danger-soft dark:bg-danger/10';
           else if (durum === 'yanlis' && sonuc === true)
-            satirBg = 'bg-emerald-50/60 dark:bg-emerald-900/10';
+            satirBg = 'bg-success-soft/60';
           return (
             <div
               key={i}
-              className={`grid grid-cols-[40px_120px_1fr_1.5fr_140px_140px_40px] gap-px bg-stone-200 dark:bg-zinc-800 border-b border-stone-200 dark:border-zinc-800 ${satirBg}`}
+              className={`grid grid-cols-[40px_120px_1fr_1.5fr_140px_140px_40px] gap-px bg-line-soft border-b border-line ${satirBg}`}
             >
               <div
-                className={`px-2 py-1.5 text-center text-xs font-mono font-bold text-stone-400 dark:text-zinc-600 ${satirBg}`}
+                className={`px-2 py-1.5 text-center text-xs font-mono font-bold text-ink-quiet ${satirBg}`}
               >
                 {i + 1}
               </div>
@@ -608,7 +608,7 @@ const SoruEkraniIci = ({
                 />
               </div>
               <div
-                className={`px-2 py-1.5 text-xs text-stone-700 dark:text-zinc-300 truncate font-medium flex items-center ${satirBg}`}
+                className={`px-2 py-1.5 text-xs text-ink-soft truncate font-medium flex items-center ${satirBg}`}
               >
                 {bulunanHesap(k.kod)}
               </div>
@@ -620,7 +620,7 @@ const SoruEkraniIci = ({
                   placeholder="—"
                   data-row={i}
                   data-col="aciklama"
-                  className="w-full text-xs px-2 py-1.5 bg-transparent outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-medium placeholder:text-stone-300 dark:placeholder:text-zinc-700"
+                  className="w-full text-xs px-2 py-1.5 bg-transparent outline-none focus:bg-premium-soft transition font-medium placeholder:text-ink-quiet"
                 />
               </div>
               <div className={satirBg}>
@@ -632,7 +632,7 @@ const SoruEkraniIci = ({
                   placeholder="0,00"
                   data-row={i}
                   data-col="borc"
-                  className="w-full font-mono text-sm text-right px-2 py-1.5 bg-transparent outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-semibold placeholder:text-stone-300 dark:placeholder:text-zinc-700"
+                  className="w-full font-mono text-sm text-right px-2 py-1.5 bg-transparent outline-none focus:bg-premium-soft transition font-semibold placeholder:text-ink-quiet"
                 />
               </div>
               <div className={satirBg}>
@@ -644,20 +644,20 @@ const SoruEkraniIci = ({
                   placeholder="0,00"
                   data-row={i}
                   data-col="alacak"
-                  className="w-full font-mono text-sm text-right px-2 py-1.5 bg-transparent outline-none focus:bg-amber-50 dark:focus:bg-amber-900/10 transition font-semibold placeholder:text-stone-300 dark:placeholder:text-zinc-700"
+                  className="w-full font-mono text-sm text-right px-2 py-1.5 bg-transparent outline-none focus:bg-premium-soft transition font-semibold placeholder:text-ink-quiet"
                 />
               </div>
               <div className={`flex items-center justify-center ${satirBg}`}>
                 {durum === 'yanlis' && sonuc === false && (
-                  <Icon name="X" size={13} className="text-red-600" />
+                  <Icon name="X" size={13} className="text-danger" />
                 )}
                 {durum === 'yanlis' && sonuc === true && (
-                  <Icon name="Check" size={13} className="text-emerald-600" />
+                  <Icon name="Check" size={13} className="text-success" />
                 )}
                 {durum !== 'yanlis' && kayitlar.length > 2 && (
                   <button
                     onClick={() => satirSil(i)}
-                    className="text-stone-300 dark:text-zinc-600 hover:text-red-600 transition p-1"
+                    className="text-ink-quiet hover:text-danger transition p-1"
                   >
                     <Icon name="Trash2" size={12} />
                   </button>
@@ -670,32 +670,32 @@ const SoruEkraniIci = ({
         {/* Satır ekle */}
         <button
           onClick={satirEkle}
-          className="w-full px-4 py-2 text-xs text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 hover:bg-stone-50 dark:hover:bg-zinc-800 transition flex items-center justify-center gap-2 border-b-2 border-stone-300 dark:border-zinc-700 font-semibold bg-stone-50/50 dark:bg-zinc-900"
+          className="w-full px-4 py-2 text-xs text-ink-mute hover:text-ink hover:bg-bg-tint transition flex items-center justify-center gap-2 border-b-2 border-line-strong font-semibold bg-bg-tint/50"
         >
           <Icon name="Plus" size={11} /> Satır Ekle
         </button>
 
         {/* Toplam */}
-        <div className="grid grid-cols-[40px_120px_1fr_1.5fr_140px_140px_40px] gap-px bg-stone-300 dark:bg-zinc-700">
-          <div className="bg-stone-100 dark:bg-zinc-800 col-span-4 px-3 py-2.5 text-[10px] tracking-[0.2em] uppercase text-stone-600 dark:text-zinc-400 font-bold text-right flex items-center justify-end">
+        <div className="grid grid-cols-[40px_120px_1fr_1.5fr_140px_140px_40px] gap-px bg-line">
+          <div className="bg-surface-2 col-span-4 px-3 py-2.5 text-[10px] tracking-[0.2em] uppercase text-ink-soft font-bold text-right flex items-center justify-end">
             Toplam
           </div>
           <div
-            className={`bg-stone-100 dark:bg-zinc-800 px-2 py-2.5 text-right font-mono text-sm font-bold ${esit ? 'text-emerald-700 dark:text-emerald-400' : 'text-stone-700 dark:text-zinc-300'}`}
+            className={`bg-surface-2 px-2 py-2.5 text-right font-mono text-sm font-bold ${esit ? 'text-success dark:text-success' : 'text-ink-soft'}`}
           >
             {paraFormat(toplamBorc) || '0,00'}
           </div>
           <div
-            className={`bg-stone-100 dark:bg-zinc-800 px-2 py-2.5 text-right font-mono text-sm font-bold ${esit ? 'text-emerald-700 dark:text-emerald-400' : 'text-stone-700 dark:text-zinc-300'}`}
+            className={`bg-surface-2 px-2 py-2.5 text-right font-mono text-sm font-bold ${esit ? 'text-success dark:text-success' : 'text-ink-soft'}`}
           >
             {paraFormat(toplamAlacak) || '0,00'}
           </div>
-          <div className="bg-stone-100 dark:bg-zinc-800 flex items-center justify-center">
+          <div className="bg-surface-2 flex items-center justify-center">
             {esit && (
               <Icon
                 name="CheckCircle2"
                 size={13}
-                className="text-emerald-700 dark:text-emerald-400"
+                className="text-success dark:text-success"
               />
             )}
           </div>
@@ -709,7 +709,7 @@ const SoruEkraniIci = ({
         <button
           onClick={kontrol}
           data-tour="kontrol"
-          className="flex-1 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 py-3.5 text-sm tracking-wide uppercase font-bold hover:bg-stone-800 dark:hover:bg-white transition flex items-center justify-center gap-2 rounded-xl shadow-lg"
+          className="flex-1 bg-ink text-bg py-3.5 text-sm tracking-wide uppercase font-bold hover:bg-ink-soft dark:hover:bg-surface transition flex items-center justify-center gap-2 rounded-xl shadow-lg"
         >
           <Icon name="Zap" size={14} />
           Kaydı Kontrol Et
@@ -718,7 +718,7 @@ const SoruEkraniIci = ({
       </div>
 
       {kontrolHatasi && (
-        <div className="mt-3 px-4 py-2.5 border border-amber-300 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-900/10 text-amber-900 dark:text-amber-300 text-sm font-medium rounded-lg flex items-center gap-2">
+        <div className="mt-3 px-4 py-2.5 border border-premium dark:border-premium-deep/40 bg-premium-soft text-premium-deep text-sm font-medium rounded-lg flex items-center gap-2">
           <Icon name="AlertTriangle" size={14} />
           {kontrolHatasi}
         </div>
@@ -734,23 +734,23 @@ const SoruEkraniIci = ({
             ? `+${kazanilan} puan`
             : 'Çözümü gördüğün için puan kazanamadın.';
         return (
-        <div className="mt-4 p-5 border-l-4 border-emerald-700 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl">
+        <div className="mt-4 p-5 border-l-4 border-success bg-success-soft rounded-xl">
           <div className="flex items-center gap-3 mb-2">
             <Icon
               name="CheckCircle2"
               size={20}
-              className="text-emerald-700 dark:text-emerald-400"
+              className="text-success dark:text-success"
             />
             <div className="font-display text-lg font-bold">
               Doğru kayıt. {puanMesaji}
             </div>
           </div>
-          <p className="text-sm text-stone-700 dark:text-zinc-300 leading-relaxed mb-4 font-medium">
+          <p className="text-sm text-ink-soft leading-relaxed mb-4 font-medium">
             {soru.aciklama}
           </p>
           <button
             onClick={sonraki}
-            className="flex items-center gap-2 text-sm bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-4 py-2 hover:bg-stone-800 dark:hover:bg-white transition rounded-lg font-semibold"
+            className="flex items-center gap-2 text-sm bg-ink text-bg px-4 py-2 hover:bg-ink-soft dark:hover:bg-surface transition rounded-lg font-semibold"
           >
             Sıradaki Soru <Icon name="ArrowRight" size={14} />
           </button>
@@ -759,9 +759,9 @@ const SoruEkraniIci = ({
       })()}
       {durum === 'yanlis' && yanlisAnaliz && (
         <div className="mt-4 space-y-4">
-          <div className="p-5 border-l-4 border-red-700 dark:border-red-400 bg-red-50 dark:bg-red-900/10 rounded-xl">
+          <div className="p-5 border-l-4 border-danger dark:border-danger bg-danger-soft dark:bg-danger/10 rounded-xl">
             <div className="flex items-center gap-3 mb-3">
-              <Icon name="X" size={20} className="text-red-700 dark:text-red-400" />
+              <Icon name="X" size={20} className="text-danger dark:text-danger" />
               <div className="font-display text-lg font-bold">Kayıt doğru değil.</div>
             </div>
 
@@ -770,9 +770,9 @@ const SoruEkraniIci = ({
                 {yanlisAnaliz.ozet.map((m, i) => (
                   <li
                     key={i}
-                    className="text-sm text-stone-700 dark:text-zinc-300 leading-relaxed font-medium flex gap-2"
+                    className="text-sm text-ink-soft leading-relaxed font-medium flex gap-2"
                   >
-                    <span className="text-red-600 dark:text-red-400 font-bold flex-shrink-0 mt-0.5">
+                    <span className="text-danger dark:text-danger font-bold flex-shrink-0 mt-0.5">
                       ▸
                     </span>
                     <span>{m}</span>
@@ -783,7 +783,7 @@ const SoruEkraniIci = ({
 
             {yanlisAnaliz.satirAnalizleri.some((s) => s.tip !== 'dogru') && (
               <details className="mt-3 group">
-                <summary className="cursor-pointer text-[11px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 inline-flex items-center gap-1.5">
+                <summary className="cursor-pointer text-[11px] tracking-[0.2em] uppercase font-bold text-ink-mute hover:text-ink inline-flex items-center gap-1.5">
                   <Icon
                     name="ChevronRight"
                     size={11}
@@ -791,15 +791,15 @@ const SoruEkraniIci = ({
                   />
                   Satır satır detay
                 </summary>
-                <div className="mt-2 space-y-1.5 pl-3 border-l border-red-200 dark:border-red-800/40">
+                <div className="mt-2 space-y-1.5 pl-3 border-l border-danger-soft dark:border-danger/40">
                   {yanlisAnaliz.satirAnalizleri
                     .filter((s) => s.tip !== 'dogru')
                     .map((s, i) => (
                       <div key={i} className="text-xs leading-relaxed">
-                        <span className="font-mono font-bold text-stone-500 dark:text-zinc-500">
+                        <span className="font-mono font-bold text-ink-mute">
                           Satır {s.satirIdx + 1}:
                         </span>{' '}
-                        <span className="text-stone-700 dark:text-zinc-300 font-medium">
+                        <span className="text-ink-soft font-medium">
                           {s.mesaj}
                         </span>
                       </div>
@@ -816,21 +816,21 @@ const SoruEkraniIci = ({
             {!aiMetin && !aiYukleniyor && (
               <button
                 onClick={aiAnalizCalistir}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-stone-900 text-sm font-bold rounded-xl transition shadow-md"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-premium-soft to-premium-soft hover:from-premium-soft hover:to-premium-soft text-ink text-sm font-bold rounded-xl transition shadow-md"
               >
                 <Icon name="Sparkles" size={14} />
                 AI ile Yanlışını Anla
               </button>
             )}
             {aiYukleniyor && (
-              <div className="flex items-center justify-center gap-2 px-4 py-4 bg-amber-50/60 dark:bg-amber-900/10 border border-amber-300/50 dark:border-amber-800/40 rounded-xl text-sm text-amber-800 dark:text-amber-300 font-semibold">
+              <div className="flex items-center justify-center gap-2 px-4 py-4 bg-premium-soft/60 border border-premium/50 dark:border-premium-deep/40 rounded-xl text-sm text-premium-deep font-semibold">
                 <Icon name="Loader2" size={14} className="animate-spin" />
                 AI yanlışını analiz ediyor...
               </div>
             )}
             {aiMetin && (
-              <div className="p-5 bg-gradient-to-br from-amber-50/60 to-white dark:from-amber-900/10 dark:to-zinc-900 border border-amber-300/50 dark:border-amber-800/40 rounded-xl">
-                <div className="flex items-center gap-2 mb-3 text-[10px] tracking-[0.2em] uppercase font-bold text-amber-700 dark:text-amber-300">
+              <div className="p-5 bg-gradient-to-br from-premium-soft to-bg border border-premium/50 dark:border-premium-deep/40 rounded-xl">
+                <div className="flex items-center gap-2 mb-3 text-[10px] tracking-[0.2em] uppercase font-bold text-premium-deep">
                   <Icon name="Sparkles" size={12} />
                   AI Yanlış Analizi
                 </div>
@@ -840,14 +840,14 @@ const SoruEkraniIci = ({
                     setAiMetin(null);
                     setAiHata(null);
                   }}
-                  className="mt-3 text-xs text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 font-semibold"
+                  className="mt-3 text-xs text-ink-mute hover:text-ink font-semibold"
                 >
                   Kapat
                 </button>
               </div>
             )}
             {aiHata && (
-              <div className="text-sm text-red-700 dark:text-red-400 font-medium mt-2">
+              <div className="text-sm text-danger dark:text-danger font-medium mt-2">
                 AI yanıtı alınamadı: {aiHata}
               </div>
             )}
@@ -858,15 +858,15 @@ const SoruEkraniIci = ({
       {cozumAcik && <CozumModal soru={soru} onKapat={() => setCozumAcik(false)} />}
       {cozumOnayAcik && (
         <div
-          className="fixed inset-0 z-[110] bg-stone-950/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8"
+          className="fixed inset-0 z-[110] bg-ink/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8"
           onClick={() => setCozumOnayAcik(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-white dark:bg-zinc-900 border border-rose-300 dark:border-rose-800 rounded-2xl shadow-2xl my-auto"
+            className="w-full max-w-md bg-surface border border-danger-soft rounded-2xl shadow-2xl my-auto"
           >
-            <div className="p-5 border-b border-stone-200 dark:border-zinc-700">
-              <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300 mb-2">
+            <div className="p-5 border-b border-line">
+              <div className="flex items-center gap-2 text-danger mb-2">
                 <Icon name="AlertTriangle" size={18} />
                 <span className="font-mono text-[10px] tracking-[0.25em] uppercase font-bold">
                   Puan kaybı
@@ -877,21 +877,21 @@ const SoruEkraniIci = ({
               </h2>
             </div>
             <div className="p-5 space-y-3">
-              <p className="text-[14px] text-stone-700 dark:text-zinc-300 leading-relaxed">
+              <p className="text-[14px] text-ink-soft leading-relaxed">
                 Çözümü görürsen bu sorudan{' '}
-                <strong className="text-rose-700 dark:text-rose-400">0 puan</strong> alırsın
+                <strong className="text-danger dark:text-danger">0 puan</strong> alırsın
                 (normalde {ZORLUK_PUAN[soru.zorluk]} puan).
               </p>
-              <p className="text-[13px] text-stone-600 dark:text-zinc-400 leading-relaxed">
+              <p className="text-[13px] text-ink-soft leading-relaxed">
                 Önce kendin denemeyi tercih edersen modalı kapatabilirsin.
                 Yardım için <span className="font-bold">AI Asistan</span> seçeneği var
                 — puana etkisi yok.
               </p>
             </div>
-            <div className="flex items-center justify-end gap-2 p-5 border-t border-stone-200 dark:border-zinc-700">
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-line">
               <button
                 onClick={() => setCozumOnayAcik(false)}
-                className="px-4 py-2 text-[12px] font-bold text-stone-700 dark:text-zinc-300 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
+                className="px-4 py-2 text-[12px] font-bold text-ink-soft hover:bg-surface-2 rounded-lg transition"
               >
                 Vazgeç
               </button>
@@ -901,7 +901,7 @@ const SoruEkraniIci = ({
                   setCozumOnayAcik(false);
                   setCozumAcik(true);
                 }}
-                className="inline-flex items-center gap-2 bg-rose-700 hover:bg-rose-800 dark:bg-rose-600 dark:hover:bg-rose-500 text-white px-4 py-2 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition"
+                className="inline-flex items-center gap-2 bg-danger hover:bg-danger dark:bg-danger dark:hover:bg-danger text-bg px-4 py-2 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition"
               >
                 <Icon name="Eye" size={13} />
                 Çözümü Göster (0 puan)
@@ -932,25 +932,25 @@ const SoruEkraniIci = ({
       />
       {konuModalAcik && konuIcerikVar && unite && (
         <div
-          className="fixed inset-0 z-[90] bg-stone-950/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8 animate-[koc-tour-pop_0.28s_cubic-bezier(0.22,1,0.36,1)_both]"
+          className="fixed inset-0 z-[90] bg-ink/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8 animate-[koc-tour-pop_0.28s_cubic-bezier(0.22,1,0.36,1)_both]"
           onClick={() => setKonuModalAcik(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-3xl my-auto bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6 sm:p-8 shadow-2xl"
+            className="relative w-full max-w-3xl my-auto bg-surface border border-line rounded-2xl p-6 sm:p-8 shadow-2xl"
           >
             <button
               onClick={() => setKonuModalAcik(false)}
-              className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 shadow-lg flex items-center justify-center hover:bg-stone-50 dark:hover:bg-zinc-800 transition"
+              className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-surface border border-line-strong shadow-lg flex items-center justify-center hover:bg-bg-tint transition"
               aria-label="Kapat"
             >
               <Icon name="X" size={14} />
             </button>
             <div className="flex items-baseline gap-3 mb-5">
-              <span className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+              <span className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold">
                 Konu Anlatımı
               </span>
-              <h3 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-zinc-100">
+              <h3 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-ink">
                 {unite.ad}
               </h3>
             </div>
@@ -988,7 +988,7 @@ export const SoruEkrani = ({
   if (yukleniyor || uniteYukleniyor) {
     return (
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-16 flex items-center justify-center">
-        <Icon name="Loader2" size={20} className="animate-spin text-stone-500" />
+        <Icon name="Loader2" size={20} className="animate-spin text-ink-mute" />
       </main>
     );
   }
@@ -1022,7 +1022,7 @@ const GirisDuvari = ({ soru }: { soru: SoruWithUnite }) => {
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
       <button
         onClick={() => nav('/problemler')}
-        className="flex items-center gap-2 text-sm text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 mb-8 font-semibold"
+        className="flex items-center gap-2 text-sm text-ink-mute hover:text-ink mb-8 font-semibold"
       >
         <Icon name="ArrowLeft" size={14} />
         <span>Tüm Problemler</span>
@@ -1030,7 +1030,7 @@ const GirisDuvari = ({ soru }: { soru: SoruWithUnite }) => {
 
       <div className="flex items-center gap-3 mb-3">
         {unite && <Thiings name={unite.thiingsIcon} size={24} />}
-        <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+        <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold">
           {unite?.ad}
         </div>
         <span
@@ -1042,32 +1042,32 @@ const GirisDuvari = ({ soru }: { soru: SoruWithUnite }) => {
       <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-4 font-bold">
         {soru.baslik}
       </h1>
-      <p className="text-base text-stone-600 dark:text-zinc-400 leading-relaxed font-medium mb-10">
+      <p className="text-base text-ink-soft leading-relaxed font-medium mb-10">
         {soru.senaryo}
       </p>
 
-      <div className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 rounded-2xl p-8 md:p-10 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mx-auto mb-5">
-          <Icon name="Lock" size={22} className="text-blue-700 dark:text-blue-400" />
+      <div className="bg-surface border border-line rounded-2xl p-8 md:p-10 text-center">
+        <div className="w-14 h-14 rounded-2xl bg-brand-soft dark:bg-brand-deep/20 flex items-center justify-center mx-auto mb-5">
+          <Icon name="Lock" size={22} className="text-brand dark:text-brand-mute" />
         </div>
         <h2 className="font-display text-2xl font-bold tracking-tight mb-3">
           Soruyu çözmek için giriş yap
         </h2>
-        <p className="text-sm text-stone-600 dark:text-zinc-400 leading-relaxed font-medium max-w-md mx-auto mb-7">
+        <p className="text-sm text-ink-soft leading-relaxed font-medium max-w-md mx-auto mb-7">
           Ücretsiz hesap ile ilerlemeni kaydet, rozet kazan, seriyi büyüt. 30 saniyede
           başlayabilirsin.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={giriseGit}
-            className="bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center justify-center gap-2 rounded-xl shadow-md"
+            className="bg-brand-deep hover:bg-brand-deep dark:bg-brand text-bg px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center justify-center gap-2 rounded-xl shadow-md"
           >
             <Icon name="LogIn" size={14} />
             Giriş Yap / Kayıt Ol
           </button>
           <button
             onClick={() => nav('/problemler')}
-            className="border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center justify-center gap-2 rounded-xl"
+            className="border border-line-strong hover:border-ink px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center justify-center gap-2 rounded-xl"
           >
             Soru Listesine Dön
           </button>

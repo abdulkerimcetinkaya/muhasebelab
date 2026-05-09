@@ -66,13 +66,13 @@ export const AdminKullanicilarSayfasi = () => {
               <h1 className="font-display text-3xl font-bold tracking-tight">
                 Kullanıcılar
               </h1>
-              <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
+              <p className="text-[13.5px] text-ink-soft mt-1">
                 Toplam <strong>{list.length}</strong> kullanıcı —{' '}
                 <strong>{premiumSayisi}</strong> aktif premium
                 {banliSayisi > 0 && (
                   <>
                     {' '}
-                    · <strong className="text-rose-700 dark:text-rose-400">
+                    · <strong className="text-danger dark:text-danger">
                       {banliSayisi}
                     </strong> banlı
                   </>
@@ -87,12 +87,12 @@ export const AdminKullanicilarSayfasi = () => {
               value={arama}
               onChange={(e) => setArama(e.target.value)}
               placeholder="Ara: kullanıcı adı, email, üniversite"
-              className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 flex-1 min-w-[220px]"
+              className="px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-medium outline-none focus:border-ink flex-1 min-w-[220px]"
             />
             <select
               value={tipFiltresi}
               onChange={(e) => setTipFiltresi(e.target.value as TipFiltresi)}
-              className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+              className="px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-medium outline-none focus:border-ink"
             >
               <option value="hepsi">Tüm kullanıcılar</option>
               <option value="premium">Sadece premium</option>
@@ -102,22 +102,22 @@ export const AdminKullanicilarSayfasi = () => {
           </div>
 
           {hata && (
-            <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+            <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
               <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
               <span>{hata}</span>
             </div>
           )}
 
           {yukleniyor ? (
-            <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+            <div className="text-sm text-ink-quiet">Yükleniyor…</div>
           ) : filtreli.length === 0 ? (
-            <div className="text-sm text-stone-400 dark:text-zinc-600 text-center py-8 border border-dashed border-stone-300 dark:border-zinc-700 rounded-xl">
+            <div className="text-sm text-ink-quiet text-center py-8 border border-dashed border-line-strong rounded-xl">
               {list.length === 0 ? 'Henüz kayıtlı kullanıcı yok.' : 'Filtreyle eşleşen kullanıcı yok.'}
             </div>
           ) : (
-            <div className="overflow-x-auto border border-stone-200 dark:border-zinc-700 rounded-xl">
+            <div className="overflow-x-auto border border-line rounded-xl">
               <table className="w-full text-[13px]">
-                <thead className="bg-stone-50 dark:bg-zinc-800/50 text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+                <thead className="bg-bg-tint text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute">
                   <tr>
                     <th className="text-left p-3">Kullanıcı</th>
                     <th className="text-left p-3">Email</th>
@@ -133,51 +133,51 @@ export const AdminKullanicilarSayfasi = () => {
                   {filtreli.map((k) => (
                     <tr
                       key={k.id}
-                      className={`border-t border-stone-200 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800/40 transition ${k.banli ? 'opacity-60' : ''}`}
+                      className={`border-t border-line hover:bg-bg-tint transition ${k.banli ? 'opacity-60' : ''}`}
                     >
                       <td className="p-3">
                         <div className="flex items-center gap-2">
                           <span className="font-bold">{k.kullanici_adi}</span>
                           {k.banli && (
-                            <span className="inline-flex items-center text-[9px] tracking-wider uppercase font-mono font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 px-1.5 py-0.5 rounded">
+                            <span className="inline-flex items-center text-[9px] tracking-wider uppercase font-mono font-bold text-danger dark:text-danger bg-danger-soft border border-danger-soft px-1.5 py-0.5 rounded">
                               Banlı
                             </span>
                           )}
                         </div>
                         {k.universite && (
-                          <div className="text-[11px] text-stone-500 dark:text-zinc-500">
+                          <div className="text-[11px] text-ink-mute">
                             {k.universite}
                           </div>
                         )}
                       </td>
-                      <td className="p-3 font-mono text-[12px] text-stone-600 dark:text-zinc-400">
+                      <td className="p-3 font-mono text-[12px] text-ink-soft">
                         {k.email ?? '—'}
                       </td>
                       <td className="p-3 text-center">
                         {k.premium_aktif ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-mono font-bold text-emerald-700 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 rounded">
+                          <span className="inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-mono font-bold text-success dark:text-success bg-success-soft px-1.5 py-0.5 rounded">
                             <Icon name="Sparkles" size={10} />
                             Premium
                           </span>
                         ) : (
-                          <span className="text-[10px] text-stone-400 dark:text-zinc-600">
+                          <span className="text-[10px] text-ink-quiet">
                             Free
                           </span>
                         )}
                       </td>
                       <td className="p-3 text-right font-mono">{k.cozum_sayisi}</td>
                       <td className="p-3 text-right font-mono">{k.rozet_sayisi}</td>
-                      <td className="p-3 text-stone-600 dark:text-zinc-400">
+                      <td className="p-3 text-ink-soft">
                         {tarihFormat(k.created_at)}
                       </td>
-                      <td className="p-3 text-stone-600 dark:text-zinc-400">
+                      <td className="p-3 text-ink-soft">
                         {tarihFormat(k.son_aktivite_tarihi)}
                       </td>
                       <td className="p-3">
                         <Link
                           to={`/admin/kullanicilar/${k.id}`}
                           title="Detay"
-                          className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-700 rounded-lg transition inline-flex"
+                          className="p-2 hover:bg-surface-2 rounded-lg transition inline-flex"
                         >
                           <Icon name="ArrowRight" size={14} />
                         </Link>

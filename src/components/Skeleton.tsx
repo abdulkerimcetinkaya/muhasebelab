@@ -15,7 +15,7 @@ const RADIUS_MAP: Record<NonNullable<BlokProps['yuvarlak']>, string> = {
 
 export const Skeleton = ({ className = '', yuvarlak = 'lg' }: BlokProps) => (
   <div
-    className={`bg-stone-200 dark:bg-zinc-800 animate-pulse ${RADIUS_MAP[yuvarlak]} ${className}`}
+    className={`bg-line-soft animate-pulse ${RADIUS_MAP[yuvarlak]} ${className}`}
   />
 );
 
@@ -29,7 +29,7 @@ export const SkeletonSatirlar = ({ satirSayisi = 5 }: SatirProps) => (
     {Array.from({ length: satirSayisi }).map((_, i) => (
       <div
         key={i}
-        className="flex items-center gap-3 p-4 border border-stone-100 dark:border-zinc-800 rounded-xl"
+        className="flex items-center gap-3 p-4 border border-line-soft rounded-xl"
       >
         <Skeleton className="w-10 h-10" yuvarlak="full" />
         <div className="flex-1 space-y-2">
@@ -48,7 +48,7 @@ export const SkeletonKartlar = ({ kartSayisi = 4 }: { kartSayisi?: number }) => 
     {Array.from({ length: kartSayisi }).map((_, i) => (
       <div
         key={i}
-        className="p-5 border border-stone-100 dark:border-zinc-800 rounded-xl space-y-3"
+        className="p-5 border border-line-soft rounded-xl space-y-3"
       >
         <Skeleton className="h-4 w-2/3" />
         <Skeleton className="h-3 w-full" />

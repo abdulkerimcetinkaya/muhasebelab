@@ -72,8 +72,8 @@ export const AdminYanMenu = () => {
   const goster = (item: MenuItem) => roller === null ? true : yetkili(item.rol);
 
   return (
-    <aside className="w-56 shrink-0 border-r border-stone-200 dark:border-zinc-800 pr-4">
-      <div className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-3 px-3">
+    <aside className="w-56 shrink-0 border-r border-line pr-4">
+      <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-3 px-3">
         Admin
       </div>
       <nav className="flex flex-col gap-1">
@@ -85,8 +85,8 @@ export const AdminYanMenu = () => {
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition ${
                 isActive
-                  ? 'bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
-                  : 'text-stone-600 dark:text-zinc-400 hover:bg-stone-100 dark:hover:bg-zinc-800 hover:text-stone-900 dark:hover:text-zinc-100'
+                  ? 'bg-ink  text-bg '
+                  : 'text-ink-soft hover:bg-surface-2  hover:text-ink '
               }`
             }
           >

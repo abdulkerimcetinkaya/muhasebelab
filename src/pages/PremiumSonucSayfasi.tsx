@@ -66,47 +66,47 @@ Teşekkürler.`;
 
     return (
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-200 to-amber-100 dark:from-amber-800/40 dark:to-amber-900/40 mb-6">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-premium-soft to-premium-soft mb-6">
           <Thiings name="trophy" size={48} />
         </div>
-        <div className="text-[10px] tracking-[0.3em] uppercase text-amber-700 dark:text-amber-400 font-bold mb-3">
+        <div className="text-[10px] tracking-[0.3em] uppercase text-premium-deep font-bold mb-3">
           Ödeme Başarılı
         </div>
         <h1 className="font-display text-4xl md:text-5xl tracking-tight font-bold mb-4">
           {isBulk ? `${adet} kullanıcı için Premium alındı!` : 'Premium üyeliğin aktif!'}
         </h1>
-        <p className="text-lg text-stone-600 dark:text-zinc-400 leading-relaxed font-medium mb-6">
+        <p className="text-lg text-ink-soft leading-relaxed font-medium mb-6">
           {isBulk
             ? 'Ödemen başarıyla tahsil edildi. Öğrenci dağıtımı için bir adım daha kaldı 👇'
             : 'Tüm Premium özellikler artık açık. AI yanlış analizi, sınırsız asistan, hesap kodu otomatik tamamlama hemen kullanıma hazır.'}
         </p>
 
         {syncDurum === 'yukleniyor' && (
-          <div className="inline-flex items-center gap-2 text-sm text-stone-500 dark:text-zinc-500 font-medium mb-6">
+          <div className="inline-flex items-center gap-2 text-sm text-ink-mute font-medium mb-6">
             <Icon name="Loader2" size={14} className="animate-spin" />
             Üyelik bilgileri senkronlanıyor…
           </div>
         )}
 
         {syncDurum === 'hata' && (
-          <div className="max-w-md mx-auto mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 text-left">
+          <div className="max-w-md mx-auto mb-6 p-4 rounded-xl bg-premium-soft border border-premium-soft text-left">
             <div className="flex items-start gap-3">
               <Icon
                 name="AlertCircle"
                 size={18}
-                className="text-amber-700 dark:text-amber-400 flex-shrink-0 mt-0.5"
+                className="text-premium-deep flex-shrink-0 mt-0.5"
               />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">
+                <div className="text-sm font-bold text-premium-deep dark:text-premium-soft mb-1">
                   Üyelik bilgilerin senkronlanamadı
                 </div>
-                <div className="text-xs text-amber-800 dark:text-amber-200/80 font-medium leading-relaxed mb-3">
+                <div className="text-xs text-premium-deep dark:text-premium-soft/80 font-medium leading-relaxed mb-3">
                   Ödemen başarılı, fakat tarayıcına aktarılamadı. Premium özellikleri kullanmak
                   için yenile.
                 </div>
                 <button
                   onClick={yenidenDene}
-                  className="inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-bold text-amber-900 dark:text-amber-100 bg-amber-200/80 dark:bg-amber-900/40 hover:bg-amber-300 dark:hover:bg-amber-900/60 px-3 py-1.5 rounded-lg transition"
+                  className="inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-bold text-premium-deep dark:text-premium-soft bg-premium-soft/80 hover:bg-premium px-3 py-1.5 rounded-lg transition"
                 >
                   <Icon name="RefreshCw" size={12} />
                   Yeniden Dene
@@ -117,30 +117,30 @@ Teşekkürler.`;
         )}
 
         {isBulk && (
-          <div className="max-w-md mx-auto mb-6 p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 text-left">
+          <div className="max-w-md mx-auto mb-6 p-5 rounded-2xl bg-premium-soft border border-premium-soft text-left">
             <div className="flex items-start gap-3">
               <Icon
                 name="Mail"
                 size={20}
-                className="text-amber-700 dark:text-amber-400 flex-shrink-0 mt-0.5"
+                className="text-premium-deep flex-shrink-0 mt-0.5"
               />
               <div className="flex-1 min-w-0">
-                <div className="font-display text-base font-bold text-amber-900 dark:text-amber-100 mb-1">
+                <div className="font-display text-base font-bold text-premium-deep dark:text-premium-soft mb-1">
                   Öğrenci listeni gönder
                 </div>
-                <div className="text-[13px] text-amber-800 dark:text-amber-200/90 font-medium leading-relaxed mb-4">
+                <div className="text-[13px] text-premium-deep dark:text-premium-soft/90 font-medium leading-relaxed mb-4">
                   Premium’u tanımlayabilmemiz için <strong>{adet}</strong>{' '}
                   öğrencinin email adresini bize ileti olarak gönder. 1 iş günü
                   içinde her hesaba Premium tanımlanır.
                 </div>
                 <a
                   href={bulkMailto}
-                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
+                  className="inline-flex items-center gap-2 bg-premium hover:bg-premium text-ink px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
                 >
                   <Icon name="Mail" size={12} />
                   Öğrenci Listesi Hazırla
                 </a>
-                <div className="mt-2.5 text-[11px] text-amber-700/80 dark:text-amber-300/70 font-mono">
+                <div className="mt-2.5 text-[11px] text-premium-deep/80 font-mono">
                   {KURUM_EMAIL}
                 </div>
               </div>
@@ -151,7 +151,7 @@ Teşekkürler.`;
         <div className="flex flex-wrap items-center justify-center gap-3">
           <button
             onClick={() => nav(isBulk ? '/profil' : '/problemler')}
-            className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition"
+            className="inline-flex items-center gap-2 bg-ink text-bg px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition"
           >
             <Icon name={isBulk ? 'User' : 'ListChecks'} size={14} />
             {isBulk ? 'Profilim' : 'Soru Çöz'}
@@ -159,7 +159,7 @@ Teşekkürler.`;
           {!isBulk && (
             <Link
               to="/profil"
-              className="inline-flex items-center gap-2 border border-stone-300 dark:border-zinc-700 px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:bg-stone-100 dark:hover:bg-zinc-800 transition"
+              className="inline-flex items-center gap-2 border border-line-strong px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:bg-surface-2 transition"
             >
               <Icon name="User" size={14} />
               Profilim
@@ -178,32 +178,32 @@ Teşekkürler.`;
 
   return (
     <main className="max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center">
-      <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-stone-100 dark:bg-zinc-800 mb-6">
-        <Icon name="AlertTriangle" size={36} className="text-stone-600 dark:text-zinc-400" />
+      <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-surface-2 mb-6">
+        <Icon name="AlertTriangle" size={36} className="text-ink-soft" />
       </div>
-      <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-3">
+      <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-3">
         Ödeme {durum === 'iptal' ? 'İptal' : 'Hata'}
       </div>
       <h1 className="font-display text-3xl md:text-4xl tracking-tight font-bold mb-4">{baslik}</h1>
-      <p className="text-base text-stone-600 dark:text-zinc-400 leading-relaxed font-medium mb-2">
+      <p className="text-base text-ink-soft leading-relaxed font-medium mb-2">
         {mesaj}
       </p>
       {detay && (
-        <p className="text-xs text-stone-500 dark:text-zinc-500 font-mono mb-6 bg-stone-100 dark:bg-zinc-800 inline-block px-3 py-1.5 rounded-lg">
+        <p className="text-xs text-ink-mute font-mono mb-6 bg-surface-2 inline-block px-3 py-1.5 rounded-lg">
           {detay}
         </p>
       )}
       <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
         <button
           onClick={() => nav('/premium')}
-          className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition"
+          className="inline-flex items-center gap-2 bg-ink text-bg px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition"
         >
           <Icon name="RefreshCw" size={14} />
           Yeniden Dene
         </button>
         <Link
           to="/"
-          className="inline-flex items-center gap-2 border border-stone-300 dark:border-zinc-700 px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:bg-stone-100 dark:hover:bg-zinc-800 transition"
+          className="inline-flex items-center gap-2 border border-line-strong px-6 py-3 text-xs tracking-[0.2em] uppercase font-bold rounded-xl hover:bg-surface-2 transition"
         >
           <Icon name="Home" size={14} />
           Ana Sayfa

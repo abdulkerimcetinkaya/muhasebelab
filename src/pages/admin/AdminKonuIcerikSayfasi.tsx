@@ -21,10 +21,10 @@ const DURUM_ETIKET: Record<KayitDurum, string> = {
 
 const DURUM_RENK: Record<KayitDurum, string> = {
   bos: 'text-ink-mute',
-  degisiyor: 'text-amber-700',
+  degisiyor: 'text-premium-deep',
   kaydediliyor: 'text-ink-soft',
-  kaydedildi: 'text-emerald-700',
-  hata: 'text-rose-700',
+  kaydedildi: 'text-success',
+  hata: 'text-danger',
 };
 
 /**
@@ -145,7 +145,7 @@ export const AdminKonuIcerikSayfasi = () => {
                   yükleniyor…
                 </div>
               ) : yuklemeHata ? (
-                <div className="text-[14px] text-rose-700 font-semibold">{yuklemeHata}</div>
+                <div className="text-[14px] text-danger font-semibold">{yuklemeHata}</div>
               ) : unite && konu ? (
                 <div className="flex items-center gap-4">
                   {unite.thiings_icon && <Thiings name={unite.thiings_icon} size={48} />}
@@ -176,7 +176,7 @@ export const AdminKonuIcerikSayfasi = () => {
                 {durum === 'kaydedildi' && <Icon name="Check" size={12} />}
                 {durum === 'hata' && <Icon name="AlertCircle" size={12} />}
                 {durum === 'degisiyor' && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-premium" />
                 )}
                 <span>{DURUM_ETIKET[durum]}</span>
               </div>
@@ -192,7 +192,7 @@ export const AdminKonuIcerikSayfasi = () => {
           </div>
 
           {hataMesaji && (
-            <div className="mb-4 px-4 py-3 rounded-lg border border-rose-200 bg-rose-50 text-[13px] text-rose-800">
+            <div className="mb-4 px-4 py-3 rounded-lg border border-danger-soft bg-danger-soft text-[13px] text-danger">
               <span className="font-bold">Kayıt hatası:</span> {hataMesaji}
             </div>
           )}

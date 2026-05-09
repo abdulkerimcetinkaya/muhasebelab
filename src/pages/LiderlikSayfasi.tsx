@@ -87,10 +87,10 @@ export const LiderlikSayfasi = () => {
               aria-selected={donem === d}
               onClick={() => setDonem(d)}
               className={`px-4 py-1.5 text-[13px] font-mono uppercase tracking-[0.14em] rounded-md transition ${
-                donem === d
-                  ? 'bg-bg text-ink shadow-sm'
-                  : 'text-ink-mute hover:text-ink'
-              }`}
+ donem === d
+ ? 'bg-bg text-ink shadow-sm'
+ : 'text-ink-mute hover:text-ink'
+ }`}
             >
               {DONEM_LABEL[d]}
             </button>
@@ -193,8 +193,8 @@ export const LiderlikSayfasi = () => {
               <div
                 key={row.id}
                 className={`grid grid-cols-[44px_1fr_140px_90px_90px] gap-4 px-4 py-4 border-b border-line-soft items-center transition ${
-                  kendisi ? 'bg-surface-2/60' : 'hover:bg-surface-2/30'
-                }`}
+ kendisi ? 'bg-surface-2/60' : 'hover:bg-surface-2/30'
+ }`}
               >
                 <span className="font-mono text-[14px] tnum text-ink-quiet text-right">
                   {String(sira).padStart(2, '0')}

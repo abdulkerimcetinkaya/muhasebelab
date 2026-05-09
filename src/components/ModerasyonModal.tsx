@@ -73,17 +73,17 @@ export const ModerasyonModal = ({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
+        className="bg-surface border border-line rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
       >
         <div className="flex items-start justify-between">
           <div>
             <h2 className="font-display text-xl font-bold tracking-tight">
               Moderasyon
             </h2>
-            <p className="text-[12px] text-stone-500 dark:text-zinc-500 mt-0.5">
+            <p className="text-[12px] text-ink-mute mt-0.5">
               <strong>{kullaniciAd}</strong>
               {banli && (
-                <span className="ml-2 text-rose-700 dark:text-rose-400">
+                <span className="ml-2 text-danger dark:text-danger">
                   · banlı: {banSebep ?? '—'}
                 </span>
               )}
@@ -91,7 +91,7 @@ export const ModerasyonModal = ({
           </div>
           <button
             onClick={onKapat}
-            className="p-1.5 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
+            className="p-1.5 hover:bg-surface-2 rounded-lg transition"
           >
             <Icon name="X" size={16} />
           </button>
@@ -104,10 +104,10 @@ export const ModerasyonModal = ({
             onClick={() => setMod('banla')}
             disabled={banli}
             className={`px-3 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg border transition disabled:opacity-40 disabled:cursor-not-allowed ${
-              mod === 'banla' && !banli
-                ? 'bg-amber-600 text-white border-amber-600'
-                : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
-            }`}
+ mod === 'banla' && !banli
+ ? 'bg-premium-deep text-bg border-premium-deep'
+ : 'border-line-strong hover:bg-bg-tint '
+ }`}
           >
             Banla
           </button>
@@ -116,10 +116,10 @@ export const ModerasyonModal = ({
             onClick={() => setMod('unbanla')}
             disabled={!banli}
             className={`px-3 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg border transition disabled:opacity-40 disabled:cursor-not-allowed ${
-              mod === 'unbanla' && banli
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
-            }`}
+ mod === 'unbanla' && banli
+ ? 'bg-success text-bg border-success'
+ : 'border-line-strong hover:bg-bg-tint '
+ }`}
           >
             Banı Kaldır
           </button>
@@ -127,21 +127,21 @@ export const ModerasyonModal = ({
             type="button"
             onClick={() => setMod('sil')}
             className={`px-3 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg border transition ${
-              mod === 'sil'
-                ? 'bg-rose-600 text-white border-rose-600'
-                : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
-            }`}
+ mod === 'sil'
+ ? 'bg-danger text-bg border-danger'
+ : 'border-line-strong hover:bg-bg-tint '
+ }`}
           >
             Sil
           </button>
         </div>
 
         {/* Mod açıklaması */}
-        <div className="text-[12px] text-stone-600 dark:text-zinc-400 px-3 py-2 bg-stone-50 dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-lg leading-relaxed">
+        <div className="text-[12px] text-ink-soft px-3 py-2 bg-bg-tint border border-line rounded-lg leading-relaxed">
           {mod === 'banla' && 'Kullanıcı yeni soru çözemez, hata bildiremez. Profil görüntüleme açık kalır. Geri alınabilir.'}
           {mod === 'unbanla' && 'Banı kaldırır, kullanıcı tekrar tüm özelliklere erişebilir.'}
           {mod === 'sil' && (
-            <span className="text-rose-700 dark:text-rose-400">
+            <span className="text-danger dark:text-danger">
               <strong>Geri alınamaz.</strong> Kullanıcı + ilerleme + rozetler + aktivite + hata bildirimleri silinir. Ödemeler audit için tutulur ama bağlantı kopar.
             </span>
           )}
@@ -150,7 +150,7 @@ export const ModerasyonModal = ({
         {/* Banlama sebebi */}
         {mod === 'banla' && (
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-2">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-2">
               Sebep
             </label>
             <textarea
@@ -160,7 +160,7 @@ export const ModerasyonModal = ({
               rows={2}
               required
               placeholder="Spam, çoklu hesap, bot davranışı..."
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 resize-none"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-medium outline-none focus:border-ink resize-none"
             />
           </div>
         )}
@@ -168,7 +168,7 @@ export const ModerasyonModal = ({
         {/* Silme onayı */}
         {mod === 'sil' && (
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-rose-700 dark:text-rose-400 mb-2">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-danger dark:text-danger mb-2">
               Onay için "SİL" yaz
             </label>
             <input
@@ -177,13 +177,13 @@ export const ModerasyonModal = ({
               onChange={(e) => setSilOnay(e.target.value)}
               autoFocus
               placeholder="SİL"
-              className="w-full px-3 py-2 bg-rose-50 dark:bg-rose-950/30 border border-rose-300 dark:border-rose-800 rounded-lg text-[13px] font-mono font-bold outline-none focus:border-rose-600"
+              className="w-full px-3 py-2 bg-danger-soft border border-danger-soft rounded-lg text-[13px] font-mono font-bold outline-none focus:border-danger"
             />
           </div>
         )}
 
         {hata && (
-          <div className="flex items-start gap-2 p-2.5 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[12px] text-rose-800 dark:text-rose-300 font-medium">
+          <div className="flex items-start gap-2 p-2.5 bg-danger-soft border border-danger-soft rounded-lg text-[12px] text-danger font-medium">
             <Icon name="AlertCircle" size={14} className="flex-shrink-0 mt-0.5" />
             <span>{hata}</span>
           </div>
@@ -193,7 +193,7 @@ export const ModerasyonModal = ({
           <button
             type="button"
             onClick={onKapat}
-            className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 rounded-lg hover:bg-stone-50 dark:hover:bg-zinc-800 transition"
+            className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold border border-line-strong rounded-lg hover:bg-bg-tint transition"
           >
             Vazgeç
           </button>
@@ -205,13 +205,13 @@ export const ModerasyonModal = ({
               (mod === 'banla' && !sebep.trim()) ||
               (mod === 'sil' && silOnay !== 'SİL')
             }
-            className={`inline-flex items-center gap-2 px-5 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed text-white ${
-              mod === 'sil'
-                ? 'bg-rose-600 hover:bg-rose-700'
-                : mod === 'unbanla'
-                  ? 'bg-emerald-600 hover:bg-emerald-700'
-                  : 'bg-amber-600 hover:bg-amber-700'
-            }`}
+            className={`inline-flex items-center gap-2 px-5 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed text-bg ${
+ mod === 'sil'
+ ? 'bg-danger hover:bg-danger'
+ : mod === 'unbanla'
+ ? 'bg-success hover:bg-success'
+ : 'bg-premium-deep hover:bg-premium-deep'
+ }`}
           >
             <Icon
               name={kaydediliyor ? 'Loader2' : mod === 'sil' ? 'Trash2' : mod === 'unbanla' ? 'BadgeCheck' : 'AlertTriangle'}

@@ -78,7 +78,7 @@ export const SifreYenileSayfasi = () => {
 
   return (
     <main className="max-w-md mx-auto px-4 sm:px-6 py-16">
-      <div className="bg-white dark:bg-zinc-800/50 border border-line rounded-2xl p-6 sm:p-8">
+      <div className="bg-surface border border-line rounded-2xl p-6 sm:p-8">
         <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight mb-2">
           Yeni şifre belirle
         </h1>
@@ -95,7 +95,7 @@ export const SifreYenileSayfasi = () => {
 
         {oturum === 'normal' && (
           <div className="space-y-4">
-            <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg text-[13px] text-amber-900 dark:text-amber-200 font-medium">
+            <div className="flex items-start gap-2 p-3 bg-premium-soft border border-premium-soft rounded-lg text-[13px] text-premium-deep dark:text-premium-soft font-medium">
               <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
               <span>
                 Bu sayfa sadece e-posta üzerinden gelen şifre sıfırlama linki ile açılabilir.
@@ -104,7 +104,7 @@ export const SifreYenileSayfasi = () => {
             </div>
             <Link
               to="/sifre-sifirla"
-              className="block text-center w-full bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-3 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition"
+              className="block text-center w-full bg-ink text-bg px-5 py-3 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition"
             >
               Yeni Sıfırlama Linki İste
             </Link>
@@ -147,7 +147,7 @@ export const SifreYenileSayfasi = () => {
             </div>
 
             {hata && (
-              <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+              <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
                 <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
                 <span>{hata}</span>
               </div>
@@ -156,7 +156,7 @@ export const SifreYenileSayfasi = () => {
             <button
               type="submit"
               disabled={yukleniyor}
-              className="w-full bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-3 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+              className="w-full bg-ink text-bg px-5 py-3 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
             >
               {yukleniyor ? (
                 <>
