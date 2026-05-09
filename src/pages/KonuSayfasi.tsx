@@ -6,7 +6,7 @@ import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
 import { TamamRozeti } from '../components/TamamRozeti';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
-import { kilidiAcanKonu, konuKilitliMi, konuTamamlandiMi } from '../lib/konu-kilit';
+import { kilidiAcanKonu, konuKilitliMi } from '../lib/konu-kilit';
 import type { Ilerleme } from '../types';
 
 const icerikDolu = (icerik: unknown | null | undefined): boolean =>
@@ -382,7 +382,6 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
             )}
           </div>
         </div>
-      </div>
     </main>
   );
 };
