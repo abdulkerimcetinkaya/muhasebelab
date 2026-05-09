@@ -29,12 +29,12 @@ export const OpenBookHero = ({ onProblemler, onGiris }: Props) => {
             className="font-display-italic text-ink leading-[0.96] tracking-tight mx-auto"
             style={{ fontSize: 'clamp(44px, 9vw, 132px)' }}
           >
-            <span className="block overflow-hidden">
+            <span className="block overflow-hidden pb-[0.18em]">
               <SlideInWords trigger="mount" delay={0.2} stagger={0.06}>
                 Kayıt tutmayı
               </SlideInWords>
             </span>
-            <span className="block overflow-hidden">
+            <span className="block overflow-hidden pb-[0.18em]">
               <SlideInWords
                 trigger="mount"
                 delay={0.4}
