@@ -77,8 +77,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
 
           {/* Sağ */}
           <div className="flex items-center gap-1.5 sm:gap-2.5">
-            {/* Streak / puan */}
-            {(ilerleme.streak > 0 || ilerleme.puan > 0) && (
+            {/* Streak / puan — sadece girişli kullanıcılar için */}
+            {user && (ilerleme.streak > 0 || ilerleme.puan > 0) && (
               <div className="hidden sm:flex items-center gap-3 mr-1 pr-3 border-r border-line">
                 {ilerleme.streak > 0 && (
                   <div className="flex items-baseline gap-1.5" title="Seri">
