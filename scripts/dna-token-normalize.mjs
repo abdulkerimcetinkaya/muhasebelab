@@ -11,7 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOTS = ['src/pages', 'src/components'];
+const ROOTS = ['src/pages', 'src/components', 'src'];
 const EXCLUDE = ['_legacy-reference.html'];
 
 // =============================================================

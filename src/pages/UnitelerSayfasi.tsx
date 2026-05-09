@@ -19,7 +19,7 @@ export const UnitelerSayfasi = ({ ilerleme }: Props) => {
   const toplamYuzde = toplamSoru > 0 ? Math.round((toplamCozulen / toplamSoru) * 100) : 0;
 
   return (
-    <main className="mufredat-sayfa relative min-h-screen overflow-hidden">
+    <main className="relative overflow-hidden">
       {/* HERO — sade başlık + dinamik sayaç */}
       <header className="relative max-w-[1240px] mx-auto px-5 sm:px-8 pt-16 pb-12">
         <div className="flex items-end justify-between gap-6 flex-wrap">

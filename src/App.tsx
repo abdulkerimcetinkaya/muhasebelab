@@ -57,7 +57,7 @@ const KonuSayfasi = lazy(() => import('./pages/KonuSayfasi').then((m) => ({ defa
 const DashboardSayfasi = lazy(() => import('./pages/DashboardSayfasi').then((m) => ({ default: m.DashboardSayfasi })));
 
 const SayfaYukleniyor = () => (
-  <div className="min-h-[60vh] flex items-center justify-center text-stone-400 dark:text-zinc-500 text-sm">
+  <div className="min-h-[60vh] flex items-center justify-center text-ink-quiet text-sm">
     Yükleniyor…
   </div>
 );
@@ -277,8 +277,8 @@ const App = () => {
 
   if (uniteYukleniyor && uniteler.length === 0) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-zinc-900 text-stone-900 dark:text-zinc-100 flex items-center justify-center">
-        <div className="text-sm text-stone-500 dark:text-zinc-500 font-medium">
+      <div className="min-h-screen bg-bg-tint text-ink flex items-center justify-center">
+        <div className="text-sm text-ink-mute font-medium">
           İçerik yükleniyor…
         </div>
       </div>
@@ -287,10 +287,10 @@ const App = () => {
 
   if (uniteHata && uniteler.length === 0) {
     return (
-      <div className="min-h-screen bg-stone-50 dark:bg-zinc-900 text-stone-900 dark:text-zinc-100 flex items-center justify-center px-6">
+      <div className="min-h-screen bg-bg-tint text-ink flex items-center justify-center px-6">
         <div className="max-w-md text-center">
           <div className="font-display text-xl font-bold mb-2">İçerik yüklenemedi</div>
-          <p className="text-sm text-stone-600 dark:text-zinc-400 font-medium">{uniteHata}</p>
+          <p className="text-sm text-ink-soft font-medium">{uniteHata}</p>
         </div>
       </div>
     );
@@ -300,7 +300,7 @@ const App = () => {
     <HashRouter>
       <ScrollToTop />
       <SiteLoader />
-      <div className="min-h-screen bg-stone-50 dark:bg-zinc-900 text-stone-900 dark:text-zinc-100 transition-colors">
+      <div className="min-h-screen bg-bg-tint text-ink transition-colors">
         <Navbar
           ilerleme={ilerleme}
           onTemaDegistir={temaDegistir}
