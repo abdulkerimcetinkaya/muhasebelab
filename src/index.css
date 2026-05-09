@@ -15,57 +15,65 @@
   --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
   --font-serif: 'Instrument Serif', Georgia, serif;
 
-  /* Yüzey — cool pearl, hafif slate undertone (Linear/Vercel hissi) */
-  --bg: #f4f5f8;
-  --bg-warm: #ecedf1;
-  --bg-tint: #f9fafc;
-  --surface: #ffffff;
-  --surface-2: #eef0f4;
-  --surface-tint: #f1f3f7;
+  /* ── Yüzey: kirli beyaz (off-white) — kağıt tonu, hafif warm undertone ── */
+  /* Kullanıcı tercihi: dominant kirli beyaz, mavi accent */
+  --bg: #f6f5f1;          /* paper / kirli beyaz — primary background */
+  --bg-warm: #efede7;     /* hafif daha sıcak — sunken yüzey */
+  --bg-tint: #faf9f5;     /* en açık tint — hover/highlight */
+  --surface: #ffffff;     /* saf kart yüzeyi */
+  --surface-2: #f1efe9;   /* ikincil kart */
+  --surface-tint: #f5f3ed;
 
-  /* Mürekkep — fountain pen mavi-siyahı */
-  --ink: #1f3a5f;        /* deep navy ink */
-  --ink-soft: #4a6e8e;
-  --ink-mute: #8a9bae;
-  --ink-quiet: #b8c4d2;
+  /* ── Mürekkep: koyu lacivert (off-black) ── */
+  /* Skill kuralı: pure black banned. Slate-blue undertone'lu off-black. */
+  --ink: #1a2538;         /* deep navy near-black */
+  --ink-soft: #4a5a72;
+  --ink-mute: #7a8597;
+  --ink-quiet: #aab3c0;
 
-  /* Hairlines — cool gray tonu */
-  --line: #e2e4ea;
-  --line-soft: #ecedf2;
-  --line-strong: #c8ccd4;
-  --line-ink: rgba(31, 58, 95, 0.16);
+  /* ── Hairlines: warm-neutral (paper'a uyumlu) ── */
+  --line: #e3dfd5;        /* warm gray hairline */
+  --line-soft: #ede9df;
+  --line-strong: #c9c3b5;
+  --line-ink: rgba(26, 37, 56, 0.14);
 
-  /* Aksanlar — mavi tonal palet */
-  --sky: #9cd5ff;        /* parlak gökyüzü vurgusu */
-  --sky-deep: #5a87b0;   /* mid sky */
-  --sky-soft: #d9eaf8;   /* tint */
+  /* ── Accent: tek mavi (skill kuralı: max 1 accent, sat<80%) ── */
+  /* Slate blue — desaturated, professional */
+  --blue: #2c4f7c;        /* primary blue accent (sat ~55%) */
+  --blue-deep: #1d3a5f;   /* hover/pressed */
+  --blue-soft: #d8e3f0;   /* tint, badge bg */
+  --blue-mute: #5d7ba2;   /* secondary blue, mid-tone */
 
-  --accent: #1f3a5f;     /* deep navy aksan */
-  --accent-deep: #122847;
-  --accent-soft: #d6dee9;
+  /* Geriye dönük alias'lar (eski sınıflar kırılmasın) */
+  --sky: var(--blue);
+  --sky-deep: var(--blue-deep);
+  --sky-soft: var(--blue-soft);
+  --accent: var(--blue);
+  --accent-deep: var(--blue-deep);
+  --accent-soft: var(--blue-soft);
+  --primary: var(--blue);
+  --primary-deep: var(--blue-deep);
 
-  --primary: #1f3a5f;
-  --primary-deep: #122847;
+  /* ── Sınırlı yardımcı renkler (sadece anlamsal kullanım) ── */
+  /* Premium: warm amber, sadece Premium-spesifik UI */
+  --copper: #a47339;      /* matlaştırılmış amber */
+  --copper-deep: #855d2c;
+  --copper-soft: #e8dfcc;
+  --copper-glow: rgba(164, 115, 57, 0.32);
 
-  /* Bakır-amber sıcak aksan (Ventriloc turuncu eşdeğeri, daha mat) */
-  --copper: #b8732b;
-  --copper-deep: #9a5f1f;
-  --copper-soft: #f2e5d0;
-  --copper-glow: rgba(184, 115, 43, 0.42);
+  --premium: var(--copper);
+  --premium-deep: var(--copper-deep);
+  --premium-soft: var(--copper-soft);
 
-  /* Mat zeytin (italik vurgu için) */
-  --olive: #7a6b3f;
-  --olive-soft: #ebe7d6;
+  /* Durum renkleri: desature, paper'a uyumlu */
+  --success: #4a7a5d;     /* mat sage */
+  --success-soft: #d4e1d7;
 
-  --premium: #a07a3f;    /* matlaştırılmış altın */
-  --premium-deep: #7a5d2c;
-  --premium-soft: #ece1c7;
+  --danger: #94544f;      /* mat brick */
+  --danger-soft: #ebd5d1;
 
-  --success: #5d8a6f;    /* matlaştırılmış sage */
-  --success-soft: #d6e3da;
-
-  --danger: #a86a64;     /* matlaştırılmış toz pembe */
-  --danger-soft: #ead3cf;
+  --olive: #6b6038;
+  --olive-soft: #e8e3cf;
 
   /* Geriye dönük (eski sınıfların kırılmaması için) */
   --mint: var(--sky);
@@ -88,42 +96,51 @@
 }
 
 .dark {
-  --bg: #0e1620;
-  --bg-warm: #121b27;
-  --bg-tint: #16202d;
-  --surface: #1a2532;
-  --surface-2: #1f2c3c;
-  --surface-tint: #1e2a39;
+  /* Dark mode — saf siyah değil, slate undertone'lu deep ink */
+  --bg: #0f1620;          /* near-black with cool slate */
+  --bg-warm: #131b27;
+  --bg-tint: #18212e;
+  --surface: #1b2533;
+  --surface-2: #202b3b;
+  --surface-tint: #1e2939;
 
-  --ink: #f1f5e8;
-  --ink-soft: #b6c5d2;
-  --ink-mute: #7a8a99;
-  --ink-quiet: #4d5a6a;
+  --ink: #ece9e0;         /* warm off-white text (kirli beyaz dark muadili) */
+  --ink-soft: #b6bcc7;
+  --ink-mute: #7a8290;
+  --ink-quiet: #4d5462;
 
-  --line: #2a3849;
-  --line-soft: #1f2c3c;
-  --line-strong: #3a4858;
-  --line-ink: rgba(241, 245, 232, 0.16);
+  --line: #2a3445;
+  --line-soft: #1d2735;
+  --line-strong: #3a4555;
+  --line-ink: rgba(236, 233, 224, 0.14);
 
-  --sky: #9cd5ff;
-  --sky-deep: #7aaace;
-  --sky-soft: rgba(156, 213, 255, 0.16);
+  /* Mavi: dark'ta biraz daha açık parlak — okunaklılık için */
+  --blue: #7da5d0;
+  --blue-deep: #6190c0;
+  --blue-soft: rgba(125, 165, 208, 0.14);
+  --blue-mute: #5a7ea3;
 
-  --accent: #9cd5ff;
-  --accent-deep: #7aaace;
-  --accent-soft: rgba(156, 213, 255, 0.12);
+  --sky: var(--blue);
+  --sky-deep: var(--blue-deep);
+  --sky-soft: var(--blue-soft);
+  --accent: var(--blue);
+  --accent-deep: var(--blue-deep);
+  --accent-soft: var(--blue-soft);
+  --primary: var(--blue);
+  --primary-deep: var(--blue-deep);
 
-  --primary: #9cd5ff;
-  --primary-deep: #7aaace;
+  --copper: #c19362;      /* dark mode'da daha açık warm */
+  --copper-deep: #a47339;
+  --copper-soft: rgba(193, 147, 98, 0.14);
 
-  --premium: #c5985a;
-  --premium-deep: #a07a3f;
-  --premium-soft: rgba(197, 152, 90, 0.14);
+  --premium: var(--copper);
+  --premium-deep: var(--copper-deep);
+  --premium-soft: var(--copper-soft);
 
-  --success: #88b89a;
-  --success-soft: rgba(136, 184, 154, 0.14);
-  --danger: #c5938e;
-  --danger-soft: rgba(197, 147, 142, 0.12);
+  --success: #7ca691;
+  --success-soft: rgba(124, 166, 145, 0.14);
+  --danger: #b07a76;
+  --danger-soft: rgba(176, 122, 118, 0.14);
 
   --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.5);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.55);
