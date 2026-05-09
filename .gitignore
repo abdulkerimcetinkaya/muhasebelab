@@ -28,6 +28,12 @@ supabase/.temp
 .idea
 .DS_Store
 
+# Playwright artifact'ları (CI'da artifact olarak yüklenir)
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/blob-report/
+
 # Claude local settings + worktree state
 .claude/
 *.suo
