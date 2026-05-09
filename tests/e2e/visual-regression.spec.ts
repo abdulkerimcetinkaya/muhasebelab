@@ -9,6 +9,11 @@
  *
  * NOT: Pixel-perfect compare yerine threshold tolerance ile çalışır.
  * Animation, font yükleme gibi flaky kaynaklar disable edilir.
+ *
+ * NOT 2: Sadece dev makinasında (darwin) koşar. CI Linux'ta farklı font
+ * render yaptığı için baseline'lar uyumsuz oluyor — visual regression
+ * design QA aracı olarak yerel kalıyor. CI smoke + functional testlere
+ * odaklanıyor.
  */
 import { expect, test } from '@playwright/test';
 
@@ -27,6 +32,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Visual regression — kritik sayfalar', () => {
+  // CI Linux ile dev macOS subpixel rendering farkı — CI'da skip
+  test.skip(
+    !!process.env.CI,
+    'Visual regression yerel macOS dev icin — Linux CI font render farki',
+  );
+
   test('anasayfa (anonim)', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
