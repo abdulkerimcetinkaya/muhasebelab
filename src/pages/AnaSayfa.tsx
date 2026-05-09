@@ -940,7 +940,7 @@ const AnonimAnaSayfa = () => {
               </span>
               <span className="flex items-center gap-2">
                 <Icon name="Check" size={11} className="text-success" />
-                Kayıt zorunlu değil
+                Kart zorunlu değil
               </span>
               <span className="flex items-center gap-2">
                 <Icon name="Check" size={11} className="text-success" />
