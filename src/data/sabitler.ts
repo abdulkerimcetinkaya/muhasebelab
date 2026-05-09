@@ -100,9 +100,9 @@ export const puanHesapla = (
 };
 
 export const ZORLUK_STIL: Record<Zorluk, string> = {
-  kolay: 'text-emerald-700 dark:text-emerald-400',
-  orta: 'text-amber-700 dark:text-amber-400',
-  zor: 'text-rose-700 dark:text-rose-400',
+  kolay: 'text-success dark:text-success',
+  orta: 'text-premium-deep dark:text-premium',
+  zor: 'text-danger dark:text-danger',
 };
 
 export const ZORLUK_AD: Record<Zorluk, string> = {
