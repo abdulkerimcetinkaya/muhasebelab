@@ -43,15 +43,15 @@ const ORNEK_JSON = `[
     "unite_id": "mal",
     "baslik": "Peşin Mal Satışı",
     "zorluk": "kolay",
-    "senaryo": "İşletme 10.000 TL'lik malı %18 KDV ile peşin satmıştır.",
+    "senaryo": "İşletme 10.000 TL'lik malı %20 KDV ile peşin satmıştır.",
     "ipucu": "Kasa hesabı brüt tutarı alır. Yurtiçi satışlar hasılat hesabıdır.",
     "aciklama": "Peşin satışta kasa borçlanır; yurtiçi satışlar ve KDV alacaklanır.",
     "durum": "taslak",
     "kaynak": "ai",
     "cozumler": [
-      { "kod": "100", "borc": 11800, "alacak": 0 },
+      { "kod": "100", "borc": 12000, "alacak": 0 },
       { "kod": "600", "borc": 0, "alacak": 10000 },
-      { "kod": "391", "borc": 0, "alacak": 1800 }
+      { "kod": "391", "borc": 0, "alacak": 2000 }
     ]
   }
 ]`;
