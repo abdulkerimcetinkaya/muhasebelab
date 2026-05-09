@@ -821,10 +821,8 @@ input[type='number'] { -moz-appearance: textfield; }
 /* ---------------------------------------------------------------
    Müfredat sayfası — editorial liste estetiği
 --------------------------------------------------------------- */
-.mufredat-sayfa {
-  /* AnaSayfa ile aynı zemin: düz kirli beyaz, gradient yok */
-  background: var(--bg);
-}
+/* .mufredat-sayfa kaldırıldı: <main> artık body'nin doğal zeminini
+   (var(--bg)) miras alır — diğer sayfalarla birebir aynı. */
 
 .mufredat-satir {
   background: transparent;
