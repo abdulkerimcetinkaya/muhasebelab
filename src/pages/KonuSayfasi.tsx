@@ -90,7 +90,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
       {/* ════════════════════════════════════════════════════════════ */}
       {/* ÜST BANNER (DergiPark esin) — full-width, koyu                 */}
       {/* ════════════════════════════════════════════════════════════ */}
-      <div className="bg-stone-900 dark:bg-zinc-900 text-stone-50 dark:text-zinc-100 border-b-2" style={{ borderBottomColor: 'var(--copper, #b87333)' }}>
+      <div className="bg-stone-900 dark:bg-zinc-900 text-stone-50 dark:text-zinc-100 border-b-2" style={{ borderBottomColor: 'var(--blue, #2c4f7c)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-[12px] mb-5 flex-wrap text-stone-400 dark:text-zinc-500">
@@ -102,7 +102,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
             </button>
             <Icon name="ChevronRight" size={11} className="opacity-60" />
             <button
-              onClick={() => nav(`/uniteler/${unite.id}`)}
+              onClick={() => nav(`/uniteler/${unite.id}?overview=1`)}
               className="hover:text-stone-50 dark:hover:text-zinc-100 transition font-semibold"
             >
               {unite.ad}
@@ -118,7 +118,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
             <div className="flex-1 min-w-0">
               <div
                 className="text-[10px] tracking-[0.3em] uppercase font-bold mb-3"
-                style={{ color: 'var(--copper, #d4a574)' }}
+                style={{ color: 'var(--blue, #7da5d0)' }}
               >
                 KONU ANLATIMI · {unite.ad.toUpperCase()}
               </div>
@@ -172,7 +172,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
                   <button
                     onClick={() => nav(`/problemler/${ilkCozulmemis.id}`)}
                     className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg shadow-lg hover:opacity-90 transition"
-                    style={{ backgroundColor: 'var(--copper, #b87333)', color: '#fff' }}
+                    style={{ backgroundColor: 'var(--blue, #2c4f7c)', color: '#fff' }}
                   >
                     <Icon name="Zap" size={13} />
                     {cozulen > 0 ? 'Devam Et' : 'Soruları Çöz'}
@@ -189,7 +189,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
                 ) : null}
 
                 <button
-                  onClick={() => nav(`/uniteler/${unite.id}`)}
+                  onClick={() => nav(`/uniteler/${unite.id}?overview=1`)}
                   className="inline-flex items-center gap-2 border border-stone-700 dark:border-zinc-700 hover:bg-stone-800 dark:hover:bg-zinc-800 px-4 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
                 >
                   <Icon name="ArrowLeft" size={12} />

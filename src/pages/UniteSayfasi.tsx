@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
 import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
@@ -19,12 +19,34 @@ interface Props {
 export const UniteSayfasi = ({ ilerleme }: Props) => {
   const { uniteId } = useParams<{ uniteId: string }>();
   const nav = useNavigate();
+  const [params] = useSearchParams();
   const { uniteler } = useUniteler();
   const unite = uniteler.find((u) => u.id === uniteId);
+  // ?overview=1 query param ile akıllı yönlendirme bypass edilebilir
+  // (Konu sayfasının breadcrumb'ı bu link'i kullanır → kullanıcı overview'i görmek isterse)
+  const overviewIstendi = params.get('overview') === '1';
 
   useEffect(() => {
-    if (!unite) nav('/uniteler', { replace: true });
-  }, [unite, nav]);
+    if (!unite) {
+      nav('/uniteler', { replace: true });
+      return;
+    }
+
+    // Akıllı yönlendirme (Yaklaşım C):
+    // Kullanıcı bu üniteye başladıysa (en az 1 soru çözmüş veya konu açmış)
+    // ve overview explicit istenmemişse → bıraktığı/devam edeceği konuya götür
+    if (overviewIstendi) return;
+
+    const cozulen = unite.sorular.filter((s) => ilerleme.cozulenler[s.id]).length;
+    const ilkTamamlanmamisKonu = unite.konular?.find(
+      (k) => !konuTamamlandiMi(k, ilerleme),
+    );
+
+    if (cozulen > 0 && ilkTamamlanmamisKonu) {
+      nav(`/uniteler/${unite.id}/${ilkTamamlanmamisKonu.id}`, { replace: true });
+    }
+    // Hiç başlamadıysa veya tüm konular tamamsa → overview'da kal
+  }, [unite, ilerleme, nav, overviewIstendi]);
 
   if (!unite) return null;
 

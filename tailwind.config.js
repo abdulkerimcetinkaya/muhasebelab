@@ -40,6 +40,14 @@ export default {
           deep: 'var(--accent-deep)',
           soft: 'var(--accent-soft)',
         },
+        // Yeni: tek tutarlı mavi accent (skill: max 1 accent, sat<80%)
+        // Kullanım: bg-brand, text-brand, border-brand, hover:bg-brand-deep
+        brand: {
+          DEFAULT: 'var(--blue)',
+          deep: 'var(--blue-deep)',
+          soft: 'var(--blue-soft)',
+          mute: 'var(--blue-mute)',
+        },
         primary: {
           DEFAULT: 'var(--primary)',
           deep: 'var(--primary-deep)',
