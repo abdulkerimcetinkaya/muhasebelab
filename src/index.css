@@ -2613,16 +2613,26 @@ input[type='number'] { -moz-appearance: textfield; }
 .paper-sheet {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(31, 58, 95, 0.012) 100%),
-    #ffffff;
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0) 0%, rgba(var(--blue-deep-rgb), 0.012) 100%),
+    rgb(var(--surface-rgb));
   border: 1px solid var(--line-strong);
   border-radius: 2px;
   box-shadow:
-    0 1px 0 #ffffff inset,
-    0 0 0 1px rgba(31, 58, 95, 0.03),
-    0 2px 4px rgba(31, 58, 95, 0.04),
-    0 12px 28px -8px rgba(31, 58, 95, 0.14),
-    0 32px 64px -24px rgba(31, 58, 95, 0.18);
+    0 1px 0 rgb(var(--surface-rgb)) inset,
+    0 0 0 1px rgba(var(--blue-deep-rgb), 0.03),
+    0 2px 4px rgba(var(--blue-deep-rgb), 0.04),
+    0 12px 28px -8px rgba(var(--blue-deep-rgb), 0.14),
+    0 32px 64px -24px rgba(var(--blue-deep-rgb), 0.18);
+}
+
+/* Dark mode: parlama yerine sunken paper hissi — surface zemin, kontrastsız gölge */
+.dark .paper-sheet {
+  background: rgb(var(--surface-rgb));
+  border-color: var(--line);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.3),
+    0 8px 24px -8px rgba(0, 0, 0, 0.4),
+    0 20px 48px -16px rgba(0, 0, 0, 0.5);
 }
 
 .paper-sheet::before {
@@ -2637,6 +2647,12 @@ input[type='number'] { -moz-appearance: textfield; }
   opacity: 0.85;
 }
 
+/* Dark mode'da multiply noise siyahlaştırıyor — overlay ile değiştir */
+.dark .paper-sheet::before {
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+}
+
 .paper-sheet::after {
   content: '';
   position: absolute;
@@ -2648,6 +2664,11 @@ input[type='number'] { -moz-appearance: textfield; }
     linear-gradient(-45deg, rgba(31, 58, 95, 0.04) 0%, transparent 40%);
   mix-blend-mode: overlay;
   opacity: 0.6;
+}
+
+/* Dark mode'da beyaz highlight göz tırmalıyor — kapat */
+.dark .paper-sheet::after {
+  display: none;
 }
 
 .paper-sheet-rule {
