@@ -52,6 +52,10 @@ export const SlideInWords = ({
           overflow: 'hidden',
           verticalAlign: 'top',
           lineHeight: 1.05,
+          // Italic serif descender (g, y, ğ kuyrukları) overflow-hidden
+          // tarafından kırpılmasın — alt boşluk + negatif margin telafi.
+          paddingBottom: '0.18em',
+          marginBottom: '-0.18em',
         }}
       >
         <motion.span
