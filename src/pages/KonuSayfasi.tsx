@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
@@ -27,7 +27,6 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
   const { uniteId, konuId } = useParams<{ uniteId: string; konuId: string }>();
   const nav = useNavigate();
   const { uniteler } = useUniteler();
-  const [sidebarAcik, setSidebarAcik] = useState(false);
 
   const unite = uniteler.find((u) => u.id === uniteId);
   const konular = unite?.konular ?? [];
@@ -42,27 +41,6 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
       nav(`/uniteler/${uniteId}`, { replace: true });
     }
   }, [unite, konu, uniteId, nav]);
-
-  // Konu değişince sidebar'ı kapat
-  useEffect(() => {
-    setSidebarAcik(false);
-  }, [konuId]);
-
-  // Konu listesini ve ilerleme verisini hook tabanına al — early return önce
-  const konularEnriched = useMemo(() => {
-    return konular.map((k) => {
-      const kSoru = k.sorular.length;
-      const kCozulen = k.sorular.filter((s) => ilerleme.cozulenler[s.id]).length;
-      return {
-        ...k,
-        soruSayisi: kSoru,
-        cozulen: kCozulen,
-        tamam: konuTamamlandiMi(k, ilerleme),
-        baslandi: kCozulen > 0,
-        kilitli: konuKilitliMi(konular, k, ilerleme),
-      };
-    });
-  }, [konular, ilerleme]);
 
   if (!unite || !konu) return null;
 
@@ -88,38 +66,34 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
   return (
     <main className="bg-stone-50 dark:bg-zinc-950 min-h-screen">
       {/* ════════════════════════════════════════════════════════════ */}
-      {/* ÜST BANNER (DergiPark esin) — full-width, koyu                 */}
+      {/* ÜST BANNER (DergiPark esin) — full-width, parlak mavi          */}
       {/* ════════════════════════════════════════════════════════════ */}
-      <div className="bg-stone-900 dark:bg-zinc-900 text-stone-50 dark:text-zinc-100 border-b-2" style={{ borderBottomColor: 'var(--blue, #2c4f7c)' }}>
+      <div className="text-white" style={{ backgroundColor: '#1d4ed8' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-[12px] mb-5 flex-wrap text-stone-400 dark:text-zinc-500">
+          <nav className="flex items-center gap-1.5 text-[12px] mb-5 flex-wrap text-blue-100/80">
             <button
               onClick={() => nav('/uniteler')}
-              className="hover:text-stone-50 dark:hover:text-zinc-100 transition font-semibold"
+              className="hover:text-white transition font-semibold"
             >
               Üniteler
             </button>
             <Icon name="ChevronRight" size={11} className="opacity-60" />
             <button
               onClick={() => nav(`/uniteler/${unite.id}?overview=1`)}
-              className="hover:text-stone-50 dark:hover:text-zinc-100 transition font-semibold"
+              className="hover:text-white transition font-semibold"
             >
               {unite.ad}
             </button>
             <Icon name="ChevronRight" size={11} className="opacity-60" />
-            <span className="text-stone-50 dark:text-zinc-100 font-bold truncate max-w-xs">
+            <span className="text-white font-bold truncate max-w-xs">
               {konu.ad}
             </span>
           </nav>
 
           <div className="flex items-start gap-6">
-            {/* Sol: ana banner içerik */}
             <div className="flex-1 min-w-0">
-              <div
-                className="text-[10px] tracking-[0.3em] uppercase font-bold mb-3"
-                style={{ color: 'var(--blue, #7da5d0)' }}
-              >
+              <div className="text-[10px] tracking-[0.3em] uppercase font-bold mb-3 text-blue-100">
                 KONU ANLATIMI · {unite.ad.toUpperCase()}
               </div>
 
@@ -128,13 +102,13 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
               </h1>
 
               {konu.aciklama && (
-                <p className="text-[14.5px] md:text-[15px] text-stone-300 dark:text-zinc-400 leading-relaxed font-medium max-w-2xl mb-5">
+                <p className="text-[14.5px] md:text-[15px] text-blue-50/90 leading-relaxed font-medium max-w-2xl mb-5">
                   {konu.aciklama}
                 </p>
               )}
 
               {/* Meta satırı */}
-              <div className="flex items-center gap-4 mb-6 flex-wrap text-[12px] text-stone-400 dark:text-zinc-500 font-mono">
+              <div className="flex items-center gap-4 mb-6 flex-wrap text-[12px] text-blue-100/80 font-mono">
                 <span>
                   Konu {String(aktifIndex + 1).padStart(2, '0')} / {konular.length}
                 </span>
@@ -149,7 +123,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
                 {tamamlandi && (
                   <>
                     <span className="opacity-50">·</span>
-                    <span className="inline-flex items-center gap-1.5 text-emerald-400">
+                    <span className="inline-flex items-center gap-1.5 text-emerald-200">
                       <TamamRozeti size={11} />
                       Tamamlandı
                     </span>
@@ -158,7 +132,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
                 {kilitliyse && (
                   <>
                     <span className="opacity-50">·</span>
-                    <span className="inline-flex items-center gap-1 text-amber-400">
+                    <span className="inline-flex items-center gap-1 text-amber-200">
                       <Icon name="Lock" size={11} />
                       Kilitli
                     </span>
@@ -171,8 +145,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
                 {ilkCozulmemis ? (
                   <button
                     onClick={() => nav(`/problemler/${ilkCozulmemis.id}`)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg shadow-lg hover:opacity-90 transition"
-                    style={{ backgroundColor: 'var(--blue, #2c4f7c)', color: '#fff' }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg shadow-lg bg-white text-blue-900 hover:bg-blue-50 transition"
                   >
                     <Icon name="Zap" size={13} />
                     {cozulen > 0 ? 'Devam Et' : 'Soruları Çöz'}
@@ -181,7 +154,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
                 ) : tamamlandi ? (
                   <button
                     disabled
-                    className="inline-flex items-center gap-2 bg-emerald-600/20 text-emerald-300 px-5 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg"
+                    className="inline-flex items-center gap-2 bg-emerald-600/30 text-emerald-50 px-5 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg"
                   >
                     <TamamRozeti size={13} />
                     Bu Konu Tamamlandı
@@ -190,27 +163,16 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
 
                 <button
                   onClick={() => nav(`/uniteler/${unite.id}?overview=1`)}
-                  className="inline-flex items-center gap-2 border border-stone-700 dark:border-zinc-700 hover:bg-stone-800 dark:hover:bg-zinc-800 px-4 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
+                  className="inline-flex items-center gap-2 border border-blue-300/40 hover:bg-blue-700/40 px-4 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
                 >
                   <Icon name="ArrowLeft" size={12} />
                   Üniteye Dön
                 </button>
-
-                {/* Mobil hamburger — sidebar aç */}
-                <button
-                  type="button"
-                  onClick={() => setSidebarAcik(true)}
-                  className="lg:hidden ml-auto inline-flex items-center gap-2 border border-stone-700 dark:border-zinc-700 hover:bg-stone-800 dark:hover:bg-zinc-800 px-3 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
-                  aria-label="Konular menüsü"
-                >
-                  <Icon name="Menu" size={13} />
-                  Konular
-                </button>
               </div>
             </div>
 
-            {/* Sağ: ünite ikonu (DergiPark'taki dergi kapağı muadili) — desktop only */}
-            <div className="hidden md:flex flex-shrink-0 items-center justify-center w-[100px] h-[140px] rounded-lg bg-stone-800/60 dark:bg-zinc-800/60 border border-stone-700 dark:border-zinc-700">
+            {/* Sağ: ünite ikonu */}
+            <div className="hidden md:flex flex-shrink-0 items-center justify-center w-[100px] h-[140px] rounded-lg bg-blue-700/40 border border-blue-300/30">
               <Thiings name={unite.thiingsIcon} size={56} />
             </div>
           </div>
@@ -243,12 +205,10 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
       )}
 
       {/* ════════════════════════════════════════════════════════════ */}
-      {/* İÇERİK GRID (sol main + sağ sidebar)                          */}
+      {/* İÇERİK — tek kolon, geniş                                     */}
       {/* ════════════════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10">
-          {/* ───── SOL: Ana içerik ───── */}
-          <div className="min-w-0 space-y-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        <div className="space-y-10">
             {/* Öz */}
             {konu.aciklama && (
               <section>
@@ -421,80 +381,8 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
               </section>
             )}
           </div>
-
-          {/* ───── SAĞ: Sticky sidebar (desktop) ───── */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-24 space-y-5">
-              {/* Bu Ünitedeki Konular */}
-              <SidebarKonuListesi
-                unite={unite}
-                konularEnriched={konularEnriched}
-                aktifKonuId={konu.id}
-                onSelect={(id) => nav(`/uniteler/${unite.id}/${id}`)}
-              />
-
-              {/* İlerleme */}
-              <SidebarIlerleme
-                cozulen={cozulen}
-                toplam={toplam}
-                yuzde={yuzde}
-                tamamlandi={tamamlandi}
-              />
-
-              {/* Paylaş */}
-              <SidebarPaylas konuAd={konu.ad} uniteAd={unite.ad} />
-            </div>
-          </aside>
         </div>
       </div>
-
-      {/* ════════════════════════════════════════════════════════════ */}
-      {/* MOBİL HAMBURGER OVERLAY                                       */}
-      {/* ════════════════════════════════════════════════════════════ */}
-      {sidebarAcik && (
-        <div
-          className="fixed inset-0 z-[100] lg:hidden flex"
-          role="dialog"
-        >
-          {/* Backdrop */}
-          <button
-            type="button"
-            onClick={() => setSidebarAcik(false)}
-            className="flex-1 bg-black/40 backdrop-blur-sm"
-            aria-label="Kapat"
-          />
-          {/* Drawer (sağdan) */}
-          <div className="w-[300px] max-w-[85vw] bg-stone-50 dark:bg-zinc-950 border-l border-stone-200 dark:border-zinc-800 overflow-y-auto p-4 space-y-5">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-bold tracking-tight">Bu Ünite</h2>
-              <button
-                type="button"
-                onClick={() => setSidebarAcik(false)}
-                className="p-1.5 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
-                aria-label="Kapat"
-              >
-                <Icon name="X" size={16} />
-              </button>
-            </div>
-            <SidebarKonuListesi
-              unite={unite}
-              konularEnriched={konularEnriched}
-              aktifKonuId={konu.id}
-              onSelect={(id) => {
-                nav(`/uniteler/${unite.id}/${id}`);
-                setSidebarAcik(false);
-              }}
-            />
-            <SidebarIlerleme
-              cozulen={cozulen}
-              toplam={toplam}
-              yuzde={yuzde}
-              tamamlandi={tamamlandi}
-            />
-            <SidebarPaylas konuAd={konu.ad} uniteAd={unite.ad} />
-          </div>
-        </div>
-      )}
     </main>
   );
 };
@@ -517,179 +405,3 @@ const DetayRow = ({ etiket, deger }: { etiket: string; deger: string }) => (
     </span>
   </div>
 );
-
-interface KonuEnriched {
-  id: string;
-  ad: string;
-  soruSayisi: number;
-  cozulen: number;
-  tamam: boolean;
-  baslandi: boolean;
-  kilitli: boolean;
-}
-
-const SidebarKonuListesi = ({
-  unite,
-  konularEnriched,
-  aktifKonuId,
-  onSelect,
-}: {
-  unite: { ad: string; thiingsIcon: string };
-  konularEnriched: KonuEnriched[];
-  aktifKonuId: string;
-  onSelect: (id: string) => void;
-}) => (
-  <div className="bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-4">
-    <div className="flex items-center gap-2 mb-3 px-2">
-      <Thiings name={unite.thiingsIcon} size={28} />
-      <div className="min-w-0">
-        <div className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
-          Bu Ünite
-        </div>
-        <div className="font-display text-[14px] font-bold tracking-tight text-stone-900 dark:text-zinc-100 leading-tight truncate">
-          {unite.ad}
-        </div>
-      </div>
-    </div>
-    <div className="border-t border-stone-200 dark:border-zinc-700 pt-3">
-      <div className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2 px-2">
-        Konular
-      </div>
-      <ul className="space-y-0.5">
-        {konularEnriched.map((k, i) => {
-          const aktif = k.id === aktifKonuId;
-          return (
-            <li key={k.id}>
-              <button
-                onClick={() => onSelect(k.id)}
-                className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-left transition ${
-                  aktif
-                    ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-100'
-                    : k.kilitli
-                      ? 'opacity-55 hover:opacity-80 text-stone-600 dark:text-zinc-500'
-                      : 'hover:bg-stone-50 dark:hover:bg-zinc-800/60 text-stone-700 dark:text-zinc-300'
-                }`}
-              >
-                <span className="flex-shrink-0">
-                  {k.kilitli ? (
-                    <Icon
-                      name="Lock"
-                      size={13}
-                      className="text-stone-400 dark:text-zinc-600"
-                    />
-                  ) : k.tamam ? (
-                    <TamamRozeti size={14} />
-                  ) : k.baslandi ? (
-                    <Icon
-                      name="CircleDashed"
-                      size={14}
-                      className="text-blue-600 dark:text-blue-400"
-                    />
-                  ) : (
-                    <Icon
-                      name="Circle"
-                      size={14}
-                      className="text-stone-300 dark:text-zinc-700"
-                    />
-                  )}
-                </span>
-                <span className="flex-1 min-w-0">
-                  <span className="font-mono text-[10px] tracking-wider text-stone-400 dark:text-zinc-600 font-bold mr-1.5">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <span
-                    className={`text-[13px] ${aktif ? 'font-bold' : 'font-semibold'} truncate`}
-                  >
-                    {k.ad}
-                  </span>
-                </span>
-                <span className="font-mono text-[10px] text-stone-400 dark:text-zinc-600 font-bold tabular-nums flex-shrink-0">
-                  {k.cozulen}/{k.soruSayisi}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  </div>
-);
-
-const SidebarIlerleme = ({
-  cozulen,
-  toplam,
-  yuzde,
-  tamamlandi,
-}: {
-  cozulen: number;
-  toplam: number;
-  yuzde: number;
-  tamamlandi: boolean;
-}) => (
-  <div className="bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-4">
-    <div className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-3">
-      İlerleme
-    </div>
-    <div className="flex items-baseline justify-between mb-2">
-      <span className="font-display text-2xl font-bold tracking-tight">
-        {cozulen}
-        <span className="text-stone-400 dark:text-zinc-600 text-base">/{toplam}</span>
-      </span>
-      <span
-        className={`text-[12px] font-mono font-bold ${tamamlandi ? 'text-emerald-700 dark:text-emerald-400' : 'text-stone-500 dark:text-zinc-500'}`}
-      >
-        %{yuzde}
-      </span>
-    </div>
-    <div className="h-1.5 bg-stone-100 dark:bg-zinc-800 rounded overflow-hidden">
-      <div
-        className={`h-full transition-all ${tamamlandi ? 'bg-emerald-600' : 'bg-blue-700 dark:bg-blue-500'}`}
-        style={{ width: `${yuzde}%` }}
-      />
-    </div>
-  </div>
-);
-
-const SidebarPaylas = ({ konuAd, uniteAd }: { konuAd: string; uniteAd: string }) => {
-  const url = typeof window !== 'undefined' ? window.location.href : '';
-  const text = `${konuAd} — ${uniteAd} | MuhasebeLab`;
-  const [kopyalandi, setKopyalandi] = useState(false);
-
-  const kopyala = async () => {
-    if (!url) return;
-    try {
-      await navigator.clipboard.writeText(url);
-      setKopyalandi(true);
-      setTimeout(() => setKopyalandi(false), 1500);
-    } catch {
-      // sessiz geç
-    }
-  };
-
-  return (
-    <div className="bg-white dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-4">
-      <div className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-3">
-        Paylaş
-      </div>
-      <div className="flex items-center gap-2">
-        <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-2 text-[11px] tracking-[0.15em] uppercase font-bold rounded-lg border border-stone-200 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800/60 transition"
-        >
-          <Icon name="Send" size={12} />
-          Twitter
-        </a>
-        <button
-          type="button"
-          onClick={kopyala}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-2 text-[11px] tracking-[0.15em] uppercase font-bold rounded-lg border border-stone-200 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800/60 transition"
-        >
-          <Icon name={kopyalandi ? 'Check' : 'FileText'} size={12} />
-          {kopyalandi ? 'Kopyalandı' : 'Linki Kopyala'}
-        </button>
-      </div>
-    </div>
-  );
-};
