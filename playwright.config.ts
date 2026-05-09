@@ -1,4 +1,27 @@
 import { defineConfig, devices } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// .env'i manuel yükle — test process'inin process.env'ine inject et.
+// Vite kendi .env'ini okur ama Playwright Node process ayrı, otomatik
+// okumuyor. Dotenv dep eklemek yerine basit parser.
+const envDosya = resolve(dirname(fileURLToPath(import.meta.url)), '.env');
+try {
+  const icerik = readFileSync(envDosya, 'utf-8');
+  for (const satir of icerik.split('\n')) {
+    const eslesme = satir.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+    if (eslesme) {
+      const [, anahtar, deger] = eslesme;
+      if (!process.env[anahtar]) {
+        // Tırnak içindeki değerleri de destekle
+        process.env[anahtar] = deger.trim().replace(/^["']|["']$/g, '');
+      }
+    }
+  }
+} catch {
+  // .env yoksa devam — CI gibi ortamlar env'leri başka yerden alır
+}
 
 /**
  * MuhasebeLab — Playwright E2E test config
