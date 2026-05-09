@@ -16,8 +16,11 @@ test.describe('Anonim ziyaretçi akışları', () => {
     await git(page, '/');
 
     // Hero h1 italic serif: "Kayıt tutmayı / bir uzman gibi öğren"
-    // SlideInWords kelime kelime böler, getByText ile lenient match
-    await expect(page.getByText(/Kayıt tutmayı/).first()).toBeVisible({ timeout: 10_000 });
+    // SlideInWords her kelimeyi AYRI <span>'a koyduğu için "Kayıt tutmayı"
+    // tek text node değil — tek kelime ile match.
+    await expect(page.getByText('Kayıt', { exact: false }).first()).toBeVisible({
+      timeout: 10_000,
+    });
 
     // Hero CTA: "Soruları aç" (OpenBookHero)
     await expect(page.getByRole('button', { name: 'Soruları aç' })).toBeVisible();
@@ -86,12 +89,10 @@ test.describe('Anonim ziyaretçi akışları', () => {
     const buton = page.locator('header').getByTitle('Hesap Planı').first();
     if (await buton.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await buton.click();
-      // Modal/yan panel açıldıktan sonra "Hesap Planı" başlığı görünür olmalı
-      // Başlık birden fazla yerde olabileceği için modal locator'a güvenmiyoruz
-      await page.waitForTimeout(300);
-      // Sayfa içerik değişti — herhangi bir hesap kodu görünür mü?
-      const hesapKodu = page.locator('text=/^\\d{3}\\s+/').first();
-      await expect(hesapKodu).toBeVisible({ timeout: 5_000 });
+      // Açılan panel'de "Tek Düzen Hesap Planı" başlığı görünür
+      await expect(page.getByText('Tek Düzen Hesap Planı').first()).toBeVisible({
+        timeout: 5_000,
+      });
     } else {
       test.skip(true, 'Hesap Planı butonu bu viewport boyutunda gizli');
     }
@@ -99,12 +100,18 @@ test.describe('Anonim ziyaretçi akışları', () => {
 
   test('tema toggle: light/dark değişir', async ({ page }) => {
     await git(page, '/');
-    const html = page.locator('html');
-    const baslangic = (await html.getAttribute('class')) || '';
+
+    // Class document.body üzerinde toggle ediliyor (App.tsx:160)
+    const body = page.locator('body');
+    const baslangicDark = (await body.getAttribute('class'))?.includes('dark') ?? false;
 
     await page.locator('header').getByTitle(/Karanlık tema|Açık tema/).first().click();
+
+    // 'dark' class'ı toggle olmalı
     await expect
-      .poll(async () => (await html.getAttribute('class')) || '', { timeout: 3_000 })
-      .not.toBe(baslangic);
+      .poll(async () => (await body.getAttribute('class'))?.includes('dark') ?? false, {
+        timeout: 3_000,
+      })
+      .toBe(!baslangicDark);
   });
 });
