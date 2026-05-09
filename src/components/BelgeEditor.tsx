@@ -149,21 +149,21 @@ export const BelgeEditor = ({ belgeler, onChange, baglam }: Props) => {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 rounded-xl p-5">
+    <div className="bg-surface border border-line rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-display text-lg font-bold tracking-tight">Belgeler</h3>
-          <p className="text-[11px] text-stone-500 dark:text-zinc-500 font-medium">
+          <p className="text-[11px] text-ink-mute font-medium">
             Soruda öğrenciye gösterilecek fatura / fiş / çek / senet / dekont.
           </p>
         </div>
-        <span className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+        <span className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
           {belgeler.length} adet
         </span>
       </div>
 
       {belgeler.length === 0 && (
-        <div className="text-sm text-stone-500 dark:text-zinc-500 font-medium italic mb-4 px-3 py-4 bg-stone-50 dark:bg-zinc-900/50 rounded-lg">
+        <div className="text-sm text-ink-mute font-medium italic mb-4 px-3 py-4 bg-bg-tint rounded-lg">
           Henüz belge yok. Aşağıdan tip seçip ekleyebilirsin.
         </div>
       )}
@@ -174,34 +174,34 @@ export const BelgeEditor = ({ belgeler, onChange, baglam }: Props) => {
           return (
             <div
               key={i}
-              className="border border-stone-200 dark:border-zinc-700 rounded-lg overflow-hidden"
+              className="border border-line rounded-lg overflow-hidden"
             >
-              <div className="flex items-center justify-between px-3 py-2 bg-stone-50 dark:bg-zinc-900/40">
+              <div className="flex items-center justify-between px-3 py-2 bg-bg-tint">
                 <button
                   type="button"
                   onClick={() => setAcik(acikMi ? null : i)}
                   className="flex items-center gap-2 flex-1 text-left text-sm font-bold"
                 >
                   <Icon name={acikMi ? 'ChevronDown' : 'ChevronRight'} size={14} />
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-mono text-stone-500 dark:text-zinc-500">
+                  <span className="text-[10px] tracking-[0.2em] uppercase font-mono text-ink-mute">
                     #{i + 1}
                   </span>
                   <span>{TUR_AD[b.tur]}</span>
-                  <span className="text-stone-500 dark:text-zinc-500 font-medium font-mono text-xs">
+                  <span className="text-ink-mute font-medium font-mono text-xs">
                     {belgeOzet(b)}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => sil(i)}
-                  className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition"
+                  className="p-1.5 text-ink-quiet hover:text-danger hover:bg-danger-soft rounded transition"
                   title="Belgeyi sil"
                 >
                   <Icon name="X" size={14} />
                 </button>
               </div>
               {acikMi && (
-                <div className="p-3 border-t border-stone-200 dark:border-zinc-700">
+                <div className="p-3 border-t border-line">
                   <BelgeAlanlari belge={b} onChange={(yeni) => guncelle(i, yeni)} />
                 </div>
               )}
@@ -211,16 +211,16 @@ export const BelgeEditor = ({ belgeler, onChange, baglam }: Props) => {
       </div>
 
       {aiHata && (
-        <div className="mb-3 px-3 py-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-lg text-xs text-rose-800 dark:text-rose-300 font-medium">
+        <div className="mb-3 px-3 py-2 bg-danger-soft border border-danger-soft rounded-lg text-xs text-danger font-medium">
           {aiHata}
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-stone-200 dark:border-zinc-700">
+      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-line">
         <select
           value={secim}
           onChange={(e) => setSecim(e.target.value as BelgeTuru)}
-          className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+          className="px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
         >
           {(Object.keys(TUR_AD) as BelgeTuru[]).map((t) => (
             <option key={t} value={t}>
@@ -231,7 +231,7 @@ export const BelgeEditor = ({ belgeler, onChange, baglam }: Props) => {
         <button
           type="button"
           onClick={ekle}
-          className="flex items-center gap-2 px-4 py-2 bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition"
+          className="flex items-center gap-2 px-4 py-2 bg-ink text-bg rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition"
         >
           <Icon name="Plus" size={14} />
           Belge Ekle
@@ -241,7 +241,7 @@ export const BelgeEditor = ({ belgeler, onChange, baglam }: Props) => {
             type="button"
             onClick={aiIleUret}
             disabled={aiYukleniyor}
-            className="ml-auto flex items-center gap-2 px-4 py-2 bg-violet-700 hover:bg-violet-800 dark:bg-violet-600 dark:hover:bg-violet-500 text-white rounded-lg text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="ml-auto flex items-center gap-2 px-4 py-2 bg-brand-deep hover:bg-brand-deep dark:bg-brand dark:hover:bg-brand text-bg rounded-lg text-sm font-bold transition disabled:opacity-50 disabled:cursor-not-allowed"
             title="Senaryo ve çözümden belge üret"
           >
             <Icon name={aiYukleniyor ? 'Loader2' : 'Sparkles'} size={14} className={aiYukleniyor ? 'animate-spin' : ''} />
@@ -291,7 +291,7 @@ const BelgeAlanlari = ({
 
 // ── Ortak küçük input bileşenleri ────────────────────────────────────────────
 const Etiket = ({ children }: { children: React.ReactNode }) => (
-  <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1">
+  <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-1">
     {children}
   </label>
 );
@@ -312,7 +312,7 @@ const Metin = ({
     value={value}
     onChange={(e) => oc(e.target.value)}
     placeholder={placeholder}
-    className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded font-medium"
+    className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded font-medium"
   />
 );
 
@@ -330,7 +330,7 @@ const Sayi = ({
     step={step}
     value={value}
     onChange={(e) => oc(parseFloat(e.target.value) || 0)}
-    className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded font-mono text-right"
+    className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded font-mono text-right"
   />
 );
 
@@ -349,7 +349,7 @@ const FaturaAlanlari = ({ b, on }: { b: FaturaBelge; on: (x: FaturaBelge) => voi
           <select
             value={b.faturaTipi ?? 'satis'}
             onChange={(e) => on({ ...b, faturaTipi: e.target.value as 'satis' | 'alis' | 'iade' })}
-            className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded font-medium"
+            className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong outline-none text-sm rounded font-medium"
           >
             <option value="satis">Satış</option>
             <option value="alis">Alış</option>
@@ -367,8 +367,8 @@ const FaturaAlanlari = ({ b, on }: { b: FaturaBelge; on: (x: FaturaBelge) => voi
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-2 p-2 bg-stone-50/50 dark:bg-zinc-900/30 rounded">
-          <div className="text-[10px] tracking-[0.2em] uppercase text-stone-600 dark:text-zinc-400 font-bold">
+        <div className="space-y-2 p-2 bg-bg-tint/50 rounded">
+          <div className="text-[10px] tracking-[0.2em] uppercase text-ink-soft font-bold">
             Satıcı
           </div>
           <Metin
@@ -389,8 +389,8 @@ const FaturaAlanlari = ({ b, on }: { b: FaturaBelge; on: (x: FaturaBelge) => voi
             />
           </div>
         </div>
-        <div className="space-y-2 p-2 bg-stone-50/50 dark:bg-zinc-900/30 rounded">
-          <div className="text-[10px] tracking-[0.2em] uppercase text-stone-600 dark:text-zinc-400 font-bold">
+        <div className="space-y-2 p-2 bg-bg-tint/50 rounded">
+          <div className="text-[10px] tracking-[0.2em] uppercase text-ink-soft font-bold">
             Alıcı
           </div>
           <Metin
@@ -427,7 +427,7 @@ const FaturaAlanlari = ({ b, on }: { b: FaturaBelge; on: (x: FaturaBelge) => voi
                 ],
               })
             }
-            className="text-[11px] font-bold text-stone-600 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-zinc-100"
+            className="text-[11px] font-bold text-ink-soft hover:text-ink"
           >
             + satır
           </button>
@@ -452,7 +452,7 @@ const FaturaAlanlari = ({ b, on }: { b: FaturaBelge; on: (x: FaturaBelge) => voi
                   type="button"
                   onClick={() => on({ ...b, kalemler: b.kalemler.filter((_, idx) => idx !== i) })}
                   disabled={b.kalemler.length <= 1}
-                  className="p-1 text-stone-400 hover:text-rose-600 disabled:opacity-30"
+                  className="p-1 text-ink-quiet hover:text-danger disabled:opacity-30"
                 >
                   <Icon name="X" size={12} />
                 </button>
@@ -507,7 +507,7 @@ const PerakendeAlanlari = ({
             onChange={(e) =>
               on({ ...b, odemeYontemi: e.target.value as 'NAKIT' | 'KART' | 'KARMA' })
             }
-            className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded font-medium"
+            className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong outline-none text-sm rounded font-medium"
           >
             <option value="NAKIT">Nakit</option>
             <option value="KART">Kart</option>
@@ -530,7 +530,7 @@ const PerakendeAlanlari = ({
                 kalemler: [...b.kalemler, { aciklama: '', miktar: 1, birimFiyat: 0, kdvOrani: 20 }],
               })
             }
-            className="text-[11px] font-bold text-stone-600 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-zinc-100"
+            className="text-[11px] font-bold text-ink-soft hover:text-ink"
           >
             + satır
           </button>
@@ -555,7 +555,7 @@ const PerakendeAlanlari = ({
                   type="button"
                   onClick={() => on({ ...b, kalemler: b.kalemler.filter((_, idx) => idx !== i) })}
                   disabled={b.kalemler.length <= 1}
-                  className="p-1 text-stone-400 hover:text-rose-600 disabled:opacity-30"
+                  className="p-1 text-ink-quiet hover:text-danger disabled:opacity-30"
                 >
                   <Icon name="X" size={12} />
                 </button>
@@ -628,7 +628,7 @@ const SenetAlanlari = ({ b, on }: { b: SenetBelge; on: (x: SenetBelge) => void }
         <select
           value={b.senetTipi ?? 'bono'}
           onChange={(e) => on({ ...b, senetTipi: e.target.value as 'bono' | 'police' })}
-          className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded font-medium"
+          className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong outline-none text-sm rounded font-medium"
         >
           <option value="bono">Bono</option>
           <option value="police">Poliçe</option>
@@ -701,7 +701,7 @@ const DekontAlanlari = ({ b, on }: { b: DekontBelge; on: (x: DekontBelge) => voi
         <select
           value={b.islemTuru}
           onChange={(e) => on({ ...b, islemTuru: e.target.value as DekontIslemTuru })}
-          className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded font-medium"
+          className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong outline-none text-sm rounded font-medium"
         >
           {(Object.keys(ISLEM_TURU_AD) as DekontIslemTuru[]).map((t) => (
             <option key={t} value={t}>
@@ -719,7 +719,7 @@ const DekontAlanlari = ({ b, on }: { b: DekontBelge; on: (x: DekontBelge) => voi
         <select
           value={b.yon}
           onChange={(e) => on({ ...b, yon: e.target.value as 'BORC' | 'ALACAK' })}
-          className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded font-medium"
+          className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong outline-none text-sm rounded font-medium"
         >
           <option value="BORC">Borç (hesaptan çıkan)</option>
           <option value="ALACAK">Alacak (hesaba giren)</option>

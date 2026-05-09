@@ -52,7 +52,7 @@ export const MarkdownLite = ({ text, className }: Props) => {
 
   return (
     <div
-      className={`text-sm text-stone-800 dark:text-zinc-200 leading-relaxed font-medium ${className ?? ''}`}
+      className={`text-sm text-ink leading-relaxed font-medium ${className ?? ''}`}
     >
       {elemanlar}
     </div>

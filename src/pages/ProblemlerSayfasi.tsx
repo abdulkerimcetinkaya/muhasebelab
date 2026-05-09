@@ -25,7 +25,7 @@ const SirOk = ({
   yon: 'asc' | 'desc';
 }) => {
   if (aktifFld !== fld) {
-    return <Icon name="ChevronsUpDown" size={10} className="text-stone-300 dark:text-zinc-700" />;
+    return <Icon name="ChevronsUpDown" size={10} className="text-ink-quiet" />;
   }
   return <Icon name={yon === 'asc' ? 'ChevronUp' : 'ChevronDown'} size={10} />;
 };
@@ -79,22 +79,22 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
       <div className="mb-8">
-        <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 mb-3 font-bold">
+        <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute mb-3 font-bold">
           Tüm Sorular
         </div>
         <h1 className="font-display text-5xl md:text-6xl tracking-tight mb-3 font-bold">
           Problemler
         </h1>
-        <p className="text-stone-600 dark:text-zinc-400 max-w-2xl font-medium">
+        <p className="text-ink-soft max-w-2xl font-medium">
           {tumSorular.length} soru · {cozulenSayi} çözüldü · %
           {tumSorular.length > 0 ? Math.round((cozulenSayi / tumSorular.length) * 100) : 0} ilerleme
         </p>
       </div>
 
-      <div className="mb-6 bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 p-4 rounded-xl">
+      <div className="mb-6 bg-surface border border-line p-4 rounded-xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="relative md:col-span-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-quiet">
               <Icon name="Search" size={14} />
             </span>
             <input
@@ -102,13 +102,13 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
               value={arama}
               onChange={(e) => setArama(e.target.value)}
               placeholder="Ara..."
-              className="w-full pl-9 pr-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
+              className="w-full pl-9 pr-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
             />
           </div>
           <select
             value={zorlukFiltre}
             onChange={(e) => setZorlukFiltre(e.target.value as typeof zorlukFiltre)}
-            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 text-sm focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none rounded-lg font-medium"
+            className="px-3 py-2 bg-bg-tint border border-line-strong text-sm focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none rounded-lg font-medium"
           >
             <option value="hepsi">Tüm Zorluklar</option>
             <option value="kolay">Kolay</option>
@@ -118,7 +118,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
           <select
             value={uniteFiltre}
             onChange={(e) => setUniteFiltre(e.target.value)}
-            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 text-sm focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none rounded-lg font-medium"
+            className="px-3 py-2 bg-bg-tint border border-line-strong text-sm focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none rounded-lg font-medium"
           >
             <option value="hepsi">Tüm Üniteler</option>
             {uniteler.map((u) => (
@@ -130,7 +130,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
           <select
             value={durumFiltre}
             onChange={(e) => setDurumFiltre(e.target.value as DurumFiltre)}
-            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 text-sm focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none rounded-lg font-medium"
+            className="px-3 py-2 bg-bg-tint border border-line-strong text-sm focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none rounded-lg font-medium"
           >
             <option value="hepsi">Tüm Durumlar</option>
             <option value="cozulen">Çözülenler</option>
@@ -139,24 +139,24 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-xl overflow-hidden">
-        <div className="hidden md:grid grid-cols-12 gap-3 px-4 py-3 border-b border-stone-200 dark:border-zinc-700 bg-stone-50 dark:bg-zinc-800 text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+      <div className="bg-surface border border-line rounded-xl overflow-hidden">
+        <div className="hidden md:grid grid-cols-12 gap-3 px-4 py-3 border-b border-line bg-bg-tint text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
           <button
             onClick={() => sirala('durum')}
-            className="col-span-1 text-left flex items-center gap-1 hover:text-stone-900 dark:hover:text-zinc-100"
+            className="col-span-1 text-left flex items-center gap-1 hover:text-ink"
           >
             Durum <SirOk fld="durum" aktifFld={siralamaFld} yon={siralamaYon} />
           </button>
           <div className="col-span-5">Başlık</div>
           <button
             onClick={() => sirala('unite')}
-            className="col-span-3 text-left flex items-center gap-1 hover:text-stone-900 dark:hover:text-zinc-100"
+            className="col-span-3 text-left flex items-center gap-1 hover:text-ink"
           >
             Ünite <SirOk fld="unite" aktifFld={siralamaFld} yon={siralamaYon} />
           </button>
           <button
             onClick={() => sirala('zorluk')}
-            className="col-span-2 text-left flex items-center gap-1 hover:text-stone-900 dark:hover:text-zinc-100"
+            className="col-span-2 text-left flex items-center gap-1 hover:text-ink"
           >
             Zorluk <SirOk fld="zorluk" aktifFld={siralamaFld} yon={siralamaYon} />
           </button>
@@ -169,12 +169,12 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
             <Icon
               name="CheckCircle2"
               size={18}
-              className="text-emerald-700 dark:text-emerald-400"
+              className="text-success dark:text-success"
             />
           ) : yanlisSayi > 0 ? (
-            <Icon name="XCircle" size={18} className="text-rose-500" />
+            <Icon name="XCircle" size={18} className="text-danger" />
           ) : (
-            <Icon name="Circle" size={18} className="text-stone-300 dark:text-zinc-700" />
+            <Icon name="Circle" size={18} className="text-ink-quiet" />
           );
           return (
             <button
@@ -184,18 +184,18 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
                   state: { liste: filtreli.map((x) => x.id) },
                 })
               }
-              className="w-full border-b border-stone-100 dark:border-zinc-800 hover:bg-stone-50 dark:hover:bg-zinc-800/50 transition text-left"
+              className="w-full border-b border-line-soft hover:bg-bg-tint transition text-left"
             >
               {/* Mobile (<md) — kart görünüm */}
               <div className="md:hidden px-4 py-3 flex items-start gap-3">
                 <div className="pt-0.5 flex-shrink-0">{durumIkon}</div>
                 <div className="flex-1 min-w-0">
                   <div className="font-display text-base leading-tight font-bold">{s.baslik}</div>
-                  <div className="text-xs text-stone-500 dark:text-zinc-500 line-clamp-1 mt-0.5 font-medium">
+                  <div className="text-xs text-ink-mute line-clamp-1 mt-0.5 font-medium">
                     {s.senaryo}
                   </div>
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    <span className="flex items-center gap-1 text-[11px] text-stone-600 dark:text-zinc-400 font-semibold">
+                    <span className="flex items-center gap-1 text-[11px] text-ink-soft font-semibold">
                       <Thiings name={s.uniteIcon} size={16} />
                       <span className="truncate max-w-[140px]">{s.uniteAd}</span>
                     </span>
@@ -204,7 +204,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
                     >
                       {ZORLUK_AD[s.zorluk]}
                     </span>
-                    <span className="text-[10px] font-mono font-bold text-stone-500 dark:text-zinc-500 ml-auto">
+                    <span className="text-[10px] font-mono font-bold text-ink-mute ml-auto">
                       {ZORLUK_PUAN[s.zorluk]}p
                     </span>
                   </div>
@@ -216,13 +216,13 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
                 <div className="col-span-1">{durumIkon}</div>
                 <div className="col-span-5">
                   <div className="font-display text-base leading-tight font-bold">{s.baslik}</div>
-                  <div className="text-xs text-stone-500 dark:text-zinc-500 line-clamp-1 mt-0.5 font-medium">
+                  <div className="text-xs text-ink-mute line-clamp-1 mt-0.5 font-medium">
                     {s.senaryo}
                   </div>
                 </div>
                 <div className="col-span-3 flex items-center gap-2 text-sm">
                   <Thiings name={s.uniteIcon} size={24} />
-                  <span className="text-stone-700 dark:text-zinc-300 truncate font-semibold">
+                  <span className="text-ink-soft truncate font-semibold">
                     {s.uniteAd}
                   </span>
                 </div>
@@ -233,7 +233,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
                     {ZORLUK_AD[s.zorluk]}
                   </span>
                 </div>
-                <div className="col-span-1 text-right font-mono text-sm text-stone-500 dark:text-zinc-500 font-bold">
+                <div className="col-span-1 text-right font-mono text-sm text-ink-mute font-bold">
                   {ZORLUK_PUAN[s.zorluk]}
                 </div>
               </div>
@@ -259,7 +259,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
         )}
       </div>
 
-      <div className="mt-4 text-xs text-stone-500 dark:text-zinc-500 font-semibold">
+      <div className="mt-4 text-xs text-ink-mute font-semibold">
         {filtreli.length} / {tumSorular.length} soru gösteriliyor
       </div>
     </main>

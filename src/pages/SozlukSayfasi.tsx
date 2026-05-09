@@ -77,7 +77,7 @@ export const SozlukSayfasi = () => {
           <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight mb-3">
             Mali Sözlük
           </h1>
-          <p className="text-[14.5px] text-stone-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
+          <p className="text-[14.5px] text-ink-soft leading-relaxed max-w-2xl">
             Muhasebe ve vergi terimlerinin Türkçe açıklamalı sözlüğü.
             Yevmiye kaydı, KDV, amortisman ve daha fazlası — örneklerle, TDHP
             hesap kodlarıyla.
@@ -89,31 +89,31 @@ export const SozlukSayfasi = () => {
             <Icon
               name="Search"
               size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-quiet"
             />
             <input
               type="text"
               value={arama}
               onChange={(e) => setArama(e.target.value)}
               placeholder="Terim ara — örn. amortisman, KDV, yevmiye"
-              className="w-full pl-9 pr-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/15"
+              className="w-full pl-9 pr-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink focus:ring-2 focus:ring-blue-500/15"
             />
           </div>
         </div>
 
         {hata && (
-          <div className="p-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+          <div className="p-4 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
             {hata}
           </div>
         )}
 
         {yukleniyor ? (
-          <div className="text-sm text-stone-400 dark:text-zinc-600 text-center py-12">
+          <div className="text-sm text-ink-quiet text-center py-12">
             Yükleniyor…
           </div>
         ) : filtrelenmis.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-sm text-stone-500 dark:text-zinc-500 font-medium">
+            <p className="text-sm text-ink-mute font-medium">
               "{arama}" için sonuç bulunamadı.
             </p>
           </div>
@@ -121,9 +121,9 @@ export const SozlukSayfasi = () => {
           <div className="space-y-10">
             {gruplu.map(([harf, list]) => (
               <section key={harf}>
-                <h2 className="font-display text-2xl font-bold tracking-tight mb-3 text-stone-900 dark:text-zinc-100 flex items-baseline gap-3">
+                <h2 className="font-display text-2xl font-bold tracking-tight mb-3 text-ink flex items-baseline gap-3">
                   <span>{harf}</span>
-                  <span className="font-mono text-[10px] tracking-wider uppercase text-stone-400 dark:text-zinc-600">
+                  <span className="font-mono text-[10px] tracking-wider uppercase text-ink-quiet">
                     {list.length} terim
                   </span>
                 </h2>
@@ -132,12 +132,12 @@ export const SozlukSayfasi = () => {
                     <Link
                       key={t.slug}
                       to={`/sozluk/${t.slug}`}
-                      className="block p-4 border border-stone-200 dark:border-zinc-800 hover:border-stone-900 dark:hover:border-zinc-400 rounded-xl transition group"
+                      className="block p-4 border border-line hover:border-ink rounded-xl transition group"
                     >
-                      <div className="font-bold text-[14.5px] text-stone-900 dark:text-zinc-100 mb-1 group-hover:underline">
+                      <div className="font-bold text-[14.5px] text-ink mb-1 group-hover:underline">
                         {t.baslik}
                       </div>
-                      <div className="text-[12.5px] text-stone-600 dark:text-zinc-400 leading-snug line-clamp-2">
+                      <div className="text-[12.5px] text-ink-soft leading-snug line-clamp-2">
                         {t.kisa_aciklama}
                       </div>
                     </Link>

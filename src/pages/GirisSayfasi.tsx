@@ -161,11 +161,11 @@ export const GirisSayfasi = () => {
   // ── Kullanıcı adı durum göstergesi (input sağ tarafı) ─────────────
   const adGosterge = () => {
     if (adDurum === 'kontrol')
-      return <Icon name="Loader2" size={14} className="text-stone-400 animate-spin" />;
+      return <Icon name="Loader2" size={14} className="text-ink-quiet animate-spin" />;
     if (adDurum === 'uygun')
-      return <Icon name="CheckCircle2" size={14} className="text-emerald-600" />;
+      return <Icon name="CheckCircle2" size={14} className="text-success" />;
     if (adDurum === 'kullanimda' || adDurum === 'gecersiz')
-      return <Icon name="AlertCircle" size={14} className="text-rose-500" />;
+      return <Icon name="AlertCircle" size={14} className="text-danger" />;
     return null;
   };
 
@@ -216,10 +216,10 @@ export const GirisSayfasi = () => {
               type="button"
               onClick={() => modDegistir('giris')}
               className={`flex-1 py-2 text-[12px] font-bold tracking-wide rounded-md transition ${
-                mod === 'giris'
-                  ? 'bg-ink text-paper shadow-sm'
-                  : 'text-ink-soft hover:text-ink'
-              }`}
+ mod === 'giris'
+ ? 'bg-ink text-paper shadow-sm'
+ : 'text-ink-soft hover:text-ink'
+ }`}
             >
               Giriş Yap
             </button>
@@ -227,10 +227,10 @@ export const GirisSayfasi = () => {
               type="button"
               onClick={() => modDegistir('kayit')}
               className={`flex-1 py-2 text-[12px] font-bold tracking-wide rounded-md transition ${
-                mod === 'kayit'
-                  ? 'bg-ink text-paper shadow-sm'
-                  : 'text-ink-soft hover:text-ink'
-              }`}
+ mod === 'kayit'
+ ? 'bg-ink text-paper shadow-sm'
+ : 'text-ink-soft hover:text-ink'
+ }`}
             >
               Kayıt Ol
             </button>
@@ -252,32 +252,32 @@ export const GirisSayfasi = () => {
                     minLength={2}
                     maxLength={30}
                     className={`w-full pl-3 pr-9 py-2.5 bg-surface-2/30 border rounded-lg text-[14px] font-medium outline-none transition focus:ring-2 focus:ring-blue-500/15 ${
-                      adDurum === 'kullanimda' || adDurum === 'gecersiz'
-                        ? 'border-rose-300 focus:border-rose-500'
-                        : adDurum === 'uygun'
-                          ? 'border-emerald-300 focus:border-emerald-500'
-                          : 'border-line focus:border-ink-soft'
-                    }`}
+ adDurum === 'kullanimda' || adDurum === 'gecersiz'
+ ? 'border-danger-soft focus:border-danger'
+ : adDurum === 'uygun'
+ ? 'border-success-soft focus:border-success'
+ : 'border-line focus:border-ink-soft'
+ }`}
                     placeholder="ahmet, zeynep_28, muhasebe_kurdu..."
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">{adGosterge()}</div>
                 </div>
 
                 {adHata && (
-                  <div className="mt-1.5 text-[12px] text-rose-700 dark:text-rose-400 font-medium">
+                  <div className="mt-1.5 text-[12px] text-danger dark:text-danger font-medium">
                     {adHata}
                   </div>
                 )}
 
                 {adDurum === 'uygun' && (
-                  <div className="mt-1.5 text-[12px] text-emerald-700 dark:text-emerald-400 font-medium">
+                  <div className="mt-1.5 text-[12px] text-success dark:text-success font-medium">
                     Bu kullanıcı adı uygun.
                   </div>
                 )}
 
                 {adDurum === 'kullanimda' && (
                   <div className="mt-2">
-                    <div className="text-[12px] text-rose-700 dark:text-rose-400 font-medium mb-1.5">
+                    <div className="text-[12px] text-danger dark:text-danger font-medium mb-1.5">
                       Bu kullanıcı adı alınmış.
                     </div>
                     {oneriler.length > 0 && (
@@ -332,7 +332,7 @@ export const GirisSayfasi = () => {
                   <button
                     type="button"
                     onClick={() => nav('/sifre-sifirla')}
-                    className="text-[11px] text-blue-700 dark:text-blue-400 hover:underline font-bold"
+                    className="text-[11px] text-brand dark:text-brand-mute hover:underline font-bold"
                   >
                     Şifremi unuttum
                   </button>
@@ -374,25 +374,25 @@ export const GirisSayfasi = () => {
                     required
                     minLength={6}
                     className={`w-full pl-3 pr-9 py-2.5 bg-surface-2/30 border rounded-lg text-[14px] font-medium outline-none transition focus:ring-2 focus:ring-blue-500/15 ${
-                      sifreUyusmazlik
-                        ? 'border-rose-300 focus:border-rose-500'
-                        : sifreEsit
-                          ? 'border-emerald-300 focus:border-emerald-500'
-                          : 'border-line focus:border-ink-soft'
-                    }`}
+ sifreUyusmazlik
+ ? 'border-danger-soft focus:border-danger'
+ : sifreEsit
+ ? 'border-success-soft focus:border-success'
+ : 'border-line focus:border-ink-soft'
+ }`}
                     placeholder="Şifreyi tekrar gir"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     {sifreUyusmazlik && (
-                      <Icon name="AlertCircle" size={14} className="text-rose-500" />
+                      <Icon name="AlertCircle" size={14} className="text-danger" />
                     )}
                     {sifreEsit && (
-                      <Icon name="CheckCircle2" size={14} className="text-emerald-600" />
+                      <Icon name="CheckCircle2" size={14} className="text-success" />
                     )}
                   </div>
                 </div>
                 {sifreUyusmazlik && (
-                  <div className="mt-1.5 text-[12px] text-rose-700 dark:text-rose-400 font-medium">
+                  <div className="mt-1.5 text-[12px] text-danger dark:text-danger font-medium">
                     Şifreler eşleşmiyor.
                   </div>
                 )}
@@ -406,7 +406,7 @@ export const GirisSayfasi = () => {
                     type="checkbox"
                     checked={kvkkOnay}
                     onChange={(e) => setKvkkOnay(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-line text-blue-700 focus:ring-blue-500/30 cursor-pointer"
+                    className="mt-0.5 h-4 w-4 rounded border-line text-brand focus:ring-blue-500/30 cursor-pointer"
                     required
                   />
                   <span className="text-ink-soft leading-snug font-medium">
@@ -418,7 +418,7 @@ export const GirisSayfasi = () => {
                       KVKK Aydınlatma Metni
                     </button>
                     'ni okudum, kişisel verilerimin işlenmesini kabul ediyorum.{' '}
-                    <span className="text-rose-700">*</span>
+                    <span className="text-danger">*</span>
                   </span>
                 </label>
 
@@ -427,7 +427,7 @@ export const GirisSayfasi = () => {
                     type="checkbox"
                     checked={bultenIzni}
                     onChange={(e) => setBultenIzni(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-line text-blue-700 focus:ring-blue-500/30 cursor-pointer"
+                    className="mt-0.5 h-4 w-4 rounded border-line text-brand focus:ring-blue-500/30 cursor-pointer"
                   />
                   <span className="text-ink-mute leading-snug font-medium">
                     Yeni özelliklerden e-posta ile haberdar olmak istiyorum.{' '}
@@ -438,14 +438,14 @@ export const GirisSayfasi = () => {
             )}
 
             {hata && (
-              <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+              <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
                 <Icon name="AlertCircle" size={15} className="flex-shrink-0 mt-0.5" />
                 <span>{hata}</span>
               </div>
             )}
 
             {bilgi && (
-              <div className="flex items-start gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-lg text-[13px] text-emerald-800 dark:text-emerald-300 font-medium">
+              <div className="flex items-start gap-2 p-3 bg-success-soft border border-success-soft rounded-lg text-[13px] text-success font-medium">
                 <Icon name="CheckCircle2" size={15} className="flex-shrink-0 mt-0.5" />
                 <span>{bilgi}</span>
               </div>

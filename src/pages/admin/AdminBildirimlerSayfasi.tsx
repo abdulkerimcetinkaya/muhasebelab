@@ -156,18 +156,18 @@ export const AdminBildirimlerSayfasi = () => {
         <main className="flex-1 min-w-0 space-y-8">
           <div>
             <h1 className="font-display text-3xl font-bold tracking-tight">Bildirimler</h1>
-            <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
+            <p className="text-[13.5px] text-ink-soft mt-1">
               Yayınladığın bildirim, oturum açmış tüm kullanıcıların çan ikonunda görünür.
             </p>
           </div>
 
           {/* Yeni bildirim formu */}
-          <section className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6">
+          <section className="bg-surface border border-line rounded-2xl p-6">
             <h2 className="font-display text-lg font-bold mb-4">Yeni Bildirim</h2>
             <form onSubmit={yarat} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-[1fr_180px] gap-4">
                 <div>
-                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                     Başlık
                   </label>
                   <input
@@ -177,17 +177,17 @@ export const AdminBildirimlerSayfasi = () => {
                     maxLength={200}
                     required
                     placeholder="Örn: Yeni soru paketi yayında"
-                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/15"
+                    className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink focus:ring-2 focus:ring-blue-500/15"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                     Tip
                   </label>
                   <select
                     value={tip}
                     onChange={(e) => setTip(e.target.value as BildirimTip)}
-                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                    className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
                   >
                     {TIPLER.map((t) => (
                       <option key={t} value={t}>
@@ -198,7 +198,7 @@ export const AdminBildirimlerSayfasi = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                   Metin
                 </label>
                 <textarea
@@ -208,23 +208,23 @@ export const AdminBildirimlerSayfasi = () => {
                   required
                   rows={4}
                   placeholder="Kullanıcıya gösterilecek mesaj..."
-                  className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/15 resize-none"
+                  className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink focus:ring-2 focus:ring-blue-500/15 resize-none"
                 />
-                <div className="text-[10px] text-stone-400 dark:text-zinc-600 mt-1 text-right font-mono">
+                <div className="text-[10px] text-ink-quiet mt-1 text-right font-mono">
                   {metin.length} / 2000
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
                 <div>
-                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
-                    Link <span className="text-stone-400">(opsiyonel)</span>
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
+                    Link <span className="text-ink-quiet">(opsiyonel)</span>
                   </label>
                   <input
                     type="text"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="/uniteler/3 — tıklanırsa bu route'a gider"
-                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-mono outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                    className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-mono outline-none focus:border-ink"
                   />
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer pb-3">
@@ -232,7 +232,7 @@ export const AdminBildirimlerSayfasi = () => {
                     type="checkbox"
                     checked={yayinda}
                     onChange={(e) => setYayinda(e.target.checked)}
-                    className="w-4 h-4 rounded border-stone-300 dark:border-zinc-600 cursor-pointer"
+                    className="w-4 h-4 rounded border-line-strong cursor-pointer"
                   />
                   <span className="text-sm font-medium">Hemen yayınla</span>
                 </label>
@@ -241,7 +241,7 @@ export const AdminBildirimlerSayfasi = () => {
               {/* Hedefleme */}
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-2">
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-2">
                     Hedef
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -249,10 +249,10 @@ export const AdminBildirimlerSayfasi = () => {
                       type="button"
                       onClick={() => setHedefTipi('herkes')}
                       className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
-                        hedefTipi === 'herkes'
-                          ? 'bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-stone-900 dark:border-zinc-100'
-                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
-                      }`}
+ hedefTipi === 'herkes'
+ ? 'bg-ink text-bg border-ink'
+ : 'border-line-strong hover:bg-bg-tint '
+ }`}
                     >
                       <Icon name="Users" size={12} />
                       Herkese
@@ -261,10 +261,10 @@ export const AdminBildirimlerSayfasi = () => {
                       type="button"
                       onClick={() => setHedefTipi('premium')}
                       className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
-                        hedefTipi === 'premium'
-                          ? 'bg-emerald-600 text-white border-emerald-600'
-                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
-                      }`}
+ hedefTipi === 'premium'
+ ? 'bg-success text-bg border-success'
+ : 'border-line-strong hover:bg-bg-tint '
+ }`}
                     >
                       <Icon name="Sparkles" size={12} />
                       Premium
@@ -273,10 +273,10 @@ export const AdminBildirimlerSayfasi = () => {
                       type="button"
                       onClick={() => setHedefTipi('free')}
                       className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
-                        hedefTipi === 'free'
-                          ? 'bg-stone-600 text-white border-stone-600'
-                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
-                      }`}
+ hedefTipi === 'free'
+ ? 'bg-ink-soft text-bg border-ink-soft'
+ : 'border-line-strong hover:bg-bg-tint '
+ }`}
                     >
                       <Icon name="User" size={12} />
                       Free
@@ -285,10 +285,10 @@ export const AdminBildirimlerSayfasi = () => {
                       type="button"
                       onClick={() => setHedefTipi('belirli')}
                       className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 text-[12px] font-bold rounded-lg border transition ${
-                        hedefTipi === 'belirli'
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800'
-                      }`}
+ hedefTipi === 'belirli'
+ ? 'bg-brand text-bg border-brand'
+ : 'border-line-strong hover:bg-bg-tint '
+ }`}
                     >
                       <Icon name="UserPlus" size={12} />
                       Belirli ({hedefUserIds.length})
@@ -297,27 +297,27 @@ export const AdminBildirimlerSayfasi = () => {
                 </div>
 
                 {hedefTipi === 'belirli' && (
-                  <div className="border border-stone-200 dark:border-zinc-700 rounded-lg p-3 space-y-2 max-h-72 overflow-auto">
+                  <div className="border border-line rounded-lg p-3 space-y-2 max-h-72 overflow-auto">
                     <input
                       type="text"
                       value={hedefArama}
                       onChange={(e) => setHedefArama(e.target.value)}
                       placeholder="Ara: kullanıcı adı veya email"
-                      className="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded text-[12px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                      className="w-full px-2.5 py-1.5 bg-bg-tint border border-line-strong rounded text-[12px] font-medium outline-none focus:border-ink"
                     />
                     {kullaniciYukleniyor ? (
-                      <div className="text-[12px] text-stone-400 dark:text-zinc-600 py-2">
+                      <div className="text-[12px] text-ink-quiet py-2">
                         Yükleniyor…
                       </div>
                     ) : filtreliKullanici.length === 0 ? (
-                      <div className="text-[12px] text-stone-400 dark:text-zinc-600 py-2">
+                      <div className="text-[12px] text-ink-quiet py-2">
                         Eşleşen kullanıcı yok.
                       </div>
                     ) : (
                       filtreliKullanici.slice(0, 50).map((k) => (
                         <label
                           key={k.id}
-                          className="flex items-center gap-2 px-2 py-1 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded cursor-pointer"
+                          className="flex items-center gap-2 px-2 py-1 hover:bg-bg-tint rounded cursor-pointer"
                         >
                           <input
                             type="checkbox"
@@ -329,26 +329,26 @@ export const AdminBildirimlerSayfasi = () => {
                                 setHedefUserIds((p) => p.filter((id) => id !== k.id));
                               }
                             }}
-                            className="w-3.5 h-3.5 rounded border-stone-300 dark:border-zinc-600"
+                            className="w-3.5 h-3.5 rounded border-line-strong"
                           />
                           <span className="text-[12.5px] font-medium flex-1 truncate">
                             {k.kullanici_adi}
                           </span>
-                          <span className="text-[11px] font-mono text-stone-500 dark:text-zinc-500 truncate">
+                          <span className="text-[11px] font-mono text-ink-mute truncate">
                             {k.email ?? '—'}
                           </span>
                           {k.premium_aktif && (
                             <Icon
                               name="Sparkles"
                               size={11}
-                              className="text-emerald-600 dark:text-emerald-400 flex-shrink-0"
+                              className="text-success dark:text-success flex-shrink-0"
                             />
                           )}
                         </label>
                       ))
                     )}
                     {filtreliKullanici.length > 50 && (
-                      <div className="text-[10px] text-stone-400 text-center py-1">
+                      <div className="text-[10px] text-ink-quiet text-center py-1">
                         İlk 50 sonuç gösteriliyor — daha fazlası için arama daralt
                       </div>
                     )}
@@ -356,13 +356,13 @@ export const AdminBildirimlerSayfasi = () => {
                 )}
               </div>
               {hata && (
-                <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+                <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
                   <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
                   <span>{hata}</span>
                 </div>
               )}
               {basarili && (
-                <div className="flex items-start gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-lg text-[13px] text-emerald-800 dark:text-emerald-300 font-medium">
+                <div className="flex items-start gap-2 p-3 bg-success-soft border border-success-soft rounded-lg text-[13px] text-success font-medium">
                   <Icon name="CheckCircle2" size={16} className="flex-shrink-0 mt-0.5" />
                   <span>{basarili}</span>
                 </div>
@@ -371,7 +371,7 @@ export const AdminBildirimlerSayfasi = () => {
                 <button
                   type="submit"
                   disabled={gonderiliyor || !baslik.trim() || !metin.trim()}
-                  className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Icon
                     name={gonderiliyor ? 'Loader2' : 'Send'}
@@ -388,9 +388,9 @@ export const AdminBildirimlerSayfasi = () => {
           <section>
             <h2 className="font-display text-lg font-bold mb-4">Geçmiş Bildirimler</h2>
             {yukleniyor ? (
-              <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+              <div className="text-sm text-ink-quiet">Yükleniyor…</div>
             ) : list.length === 0 ? (
-              <div className="text-sm text-stone-400 dark:text-zinc-600">
+              <div className="text-sm text-ink-quiet">
                 Henüz bildirim yok.
               </div>
             ) : (
@@ -398,30 +398,30 @@ export const AdminBildirimlerSayfasi = () => {
                 {list.map((b) => (
                   <div
                     key={b.id}
-                    className={`flex items-start gap-3 p-4 bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl ${
-                      !b.yayinda ? 'opacity-60' : ''
-                    }`}
+                    className={`flex items-start gap-3 p-4 bg-surface border border-line rounded-xl ${
+ !b.yayinda ? 'opacity-60' : ''
+ }`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-stone-500 dark:text-zinc-500">
+                        <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-ink-mute">
                           {TIP_LABEL[b.tip]}
                         </span>
                         {!b.yayinda && (
-                          <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-amber-700 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-premium-deep bg-premium-soft px-1.5 py-0.5 rounded">
                             Taslak
                           </span>
                         )}
-                        <span className="text-[10px] text-stone-400 dark:text-zinc-600 font-mono ml-auto">
+                        <span className="text-[10px] text-ink-quiet font-mono ml-auto">
                           {new Date(b.created_at).toLocaleString('tr-TR')}
                         </span>
                       </div>
                       <div className="font-bold text-[14px] mb-1">{b.baslik}</div>
-                      <div className="text-[13px] text-stone-600 dark:text-zinc-400 leading-snug whitespace-pre-wrap">
+                      <div className="text-[13px] text-ink-soft leading-snug whitespace-pre-wrap">
                         {b.metin}
                       </div>
                       {b.link && (
-                        <div className="text-[11px] text-blue-600 dark:text-blue-400 mt-1 font-mono">
+                        <div className="text-[11px] text-brand dark:text-brand-mute mt-1 font-mono">
                           → {b.link}
                         </div>
                       )}
@@ -430,14 +430,14 @@ export const AdminBildirimlerSayfasi = () => {
                       <button
                         onClick={() => yayinDegistir(b)}
                         title={b.yayinda ? 'Yayından kaldır' : 'Yayınla'}
-                        className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-700 rounded-lg transition"
+                        className="p-2 hover:bg-surface-2 rounded-lg transition"
                       >
                         <Icon name={b.yayinda ? 'EyeOff' : 'Eye'} size={14} />
                       </button>
                       <button
                         onClick={() => sil(b.id)}
                         title="Sil"
-                        className="p-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-700 dark:text-rose-400 rounded-lg transition"
+                        className="p-2 hover:bg-danger-soft text-danger dark:text-danger rounded-lg transition"
                       >
                         <Icon name="Trash2" size={14} />
                       </button>

@@ -29,7 +29,7 @@ export const RozetlerView = ({ ilerleme, stat }: Props) => {
     <section>
       <div className="flex items-baseline justify-between mb-4">
         <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold">Rozetler</h2>
-        <span className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+        <span className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
           {kazanilanRozetSayi}/{ROZETLER.length} kazanıldı
         </span>
       </div>
@@ -45,39 +45,39 @@ export const RozetlerView = ({ ilerleme, stat }: Props) => {
             <div
               key={r.id}
               className={`p-4 border text-center transition rounded-xl ${
-                kazanildi
-                  ? 'border-amber-600/40 bg-amber-50/40 dark:bg-amber-900/10 dark:border-amber-400/40'
-                  : 'border-stone-200 dark:border-zinc-800'
-              }`}
+ kazanildi
+ ? 'border-premium-deep/40 bg-premium-soft/40 dark:border-premium/40'
+ : 'border-line'
+ }`}
             >
               <Icon
                 name={r.icon}
                 size={26}
                 className={`mx-auto mb-2 ${
-                  kazanildi
-                    ? 'text-amber-700 dark:text-amber-400'
-                    : 'text-stone-400 dark:text-zinc-600'
-                }`}
+ kazanildi
+ ? 'text-premium-deep'
+ : 'text-ink-quiet'
+ }`}
               />
               <div
                 className={`font-display text-sm leading-tight mb-1 font-bold ${
-                  kazanildi ? '' : 'text-stone-600 dark:text-zinc-500'
-                }`}
+ kazanildi ? '' : 'text-ink-soft'
+ }`}
               >
                 {r.ad}
               </div>
               <div
                 className={`text-[10.5px] leading-tight font-medium ${
-                  kazanildi
-                    ? 'text-stone-500 dark:text-zinc-500'
-                    : 'text-stone-400 dark:text-zinc-600'
-                }`}
+ kazanildi
+ ? 'text-ink-mute'
+ : 'text-ink-quiet'
+ }`}
               >
                 {r.aciklama}
               </div>
 
               {kazanildi && tarih ? (
-                <div className="mt-2 text-[10px] tracking-[0.18em] uppercase text-amber-700 dark:text-amber-400 font-bold">
+                <div className="mt-2 text-[10px] tracking-[0.18em] uppercase text-premium-deep font-bold">
                   {new Date(tarih).toLocaleDateString('tr-TR', {
                     day: 'numeric',
                     month: 'short',
@@ -85,18 +85,18 @@ export const RozetlerView = ({ ilerleme, stat }: Props) => {
                 </div>
               ) : rIlerleme ? (
                 <div className="mt-2.5">
-                  <div className="h-1 bg-stone-100 dark:bg-zinc-800 rounded overflow-hidden">
+                  <div className="h-1 bg-surface-2 rounded overflow-hidden">
                     <div
-                      className="h-full bg-blue-700 dark:bg-blue-500 transition-all"
+                      className="h-full bg-brand-deep transition-all"
                       style={{ width: `${yuzde}%` }}
                     />
                   </div>
-                  <div className="text-[10px] text-stone-500 dark:text-zinc-500 font-mono font-bold tabular-nums mt-1">
+                  <div className="text-[10px] text-ink-mute font-mono font-bold tabular-nums mt-1">
                     {rIlerleme.mevcut}/{rIlerleme.hedef}
                   </div>
                 </div>
               ) : (
-                <div className="mt-2 text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 font-bold">
+                <div className="mt-2 text-[10px] tracking-[0.18em] uppercase text-ink-quiet font-bold">
                   Kilitli
                 </div>
               )}

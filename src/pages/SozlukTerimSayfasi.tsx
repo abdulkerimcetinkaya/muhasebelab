@@ -57,7 +57,7 @@ const inlineFormat = (metin: string): React.ReactNode[] => {
     const seg = match[0];
     if (seg.startsWith('**')) {
       parts.push(
-        <strong key={key++} className="font-bold text-stone-900 dark:text-zinc-100">
+        <strong key={key++} className="font-bold text-ink">
           {seg.slice(2, -2)}
         </strong>,
       );
@@ -65,7 +65,7 @@ const inlineFormat = (metin: string): React.ReactNode[] => {
       parts.push(
         <code
           key={key++}
-          className="font-mono text-[12.5px] px-1.5 py-0.5 bg-stone-100 dark:bg-zinc-800 rounded"
+          className="font-mono text-[12.5px] px-1.5 py-0.5 bg-surface-2 rounded"
         >
           {seg.slice(1, -1)}
         </code>,
@@ -117,7 +117,7 @@ export const SozlukTerimSayfasi = () => {
   if (yukleniyor) {
     return (
       <main className="max-w-[760px] mx-auto px-5 sm:px-8 py-12">
-        <div className="text-sm text-stone-400 dark:text-zinc-600 text-center">
+        <div className="text-sm text-ink-quiet text-center">
           Yükleniyor…
         </div>
       </main>
@@ -137,12 +137,12 @@ export const SozlukTerimSayfasi = () => {
           <h1 className="font-display text-3xl font-bold tracking-tight mb-3">
             Terim bulunamadı
           </h1>
-          <p className="text-[14px] text-stone-600 dark:text-zinc-400 mb-6">
+          <p className="text-[14px] text-ink-soft mb-6">
             "{slug}" terimi sözlükte yok ya da kaldırılmış olabilir.
           </p>
           <Link
             to="/sozluk"
-            className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 transition"
+            className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 transition"
           >
             <Icon name="ArrowLeft" size={12} />
             Sözlüğe Dön
@@ -178,16 +178,16 @@ export const SozlukTerimSayfasi = () => {
         }}
       />
       <main className="max-w-[760px] mx-auto px-5 sm:px-8 py-10">
-        <nav className="text-[12px] text-stone-500 dark:text-zinc-500 mb-6 font-medium">
+        <nav className="text-[12px] text-ink-mute mb-6 font-medium">
           <Link to="/sozluk" className="hover:text-ink-soft transition">
             Mali Sözlük
           </Link>
-          <span className="mx-2 text-stone-300 dark:text-zinc-700">/</span>
-          <span className="text-stone-700 dark:text-zinc-300">{terim.baslik}</span>
+          <span className="mx-2 text-ink-quiet">/</span>
+          <span className="text-ink-soft">{terim.baslik}</span>
         </nav>
 
         <article itemScope itemType="https://schema.org/DefinedTerm">
-          <header className="mb-8 pb-8 border-b border-stone-200 dark:border-zinc-800">
+          <header className="mb-8 pb-8 border-b border-line">
             <h1
               itemProp="name"
               className="font-display text-4xl sm:text-5xl font-bold tracking-tight mb-4"
@@ -196,7 +196,7 @@ export const SozlukTerimSayfasi = () => {
             </h1>
             <p
               itemProp="description"
-              className="text-[16px] sm:text-[17px] text-stone-700 dark:text-zinc-300 leading-relaxed font-medium"
+              className="text-[16px] sm:text-[17px] text-ink-soft leading-relaxed font-medium"
             >
               {terim.kisa_aciklama}
             </p>
@@ -218,7 +218,7 @@ export const SozlukTerimSayfasi = () => {
                 return (
                   <ul
                     key={i}
-                    className="list-disc pl-5 space-y-1.5 text-[14.5px] text-stone-700 dark:text-zinc-300 leading-relaxed"
+                    className="list-disc pl-5 space-y-1.5 text-[14.5px] text-ink-soft leading-relaxed"
                   >
                     {(p.icerik as string[]).map((li, j) => (
                       <li key={j}>{inlineFormat(li)}</li>
@@ -229,7 +229,7 @@ export const SozlukTerimSayfasi = () => {
               return (
                 <p
                   key={i}
-                  className="text-[15px] text-stone-700 dark:text-zinc-300 leading-[1.75]"
+                  className="text-[15px] text-ink-soft leading-[1.75]"
                 >
                   {inlineFormat(p.icerik as string)}
                 </p>
@@ -238,11 +238,11 @@ export const SozlukTerimSayfasi = () => {
           </div>
 
           {terim.ornek && (
-            <aside className="mt-8 p-5 bg-blue-50/40 dark:bg-blue-950/15 border border-blue-200 dark:border-blue-900/40 rounded-xl">
-              <div className="text-[10px] tracking-[0.22em] uppercase font-mono font-bold text-blue-700 dark:text-blue-400 mb-2">
+            <aside className="mt-8 p-5 bg-brand-soft/40 border border-brand-soft rounded-xl">
+              <div className="text-[10px] tracking-[0.22em] uppercase font-mono font-bold text-brand dark:text-brand-mute mb-2">
                 Örnek
               </div>
-              <p className="text-[14px] text-stone-700 dark:text-zinc-300 leading-relaxed">
+              <p className="text-[14px] text-ink-soft leading-relaxed">
                 {inlineFormat(terim.ornek)}
               </p>
             </aside>
@@ -257,12 +257,12 @@ export const SozlukTerimSayfasi = () => {
                 {ilgiliHesaplar.map((h) => (
                   <span
                     key={h.kod}
-                    className="inline-flex items-baseline gap-2 px-3 py-1.5 bg-stone-100 dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 rounded-lg"
+                    className="inline-flex items-baseline gap-2 px-3 py-1.5 bg-surface-2 border border-line rounded-lg"
                   >
-                    <span className="font-mono text-[12px] font-bold text-stone-900 dark:text-zinc-100 tnum">
+                    <span className="font-mono text-[12px] font-bold text-ink tnum">
                       {h.kod}
                     </span>
-                    <span className="text-[12.5px] text-stone-700 dark:text-zinc-300">
+                    <span className="text-[12.5px] text-ink-soft">
                       {h.ad}
                     </span>
                   </span>
@@ -272,7 +272,7 @@ export const SozlukTerimSayfasi = () => {
           )}
 
           {terim.ilgili_terimler.length > 0 && (
-            <section className="mt-8 pt-6 border-t border-stone-200 dark:border-zinc-800">
+            <section className="mt-8 pt-6 border-t border-line">
               <h2 className="font-display text-xl font-bold tracking-tight mb-3">
                 İlgili Terimler
               </h2>
@@ -281,7 +281,7 @@ export const SozlukTerimSayfasi = () => {
                   <Link
                     key={s}
                     to={`/sozluk/${s}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium border border-stone-300 dark:border-zinc-700 rounded-lg hover:border-stone-900 dark:hover:border-zinc-400 hover:bg-stone-50 dark:hover:bg-zinc-800/50 transition"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium border border-line-strong rounded-lg hover:border-ink hover:bg-bg-tint transition"
                   >
                     {s.replace(/-/g, ' ')}
                     <Icon name="ArrowRight" size={11} />
@@ -291,7 +291,7 @@ export const SozlukTerimSayfasi = () => {
             </section>
           )}
 
-          <aside className="mt-10 p-5 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 rounded-xl">
+          <aside className="mt-10 p-5 bg-ink text-bg rounded-xl">
             <div className="font-display text-lg font-bold mb-1.5">
               Bu konuyu pratikle pekiştir
             </div>
@@ -301,7 +301,7 @@ export const SozlukTerimSayfasi = () => {
             </p>
             <Link
               to="/problemler"
-              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 dark:bg-black/10 dark:hover:bg-black/20 px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
+              className="inline-flex items-center gap-2 bg-surface/10 hover:bg-surface/20 dark:bg-black/10 dark:hover:bg-black/20 px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg transition"
             >
               <Icon name="ArrowRight" size={12} />
               Soruları Çöz

@@ -110,7 +110,7 @@ export const UnitelerSayfasi = ({ ilerleme }: Props) => {
                       {bos ? (
                         <span className="text-ink-quiet">Hazırlanıyor</span>
                       ) : tamamlandi ? (
-                        <span className="text-emerald-700 inline-flex items-center gap-1">
+                        <span className="text-success inline-flex items-center gap-1">
                           <Icon name="Check" size={9} /> Bitti
                         </span>
                       ) : baslandi ? (

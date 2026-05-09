@@ -36,11 +36,11 @@ const tarihSaatFormat = (s: string | null): string => {
 };
 
 const ODEME_DURUM_RENKLERI: Record<string, string> = {
-  basarili: 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30',
-  beklemede: 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30',
-  iptal: 'text-stone-600 dark:text-zinc-500 bg-stone-100 dark:bg-zinc-800',
-  iade: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30',
-  hata: 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30',
+  basarili: 'text-success dark:text-success bg-success-soft',
+  beklemede: 'text-premium-deep bg-premium-soft',
+  iptal: 'text-ink-soft bg-surface-2',
+  iade: 'text-brand dark:text-brand-mute bg-brand-soft',
+  hata: 'text-danger dark:text-danger bg-danger-soft',
 };
 
 export const AdminKullaniciDetaySayfasi = () => {
@@ -138,35 +138,35 @@ export const AdminKullaniciDetaySayfasi = () => {
         <main className="flex-1 min-w-0 space-y-6">
           <Link
             to="/admin/kullanicilar"
-            className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 transition"
+            className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-ink-mute hover:text-ink transition"
           >
             <Icon name="ArrowLeft" size={12} />
             Tüm Kullanıcılar
           </Link>
 
           {yukleniyor ? (
-            <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+            <div className="text-sm text-ink-quiet">Yükleniyor…</div>
           ) : hata ? (
-            <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+            <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
               <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
               <span>{hata}</span>
             </div>
           ) : detay ? (
             <>
               {/* Profil başlığı */}
-              <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6">
+              <div className="bg-surface border border-line rounded-2xl p-6">
                 <div className="flex items-start gap-4 flex-wrap">
                   <div className="flex-1 min-w-0">
                     <h1 className="font-display text-2xl font-bold tracking-tight">
                       {detay.kullanici_adi}
                     </h1>
-                    <div className="text-[13px] font-mono text-stone-500 dark:text-zinc-500 mt-1">
+                    <div className="text-[13px] font-mono text-ink-mute mt-1">
                       {detay.email}
                     </div>
                     <div className="flex flex-wrap gap-x-6 gap-y-3 mt-4 text-[12px]">
                       {detay.universite && (
                         <div className="min-w-[140px]">
-                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-ink-quiet mb-0.5 whitespace-nowrap">
                             Üniversite
                           </div>
                           <div className="font-medium">{detay.universite}</div>
@@ -174,7 +174,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                       )}
                       {detay.bolum && (
                         <div className="min-w-[120px]">
-                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-ink-quiet mb-0.5 whitespace-nowrap">
                             Bölüm
                           </div>
                           <div className="font-medium">{detay.bolum}</div>
@@ -182,7 +182,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                       )}
                       {detay.sinif && (
                         <div className="min-w-[80px]">
-                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-ink-quiet mb-0.5 whitespace-nowrap">
                             Sınıf
                           </div>
                           <div className="font-medium">{detay.sinif}</div>
@@ -190,20 +190,20 @@ export const AdminKullaniciDetaySayfasi = () => {
                       )}
                       {detay.hedef && (
                         <div className="min-w-[100px]">
-                          <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
+                          <div className="text-[10px] tracking-[0.18em] uppercase text-ink-quiet mb-0.5 whitespace-nowrap">
                             Hedef
                           </div>
                           <div className="font-medium">{detay.hedef}</div>
                         </div>
                       )}
                       <div className="min-w-[120px]">
-                        <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
+                        <div className="text-[10px] tracking-[0.18em] uppercase text-ink-quiet mb-0.5 whitespace-nowrap">
                           Kayıt Tarihi
                         </div>
                         <div className="font-medium">{tarihFormat(detay.created_at)}</div>
                       </div>
                       <div className="min-w-[120px]">
-                        <div className="text-[10px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 mb-0.5 whitespace-nowrap">
+                        <div className="text-[10px] tracking-[0.18em] uppercase text-ink-quiet mb-0.5 whitespace-nowrap">
                           KVKK Kabul
                         </div>
                         <div className="font-medium">{tarihFormat(detay.kvkk_kabul_tarihi)}</div>
@@ -213,17 +213,17 @@ export const AdminKullaniciDetaySayfasi = () => {
                   <div className="flex flex-col items-end gap-2">
                     <div className="flex items-center gap-1.5 flex-wrap justify-end">
                       {premiumAktif ? (
-                        <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-2 py-1 rounded">
+                        <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-success bg-success-soft border border-success-soft px-2 py-1 rounded">
                           <Icon name="Sparkles" size={11} />
                           Premium · {tarihFormat(detay.premium_bitis)} bitiyor
                         </div>
                       ) : (
-                        <div className="inline-flex items-center text-[11px] tracking-wider uppercase font-mono font-bold text-stone-500 dark:text-zinc-500 bg-stone-100 dark:bg-zinc-800 px-2 py-1 rounded">
+                        <div className="inline-flex items-center text-[11px] tracking-wider uppercase font-mono font-bold text-ink-mute bg-surface-2 px-2 py-1 rounded">
                           Free
                         </div>
                       )}
                       {detay.banli && (
-                        <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-rose-800 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border border-rose-300 dark:border-rose-800 px-2 py-1 rounded">
+                        <div className="inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-mono font-bold text-danger bg-danger-soft border border-danger-soft px-2 py-1 rounded">
                           <Icon name="Lock" size={11} />
                           Banlı
                         </div>
@@ -232,14 +232,14 @@ export const AdminKullaniciDetaySayfasi = () => {
                     <div className="flex items-center gap-2 flex-wrap justify-end">
                       <button
                         onClick={() => setPremiumModalAcik(true)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-line-strong hover:bg-bg-tint rounded-lg transition"
                       >
                         <Icon name="Sparkles" size={11} />
                         Premium
                       </button>
                       <button
                         onClick={() => setModerasyonModalAcik(true)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-line-strong hover:bg-bg-tint rounded-lg transition"
                       >
                         <Icon name="Shield" size={11} />
                         Moderasyon
@@ -247,7 +247,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                       <button
                         onClick={() => setEmailModalAcik(true)}
                         disabled={!detay.email}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-line-strong hover:bg-bg-tint rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
                         title={!detay.email ? 'Email adresi yok' : ''}
                       >
                         <Icon name="Send" size={11} />
@@ -256,7 +256,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                       <button
                         onClick={sifreSifirlaTiklandi}
                         disabled={sifreSifirlaniyor || !detay.email}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 hover:bg-stone-50 dark:hover:bg-zinc-800 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-line-strong hover:bg-bg-tint rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
                       >
                         <Icon
                           name={sifreSifirlaniyor ? 'Loader2' : 'Lock'}
@@ -267,7 +267,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                       </button>
                       <button
                         onClick={ilerlemeSifirlaTiklandi}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] tracking-[0.2em] uppercase font-bold border border-danger-soft text-danger dark:text-danger hover:bg-danger-soft rounded-lg transition"
                       >
                         <Icon name="RotateCcw" size={11} />
                         İlerleme Sıfırla
@@ -276,10 +276,10 @@ export const AdminKullaniciDetaySayfasi = () => {
                     {sifreOnay && (
                       <div
                         className={`text-[11px] mt-1 ${
-                          sifreOnay.startsWith('Hata')
-                            ? 'text-rose-600 dark:text-rose-400'
-                            : 'text-emerald-600 dark:text-emerald-400'
-                        }`}
+ sifreOnay.startsWith('Hata')
+ ? 'text-danger dark:text-danger'
+ : 'text-success dark:text-success'
+ }`}
                       >
                         {sifreOnay}
                       </div>
@@ -290,7 +290,7 @@ export const AdminKullaniciDetaySayfasi = () => {
 
               {/* Ban bilgisi */}
               {detay.banli && (
-                <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-xl text-[13px] text-rose-800 dark:text-rose-300">
+                <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-xl text-[13px] text-danger">
                   <Icon name="Lock" size={16} className="flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <div className="font-bold">Banlı kullanıcı</div>
@@ -304,12 +304,12 @@ export const AdminKullaniciDetaySayfasi = () => {
 
               {/* Şüpheli aktivite uyarıları */}
               {supheliFlagler.length > 0 && (
-                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-[12px] tracking-[0.2em] uppercase font-bold text-amber-800 dark:text-amber-300 mb-2">
+                <div className="bg-premium-soft border border-premium-soft rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-[12px] tracking-[0.2em] uppercase font-bold text-premium-deep mb-2">
                     <Icon name="AlertTriangle" size={13} />
                     Şüpheli Aktivite ({supheliFlagler.length})
                   </div>
-                  <ul className="space-y-1 text-[13px] text-amber-900 dark:text-amber-200">
+                  <ul className="space-y-1 text-[13px] text-premium-deep dark:text-premium-soft">
                     {supheliFlagler.map((f) => (
                       <li key={f.tip} className="flex items-start gap-2">
                         <span className="font-mono text-[10px] tracking-wider uppercase font-bold mt-0.5 opacity-70">
@@ -324,39 +324,39 @@ export const AdminKullaniciDetaySayfasi = () => {
 
               {/* İstatistikler */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
-                  <div className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+                <div className="bg-surface border border-line rounded-xl p-4">
+                  <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
                     Çözüm
                   </div>
                   <div className="text-2xl font-display font-bold mt-1">
                     {detay.cozumler.length}
                   </div>
-                  <div className="text-[11px] text-stone-500 dark:text-zinc-500 mt-0.5 font-mono">
+                  <div className="text-[11px] text-ink-mute mt-0.5 font-mono">
                     {dogruCozumSayisi} doğru · {yanlisCozumSayisi} yanlış
                   </div>
                 </div>
-                <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
-                  <div className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+                <div className="bg-surface border border-line rounded-xl p-4">
+                  <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
                     Puan
                   </div>
                   <div className="text-2xl font-display font-bold mt-1">{toplamPuan}</div>
                 </div>
-                <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
-                  <div className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+                <div className="bg-surface border border-line rounded-xl p-4">
+                  <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
                     Aktif Gün
                   </div>
                   <div className="text-2xl font-display font-bold mt-1">{toplamGun}</div>
                 </div>
-                <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
-                  <div className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+                <div className="bg-surface border border-line rounded-xl p-4">
+                  <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
                     Rozet
                   </div>
                   <div className="text-2xl font-display font-bold mt-1">
                     {detay.rozetler.length}
                   </div>
                 </div>
-                <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
-                  <div className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+                <div className="bg-surface border border-line rounded-xl p-4">
+                  <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
                     Toplam Ödeme
                   </div>
                   <div className="text-2xl font-display font-bold mt-1">
@@ -371,13 +371,13 @@ export const AdminKullaniciDetaySayfasi = () => {
                   Son Çözümler ({detay.cozumler.length})
                 </h2>
                 {detay.cozumler.length === 0 ? (
-                  <div className="text-sm text-stone-400 dark:text-zinc-600 text-center py-6 border border-dashed border-stone-300 dark:border-zinc-700 rounded-xl">
+                  <div className="text-sm text-ink-quiet text-center py-6 border border-dashed border-line-strong rounded-xl">
                     Henüz çözüm yok.
                   </div>
                 ) : (
-                  <div className="overflow-x-auto border border-stone-200 dark:border-zinc-700 rounded-xl">
+                  <div className="overflow-x-auto border border-line rounded-xl">
                     <table className="w-full text-[12.5px]">
-                      <thead className="bg-stone-50 dark:bg-zinc-800/50 text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+                      <thead className="bg-bg-tint text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute">
                         <tr>
                           <th className="text-left p-2.5">Tarih</th>
                           <th className="text-left p-2.5">Soru ID</th>
@@ -392,23 +392,23 @@ export const AdminKullaniciDetaySayfasi = () => {
                         {detay.cozumler.slice(0, 50).map((c) => (
                           <tr
                             key={c.id}
-                            className="border-t border-stone-200 dark:border-zinc-700"
+                            className="border-t border-line"
                           >
-                            <td className="p-2.5 text-stone-600 dark:text-zinc-400">
+                            <td className="p-2.5 text-ink-soft">
                               {tarihSaatFormat(c.created_at)}
                             </td>
                             <td className="p-2.5 font-mono text-[11px]">{c.soru_id}</td>
                             <td className="p-2.5 text-center">
                               {c.dogru_mu ? (
-                                <span className="text-emerald-600 dark:text-emerald-400">✓</span>
+                                <span className="text-success dark:text-success">✓</span>
                               ) : (
-                                <span className="text-rose-600 dark:text-rose-400">✗</span>
+                                <span className="text-danger dark:text-danger">✗</span>
                               )}
                             </td>
                             <td className="p-2.5 text-right font-mono">
                               {c.kazanilan_puan ?? '—'}
                             </td>
-                            <td className="p-2.5 text-right font-mono text-stone-500">
+                            <td className="p-2.5 text-right font-mono text-ink-mute">
                               {c.sure_saniye ? `${c.sure_saniye}s` : '—'}
                             </td>
                             <td className="p-2.5 text-center text-[11px]">
@@ -422,7 +422,7 @@ export const AdminKullaniciDetaySayfasi = () => {
                       </tbody>
                     </table>
                     {detay.cozumler.length > 50 && (
-                      <div className="text-[11px] text-stone-500 dark:text-zinc-500 p-2 text-center bg-stone-50 dark:bg-zinc-800/30">
+                      <div className="text-[11px] text-ink-mute p-2 text-center bg-bg-tint">
                         Son 50 çözüm gösteriliyor (toplam {detay.cozumler.length})
                       </div>
                     )}
@@ -436,13 +436,13 @@ export const AdminKullaniciDetaySayfasi = () => {
                   Ödemeler ({detay.odemeler.length})
                 </h2>
                 {detay.odemeler.length === 0 ? (
-                  <div className="text-sm text-stone-400 dark:text-zinc-600 text-center py-6 border border-dashed border-stone-300 dark:border-zinc-700 rounded-xl">
+                  <div className="text-sm text-ink-quiet text-center py-6 border border-dashed border-line-strong rounded-xl">
                     Ödeme kaydı yok.
                   </div>
                 ) : (
-                  <div className="overflow-x-auto border border-stone-200 dark:border-zinc-700 rounded-xl">
+                  <div className="overflow-x-auto border border-line rounded-xl">
                     <table className="w-full text-[12.5px]">
-                      <thead className="bg-stone-50 dark:bg-zinc-800/50 text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+                      <thead className="bg-bg-tint text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute">
                         <tr>
                           <th className="text-left p-2.5">Tarih</th>
                           <th className="text-left p-2.5">Plan</th>
@@ -455,9 +455,9 @@ export const AdminKullaniciDetaySayfasi = () => {
                         {detay.odemeler.map((o) => (
                           <tr
                             key={o.id}
-                            className="border-t border-stone-200 dark:border-zinc-700"
+                            className="border-t border-line"
                           >
-                            <td className="p-2.5 text-stone-600 dark:text-zinc-400">
+                            <td className="p-2.5 text-ink-soft">
                               {tarihFormat(o.created_at)}
                             </td>
                             <td className="p-2.5 font-mono text-[11px]">
@@ -468,12 +468,12 @@ export const AdminKullaniciDetaySayfasi = () => {
                             </td>
                             <td className="p-2.5 text-center">
                               <span
-                                className={`inline-flex text-[10px] tracking-wider uppercase font-mono font-bold px-1.5 py-0.5 rounded ${ODEME_DURUM_RENKLERI[o.durum] ?? 'text-stone-500'}`}
+                                className={`inline-flex text-[10px] tracking-wider uppercase font-mono font-bold px-1.5 py-0.5 rounded ${ODEME_DURUM_RENKLERI[o.durum] ?? 'text-ink-mute'}`}
                               >
                                 {o.durum}
                               </span>
                             </td>
-                            <td className="p-2.5 font-mono text-[10px] text-stone-500">
+                            <td className="p-2.5 font-mono text-[10px] text-ink-mute">
                               {o.iyzico_ref ?? '—'}
                             </td>
                           </tr>
@@ -488,7 +488,7 @@ export const AdminKullaniciDetaySayfasi = () => {
               <section>
                 <h2 className="font-display text-lg font-bold mb-3">Aktivite</h2>
                 {detay.aktivite.length === 0 ? (
-                  <div className="text-sm text-stone-400 dark:text-zinc-600 text-center py-6 border border-dashed border-stone-300 dark:border-zinc-700 rounded-xl">
+                  <div className="text-sm text-ink-quiet text-center py-6 border border-dashed border-line-strong rounded-xl">
                     Aktivite kaydı yok.
                   </div>
                 ) : (

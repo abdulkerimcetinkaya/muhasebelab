@@ -51,25 +51,25 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
           <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold">
             Yetkinlik Haritası
           </h2>
-          <span className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+          <span className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
             Ünite × Zorluk
           </span>
         </div>
 
-        <ul className="divide-y divide-stone-200 dark:divide-zinc-800">
+        <ul className="divide-y divide-stone-200">
           {yetkinlikler.map((y) => (
             <li key={y.uniteId}>
               <button
                 onClick={() => nav(`/uniteler/${y.uniteId}`)}
-                className="w-full text-left py-4 group hover:bg-stone-50/60 dark:hover:bg-zinc-800/30 transition active:scale-[0.998] -mx-2 px-2 rounded-lg"
+                className="w-full text-left py-4 group hover:bg-bg-tint/60 transition active:scale-[0.998] -mx-2 px-2 rounded-lg"
               >
                 <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4">
                   <Thiings name={y.thiingsIcon} size={36} />
                   <div className="min-w-0">
-                    <h3 className="font-display text-[15px] font-bold tracking-tight leading-tight group-hover:text-blue-700 dark:group-hover:text-blue-400 transition truncate">
+                    <h3 className="font-display text-[15px] font-bold tracking-tight leading-tight group-hover:text-brand dark:group-hover:text-brand-mute transition truncate">
                       {y.uniteAd}
                     </h3>
-                    <div className="font-mono text-[11px] text-stone-500 dark:text-zinc-500 mt-0.5 tabular-nums">
+                    <div className="font-mono text-[11px] text-ink-mute mt-0.5 tabular-nums">
                       {y.cozulenSoru}/{y.toplamSoru} soru
                     </div>
                   </div>
@@ -82,10 +82,10 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
                           if (d.toplam === 0) return null;
                           const renk =
                             zor === 'kolay'
-                              ? 'text-emerald-700 dark:text-emerald-400'
+                              ? 'text-success dark:text-success'
                               : zor === 'orta'
-                                ? 'text-amber-700 dark:text-amber-400'
-                                : 'text-rose-700 dark:text-rose-400';
+                                ? 'text-premium-deep'
+                                : 'text-danger dark:text-danger';
                           return (
                             <div key={zor} className="leading-tight">
                               <div
@@ -93,9 +93,9 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
                               >
                                 {zor}
                               </div>
-                              <div className="font-mono text-[12.5px] font-bold tabular-nums text-stone-700 dark:text-zinc-300 mt-0.5">
+                              <div className="font-mono text-[12.5px] font-bold tabular-nums text-ink-soft mt-0.5">
                                 {d.cozulen}
-                                <span className="text-stone-400 dark:text-zinc-600">
+                                <span className="text-ink-quiet">
                                   /{d.toplam}
                                 </span>
                               </div>
@@ -109,7 +109,7 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
                       <span className="font-display text-2xl sm:text-3xl font-bold tabular-nums leading-none">
                         {y.yetkinlik}
                       </span>
-                      <span className="text-[10px] text-stone-400 dark:text-zinc-600 font-bold">
+                      <span className="text-[10px] text-ink-quiet font-bold">
                         %
                       </span>
                     </div>
@@ -124,10 +124,10 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
                       if (d.toplam === 0) return null;
                       const renk =
                         zor === 'kolay'
-                          ? 'text-emerald-700 dark:text-emerald-400'
+                          ? 'text-success dark:text-success'
                           : zor === 'orta'
-                            ? 'text-amber-700 dark:text-amber-400'
-                            : 'text-rose-700 dark:text-rose-400';
+                            ? 'text-premium-deep'
+                            : 'text-danger dark:text-danger';
                       return (
                         <span key={zor} className={`font-bold ${renk}`}>
                           <span className="uppercase tracking-wider mr-1">{zor.slice(0, 1)}</span>
@@ -147,7 +147,7 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
       <section>
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold">Son 12 Ay</h2>
-          <span className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+          <span className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
             {yil.toplam} aktivite
           </span>
         </div>
@@ -161,7 +161,7 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
               {ayEtiketleri.map((a, i) => (
                 <span
                   key={i}
-                  className="absolute text-[9.5px] tracking-wider uppercase font-bold text-stone-500 dark:text-zinc-500"
+                  className="absolute text-[9.5px] tracking-wider uppercase font-bold text-ink-mute"
                   style={{ left: `${a.haftaIndex * 14}px` }}
                 >
                   {a.ad}
@@ -182,7 +182,7 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
                     <div
                       key={`${hi}-${gi}`}
                       title={ileride ? '' : `${g.tarih}: ${g.sayi} soru`}
-                      className="w-[11px] h-[11px] bg-blue-700 dark:bg-blue-400 rounded-[2px]"
+                      className="w-[11px] h-[11px] bg-brand-deep rounded-[2px]"
                       style={{ opacity: ileride ? 0 : opacity }}
                     />
                   );
@@ -192,18 +192,18 @@ export const YetkinlikView = ({ ilerleme, uniteler }: Props) => {
           </div>
         </div>
         <div className="flex justify-between items-center mt-2">
-          <div className="flex items-center gap-1.5 text-[10px] text-stone-500 dark:text-zinc-500 font-semibold">
+          <div className="flex items-center gap-1.5 text-[10px] text-ink-mute font-semibold">
             <span>Az</span>
             {[0.06, 0.3, 0.55, 0.8, 1].map((o, i) => (
               <span
                 key={i}
-                className="w-2.5 h-2.5 bg-blue-700 dark:bg-blue-400 rounded-[2px]"
+                className="w-2.5 h-2.5 bg-brand-deep rounded-[2px]"
                 style={{ opacity: o }}
               />
             ))}
             <span>Çok</span>
           </div>
-          <div className="text-[10px] text-stone-500 dark:text-zinc-500 font-semibold">
+          <div className="text-[10px] text-ink-mute font-semibold">
             12 ay önce → Bugün
           </div>
         </div>

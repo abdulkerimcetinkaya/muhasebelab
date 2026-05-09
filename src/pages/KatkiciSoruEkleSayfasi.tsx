@@ -100,7 +100,7 @@ export const KatkiciSoruEkleSayfasi = () => {
 
   if (yetkiKontrolu === 'kontrol') {
     return (
-      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-12 text-stone-400 dark:text-zinc-600">
+      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-12 text-ink-quiet">
         Yetki kontrol ediliyor…
       </div>
     );
@@ -109,14 +109,14 @@ export const KatkiciSoruEkleSayfasi = () => {
   if (yetkiKontrolu === 'yetkisiz') {
     return (
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-12 text-center">
-        <Icon name="Lock" size={32} className="text-stone-400 dark:text-zinc-600 mx-auto" />
+        <Icon name="Lock" size={32} className="text-ink-quiet mx-auto" />
         <h1 className="font-display text-2xl font-bold mt-4">Bu sayfa katkıcılara özel</h1>
-        <p className="text-stone-600 dark:text-zinc-400 mt-2">
+        <p className="text-ink-soft mt-2">
           Soru ekleyebilmek için Katkıcı Programı'na başvurman gerekiyor.
         </p>
         <Link
           to="/katkici-basvuru"
-          className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg mt-6"
+          className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg mt-6"
         >
           <Icon name="UserPlus" size={12} />
           Başvuru Sayfasına Git
@@ -129,7 +129,7 @@ export const KatkiciSoruEkleSayfasi = () => {
     <main className="max-w-5xl mx-auto px-5 sm:px-8 py-8">
       <Link
         to="/katkici-basvuru"
-        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 transition mb-4"
+        className="inline-flex items-center gap-1.5 text-[12px] tracking-[0.2em] uppercase font-bold text-ink-mute hover:text-ink transition mb-4"
       >
         <Icon name="ArrowLeft" size={12} />
         Katkıcı Profilim
@@ -140,10 +140,10 @@ export const KatkiciSoruEkleSayfasi = () => {
           Yeni Soru Öner
         </h1>
         {katkiSayisi !== null && (
-          <div className="text-[12px] text-stone-600 dark:text-zinc-400">
+          <div className="text-[12px] text-ink-soft">
             <strong>{katkiSayisi}</strong> / 5 onaylı katkı{' '}
             {katkiSayisi >= 5 ? (
-              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+              <span className="text-success dark:text-success font-bold">
                 · 1 yıl Premium hediye edildi 🎉
               </span>
             ) : (
@@ -153,7 +153,7 @@ export const KatkiciSoruEkleSayfasi = () => {
         )}
       </div>
 
-      <p className="text-sm text-stone-600 dark:text-zinc-400 font-medium mt-2 mb-6">
+      <p className="text-sm text-ink-soft font-medium mt-2 mb-6">
         Sorun otomatik olarak <strong>inceleme</strong> durumunda admin moderatörlere
         gider. Onaylanınca adına atfen yayında görünür.
       </p>

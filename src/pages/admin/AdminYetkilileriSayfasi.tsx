@@ -155,13 +155,13 @@ export const AdminYetkilileriSayfasi = () => {
               <h1 className="font-display text-3xl font-bold tracking-tight">
                 Admin Yetkilileri
               </h1>
-              <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
+              <p className="text-[13.5px] text-ink-soft mt-1">
                 Toplam <strong>{admins.length}</strong> admin · admin tüm içerik ve kullanıcı yönetimi yetkisine sahip
               </p>
             </div>
             <button
               onClick={() => setEkleModalAcik(true)}
-              className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition"
+              className="inline-flex items-center gap-2 bg-ink text-bg px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition"
             >
               <Icon name="UserPlus" size={12} />
               Admin Ekle
@@ -169,18 +169,18 @@ export const AdminYetkilileriSayfasi = () => {
           </div>
 
           {hata && (
-            <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+            <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
               <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
               <span>{hata}</span>
             </div>
           )}
 
           {yukleniyor ? (
-            <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+            <div className="text-sm text-ink-quiet">Yükleniyor…</div>
           ) : (
-            <div className="overflow-x-auto border border-stone-200 dark:border-zinc-700 rounded-xl">
+            <div className="overflow-x-auto border border-line rounded-xl">
               <table className="w-full text-[13px]">
-                <thead className="bg-stone-50 dark:bg-zinc-800/50 text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+                <thead className="bg-bg-tint text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute">
                   <tr>
                     <th className="text-left p-3">Email</th>
                     <th className="text-left p-3">Roller</th>
@@ -197,24 +197,24 @@ export const AdminYetkilileriSayfasi = () => {
                     return (
                       <tr
                         key={a.user_id}
-                        className="border-t border-stone-200 dark:border-zinc-700"
+                        className="border-t border-line"
                       >
                         <td className="p-3 font-mono">{a.email}</td>
                         <td className="p-3">
                           <div className="flex gap-1 flex-wrap">
                             {roller.length === 0 ? (
-                              <span className="text-[11px] text-stone-400">—</span>
+                              <span className="text-[11px] text-ink-quiet">—</span>
                             ) : (
                               roller.map((r) => (
                                 <span
                                   key={r}
                                   className={`text-[10px] tracking-[0.15em] uppercase font-bold px-1.5 py-0.5 rounded ${
-                                    r === 'super'
-                                      ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300'
-                                      : r === 'icerik'
-                                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                                        : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300'
-                                  }`}
+ r === 'super'
+ ? 'bg-premium-soft text-premium-deep'
+ : r === 'icerik'
+ ? 'bg-brand-soft dark:bg-brand-deep/30 text-brand-deep dark:text-brand-mute'
+ : 'bg-success-soft text-success'
+ }`}
                                 >
                                   {ROL_ETIKETLERI[r].ad}
                                 </span>
@@ -222,12 +222,12 @@ export const AdminYetkilileriSayfasi = () => {
                             )}
                           </div>
                         </td>
-                        <td className="p-3 text-stone-600 dark:text-zinc-400">
+                        <td className="p-3 text-ink-soft">
                           {tarihFormat(a.eklenen_at)}
                         </td>
                         <td className="p-3 text-center">
                           {benMi && (
-                            <span className="inline-flex items-center text-[10px] tracking-wider uppercase font-mono font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-1.5 py-0.5 rounded">
+                            <span className="inline-flex items-center text-[10px] tracking-wider uppercase font-mono font-bold text-brand dark:text-brand-mute bg-brand-soft px-1.5 py-0.5 rounded">
                               sen
                             </span>
                           )}
@@ -240,7 +240,7 @@ export const AdminYetkilileriSayfasi = () => {
                                 setDuzenleRoller(roller.length ? roller : ['operasyon']);
                               }}
                               title="Rolleri düzenle"
-                              className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-800 text-stone-600 dark:text-zinc-400 rounded-lg transition"
+                              className="p-2 hover:bg-surface-2 text-ink-soft rounded-lg transition"
                             >
                               <Icon name="Pencil" size={13} />
                             </button>
@@ -254,7 +254,7 @@ export const AdminYetkilileriSayfasi = () => {
                                     ? 'Kendi yetkini kaldır'
                                     : 'Yetkiyi kaldır'
                               }
-                              className="p-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-700 dark:text-rose-400 rounded-lg transition disabled:opacity-30 disabled:cursor-not-allowed"
+                              className="p-2 hover:bg-danger-soft text-danger dark:text-danger rounded-lg transition disabled:opacity-30 disabled:cursor-not-allowed"
                             >
                               <Icon name="X" size={13} />
                             </button>
@@ -281,14 +281,14 @@ export const AdminYetkilileriSayfasi = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
+            className="bg-surface border border-line rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
           >
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="font-display text-xl font-bold tracking-tight">
                   {seciliK ? 'Rol Seç' : 'Admin Ekle'}
                 </h2>
-                <p className="text-[12px] text-stone-500 dark:text-zinc-500 mt-0.5">
+                <p className="text-[12px] text-ink-mute mt-0.5">
                   {seciliK
                     ? `${seciliK.kullanici_adi} (${seciliK.email}) için rolleri seç`
                     : 'Aramadan kullanıcı seç → ardından rolleri belirle'}
@@ -299,7 +299,7 @@ export const AdminYetkilileriSayfasi = () => {
                   setEkleModalAcik(false);
                   setSeciliK(null);
                 }}
-                className="p-1.5 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
+                className="p-1.5 hover:bg-surface-2 rounded-lg transition"
               >
                 <Icon name="X" size={16} />
               </button>
@@ -313,16 +313,16 @@ export const AdminYetkilileriSayfasi = () => {
                   onChange={(e) => setAramaQ(e.target.value)}
                   autoFocus
                   placeholder="Kullanıcı adı veya email"
-                  className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                  className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
                 />
 
-                <div className="border border-stone-200 dark:border-zinc-700 rounded-lg max-h-72 overflow-auto">
+                <div className="border border-line rounded-lg max-h-72 overflow-auto">
                   {kullaniciYukleniyor ? (
-                    <div className="text-[13px] text-stone-400 dark:text-zinc-600 p-3">
+                    <div className="text-[13px] text-ink-quiet p-3">
                       Yükleniyor…
                     </div>
                   ) : filtreliKullanici.length === 0 ? (
-                    <div className="text-[13px] text-stone-400 dark:text-zinc-600 p-3">
+                    <div className="text-[13px] text-ink-quiet p-3">
                       Eşleşen kullanıcı yok.
                     </div>
                   ) : (
@@ -330,15 +330,15 @@ export const AdminYetkilileriSayfasi = () => {
                       <button
                         key={k.id}
                         onClick={() => setSeciliK(k)}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-stone-50 dark:hover:bg-zinc-800/50 border-b last:border-b-0 border-stone-100 dark:border-zinc-800"
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-bg-tint border-b last:border-b-0 border-line-soft"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="font-bold text-[13px]">{k.kullanici_adi}</div>
-                          <div className="text-[11px] font-mono text-stone-500 dark:text-zinc-500 truncate">
+                          <div className="text-[11px] font-mono text-ink-mute truncate">
                             {k.email ?? '—'}
                           </div>
                         </div>
-                        <Icon name="ArrowRight" size={14} className="flex-shrink-0 text-stone-400" />
+                        <Icon name="ArrowRight" size={14} className="flex-shrink-0 text-ink-quiet" />
                       </button>
                     ))
                   )}
@@ -355,14 +355,14 @@ export const AdminYetkilileriSayfasi = () => {
                 <div className="flex gap-2 pt-2">
                   <button
                     onClick={() => setSeciliK(null)}
-                    className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg border border-stone-300 dark:border-zinc-700 hover:bg-stone-100 dark:hover:bg-zinc-800 transition"
+                    className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg border border-line-strong hover:bg-surface-2 transition"
                   >
                     Geri
                   </button>
                   <button
                     onClick={yetkiVer}
                     disabled={seciliRoller.length === 0}
-                    className="flex-1 inline-flex items-center justify-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex-1 inline-flex items-center justify-center gap-2 bg-ink text-bg px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Icon name="UserPlus" size={12} />
                     Admin Yap
@@ -382,20 +382,20 @@ export const AdminYetkilileriSayfasi = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
+            className="bg-surface border border-line rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
           >
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="font-display text-xl font-bold tracking-tight">
                   Rolleri Düzenle
                 </h2>
-                <p className="text-[12px] text-stone-500 dark:text-zinc-500 mt-0.5 font-mono">
+                <p className="text-[12px] text-ink-mute mt-0.5 font-mono">
                   {duzenleAdmin.email}
                 </p>
               </div>
               <button
                 onClick={() => setDuzenleAdmin(null)}
-                className="p-1.5 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
+                className="p-1.5 hover:bg-surface-2 rounded-lg transition"
               >
                 <Icon name="X" size={16} />
               </button>
@@ -410,14 +410,14 @@ export const AdminYetkilileriSayfasi = () => {
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setDuzenleAdmin(null)}
-                className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg border border-stone-300 dark:border-zinc-700 hover:bg-stone-100 dark:hover:bg-zinc-800 transition"
+                className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg border border-line-strong hover:bg-surface-2 transition"
               >
                 İptal
               </button>
               <button
                 onClick={rolKaydet}
                 disabled={duzenleRoller.length === 0}
-                className="flex-1 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 bg-ink text-bg px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Kaydet
               </button>
@@ -439,7 +439,7 @@ const RolSeciciler = ({
   toggle: (rol: AdminRol) => void;
 }) => (
   <div className="space-y-2">
-    <div className="text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+    <div className="text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute">
       Roller (en az 1)
     </div>
     {TUM_ROLLER.map((rol) => {
@@ -449,10 +449,10 @@ const RolSeciciler = ({
         <label
           key={rol}
           className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition ${
-            aktif
-              ? 'border-stone-900 dark:border-zinc-100 bg-stone-50 dark:bg-zinc-800'
-              : 'border-stone-200 dark:border-zinc-700 hover:border-stone-300 dark:hover:border-zinc-600'
-          }`}
+ aktif
+ ? 'border-ink bg-bg-tint '
+ : 'border-line hover:border-line-strong '
+ }`}
         >
           <input
             type="checkbox"
@@ -464,12 +464,12 @@ const RolSeciciler = ({
             <div className="font-display font-bold text-sm tracking-tight">
               {meta.ad}
               {rol === 'super' && (
-                <span className="ml-2 text-[10px] tracking-[0.15em] uppercase font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">
+                <span className="ml-2 text-[10px] tracking-[0.15em] uppercase font-bold text-premium-deep bg-premium-soft px-1.5 py-0.5 rounded">
                   her şey
                 </span>
               )}
             </div>
-            <div className="text-[12px] text-stone-600 dark:text-zinc-400 font-medium leading-relaxed mt-0.5">
+            <div className="text-[12px] text-ink-soft font-medium leading-relaxed mt-0.5">
               {meta.aciklama}
             </div>
           </div>

@@ -106,20 +106,20 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
+        className="bg-surface border border-line rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-xl"
       >
         <div className="flex items-start justify-between">
           <div>
             <h2 className="font-display text-xl font-bold tracking-tight">
               Yeni Muavin Ekle
             </h2>
-            <p className="text-[12px] text-stone-500 dark:text-zinc-500 mt-0.5">
+            <p className="text-[12px] text-ink-mute mt-0.5">
               Bu cariyi/alt hesabı bir kez ekle, tüm sorularda kullanabil.
             </p>
           </div>
           <button
             onClick={onKapat}
-            className="p-1.5 hover:bg-stone-100 dark:hover:bg-zinc-800 rounded-lg transition"
+            className="p-1.5 hover:bg-surface-2 rounded-lg transition"
           >
             <Icon name="X" size={16} />
           </button>
@@ -128,14 +128,14 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
         <form onSubmit={kaydet} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                 Ana Hesap
               </label>
               <select
                 value={anaKod}
                 onChange={(e) => setAnaKod(e.target.value)}
                 required
-                className="w-full px-2.5 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                className="w-full px-2.5 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-medium outline-none focus:border-ink"
               >
                 <option value="">— seç —</option>
                 {HESAP_PLANI.map((h) => (
@@ -146,7 +146,7 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
               </select>
             </div>
             <div>
-              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+              <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                 Muavin Kodu
               </label>
               <input
@@ -155,13 +155,13 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
                 onChange={(e) => setKod(e.target.value)}
                 required
                 placeholder="120.001"
-                className="w-full px-2.5 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-mono outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                className="w-full px-2.5 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-mono outline-none focus:border-ink"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
               Ad
             </label>
             <input
@@ -171,19 +171,19 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
               autoFocus
               required
               placeholder="ABC Ticaret Ltd. Şti."
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
               Tip
             </label>
             <select
               value={tip}
               onChange={(e) => setTip(e.target.value as MuavinTip)}
               required
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
             >
               {TIP_LISTESI.map((t) => (
                 <option key={t} value={t}>
@@ -194,7 +194,7 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
           </div>
 
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+            <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
               Açıklama (opsiyonel)
             </label>
             <input
@@ -202,12 +202,12 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
               value={aciklama}
               onChange={(e) => setAciklama(e.target.value)}
               placeholder="Vergi no: 1234567890, vb."
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-800 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-medium outline-none focus:border-ink"
             />
           </div>
 
           {hata && (
-            <div className="flex items-start gap-2 p-2.5 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[12px] text-rose-800 dark:text-rose-300 font-medium">
+            <div className="flex items-start gap-2 p-2.5 bg-danger-soft border border-danger-soft rounded-lg text-[12px] text-danger font-medium">
               <Icon name="AlertCircle" size={14} className="flex-shrink-0 mt-0.5" />
               <span>{hata}</span>
             </div>
@@ -217,14 +217,14 @@ export const YeniMuavinModal = ({ anaKod: anaKodInit, onKapat, onEklendi }: Prop
             <button
               type="button"
               onClick={onKapat}
-              className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 rounded-lg hover:bg-stone-50 dark:hover:bg-zinc-800 transition"
+              className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold border border-line-strong rounded-lg hover:bg-bg-tint transition"
             >
               Vazgeç
             </button>
             <button
               type="submit"
               disabled={kaydediliyor}
-              className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50"
             >
               <Icon
                 name={kaydediliyor ? 'Loader2' : 'Plus'}

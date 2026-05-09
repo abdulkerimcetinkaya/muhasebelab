@@ -62,11 +62,11 @@ export const AktiviteIsiHaritasi = ({ aktivite, haftaSayisi = 26 }: Props) => {
   }, [aktivite, haftaSayisi]);
 
   const yogunluk = (sayi: number): string => {
-    if (sayi === 0) return 'bg-stone-100 dark:bg-zinc-800/50';
-    if (sayi <= 2) return 'bg-emerald-200 dark:bg-emerald-900/60';
-    if (sayi <= 5) return 'bg-emerald-400 dark:bg-emerald-700';
-    if (sayi <= 10) return 'bg-emerald-600 dark:bg-emerald-500';
-    return 'bg-emerald-700 dark:bg-emerald-400';
+    if (sayi === 0) return 'bg-surface-2';
+    if (sayi <= 2) return 'bg-success-soft';
+    if (sayi <= 5) return 'bg-success';
+    if (sayi <= 10) return 'bg-success';
+    return 'bg-success';
   };
 
   const tarihEtiket = (tarih: string): string => {
@@ -79,15 +79,15 @@ export const AktiviteIsiHaritasi = ({ aktivite, haftaSayisi = 26 }: Props) => {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
-      <div className="text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-3">
+    <div className="bg-surface border border-line rounded-xl p-4">
+      <div className="text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-3">
         Aktivite Isı Haritası ({haftaSayisi} hafta)
       </div>
 
       <div className="overflow-x-auto">
         <div className="inline-flex flex-col gap-1 min-w-fit">
           {/* Ay etiketleri */}
-          <div className="flex gap-1 ml-7 text-[9px] text-stone-400 dark:text-zinc-600 font-mono h-3">
+          <div className="flex gap-1 ml-7 text-[9px] text-ink-quiet font-mono h-3">
             {Array.from({ length: haftaSayisi }).map((_, i) => {
               const ay = aySinirlari.find((s) => s.haftaIdx === i);
               return (
@@ -101,7 +101,7 @@ export const AktiviteIsiHaritasi = ({ aktivite, haftaSayisi = 26 }: Props) => {
           {/* 7 satır × N sütun grid */}
           <div className="flex gap-1">
             {/* Gün etiketleri (sol) */}
-            <div className="flex flex-col gap-1 mr-1 text-[9px] text-stone-400 dark:text-zinc-600 font-mono pr-1">
+            <div className="flex flex-col gap-1 mr-1 text-[9px] text-ink-quiet font-mono pr-1">
               {Array.from({ length: 7 }).map((_, gunIdx) => (
                 <div key={gunIdx} className="w-5 h-3 flex items-center">
                   {gunIdx % 2 === 0 ? GUN_ETIKETLERI[gunIdx / 2] ?? '' : ''}
@@ -133,13 +133,13 @@ export const AktiviteIsiHaritasi = ({ aktivite, haftaSayisi = 26 }: Props) => {
       </div>
 
       {/* Lejant */}
-      <div className="flex items-center gap-2 mt-3 text-[10px] text-stone-500 dark:text-zinc-500 font-mono">
+      <div className="flex items-center gap-2 mt-3 text-[10px] text-ink-mute font-mono">
         <span>az</span>
-        <div className="w-3 h-3 rounded-sm bg-stone-100 dark:bg-zinc-800/50" />
-        <div className="w-3 h-3 rounded-sm bg-emerald-200 dark:bg-emerald-900/60" />
-        <div className="w-3 h-3 rounded-sm bg-emerald-400 dark:bg-emerald-700" />
-        <div className="w-3 h-3 rounded-sm bg-emerald-600 dark:bg-emerald-500" />
-        <div className="w-3 h-3 rounded-sm bg-emerald-700 dark:bg-emerald-400" />
+        <div className="w-3 h-3 rounded-sm bg-surface-2" />
+        <div className="w-3 h-3 rounded-sm bg-success-soft" />
+        <div className="w-3 h-3 rounded-sm bg-success" />
+        <div className="w-3 h-3 rounded-sm bg-success" />
+        <div className="w-3 h-3 rounded-sm bg-success" />
         <span>çok</span>
       </div>
     </div>

@@ -15,6 +15,40 @@
   --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
   --font-serif: 'Instrument Serif', Georgia, serif;
 
+  /* =====================================================================
+     RGB tuple'ları — Tailwind alpha modifier ("bg-brand/40") için.
+     Format: "R G B" (space-separated, virgülsüz)
+     Tailwind config: rgb(var(--xxx-rgb) / <alpha-value>)
+     ===================================================================== */
+  --bg-rgb: 246 245 241;
+  --bg-warm-rgb: 239 237 231;
+  --bg-tint-rgb: 250 249 245;
+  --surface-rgb: 255 255 255;
+  --surface-2-rgb: 241 239 233;
+
+  --ink-rgb: 26 37 56;
+  --ink-soft-rgb: 74 90 114;
+  --ink-mute-rgb: 122 133 151;
+  --ink-quiet-rgb: 170 179 192;
+
+  --line-rgb: 227 223 213;
+  --line-soft-rgb: 237 233 223;
+  --line-strong-rgb: 201 195 181;
+
+  --blue-rgb: 44 79 124;
+  --blue-deep-rgb: 29 58 95;
+  --blue-soft-rgb: 216 227 240;
+  --blue-mute-rgb: 93 123 162;
+
+  --copper-rgb: 164 115 57;
+  --copper-deep-rgb: 133 93 44;
+  --copper-soft-rgb: 232 223 204;
+
+  --success-rgb: 74 122 93;
+  --success-soft-rgb: 212 225 215;
+  --danger-rgb: 148 84 79;
+  --danger-soft-rgb: 235 213 209;
+
   /* ── Yüzey: kirli beyaz (off-white) — kağıt tonu, hafif warm undertone ── */
   /* Kullanıcı tercihi: dominant kirli beyaz, mavi accent */
   --bg: #f6f5f1;          /* paper / kirli beyaz — primary background */
@@ -96,6 +130,36 @@
 }
 
 .dark {
+  /* Dark mode RGB tuples (alpha modifier desteği) */
+  --bg-rgb: 15 22 32;
+  --bg-warm-rgb: 19 27 39;
+  --bg-tint-rgb: 24 33 46;
+  --surface-rgb: 27 37 51;
+  --surface-2-rgb: 32 43 59;
+
+  --ink-rgb: 236 233 224;
+  --ink-soft-rgb: 182 188 199;
+  --ink-mute-rgb: 122 130 144;
+  --ink-quiet-rgb: 77 84 98;
+
+  --line-rgb: 42 52 69;
+  --line-soft-rgb: 29 39 53;
+  --line-strong-rgb: 58 69 85;
+
+  --blue-rgb: 125 165 208;
+  --blue-deep-rgb: 97 144 192;
+  --blue-soft-rgb: 125 165 208;
+  --blue-mute-rgb: 90 126 163;
+
+  --copper-rgb: 193 147 98;
+  --copper-deep-rgb: 164 115 57;
+  --copper-soft-rgb: 193 147 98;
+
+  --success-rgb: 124 166 145;
+  --success-soft-rgb: 124 166 145;
+  --danger-rgb: 176 122 118;
+  --danger-soft-rgb: 176 122 118;
+
   /* Dark mode — saf siyah değil, slate undertone'lu deep ink */
   --bg: #0f1620;          /* near-black with cool slate */
   --bg-warm: #131b27;

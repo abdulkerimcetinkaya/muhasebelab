@@ -48,7 +48,7 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
       <div className="flex items-baseline justify-between mb-4">
         <h2 className="font-display text-xl md:text-2xl tracking-tight font-bold">Üyelik</h2>
         {isPremium && (
-          <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-full">
+          <span className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase font-bold text-premium-deep bg-premium-soft px-2.5 py-1 rounded-full">
             <Icon name="Sparkles" size={11} />
             Premium
           </span>
@@ -56,14 +56,14 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
       </div>
 
       {isPremium && premiumBitis ? (
-        <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-950/20 border border-amber-200 dark:border-amber-800/40 p-6">
+        <div className="rounded-2xl bg-gradient-to-br from-premium-soft to-premium-soft border border-premium-soft dark:border-premium-deep/40 p-6">
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-200 to-amber-100 dark:from-amber-800/40 dark:to-amber-900/40 flex items-center justify-center flex-shrink-0">
-              <Icon name="BadgeCheck" size={22} className="text-amber-700 dark:text-amber-300" />
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-premium-soft to-premium-soft flex items-center justify-center flex-shrink-0">
+              <Icon name="BadgeCheck" size={22} className="text-premium-deep" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-display text-lg font-bold mb-1">Premium üyeliğin aktif</div>
-              <div className="text-sm text-stone-700 dark:text-zinc-300 font-medium">
+              <div className="text-sm text-ink-soft font-medium">
                 Bitiş:{' '}
                 <span className="font-mono font-bold">
                   {new Date(premiumBitis).toLocaleDateString('tr-TR', {
@@ -73,7 +73,7 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
                   })}
                 </span>
               </div>
-              <div className="text-xs text-stone-600 dark:text-zinc-400 font-medium mt-1">
+              <div className="text-xs text-ink-soft font-medium mt-1">
                 Tüm AI özellikleri ve premium araçlar bu tarihe kadar açık.
               </div>
             </div>
@@ -81,14 +81,14 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => nav('/premium')}
-              className="inline-flex items-center gap-1.5 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition"
+              className="inline-flex items-center gap-1.5 bg-ink text-bg px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition"
             >
               <Icon name="RefreshCw" size={12} />
               Süreyi Uzat
             </button>
             <a
               href="mailto:kerim.cetinkayaa78@gmail.com?subject=MuhasebeLab%20iade%20talebi"
-              className="inline-flex items-center gap-1.5 border border-stone-300 dark:border-zinc-700 px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:border-stone-900 dark:hover:border-zinc-400 transition"
+              className="inline-flex items-center gap-1.5 border border-line-strong px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:border-ink transition"
             >
               <Icon name="Send" size={12} />
               İade Talebi
@@ -96,29 +96,29 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
           </div>
         </div>
       ) : (
-        <div className="rounded-2xl border border-stone-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/40 p-6">
+        <div className="rounded-2xl border border-line bg-surface p-6">
           <div className="flex items-start gap-4 mb-5">
-            <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0">
-              <Icon name="Sparkles" size={22} className="text-stone-500 dark:text-zinc-500" />
+            <div className="w-12 h-12 rounded-xl bg-surface-2 flex items-center justify-center flex-shrink-0">
+              <Icon name="Sparkles" size={22} className="text-ink-mute" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-display text-lg font-bold mb-1">Ücretsiz hesap</div>
-              <p className="text-sm text-stone-600 dark:text-zinc-400 font-medium leading-relaxed">
+              <p className="text-sm text-ink-soft font-medium leading-relaxed">
                 Tüm soruları sınırsız çözebilirsin. Premium aşağıdaki ek özellikleri açar.
               </p>
             </div>
           </div>
 
           {/* Mini karşılaştırma — Ücretsiz vs Premium */}
-          <div className="border border-stone-200 dark:border-zinc-700 rounded-xl overflow-hidden mb-5">
+          <div className="border border-line rounded-xl overflow-hidden mb-5">
             <div className="grid grid-cols-[1fr_80px_80px] text-[12px]">
-              <div className="px-4 py-2.5 bg-stone-50 dark:bg-zinc-800/60 border-b border-stone-200 dark:border-zinc-700 text-[10px] tracking-[0.18em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+              <div className="px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.18em] uppercase font-bold text-ink-mute">
                 Özellik
               </div>
-              <div className="px-3 py-2.5 bg-stone-50 dark:bg-zinc-800/60 border-b border-l border-stone-200 dark:border-zinc-700 text-[10px] tracking-[0.18em] uppercase font-bold text-stone-500 dark:text-zinc-500 text-center">
+              <div className="px-3 py-2.5 bg-bg-tint border-b border-l border-line text-[10px] tracking-[0.18em] uppercase font-bold text-ink-mute text-center">
                 Ücretsiz
               </div>
-              <div className="px-3 py-2.5 bg-amber-50/60 dark:bg-amber-950/20 border-b border-l border-stone-200 dark:border-zinc-700 text-[10px] tracking-[0.18em] uppercase font-bold text-amber-800 dark:text-amber-300 text-center">
+              <div className="px-3 py-2.5 bg-premium-soft/60 border-b border-l border-line text-[10px] tracking-[0.18em] uppercase font-bold text-premium-deep text-center">
                 Premium
               </div>
 
@@ -140,7 +140,7 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
 
           <button
             onClick={() => nav('/premium')}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-stone-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-premium hover:bg-premium text-ink px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg active:scale-[0.98] transition"
           >
             <Icon name="Sparkles" size={12} />
             Premium'u Keşfet ve Fiyatları Gör
@@ -152,10 +152,10 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
 
       {odemeler.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-3">
+          <h3 className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-3">
             Ödeme Geçmişi
           </h3>
-          <div className="rounded-xl border border-stone-200 dark:border-zinc-800 overflow-hidden">
+          <div className="rounded-xl border border-line overflow-hidden">
             {odemeler.map((o, i) => {
               const tarih = new Date(o.basarili_tarih ?? o.created_at).toLocaleDateString('tr-TR', {
                 day: 'numeric',
@@ -164,10 +164,10 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
               });
               const durumStil =
                 o.durum === 'basarili'
-                  ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30'
+                  ? 'text-success dark:text-success bg-success-soft'
                   : o.durum === 'beklemede'
-                    ? 'text-stone-600 dark:text-zinc-400 bg-stone-100 dark:bg-zinc-800'
-                    : 'text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30';
+                    ? 'text-ink-soft bg-surface-2'
+                    : 'text-danger dark:text-danger bg-danger-soft';
               const durumAd =
                 o.durum === 'basarili'
                   ? 'Başarılı'
@@ -180,8 +180,8 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
                 <div
                   key={o.id}
                   className={`flex items-center justify-between px-4 py-3 text-sm ${
-                    i > 0 ? 'border-t border-stone-100 dark:border-zinc-800' : ''
-                  }`}
+ i > 0 ? 'border-t border-line-soft' : ''
+ }`}
                 >
                   <div className="min-w-0 flex-1">
                     <div className="font-display font-bold tracking-tight">
@@ -191,7 +191,7 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
                           ? 'Premium · Aylık'
                           : 'Premium'}
                     </div>
-                    <div className="text-xs text-stone-500 dark:text-zinc-500 font-medium font-mono">
+                    <div className="text-xs text-ink-mute font-medium font-mono">
                       {tarih}
                     </div>
                   </div>
@@ -228,27 +228,27 @@ const KrsRow = ({
   vurgu?: boolean;
   son?: boolean;
 }) => {
-  const border = son ? '' : 'border-b border-stone-100 dark:border-zinc-800';
+  const border = son ? '' : 'border-b border-line-soft';
   return (
     <>
-      <div className={`px-4 py-2.5 ${border} text-stone-700 dark:text-zinc-300 font-medium`}>
+      <div className={`px-4 py-2.5 ${border} text-ink-soft font-medium`}>
         {ozellik}
       </div>
       <div
-        className={`px-3 py-2.5 ${border} border-l border-stone-200 dark:border-zinc-700 text-center font-mono font-bold tabular-nums ${
-          ucretsiz === '—'
-            ? 'text-stone-300 dark:text-zinc-700'
-            : 'text-stone-700 dark:text-zinc-300'
-        }`}
+        className={`px-3 py-2.5 ${border} border-l border-line text-center font-mono font-bold tabular-nums ${
+ ucretsiz === '—'
+ ? 'text-ink-quiet'
+ : 'text-ink-soft'
+ }`}
       >
         {ucretsiz}
       </div>
       <div
-        className={`px-3 py-2.5 bg-amber-50/30 dark:bg-amber-950/10 ${border} border-l border-stone-200 dark:border-zinc-700 text-center font-mono font-bold tabular-nums ${
-          vurgu
-            ? 'text-amber-800 dark:text-amber-300'
-            : 'text-stone-700 dark:text-zinc-300'
-        }`}
+        className={`px-3 py-2.5 bg-premium-soft/30 ${border} border-l border-line text-center font-mono font-bold tabular-nums ${
+ vurgu
+ ? 'text-premium-deep'
+ : 'text-ink-soft'
+ }`}
       >
         {premium}
       </div>

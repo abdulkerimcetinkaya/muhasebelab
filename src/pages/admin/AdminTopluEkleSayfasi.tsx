@@ -254,13 +254,13 @@ export const AdminTopluEkleSayfasi = () => {
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="font-display text-3xl font-bold tracking-tight mb-1">Toplu Soru Ekle</h1>
-            <p className="text-sm text-stone-600 dark:text-zinc-400 font-medium">
+            <p className="text-sm text-ink-soft font-medium">
               JSON olarak birden çok soruyu tek seferde ekle. ID'ler otomatik üretilir.
             </p>
           </div>
           <button
             onClick={ornekYukle}
-            className="text-sm text-stone-600 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-zinc-100 font-semibold flex items-center gap-2"
+            className="text-sm text-ink-soft hover:text-ink font-semibold flex items-center gap-2"
           >
             <Icon name="FileCode" size={14} />
             Örnek yükle
@@ -268,7 +268,7 @@ export const AdminTopluEkleSayfasi = () => {
         </div>
 
         {sonuc && (
-          <div className="flex items-start gap-2 p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-lg text-sm text-emerald-800 dark:text-emerald-300 font-medium mb-4">
+          <div className="flex items-start gap-2 p-4 bg-success-soft border border-success-soft rounded-lg text-sm text-success font-medium mb-4">
             <Icon name="CheckCircle2" size={16} className="flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <strong>{sonuc.basarili}</strong> soru başarıyla eklendi.
@@ -288,14 +288,14 @@ export const AdminTopluEkleSayfasi = () => {
           onChange={(e) => setMetin(e.target.value)}
           rows={14}
           placeholder='[{"unite_id": "...", "baslik": "...", "zorluk": "kolay", "senaryo": "...", "cozumler": [...]}]'
-          className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-xs rounded-lg font-mono mb-3"
+          className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-xs rounded-lg font-mono mb-3"
         />
 
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={dogrula}
             disabled={!metin.trim()}
-            className="flex items-center gap-2 px-4 py-2 border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 rounded-lg text-sm font-bold disabled:opacity-50 transition"
+            className="flex items-center gap-2 px-4 py-2 border border-line-strong hover:border-ink rounded-lg text-sm font-bold disabled:opacity-50 transition"
           >
             <Icon name="ShieldCheck" size={14} />
             Doğrula
@@ -304,7 +304,7 @@ export const AdminTopluEkleSayfasi = () => {
             <button
               onClick={iceAktar}
               disabled={ekleniyor}
-              className="flex items-center gap-2 px-5 py-2 bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2 bg-ink text-bg rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50"
             >
               {ekleniyor && <Icon name="Loader2" size={14} className="animate-spin" />}
               İçe Aktar ({gecerliSayisi})
@@ -313,20 +313,20 @@ export const AdminTopluEkleSayfasi = () => {
         </div>
 
         {parseHatasi && (
-          <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300 font-medium mb-4">
+          <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger font-medium mb-4">
             <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
             <span>{parseHatasi}</span>
           </div>
         )}
 
         {satirlar && (
-          <div className="bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 rounded-xl overflow-hidden">
-            <div className="px-4 py-3 bg-stone-50 dark:bg-zinc-900/50 border-b border-stone-200 dark:border-zinc-700 text-xs font-bold">
+          <div className="bg-surface border border-line rounded-xl overflow-hidden">
+            <div className="px-4 py-3 bg-bg-tint border-b border-line text-xs font-bold">
               {gecerliSayisi} geçerli / {satirlar.length} toplam
             </div>
             <table className="w-full text-sm">
-              <thead className="bg-stone-50 dark:bg-zinc-900/50 border-b border-stone-200 dark:border-zinc-700">
-                <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+              <thead className="bg-bg-tint border-b border-line">
+                <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
                   <th className="px-4 py-2 w-10">#</th>
                   <th className="px-4 py-2">Başlık</th>
                   <th className="px-4 py-2">Ünite</th>
@@ -337,29 +337,29 @@ export const AdminTopluEkleSayfasi = () => {
                 {satirlar.map((s, i) => (
                   <tr
                     key={i}
-                    className="border-b border-stone-100 dark:border-zinc-800 last:border-0 align-top"
+                    className="border-b border-line-soft last:border-0 align-top"
                   >
-                    <td className="px-4 py-2 text-stone-400 font-mono text-xs pt-3">{i + 1}</td>
+                    <td className="px-4 py-2 text-ink-quiet font-mono text-xs pt-3">{i + 1}</td>
                     <td className="px-4 py-2">
                       <div className="font-semibold">{s.veri.baslik || '—'}</div>
-                      <div className="text-xs text-stone-500 font-mono mt-0.5">{s.yeniId}</div>
+                      <div className="text-xs text-ink-mute font-mono mt-0.5">{s.yeniId}</div>
                     </td>
-                    <td className="px-4 py-2 text-stone-600 dark:text-zinc-400 text-xs pt-3">
+                    <td className="px-4 py-2 text-ink-soft text-xs pt-3">
                       {s.veri.unite_id || '—'}
                     </td>
                     <td className="px-4 py-2 pt-3">
                       {s.hatalar.length === 0 ? (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-success dark:text-success">
                           <Icon name="CheckCircle2" size={12} />
                           Geçerli
                         </span>
                       ) : (
                         <div>
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 dark:text-rose-400 mb-1">
+                          <span className="inline-flex items-center gap-1 text-xs font-bold text-danger dark:text-danger mb-1">
                             <Icon name="AlertCircle" size={12} />
                             Hatalı
                           </span>
-                          <ul className="text-xs text-rose-700 dark:text-rose-400 list-disc ml-4 space-y-0.5">
+                          <ul className="text-xs text-danger dark:text-danger list-disc ml-4 space-y-0.5">
                             {s.hatalar.map((h, j) => (
                               <li key={j}>{h}</li>
                             ))}

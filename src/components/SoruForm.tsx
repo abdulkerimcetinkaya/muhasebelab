@@ -167,30 +167,30 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
   return (
     <form onSubmit={gonder} className="space-y-6">
       {/* Üst meta */}
-      <div className="bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 rounded-xl p-5 space-y-4">
+      <div className="bg-surface border border-line rounded-xl p-5 space-y-4">
         <div className={`grid grid-cols-1 ${duzenleme ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
           {duzenleme && (
             <div>
-              <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+              <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
                 ID
               </label>
               <input
                 type="text"
                 value={d.id}
                 disabled
-                className="w-full px-3 py-2 bg-stone-100 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-mono opacity-70"
+                className="w-full px-3 py-2 bg-surface-2 border border-line-strong outline-none text-sm rounded-lg font-mono opacity-70"
               />
             </div>
           )}
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+            <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
               Ünite *
             </label>
             <select
               value={d.unite_id}
               onChange={(e) => setD({ ...d, unite_id: e.target.value })}
               required
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
             >
               <option value="">— Seç —</option>
               {uniteler.map((u) => (
@@ -201,13 +201,13 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
             </select>
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+            <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
               Zorluk
             </label>
             <select
               value={d.zorluk}
               onChange={(e) => setD({ ...d, zorluk: e.target.value as Zorluk })}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
             >
               <option value="kolay">Kolay</option>
               <option value="orta">Orta</option>
@@ -217,9 +217,9 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
         </div>
 
         <div>
-          <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+          <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
             Alt-konu{' '}
-            <span className="text-stone-400 dark:text-zinc-600 font-normal normal-case tracking-normal">
+            <span className="text-ink-quiet font-normal normal-case tracking-normal">
               (opsiyonel — LeetCode-tarzı sol nav için)
             </span>
           </label>
@@ -227,7 +227,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
             value={d.konu_id}
             onChange={(e) => setD({ ...d, konu_id: e.target.value })}
             disabled={!d.unite_id || konular.length === 0}
-            className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium disabled:opacity-50"
+            className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium disabled:opacity-50"
           >
             <option value="">
               {!d.unite_id
@@ -245,7 +245,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
         </div>
 
         <div>
-          <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+          <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
             Başlık *
           </label>
           <input
@@ -253,13 +253,13 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
             value={d.baslik}
             onChange={(e) => setD({ ...d, baslik: e.target.value })}
             required
-            className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
+            className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
             placeholder="Peşin Mal Satışı"
           />
         </div>
 
         <div>
-          <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+          <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
             Senaryo *
           </label>
           <textarea
@@ -267,32 +267,32 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
             onChange={(e) => setD({ ...d, senaryo: e.target.value })}
             required
             rows={4}
-            className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium leading-relaxed"
+            className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium leading-relaxed"
             placeholder="İşletme 10.000 TL'lik mal satmıştır..."
           />
         </div>
 
         <div>
-          <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+          <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
             Açıklama (doğru kayıt sonrası gösterilir)
           </label>
           <textarea
             value={d.aciklama}
             onChange={(e) => setD({ ...d, aciklama: e.target.value })}
             rows={3}
-            className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
+            className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+            <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
               Durum
             </label>
             <select
               value={d.durum}
               onChange={(e) => setD({ ...d, durum: e.target.value as SoruDurum })}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
             >
               <option value="taslak">Taslak (yayında değil)</option>
               <option value="inceleme">İnceleme</option>
@@ -301,13 +301,13 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
             </select>
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+            <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
               Kaynak
             </label>
             <select
               value={d.kaynak}
               onChange={(e) => setD({ ...d, kaynak: e.target.value })}
-              className="w-full px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+              className="w-full px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
             >
               <option value="manuel">Manuel</option>
               <option value="ai">AI</option>
@@ -318,11 +318,11 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
       </div>
 
       {/* Çözüm satırları */}
-      <div className="bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 rounded-xl p-5">
+      <div className="bg-surface border border-line rounded-xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display text-lg font-bold tracking-tight">Yevmiye Kaydı</h3>
           <div
-            className={`text-xs font-bold ${dengeli ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
+            className={`text-xs font-bold ${dengeli ? 'text-success dark:text-success' : 'text-danger dark:text-danger'}`}
           >
             Borç {toplamBorc.toFixed(2)} / Alacak {toplamAlacak.toFixed(2)}
             {dengeli && <span className="ml-2">✓ dengeli</span>}
@@ -330,7 +330,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+            <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <th className="pb-2 w-44">Hesap Kodu</th>
               <th className="pb-2">Hesap Adı</th>
               <th className="pb-2 w-32">Borç</th>
@@ -351,9 +351,9 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
                     onMuavinEklendi={muavinEklendi}
                   />
                 </td>
-                <td className="py-1 pr-2 text-[12.5px] text-stone-700 dark:text-zinc-300 font-medium truncate">
+                <td className="py-1 pr-2 text-[12.5px] text-ink-soft font-medium truncate">
                   {hesapAdiBul(c.kod, muavinler) || (
-                    <span className="text-stone-300 dark:text-zinc-700">—</span>
+                    <span className="text-ink-quiet">—</span>
                   )}
                 </td>
                 <td className="py-1 pr-2">
@@ -365,7 +365,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
                     onChange={(e) => guncelleCozum(i, 'borc', e.target.value)}
                     data-row={i}
                     data-col="borc"
-                    className="w-full font-mono text-sm px-2 py-1.5 bg-stone-50 dark:bg-zinc-800 border border-transparent focus:border-stone-900 dark:focus:border-zinc-400 focus:bg-white dark:focus:bg-zinc-900 outline-none rounded text-right"
+                    className="w-full font-mono text-sm px-2 py-1.5 bg-bg-tint border border-transparent focus:border-ink focus:bg-surface outline-none rounded text-right"
                   />
                 </td>
                 <td className="py-1 pr-2">
@@ -375,7 +375,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
                     min="0"
                     value={c.alacak}
                     onChange={(e) => guncelleCozum(i, 'alacak', e.target.value)}
-                    className="w-full font-mono text-sm px-2 py-1.5 bg-stone-50 dark:bg-zinc-800 border border-transparent focus:border-stone-900 dark:focus:border-zinc-400 focus:bg-white dark:focus:bg-zinc-900 outline-none rounded text-right"
+                    className="w-full font-mono text-sm px-2 py-1.5 bg-bg-tint border border-transparent focus:border-ink focus:bg-surface outline-none rounded text-right"
                   />
                 </td>
                 <td className="py-1">
@@ -383,7 +383,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
                     type="button"
                     onClick={() => silSatir(i)}
                     disabled={d.cozumler.length <= 2}
-                    className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 disabled:opacity-30 disabled:cursor-not-allowed rounded transition"
+                    className="p-1.5 text-ink-quiet hover:text-danger hover:bg-danger-soft disabled:opacity-30 disabled:cursor-not-allowed rounded transition"
                     title="Satırı sil"
                   >
                     <Icon name="X" size={14} />
@@ -396,7 +396,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
         <button
           type="button"
           onClick={ekleSatir}
-          className="mt-3 flex items-center gap-2 text-sm text-stone-600 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-zinc-100 font-semibold"
+          className="mt-3 flex items-center gap-2 text-sm text-ink-soft hover:text-ink font-semibold"
         >
           <Icon name="Plus" size={14} />
           Satır ekle
@@ -419,7 +419,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
       />
 
       {hata && (
-        <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300 font-medium">
+        <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger font-medium">
           <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
           <span>{hata}</span>
         </div>
@@ -429,14 +429,14 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
         <button
           type="button"
           onClick={onIptal}
-          className="px-4 py-2 text-sm font-bold text-stone-600 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-zinc-100 transition"
+          className="px-4 py-2 text-sm font-bold text-ink-soft hover:text-ink transition"
         >
           İptal
         </button>
         <button
           type="submit"
           disabled={kaydediliyor}
-          className="flex items-center gap-2 px-5 py-2 bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2 bg-ink text-bg rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50"
         >
           {kaydediliyor && <Icon name="Loader2" size={14} className="animate-spin" />}
           {duzenleme ? 'Güncelle' : 'Kaydet'}

@@ -15,7 +15,7 @@ export const ProtectedAdminRoute = ({ children }: Props) => {
   if (yukleniyor || (user && adminRoller === null)) {
     return (
       <main className="max-w-7xl mx-auto px-6 py-16 flex items-center justify-center">
-        <Icon name="Loader2" size={20} className="animate-spin text-stone-500" />
+        <Icon name="Loader2" size={20} className="animate-spin text-ink-mute" />
       </main>
     );
   }

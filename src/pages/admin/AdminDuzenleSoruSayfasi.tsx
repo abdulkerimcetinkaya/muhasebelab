@@ -102,7 +102,7 @@ export const AdminDuzenleSoruSayfasi = () => {
       <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
         <AdminYanMenu />
         <div className="flex-1 min-w-0">
-          <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300 font-medium">
+          <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger font-medium">
             <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
             <span>{hata}</span>
           </div>
@@ -116,7 +116,7 @@ export const AdminDuzenleSoruSayfasi = () => {
       <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
         <AdminYanMenu />
         <div className="flex-1 min-w-0 flex items-center justify-center py-16">
-          <Icon name="Loader2" size={20} className="animate-spin text-stone-500" />
+          <Icon name="Loader2" size={20} className="animate-spin text-ink-mute" />
         </div>
       </main>
     );
@@ -127,7 +127,7 @@ export const AdminDuzenleSoruSayfasi = () => {
       <AdminYanMenu />
       <div className="flex-1 min-w-0">
         <h1 className="font-display text-3xl font-bold tracking-tight mb-1">Soruyu Düzenle</h1>
-        <p className="text-sm text-stone-600 dark:text-zinc-400 font-mono mb-6">{baslangic.id}</p>
+        <p className="text-sm text-ink-soft font-mono mb-6">{baslangic.id}</p>
         <SoruForm
           baslangic={baslangic}
           duzenleme={true}

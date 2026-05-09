@@ -165,7 +165,7 @@ export const HesapKoduInput = ({
           placeholder={isPremium ? 'Kod / ad...' : 'Kod...'}
           data-row={rowIndex}
           data-col="kod"
-          className={`w-full font-mono text-sm px-2 py-1.5 bg-stone-50 dark:bg-zinc-800 border border-transparent focus:border-stone-900 dark:focus:border-zinc-400 focus:bg-white dark:focus:bg-zinc-900 outline-none transition ${adAramaUpsellGoster ? 'pr-7' : ''}`}
+          className={`w-full font-mono text-sm px-2 py-1.5 bg-bg-tint border border-transparent focus:border-ink focus:bg-surface outline-none transition ${adAramaUpsellGoster ? 'pr-7' : ''}`}
         />
 
         {/* Premium upsell — ad ile arama yapmaya çalışan free kullanıcı için */}
@@ -177,7 +177,7 @@ export const HesapKoduInput = ({
               nav('/premium');
             }}
             title="Ad ile arama — Premium özellik"
-            className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition"
+            className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded text-premium hover:bg-premium-soft transition"
           >
             <Icon name="Sparkles" size={12} />
           </button>
@@ -185,7 +185,7 @@ export const HesapKoduInput = ({
 
         {/* Ana hesap uyarısı — kayıt yapılamaz */}
         {anaHesapUyari && (
-          <div className="absolute top-full left-0 right-0 mt-1 z-40 px-2 py-1.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded text-[11px] font-medium text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+          <div className="absolute top-full left-0 right-0 mt-1 z-40 px-2 py-1.5 bg-premium-soft border border-premium rounded text-[11px] font-medium text-premium-deep flex items-center gap-1.5">
             <Icon name="AlertTriangle" size={11} className="flex-shrink-0" />
             <span>
               Ana hesaba kayıt yapılamaz — alt muavin seç ({anaHesapUyari} adet
@@ -197,7 +197,7 @@ export const HesapKoduInput = ({
         {/* Dropdown */}
         {dropdownAcik && oneriler.length > 0 && (
           <div
-            className="autocomplete-dropdown absolute top-full left-0 mt-1 bg-white dark:bg-zinc-900 border border-stone-900/10 dark:border-zinc-700 z-50 max-h-64 overflow-auto rounded-xl"
+            className="autocomplete-dropdown absolute top-full left-0 mt-1 bg-surface border border-ink/10 z-50 max-h-64 overflow-auto rounded-xl"
             style={{ minWidth: '380px' }}
           >
             {oneriler.map((o, i) =>
@@ -209,7 +209,7 @@ export const HesapKoduInput = ({
                     secim(o);
                   }}
                   onMouseEnter={() => setSeciliIdx(i)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-left text-xs hover:bg-stone-50 dark:hover:bg-zinc-800 ${i === seciliIdx ? 'bg-stone-100 dark:bg-zinc-800' : ''}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 text-left text-xs hover:bg-bg-tint ${i === seciliIdx ? 'bg-surface-2' : ''}`}
                 >
                   <span className="font-mono font-semibold w-14">
                     {o.hesap.kod}
@@ -217,16 +217,16 @@ export const HesapKoduInput = ({
                   <span className="flex-1">{o.hesap.ad}</span>
                   <span
                     className={`text-[9px] tracking-widest uppercase font-semibold ${
-                      o.hesap.tur === 'AKTİF'
-                        ? 'text-blue-700 dark:text-blue-400'
-                        : o.hesap.tur === 'PASİF'
-                          ? 'text-amber-700 dark:text-amber-400'
-                          : o.hesap.tur === 'GELİR'
-                            ? 'text-emerald-700 dark:text-emerald-400'
-                            : o.hesap.tur === 'GİDER'
-                              ? 'text-red-700 dark:text-red-400'
-                              : 'text-stone-500'
-                    }`}
+ o.hesap.tur === 'AKTİF'
+ ? 'text-brand dark:text-brand-mute'
+ : o.hesap.tur === 'PASİF'
+ ? 'text-premium-deep'
+ : o.hesap.tur === 'GELİR'
+ ? 'text-success dark:text-success'
+ : o.hesap.tur === 'GİDER'
+ ? 'text-danger dark:text-danger'
+ : 'text-ink-mute'
+ }`}
                   >
                     {o.hesap.tur}
                   </span>
@@ -239,13 +239,13 @@ export const HesapKoduInput = ({
                     secim(o);
                   }}
                   onMouseEnter={() => setSeciliIdx(i)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 pl-6 text-left text-xs hover:bg-stone-50 dark:hover:bg-zinc-800 border-l-2 border-stone-200 dark:border-zinc-700 ml-2 ${i === seciliIdx ? 'bg-stone-100 dark:bg-zinc-800' : ''}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 pl-6 text-left text-xs hover:bg-bg-tint border-l-2 border-line ml-2 ${i === seciliIdx ? 'bg-surface-2' : ''}`}
                 >
                   <span className="font-mono font-semibold w-16">
                     {o.muavin.kod}
                   </span>
                   <span className="flex-1">{o.muavin.ad}</span>
-                  <span className="text-[9px] tracking-widest uppercase font-semibold text-stone-500 dark:text-zinc-500">
+                  <span className="text-[9px] tracking-widest uppercase font-semibold text-ink-mute">
                     {TIP_ETIKETLERI[o.muavin.tip]}
                   </span>
                 </button>
@@ -261,7 +261,7 @@ export const HesapKoduInput = ({
                   setDropdownAcik(false);
                   setMuavinModalAcik(true);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs border-t border-stone-200 dark:border-zinc-700 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 font-semibold"
+                className="w-full flex items-center gap-2 px-3 py-2 text-left text-xs border-t border-line text-brand dark:text-brand-mute hover:bg-brand-soft font-semibold"
               >
                 <Icon name="PlusCircle" size={12} />
                 <span>{modalAnaKod} altına yeni muavin ekle</span>

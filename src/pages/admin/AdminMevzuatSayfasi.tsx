@@ -394,18 +394,18 @@ export const AdminMevzuatSayfasi = () => {
         <div className="flex-1 min-w-0">
           {/* Üst başlık */}
           <header className="mb-8">
-            <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-2">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
               AI Eğitim Verisi
             </div>
-            <h1 className="font-display text-[32px] font-bold tracking-tight text-stone-900 dark:text-zinc-100 leading-tight">
+            <h1 className="font-display text-[32px] font-bold tracking-tight text-ink leading-tight">
               Mevzuat Havuzu
             </h1>
-            <p className="text-[14px] text-stone-600 dark:text-zinc-400 leading-relaxed mt-2 max-w-2xl">
+            <p className="text-[14px] text-ink-soft leading-relaxed mt-2 max-w-2xl">
               Soru ekranındaki AI asistan, mevzuat parçalarını kaynak göstererek cevap verir.
               Aşağıdan üç farklı yolla içerik ekleyebilirsin.
             </p>
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-stone-50 dark:bg-zinc-900/40 border border-stone-200 dark:border-zinc-700 text-[11.5px] text-stone-600 dark:text-zinc-400">
-              <Icon name="Info" size={12} className="text-stone-500 dark:text-zinc-500" />
+            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-tint border border-line text-[11.5px] text-ink-soft">
+              <Icon name="Info" size={12} className="text-ink-mute" />
               <span>
                 Aynı <strong>kaynak + başlık</strong> tekrar gönderilirse mevcut chunk üzerine
                 yazılır — duplicate oluşmaz.
@@ -414,21 +414,21 @@ export const AdminMevzuatSayfasi = () => {
           </header>
 
           {/* İstatistik şeridi */}
-          <div className="mb-6 flex flex-wrap items-baseline gap-x-6 gap-y-2 px-5 py-4 border border-stone-200 dark:border-zinc-700 rounded-xl bg-stone-50 dark:bg-zinc-900/40">
+          <div className="mb-6 flex flex-wrap items-baseline gap-x-6 gap-y-2 px-5 py-4 border border-line rounded-xl bg-bg-tint">
             <div>
-              <div className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+              <div className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
                 Toplam
               </div>
-              <div className="font-display text-2xl font-bold text-stone-900 dark:text-zinc-100 tabular-nums">
+              <div className="font-display text-2xl font-bold text-ink tabular-nums">
                 {liste.length}
               </div>
             </div>
             {grupla.slice(0, 6).map(([kaynak, sayi]) => (
               <div key={kaynak}>
-                <div className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold font-mono">
+                <div className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold font-mono">
                   {kaynak}
                 </div>
-                <div className="font-mono text-base font-bold text-stone-900 dark:text-zinc-100 tabular-nums">
+                <div className="font-mono text-base font-bold text-ink tabular-nums">
                   {sayi}
                 </div>
               </div>
@@ -436,7 +436,7 @@ export const AdminMevzuatSayfasi = () => {
           </div>
 
           {/* Sekme şeridi */}
-          <div className="mb-5 flex gap-1 border-b border-stone-200 dark:border-zinc-700">
+          <div className="mb-5 flex gap-1 border-b border-line">
             {[
               { id: 'tek' as const, etiket: 'Tek madde ekle', icon: 'Plus' },
               { id: 'toplu' as const, etiket: 'Toplu metin yapıştır', icon: 'AlignLeft' },
@@ -451,10 +451,10 @@ export const AdminMevzuatSayfasi = () => {
                   setTopluOnizleme(null);
                 }}
                 className={`px-4 py-2.5 text-[13px] font-semibold tracking-wide flex items-center gap-2 border-b-2 -mb-px transition ${
-                  sekme === s.id
-                    ? 'border-stone-900 dark:border-zinc-100 text-stone-900 dark:text-zinc-100'
-                    : 'border-transparent text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100'
-                }`}
+ sekme === s.id
+ ? 'border-ink text-ink'
+ : 'border-transparent text-ink-mute hover:text-ink '
+ }`}
               >
                 <Icon name={s.icon} size={13} />
                 {s.etiket}
@@ -465,20 +465,20 @@ export const AdminMevzuatSayfasi = () => {
           {/* SEKME — Tek madde */}
           {sekme === 'tek' && (
             <section className="mb-10 space-y-3">
-              <p className="text-[12.5px] text-stone-500 dark:text-zinc-500 leading-relaxed">
+              <p className="text-[12.5px] text-ink-mute leading-relaxed">
                 mevzuat.gov.tr'den <strong>tek bir maddeyi</strong> kopyalayıp yapıştır. Metin
                 max 4000 karakter — daha uzun ise <em>Toplu metin</em> sekmesini kullan.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <label className="block">
-                  <span className="text-[11px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1 block">
+                  <span className="text-[11px] tracking-wider uppercase text-ink-mute font-bold mb-1 block">
                     Kaynak
                   </span>
                   <select
                     value={formKaynak}
                     onChange={(e) => setFormKaynak(e.target.value)}
-                    className="w-full px-3 py-2 text-[13px] bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                    className="w-full px-3 py-2 text-[13px] bg-surface border border-line-strong rounded focus:outline-none focus:border-ink"
                   >
                     {KAYNAK_SECENEK.map((k) => (
                       <option key={k.kod} value={k.kod}>
@@ -488,7 +488,7 @@ export const AdminMevzuatSayfasi = () => {
                   </select>
                 </label>
                 <label className="block md:col-span-2">
-                  <span className="text-[11px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1 block">
+                  <span className="text-[11px] tracking-wider uppercase text-ink-mute font-bold mb-1 block">
                     Başlık (zorunlu)
                   </span>
                   <input
@@ -496,14 +496,14 @@ export const AdminMevzuatSayfasi = () => {
                     value={formBaslik}
                     onChange={(e) => setFormBaslik(e.target.value)}
                     placeholder="Örn: Madde 234 — Gider Pusulası"
-                    className="w-full px-3 py-2 text-[13px] bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                    className="w-full px-3 py-2 text-[13px] bg-surface border border-line-strong rounded focus:outline-none focus:border-ink"
                   />
                 </label>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <label className="block md:col-span-2">
-                  <span className="text-[11px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1 block">
+                  <span className="text-[11px] tracking-wider uppercase text-ink-mute font-bold mb-1 block">
                     URL (opsiyonel)
                   </span>
                   <input
@@ -511,26 +511,26 @@ export const AdminMevzuatSayfasi = () => {
                     value={formUrl}
                     onChange={(e) => setFormUrl(e.target.value)}
                     placeholder="https://www.mevzuat.gov.tr/..."
-                    className="w-full px-3 py-2 text-[13px] bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                    className="w-full px-3 py-2 text-[13px] bg-surface border border-line-strong rounded focus:outline-none focus:border-ink"
                   />
                 </label>
                 <label className="block">
-                  <span className="text-[11px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1 block">
+                  <span className="text-[11px] tracking-wider uppercase text-ink-mute font-bold mb-1 block">
                     Yürürlük (opsiyonel)
                   </span>
                   <input
                     type="date"
                     value={formGuncellendi}
                     onChange={(e) => setFormGuncellendi(e.target.value)}
-                    className="w-full px-3 py-2 text-[13px] bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                    className="w-full px-3 py-2 text-[13px] bg-surface border border-line-strong rounded focus:outline-none focus:border-ink"
                   />
                 </label>
               </div>
 
               <label className="block">
-                <span className="text-[11px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1 flex items-baseline justify-between">
+                <span className="text-[11px] tracking-wider uppercase text-ink-mute font-bold mb-1 flex items-baseline justify-between">
                   <span>Metin (zorunlu)</span>
-                  <span className="text-[10px] font-mono text-stone-400 dark:text-zinc-600 tabular-nums">
+                  <span className="text-[10px] font-mono text-ink-quiet tabular-nums">
                     {formMetin.length} / 4000
                   </span>
                 </span>
@@ -538,7 +538,7 @@ export const AdminMevzuatSayfasi = () => {
                   value={formMetin}
                   onChange={(e) => setFormMetin(e.target.value)}
                   placeholder="Madde gövdesini buraya yapıştır. mevzuat.gov.tr'den kopyala-yapıştır direkt çalışır."
-                  className="w-full h-44 px-3 py-2 text-[13px] leading-relaxed bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300 resize-y"
+                  className="w-full h-44 px-3 py-2 text-[13px] leading-relaxed bg-surface border border-line-strong rounded focus:outline-none focus:border-ink resize-y"
                   disabled={calisiyor}
                 />
               </label>
@@ -546,7 +546,7 @@ export const AdminMevzuatSayfasi = () => {
               <button
                 onClick={tekEkle}
                 disabled={calisiyor || !formBaslik.trim() || !formMetin.trim()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[13px] font-bold tracking-wide hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-ink text-bg text-[13px] font-bold tracking-wide hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {calisiyor ? (
                   <>
@@ -566,13 +566,13 @@ export const AdminMevzuatSayfasi = () => {
           {/* SEKME — Toplu metin */}
           {sekme === 'toplu' && (
             <section className="mb-10 space-y-3">
-              <p className="text-[12.5px] text-stone-500 dark:text-zinc-500 leading-relaxed">
+              <p className="text-[12.5px] text-ink-mute leading-relaxed">
                 Bir mevzuatın birden fazla maddesini tek seferde yapıştır.{' '}
-                <code className="font-mono text-[11px] bg-stone-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
+                <code className="font-mono text-[11px] bg-surface-2 px-1.5 py-0.5 rounded">
                   MADDE 234
                 </code>{' '}
                 veya{' '}
-                <code className="font-mono text-[11px] bg-stone-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
+                <code className="font-mono text-[11px] bg-surface-2 px-1.5 py-0.5 rounded">
                   Bölüm V
                 </code>{' '}
                 gibi başlıkları otomatik tanır ve her maddeyi ayrı bir chunk yapar. Önce
@@ -581,13 +581,13 @@ export const AdminMevzuatSayfasi = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <label className="block">
-                  <span className="text-[11px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1 block">
+                  <span className="text-[11px] tracking-wider uppercase text-ink-mute font-bold mb-1 block">
                     Kaynak
                   </span>
                   <select
                     value={topluKaynak}
                     onChange={(e) => setTopluKaynak(e.target.value)}
-                    className="w-full px-3 py-2 text-[13px] bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                    className="w-full px-3 py-2 text-[13px] bg-surface border border-line-strong rounded focus:outline-none focus:border-ink"
                   >
                     {KAYNAK_SECENEK.map((k) => (
                       <option key={k.kod} value={k.kod}>
@@ -596,15 +596,15 @@ export const AdminMevzuatSayfasi = () => {
                     ))}
                   </select>
                 </label>
-                <div className="md:col-span-2 text-[11.5px] text-stone-500 dark:text-zinc-500 self-end pb-2">
+                <div className="md:col-span-2 text-[11.5px] text-ink-mute self-end pb-2">
                   Tek seferde 200+ madde de yapıştırabilirsin — sistem 50'lik gruplara böler.
                 </div>
               </div>
 
               <label className="block">
-                <span className="text-[11px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1 flex items-baseline justify-between">
+                <span className="text-[11px] tracking-wider uppercase text-ink-mute font-bold mb-1 flex items-baseline justify-between">
                   <span>Tüm metin</span>
-                  <span className="text-[10px] font-mono text-stone-400 dark:text-zinc-600 tabular-nums">
+                  <span className="text-[10px] font-mono text-ink-quiet tabular-nums">
                     {topluMetin.length} karakter
                   </span>
                 </span>
@@ -615,7 +615,7 @@ export const AdminMevzuatSayfasi = () => {
                     setTopluOnizleme(null);
                   }}
                   placeholder={`Örnek:\n\nMADDE 175\nBu Kanunun uygulanmasında...\n\nMADDE 176\nBirinci sınıf tüccarlar...\n\nMADDE 177\n...`}
-                  className="w-full h-72 px-3 py-2 font-mono text-[12px] leading-relaxed bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300 resize-y"
+                  className="w-full h-72 px-3 py-2 font-mono text-[12px] leading-relaxed bg-surface border border-line-strong rounded focus:outline-none focus:border-ink resize-y"
                   disabled={calisiyor}
                 />
               </label>
@@ -624,7 +624,7 @@ export const AdminMevzuatSayfasi = () => {
                 <button
                   onClick={topluBol}
                   disabled={calisiyor || !topluMetin.trim()}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-stone-300 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 text-[13px] font-semibold transition disabled:opacity-40"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-line-strong hover:border-ink text-[13px] font-semibold transition disabled:opacity-40"
                 >
                   <Icon name="AlignLeft" size={13} />
                   Önizle (madde madde böl)
@@ -633,7 +633,7 @@ export const AdminMevzuatSayfasi = () => {
                   <button
                     onClick={topluEmbedle}
                     disabled={calisiyor}
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[13px] font-bold tracking-wide hover:opacity-90 transition disabled:opacity-40"
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-ink text-bg text-[13px] font-bold tracking-wide hover:opacity-90 transition disabled:opacity-40"
                   >
                     {calisiyor ? (
                       <>
@@ -651,26 +651,26 @@ export const AdminMevzuatSayfasi = () => {
               </div>
 
               {topluOnizleme && topluOnizleme.length > 0 && (
-                <div className="mt-3 border border-stone-200 dark:border-zinc-700 rounded-lg overflow-hidden">
-                  <div className="px-3 py-2 bg-stone-50 dark:bg-zinc-900/40 border-b border-stone-200 dark:border-zinc-700 text-[11px] tracking-wider uppercase font-bold text-stone-600 dark:text-zinc-400">
+                <div className="mt-3 border border-line rounded-lg overflow-hidden">
+                  <div className="px-3 py-2 bg-bg-tint border-b border-line text-[11px] tracking-wider uppercase font-bold text-ink-soft">
                     Önizleme — {topluOnizleme.length} chunk bulundu
                   </div>
                   <ul className="max-h-72 overflow-y-auto">
                     {topluOnizleme.slice(0, 30).map((c, i) => (
                       <li
                         key={i}
-                        className="px-3 py-2 border-b border-stone-100 dark:border-zinc-800 text-[12px]"
+                        className="px-3 py-2 border-b border-line-soft text-[12px]"
                       >
-                        <div className="font-mono text-[10px] tracking-wider uppercase text-stone-500 dark:text-zinc-500 font-bold mb-0.5">
+                        <div className="font-mono text-[10px] tracking-wider uppercase text-ink-mute font-bold mb-0.5">
                           {c.kaynak} · {c.baslik}
                         </div>
-                        <div className="text-stone-600 dark:text-zinc-400 line-clamp-2 leading-snug">
+                        <div className="text-ink-soft line-clamp-2 leading-snug">
                           {c.metin}
                         </div>
                       </li>
                     ))}
                     {topluOnizleme.length > 30 && (
-                      <li className="px-3 py-2 text-[12px] text-stone-500 dark:text-zinc-500 text-center">
+                      <li className="px-3 py-2 text-[12px] text-ink-mute text-center">
                         … ve {topluOnizleme.length - 30} chunk daha
                       </li>
                     )}
@@ -683,31 +683,31 @@ export const AdminMevzuatSayfasi = () => {
           {/* SEKME — TDHP otomatik */}
           {sekme === 'tdhp' && (
             <section className="mb-10">
-              <div className="border border-stone-200 dark:border-zinc-700 rounded-xl p-6 bg-stone-50 dark:bg-zinc-900/40">
+              <div className="border border-line rounded-xl p-6 bg-bg-tint">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                    <Icon name="Sparkles" size={18} className="text-amber-700 dark:text-amber-400" />
+                  <div className="w-10 h-10 rounded-lg bg-premium-soft flex items-center justify-center flex-shrink-0">
+                    <Icon name="Sparkles" size={18} className="text-premium-deep" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-display font-bold text-base text-stone-900 dark:text-zinc-100 mb-1">
+                    <h3 className="font-display font-bold text-base text-ink mb-1">
                       Hesap Planı'ndan otomatik chunk üret
                     </h3>
-                    <p className="text-[13px] text-stone-600 dark:text-zinc-400 leading-relaxed mb-4">
+                    <p className="text-[13px] text-ink-soft leading-relaxed mb-4">
                       Veritabanındaki <strong>{HESAP_PLANI.length} hesap</strong> için tek tıkla
                       başlangıç chunk'ları üretilir. Her hesap için kod, ad, sınıf, grup ve
                       borç/alacak davranışı içeren kısa bir özet metin oluşturulur ve
                       embedlenir.
                     </p>
-                    <div className="bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded p-3 mb-4 font-mono text-[11.5px] leading-relaxed text-stone-700 dark:text-zinc-300">
+                    <div className="bg-surface border border-line rounded p-3 mb-4 font-mono text-[11.5px] leading-relaxed text-ink-soft">
                       <div className="font-bold mb-1">Örnek çıktı (100 — KASA):</div>
-                      <div className="text-stone-600 dark:text-zinc-400">
+                      <div className="text-ink-soft">
                         100 — KASA. Sınıf 1: Dönen Varlıklar. Grup 10 altında yer alır. Tür:
                         aktif karakterli (varlık). Borçlu çalışır; artışlar borç, azalışlar
                         alacak tarafa yazılır. Tek Düzen Hesap Planı (TDHP) — Muhasebe Sistemi
                         Uygulama Genel Tebliği (1992) referans.
                       </div>
                     </div>
-                    <div className="text-[11.5px] text-stone-500 dark:text-zinc-500 mb-4 leading-relaxed">
+                    <div className="text-[11.5px] text-ink-mute mb-4 leading-relaxed">
                       <strong>Bu başlangıç verisidir.</strong> İlerde her hesabı tek tek açıp
                       gerçek MSUGT açıklamasıyla zenginleştirebilirsin (Tek madde sekmesi). Ama
                       bugünden AI <em>"100 hesabı nedir?"</em> sorusuna cevap verir.
@@ -715,7 +715,7 @@ export const AdminMevzuatSayfasi = () => {
                     <button
                       onClick={tdhpUret}
                       disabled={calisiyor}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[13px] font-bold tracking-wide hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-ink text-bg text-[13px] font-bold tracking-wide hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {calisiyor ? (
                         <>
@@ -737,18 +737,18 @@ export const AdminMevzuatSayfasi = () => {
 
           {/* Progress / sonuç / hata */}
           {ilerleme && (
-            <div className="mb-4 px-4 py-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20">
+            <div className="mb-4 px-4 py-3 rounded-lg border border-brand-soft bg-brand-soft">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[12px] font-semibold text-blue-900 dark:text-blue-200">
+                <span className="text-[12px] font-semibold text-brand-deep dark:text-brand-soft">
                   Embed ediliyor ({ilerleme.yapilan}/{ilerleme.toplam})
                 </span>
-                <span className="text-[11px] font-mono text-blue-700 dark:text-blue-400 tabular-nums">
+                <span className="text-[11px] font-mono text-brand dark:text-brand-mute tabular-nums">
                   %{Math.round((ilerleme.yapilan / ilerleme.toplam) * 100)}
                 </span>
               </div>
-              <div className="h-1.5 bg-blue-100 dark:bg-blue-900/40 rounded overflow-hidden">
+              <div className="h-1.5 bg-brand-soft dark:bg-brand-deep/40 rounded overflow-hidden">
                 <div
-                  className="h-full bg-blue-700 dark:bg-blue-400 transition-all"
+                  className="h-full bg-brand-deep transition-all"
                   style={{ width: `${(ilerleme.yapilan / ilerleme.toplam) * 100}%` }}
                 />
               </div>
@@ -756,14 +756,14 @@ export const AdminMevzuatSayfasi = () => {
           )}
 
           {sonuc && (
-            <div className="mb-4 px-4 py-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20 text-[13px] text-emerald-900 dark:text-emerald-200 inline-flex items-center gap-2">
+            <div className="mb-4 px-4 py-3 rounded-lg border border-success-soft bg-success-soft text-[13px] text-success dark:text-success-soft inline-flex items-center gap-2">
               <Icon name="Check" size={14} />
               {sonuc}
             </div>
           )}
 
           {hataMsj && (
-            <pre className="mb-6 px-4 py-3 rounded-lg border border-rose-200 bg-rose-50 dark:bg-rose-950/20 dark:border-rose-900 text-[12px] text-rose-800 dark:text-rose-300 whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto">
+            <pre className="mb-6 px-4 py-3 rounded-lg border border-danger-soft bg-danger-soft text-[12px] text-danger whitespace-pre-wrap leading-relaxed max-h-40 overflow-y-auto">
               {hataMsj}
             </pre>
           )}
@@ -771,7 +771,7 @@ export const AdminMevzuatSayfasi = () => {
           {/* Mevcut chunk listesi */}
           <section className="mt-8">
             <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
-              <h2 className="font-display text-lg font-bold text-stone-900 dark:text-zinc-100">
+              <h2 className="font-display text-lg font-bold text-ink">
                 Mevcut chunk'lar
               </h2>
               <input
@@ -779,40 +779,40 @@ export const AdminMevzuatSayfasi = () => {
                 value={arama}
                 onChange={(e) => setArama(e.target.value)}
                 placeholder="Ara: kaynak, başlık, metin…"
-                className="w-72 px-3 py-1.5 text-[13px] bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded focus:outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                className="w-72 px-3 py-1.5 text-[13px] bg-surface border border-line-strong rounded focus:outline-none focus:border-ink"
               />
             </div>
 
             {yukleniyor ? (
               <SkeletonSatirlar satirSayisi={4} />
             ) : filtreli.length === 0 ? (
-              <div className="py-12 text-center text-[13px] text-stone-500 dark:text-zinc-500">
+              <div className="py-12 text-center text-[13px] text-ink-mute">
                 {liste.length === 0
                   ? 'Henüz chunk yok. Yukarıdan ilk grubu ekle.'
                   : 'Aramana uyan chunk yok.'}
               </div>
             ) : (
-              <ul className="border-t border-stone-200 dark:border-zinc-700">
+              <ul className="border-t border-line">
                 {filtreli.map((row) => (
                   <li
                     key={row.id}
-                    className="border-b border-stone-200 dark:border-zinc-700 py-4 px-1 flex items-start justify-between gap-4"
+                    className="border-b border-line py-4 px-1 flex items-start justify-between gap-4"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-                        <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+                        <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-mute font-bold">
                           {row.kaynak}
                         </span>
-                        <span className="font-display text-[14px] font-bold text-stone-900 dark:text-zinc-100">
+                        <span className="font-display text-[14px] font-bold text-ink">
                           {row.baslik}
                         </span>
                         {row.guncellendi && (
-                          <span className="font-mono text-[10px] text-stone-400 dark:text-zinc-600">
+                          <span className="font-mono text-[10px] text-ink-quiet">
                             {row.guncellendi}
                           </span>
                         )}
                       </div>
-                      <p className="text-[12.5px] text-stone-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                      <p className="text-[12.5px] text-ink-soft line-clamp-2 leading-relaxed">
                         {row.metin}
                       </p>
                       {row.url && (
@@ -820,7 +820,7 @@ export const AdminMevzuatSayfasi = () => {
                           href={row.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-block mt-1 text-[11px] text-blue-700 dark:text-blue-400 hover:underline truncate max-w-[420px]"
+                          className="inline-block mt-1 text-[11px] text-brand dark:text-brand-mute hover:underline truncate max-w-[420px]"
                         >
                           {row.url}
                         </a>
@@ -828,7 +828,7 @@ export const AdminMevzuatSayfasi = () => {
                     </div>
                     <button
                       onClick={() => sil(row)}
-                      className="p-2 rounded hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 transition flex-shrink-0"
+                      className="p-2 rounded hover:bg-danger-soft text-danger dark:text-danger transition flex-shrink-0"
                       title="Sil"
                     >
                       <Icon name="Trash2" size={14} />

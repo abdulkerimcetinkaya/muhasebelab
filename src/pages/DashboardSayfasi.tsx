@@ -120,28 +120,28 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
             {siradaki ? (
               <button
                 onClick={() => nav(siradaki.href)}
-                className="w-full group text-left bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 hover:border-blue-700 dark:hover:border-blue-500 rounded-2xl p-5 sm:p-6 transition active:scale-[0.99] shadow-sm hover:shadow-md"
+                className="w-full group text-left bg-surface border border-line hover:border-brand-deep rounded-2xl p-5 sm:p-6 transition active:scale-[0.99] shadow-sm hover:shadow-md"
               >
                 <div className="flex items-center gap-4 sm:gap-5">
-                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-brand-soft border border-brand-soft flex items-center justify-center">
                     <Icon
                       name="Zap"
                       size={20}
-                      className="text-blue-700 dark:text-blue-400"
+                      className="text-brand dark:text-brand-mute"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 font-bold mb-1">
+                    <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-1">
                       {siradaki.altBaslik}
                     </div>
-                    <div className="font-display text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-zinc-100 leading-tight truncate">
+                    <div className="font-display text-xl sm:text-2xl font-bold tracking-tight text-ink leading-tight truncate">
                       {siradaki.baslik}
                     </div>
-                    <div className="text-[12.5px] text-stone-500 dark:text-zinc-500 font-medium mt-1">
+                    <div className="text-[12.5px] text-ink-mute font-medium mt-1">
                       {siradaki.yeni ? 'Çalışmaya başla' : 'Kaldığın yerden devam et'}
                     </div>
                   </div>
-                  <div className="flex-shrink-0 hidden sm:flex items-center gap-2 text-stone-400 dark:text-zinc-600 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition">
+                  <div className="flex-shrink-0 hidden sm:flex items-center gap-2 text-ink-quiet group-hover:text-brand dark:group-hover:text-brand-mute transition">
                     <span className="text-[11px] tracking-[0.18em] uppercase font-bold">
                       Devam Et
                     </span>
@@ -150,16 +150,16 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
                 </div>
               </button>
             ) : (
-              <div className="w-full bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 rounded-2xl p-6 text-center">
+              <div className="w-full bg-brand-soft border border-brand-soft rounded-2xl p-6 text-center">
                 <Icon
                   name="Trophy"
                   size={28}
-                  className="mx-auto mb-2 text-blue-700 dark:text-blue-400"
+                  className="mx-auto mb-2 text-brand dark:text-brand-mute"
                 />
-                <div className="font-display text-lg font-bold text-blue-900 dark:text-blue-100 mb-1">
+                <div className="font-display text-lg font-bold text-brand-deep dark:text-bg-tint mb-1">
                   Tüm üniteleri tamamladın
                 </div>
-                <p className="text-[13px] text-blue-800/80 dark:text-blue-200/80">
+                <p className="text-[13px] text-brand-deep/80 dark:text-brand-soft/80">
                   Pratik için bir soruyu tekrar çözmeye ne dersin?
                 </p>
               </div>
@@ -180,15 +180,15 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
           {/* Sağ kolon: Bugün kartı */}
           <aside
             className={`rounded-2xl border p-5 flex flex-col gap-4 ${
-              streakRiski
-                ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/40'
-                : hedefTamam
-                  ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50'
-                  : 'bg-white dark:bg-zinc-800/60 border-stone-200 dark:border-zinc-700'
-            }`}
+ streakRiski
+ ? 'bg-premium-soft border-premium-soft dark:border-premium-deep/40'
+ : hedefTamam
+ ? 'bg-brand-soft border-brand-soft'
+ : 'bg-surface border-line'
+ }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
                 Bugün
               </span>
               <div className="flex items-center gap-1.5">
@@ -197,16 +197,16 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
                   size={14}
                   className={
                     ilerleme.streak > 0
-                      ? 'text-amber-600 dark:text-amber-400'
-                      : 'text-stone-300 dark:text-zinc-700'
+                      ? 'text-premium'
+                      : 'text-ink-quiet'
                   }
                 />
                 <span
                   className={`font-mono text-[13px] font-bold tabular-nums ${
-                    ilerleme.streak > 0
-                      ? 'text-amber-900 dark:text-amber-200'
-                      : 'text-stone-400 dark:text-zinc-600'
-                  }`}
+ ilerleme.streak > 0
+ ? 'text-premium-deep dark:text-premium-soft'
+ : 'text-ink-quiet'
+ }`}
                 >
                   {ilerleme.streak} gün
                 </span>
@@ -218,19 +218,19 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
                 <span className="font-display text-3xl font-bold tabular-nums leading-none">
                   {bugunCozulen}
                 </span>
-                <span className="text-[12px] text-stone-500 dark:text-zinc-500 font-bold">
+                <span className="text-[12px] text-ink-mute font-bold">
                   / {GUNLUK_HEDEF} hedef
                 </span>
               </div>
-              <div className="h-2 bg-stone-100 dark:bg-zinc-800 rounded overflow-hidden">
+              <div className="h-2 bg-surface-2 rounded overflow-hidden">
                 <div
                   className={`h-full transition-all ${
-                    hedefTamam
-                      ? 'bg-blue-900 dark:bg-blue-600'
-                      : streakRiski
-                        ? 'bg-amber-500 dark:bg-amber-400'
-                        : 'bg-blue-700 dark:bg-blue-500'
-                  }`}
+ hedefTamam
+ ? 'bg-brand-deep dark:bg-brand'
+ : streakRiski
+ ? 'bg-premium dark:bg-premium'
+ : 'bg-brand-deep'
+ }`}
                   style={{ width: `${hedefYuzde}%` }}
                 />
               </div>
@@ -238,21 +238,21 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
 
             <div className="text-[12.5px] leading-relaxed font-medium">
               {hedefTamam ? (
-                <span className="inline-flex items-center gap-1.5 text-blue-900 dark:text-blue-200 font-bold">
+                <span className="inline-flex items-center gap-1.5 text-brand-deep dark:text-brand-soft font-bold">
                   <TamamRozeti size={14} />
                   Bugünkü hedefe ulaştın.
                 </span>
               ) : streakRiski ? (
-                <span className="text-amber-900 dark:text-amber-200">
+                <span className="text-premium-deep dark:text-premium-soft">
                   <span className="font-bold">Streak'in tehlikede.</span> 1 soru çözünce
                   serin koruma altına girer.
                 </span>
               ) : ilerleme.streak === 0 ? (
-                <span className="text-stone-600 dark:text-zinc-400">
+                <span className="text-ink-soft">
                   Bir soru çöz, streak başlasın. Her gün 1 soru yeter.
                 </span>
               ) : (
-                <span className="text-stone-600 dark:text-zinc-400">
+                <span className="text-ink-soft">
                   Hedefi tamamla, streak sayacın bir gün daha çiziği.
                 </span>
               )}
@@ -268,25 +268,25 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
           {gununS && (
             <button
               onClick={() => nav(`/problemler/${gununS.id}`)}
-              className="text-left bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 rounded-2xl p-5 transition active:scale-[0.99] group"
+              className="text-left bg-surface border border-line hover:border-ink rounded-2xl p-5 transition active:scale-[0.99] group"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Icon
                     name="Sparkles"
                     size={14}
-                    className="text-amber-600 dark:text-amber-400"
+                    className="text-premium"
                   />
-                  <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+                  <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
                     Günün Sorusu
                   </span>
                 </div>
                 {ilerleme.cozulenler[gununS.id] && <TamamRozeti size={14} />}
               </div>
-              <h3 className="font-display text-base font-bold tracking-tight mb-1 line-clamp-2 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition">
+              <h3 className="font-display text-base font-bold tracking-tight mb-1 line-clamp-2 group-hover:text-brand dark:group-hover:text-brand-mute transition">
                 {gununS.baslik}
               </h3>
-              <div className="text-[11px] text-stone-500 dark:text-zinc-500 font-semibold mb-2 truncate">
+              <div className="text-[11px] text-ink-mute font-semibold mb-2 truncate">
                 {gununS.uniteAd}
               </div>
               <div className="flex items-center gap-3">
@@ -295,7 +295,7 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
                 >
                   {ZORLUK_AD[gununS.zorluk]}
                 </span>
-                <span className="font-mono text-[10px] text-stone-400 dark:text-zinc-600 font-bold">
+                <span className="font-mono text-[10px] text-ink-quiet font-bold">
                   {ZORLUK_PUAN[gununS.zorluk]}p
                 </span>
               </div>
@@ -305,41 +305,41 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
           {enYanlis ? (
             <button
               onClick={() => nav(`/problemler/${enYanlis.id}`)}
-              className="text-left bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 hover:border-stone-900 dark:hover:border-zinc-400 rounded-2xl p-5 transition active:scale-[0.99] group"
+              className="text-left bg-surface border border-line hover:border-ink rounded-2xl p-5 transition active:scale-[0.99] group"
             >
               <div className="flex items-center gap-2 mb-3">
                 <Icon
                   name="RotateCcw"
                   size={14}
-                  className="text-rose-600 dark:text-rose-400"
+                  className="text-danger dark:text-danger"
                 />
-                <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+                <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
                   Tekrar Et
                 </span>
               </div>
-              <h3 className="font-display text-base font-bold tracking-tight mb-1 line-clamp-2 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition">
+              <h3 className="font-display text-base font-bold tracking-tight mb-1 line-clamp-2 group-hover:text-brand dark:group-hover:text-brand-mute transition">
                 {enYanlis.baslik}
               </h3>
-              <div className="text-[11px] text-stone-500 dark:text-zinc-500 font-semibold mb-2 truncate">
+              <div className="text-[11px] text-ink-mute font-semibold mb-2 truncate">
                 {enYanlis.uniteAd}
               </div>
-              <div className="text-[11px] text-rose-600 dark:text-rose-400 font-semibold">
+              <div className="text-[11px] text-danger dark:text-danger font-semibold">
                 {ilerleme.yanlislar[enYanlis.id]} kez yanlış yapıldı
               </div>
             </button>
           ) : (
-            <div className="bg-white dark:bg-zinc-800/40 border border-dashed border-stone-200 dark:border-zinc-700 rounded-2xl p-5">
+            <div className="bg-surface border border-dashed border-line rounded-2xl p-5">
               <div className="flex items-center gap-2 mb-3">
                 <Icon
                   name="RotateCcw"
                   size={14}
-                  className="text-stone-400 dark:text-zinc-600"
+                  className="text-ink-quiet"
                 />
-                <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-400 dark:text-zinc-600">
+                <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-quiet">
                   Tekrar Et
                 </span>
               </div>
-              <p className="text-[12.5px] text-stone-500 dark:text-zinc-500 leading-relaxed">
+              <p className="text-[12.5px] text-ink-mute leading-relaxed">
                 Henüz yanlış yapılan soru yok. Pekiştirme listesi burada birikir.
               </p>
             </div>
@@ -347,19 +347,19 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
         </div>
 
         {/* Sağ: Aktivite ısı geniş — 2fr alanı kaplar */}
-        <div className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 rounded-2xl p-5 sm:p-6 flex flex-col">
+        <div className="bg-surface border border-line rounded-2xl p-5 sm:p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Icon
                 name="Calendar"
                 size={14}
-                className="text-blue-700 dark:text-blue-400"
+                className="text-brand dark:text-brand-mute"
               />
-              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+              <span className="text-[10px] tracking-[0.22em] uppercase font-bold text-ink-mute">
                 Son 30 Gün
               </span>
             </div>
-            <span className="text-[11px] text-stone-500 dark:text-zinc-500 font-bold tabular-nums">
+            <span className="text-[11px] text-ink-mute font-bold tabular-nums">
               {aktifGunSayisi} gün aktif
             </span>
           </div>
@@ -373,14 +373,14 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
                   <div
                     key={i}
                     title={`${g.tarih}: ${g.sayi} soru`}
-                    className="aspect-square bg-blue-700 dark:bg-blue-400 rounded-[3px]"
+                    className="aspect-square bg-brand-deep rounded-[3px]"
                     style={{ opacity }}
                   />
                 );
               })}
             </div>
           </div>
-          <div className="flex justify-between mt-3 text-[10px] text-stone-400 dark:text-zinc-600 font-semibold">
+          <div className="flex justify-between mt-3 text-[10px] text-ink-quiet font-semibold">
             <span>30 gün önce</span>
             <span>Bugün</span>
           </div>
@@ -392,13 +392,13 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
         <div className="flex items-baseline justify-between mb-4">
           <div className="flex items-baseline gap-3">
             <h2 className="font-display text-2xl font-bold tracking-tight">Üniteler</h2>
-            <span className="text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+            <span className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
               Tüm yol haritası
             </span>
           </div>
           <button
             onClick={() => nav('/uniteler')}
-            className="text-[12px] text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-100 font-bold inline-flex items-center gap-1 transition"
+            className="text-[12px] text-ink-mute hover:text-ink font-bold inline-flex items-center gap-1 transition"
           >
             Hepsini gör
             <Icon name="ArrowRight" size={11} />
@@ -417,33 +417,33 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
               return (
                 <button
                   onClick={() => nav(`/uniteler/${u.id}`)}
-                  className="text-left bg-blue-50/50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-900/60 rounded-2xl p-5 transition active:scale-[0.99] hover:border-blue-700 dark:hover:border-blue-600 group"
+                  className="text-left bg-brand-soft/50 border-2 border-brand-soft rounded-2xl p-5 transition active:scale-[0.99] hover:border-brand-deep dark:hover:border-brand group"
                 >
                   <div className="flex items-center gap-1.5 mb-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-700 dark:bg-blue-400 animate-pulse" />
-                    <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-blue-900 dark:text-blue-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-deep animate-pulse" />
+                    <span className="text-[10px] tracking-[0.25em] uppercase font-bold text-brand-deep dark:text-brand-mute">
                       Aktif Ünite
                     </span>
                   </div>
                   <div className="flex items-start gap-4">
                     <Thiings name={u.thiingsIcon} size={56} />
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-display text-xl sm:text-2xl font-bold tracking-tight leading-tight group-hover:text-blue-700 dark:group-hover:text-blue-400 transition">
+                      <h3 className="font-display text-xl sm:text-2xl font-bold tracking-tight leading-tight group-hover:text-brand dark:group-hover:text-brand-mute transition">
                         {u.ad}
                       </h3>
                       {aktifKonuAdi && (
-                        <div className="text-[12.5px] text-blue-900/80 dark:text-blue-300/90 font-semibold mt-1">
+                        <div className="text-[12.5px] text-brand-deep/80 dark:text-brand-mute/90 font-semibold mt-1">
                           Sıradaki konu · {aktifKonuAdi}
                         </div>
                       )}
                       <div className="flex items-center gap-3 mt-3">
-                        <div className="flex-1 h-1.5 bg-blue-100 dark:bg-blue-950/60 rounded overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-brand-soft rounded overflow-hidden">
                           <div
-                            className="h-full bg-blue-700 dark:bg-blue-500 transition-all"
+                            className="h-full bg-brand-deep transition-all"
                             style={{ width: `${yuzde}%` }}
                           />
                         </div>
-                        <span className="font-mono text-[11px] text-blue-900 dark:text-blue-200 font-bold tabular-nums whitespace-nowrap">
+                        <span className="font-mono text-[11px] text-brand-deep dark:text-brand-soft font-bold tabular-nums whitespace-nowrap">
                           {cozulen}/{toplam}
                         </span>
                       </div>
@@ -453,14 +453,14 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
               );
             })()
           ) : (
-            <div className="bg-white dark:bg-zinc-800/40 border border-dashed border-stone-300 dark:border-zinc-700 rounded-2xl p-5 flex items-center justify-center text-center">
+            <div className="bg-surface border border-dashed border-line-strong rounded-2xl p-5 flex items-center justify-center text-center">
               <div>
                 <Icon
                   name="Trophy"
                   size={24}
-                  className="mx-auto mb-2 text-stone-400 dark:text-zinc-600"
+                  className="mx-auto mb-2 text-ink-quiet"
                 />
-                <p className="text-[13px] text-stone-500 dark:text-zinc-500 font-medium">
+                <p className="text-[13px] text-ink-mute font-medium">
                   Tüm üniteler tamam.
                 </p>
               </div>
@@ -468,8 +468,8 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
           )}
 
           {/* Diğer üniteler — divide-y kompakt liste */}
-          <div className="border border-stone-200 dark:border-zinc-700 rounded-2xl bg-white dark:bg-zinc-800/40 overflow-hidden">
-            <ul className="divide-y divide-stone-200 dark:divide-zinc-700/80">
+          <div className="border border-line rounded-2xl bg-surface overflow-hidden">
+            <ul className="divide-y divide-stone-200">
               {uniteler
                 .filter((u) => !aktif || u.id !== aktif.unite.id)
                 .map((u) => {
@@ -482,21 +482,21 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
                     <li key={u.id}>
                       <button
                         onClick={() => nav(`/uniteler/${u.id}`)}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-stone-50 dark:hover:bg-zinc-800/60 transition group"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-bg-tint transition group"
                       >
                         <Thiings name={u.thiingsIcon} size={28} />
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-display text-[13px] font-bold tracking-tight leading-tight truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition">
+                          <h3 className="font-display text-[13px] font-bold tracking-tight leading-tight truncate group-hover:text-brand dark:group-hover:text-brand-mute transition">
                             {u.ad}
                           </h3>
                           <div className="flex items-center gap-2 mt-1">
-                            <div className="flex-1 h-1 bg-stone-100 dark:bg-zinc-800 rounded overflow-hidden max-w-[180px]">
+                            <div className="flex-1 h-1 bg-surface-2 rounded overflow-hidden max-w-[180px]">
                               <div
-                                className={`h-full transition-all ${tamam ? 'bg-blue-900 dark:bg-blue-600' : 'bg-blue-700 dark:bg-blue-500'}`}
+                                className={`h-full transition-all ${tamam ? 'bg-brand-deep dark:bg-brand' : 'bg-brand-deep'}`}
                                 style={{ width: `${yuzde}%` }}
                               />
                             </div>
-                            <span className="font-mono text-[10px] text-stone-400 dark:text-zinc-600 font-bold tabular-nums">
+                            <span className="font-mono text-[10px] text-ink-quiet font-bold tabular-nums">
                               {cozulen}/{toplam}
                             </span>
                           </div>
@@ -508,13 +508,13 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
                             <Icon
                               name="CircleDashed"
                               size={14}
-                              className="text-blue-600 dark:text-blue-400"
+                              className="text-brand dark:text-brand-mute"
                             />
                           ) : (
                             <Icon
                               name="Circle"
                               size={14}
-                              className="text-stone-300 dark:text-zinc-700"
+                              className="text-ink-quiet"
                             />
                           )}
                         </span>
@@ -531,14 +531,14 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
 };
 
 const Stat = ({ ikon, deger, etiket }: { ikon: string; deger: string; etiket: string }) => (
-  <div className="bg-white dark:bg-zinc-800/60 border border-stone-200 dark:border-zinc-700 rounded-xl p-3 sm:p-4">
+  <div className="bg-surface border border-line rounded-xl p-3 sm:p-4">
     <div className="flex items-center gap-1.5 mb-1.5">
       <Icon
         name={ikon}
         size={12}
-        className="text-stone-500 dark:text-zinc-500"
+        className="text-ink-mute"
       />
-      <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500">
+      <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute">
         {etiket}
       </span>
     </div>

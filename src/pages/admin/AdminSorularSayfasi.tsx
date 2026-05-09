@@ -19,16 +19,16 @@ type ZorlukFiltre = 'hepsi' | Zorluk;
 type KonuFiltre = 'hepsi' | 'baglanti-yok' | string;
 
 const DURUM_RENK: Record<SoruDurum, string> = {
-  taslak: 'bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300',
-  inceleme: 'bg-sky-100 text-sky-900 dark:bg-sky-950/40 dark:text-sky-300',
-  onayli: 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300',
-  arsiv: 'bg-stone-200 text-stone-700 dark:bg-zinc-800 dark:text-zinc-400',
+  taslak: 'bg-premium-soft text-premium-deep',
+  inceleme: 'bg-brand-soft text-brand-deep dark:bg-brand/20 dark:text-brand-mute',
+  onayli: 'bg-success-soft text-success',
+  arsiv: 'bg-line-soft text-ink-soft  ',
 };
 
 const ZORLUK_RENK: Record<Zorluk, string> = {
-  kolay: 'text-emerald-600 dark:text-emerald-400',
-  orta: 'text-amber-600 dark:text-amber-400',
-  zor: 'text-rose-600 dark:text-rose-400',
+  kolay: 'text-success dark:text-success',
+  orta: 'text-premium',
+  zor: 'text-danger dark:text-danger',
 };
 
 export const AdminSorularSayfasi = () => {
@@ -141,13 +141,13 @@ export const AdminSorularSayfasi = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="font-display text-3xl font-bold tracking-tight">Sorular</h1>
-            <p className="text-sm text-stone-600 dark:text-zinc-400 font-medium mt-1">
+            <p className="text-sm text-ink-soft font-medium mt-1">
               {filtreli.length} / {sorular.length} soru görüntüleniyor
             </p>
           </div>
           <Link
             to="/admin/sorular/yeni"
-            className="flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition"
+            className="flex items-center gap-2 bg-ink text-bg px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 active:scale-[0.98] transition"
           >
             <Icon name="Plus" size={14} />
             Yeni Soru
@@ -155,26 +155,26 @@ export const AdminSorularSayfasi = () => {
         </div>
 
         {/* Filtreler */}
-        <div className="bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 rounded-xl p-4 mb-4 flex flex-wrap gap-3 items-center">
+        <div className="bg-surface border border-line rounded-xl p-4 mb-4 flex flex-wrap gap-3 items-center">
           <div className="relative flex-1 min-w-[200px]">
             <Icon
               name="Search"
               size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-quiet"
             />
             <input
               type="text"
               value={arama}
               onChange={(e) => setArama(e.target.value)}
               placeholder="Başlık veya ID ile ara…"
-              className="w-full pl-9 pr-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 focus:border-stone-900 dark:focus:border-zinc-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
+              className="w-full pl-9 pr-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium"
             />
           </div>
 
           <select
             value={durumFiltre}
             onChange={(e) => setDurumFiltre(e.target.value as DurumFiltre)}
-            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+            className="px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
           >
             <option value="hepsi">Tüm durumlar</option>
             <option value="taslak">Taslak</option>
@@ -186,7 +186,7 @@ export const AdminSorularSayfasi = () => {
           <select
             value={zorlukFiltre}
             onChange={(e) => setZorlukFiltre(e.target.value as ZorlukFiltre)}
-            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+            className="px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
           >
             <option value="hepsi">Tüm zorluklar</option>
             <option value="kolay">Kolay</option>
@@ -197,7 +197,7 @@ export const AdminSorularSayfasi = () => {
           <select
             value={uniteFiltre}
             onChange={(e) => setUniteFiltre(e.target.value)}
-            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+            className="px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
           >
             <option value="hepsi">Tüm üniteler</option>
             {uniteler.map((u) => (
@@ -210,7 +210,7 @@ export const AdminSorularSayfasi = () => {
           <select
             value={konuFiltre}
             onChange={(e) => setKonuFiltre(e.target.value as KonuFiltre)}
-            className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 outline-none text-sm rounded-lg font-medium"
+            className="px-3 py-2 bg-bg-tint border border-line-strong outline-none text-sm rounded-lg font-medium"
           >
             <option value="hepsi">Tüm konular</option>
             <option value="baglanti-yok">— Konu bağlantısı yok —</option>
@@ -226,7 +226,7 @@ export const AdminSorularSayfasi = () => {
 
         {/* Hata / Yükleniyor */}
         {hata && (
-          <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-sm text-rose-800 dark:text-rose-300 font-medium mb-4">
+          <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger font-medium mb-4">
             <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
             <span>{hata}</span>
           </div>
@@ -241,10 +241,10 @@ export const AdminSorularSayfasi = () => {
             aciklama="Aramayı temizleyebilir veya farklı bir filtre uygulayabilirsin."
           />
         ) : (
-          <div className="bg-white dark:bg-zinc-800/50 border border-stone-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+          <div className="bg-surface border border-line rounded-xl overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-stone-50 dark:bg-zinc-900/50 border-b border-stone-200 dark:border-zinc-700">
-                <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+              <thead className="bg-bg-tint border-b border-line">
+                <tr className="text-left text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
                   <th className="px-4 py-3">Başlık</th>
                   <th className="px-4 py-3">Ünite</th>
                   <th className="px-4 py-3">Konu</th>
@@ -257,26 +257,26 @@ export const AdminSorularSayfasi = () => {
                 {filtreli.map((s) => (
                   <tr
                     key={s.id}
-                    className="border-b border-stone-100 dark:border-zinc-800 last:border-0 hover:bg-stone-50 dark:hover:bg-zinc-800/30 transition"
+                    className="border-b border-line-soft last:border-0 hover:bg-bg-tint transition"
                   >
                     <td className="px-4 py-3">
-                      <div className="font-semibold text-stone-900 dark:text-zinc-100">
+                      <div className="font-semibold text-ink">
                         {s.baslik}
                       </div>
-                      <div className="text-xs text-stone-500 dark:text-zinc-500 font-mono mt-0.5">
+                      <div className="text-xs text-ink-mute font-mono mt-0.5">
                         {s.id}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-stone-600 dark:text-zinc-400 font-medium">
+                    <td className="px-4 py-3 text-ink-soft font-medium">
                       {uniteAdMap[s.unite_id] ?? s.unite_id}
                     </td>
                     <td className="px-4 py-3">
                       {s.konu_id ? (
-                        <span className="text-stone-600 dark:text-zinc-400 font-medium">
+                        <span className="text-ink-soft font-medium">
                           {konuAdMap[s.konu_id] ?? s.konu_id}
                         </span>
                       ) : (
-                        <span className="text-[11px] tracking-[0.18em] uppercase text-stone-400 dark:text-zinc-600 font-bold">
+                        <span className="text-[11px] tracking-[0.18em] uppercase text-ink-quiet font-bold">
                           —
                         </span>
                       )}
@@ -297,14 +297,14 @@ export const AdminSorularSayfasi = () => {
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           to={`/admin/sorular/${s.id}`}
-                          className="p-1.5 hover:bg-stone-200 dark:hover:bg-zinc-700 rounded transition"
+                          className="p-1.5 hover:bg-line-soft rounded transition"
                           title="Düzenle"
                         >
                           <Icon name="Edit3" size={14} />
                         </Link>
                         <button
                           onClick={() => sil(s.id, s.baslik)}
-                          className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded transition"
+                          className="p-1.5 hover:bg-danger-soft text-danger dark:text-danger rounded transition"
                           title="Sil"
                         >
                           <Icon name="Trash2" size={14} />

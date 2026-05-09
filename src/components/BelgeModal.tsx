@@ -24,17 +24,17 @@ export const BelgeModal = ({ belgeler, onKapat }: Props) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-stone-900/70 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-ink/70 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onKapat}
     >
       <div
-        className="bg-stone-100 dark:bg-zinc-950 max-w-4xl w-full max-h-[92vh] overflow-auto rounded-2xl shadow-2xl"
+        className="bg-surface-2 max-w-4xl w-full max-h-[92vh] overflow-auto rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 z-10 bg-stone-100 dark:bg-zinc-950 border-b border-stone-300 dark:border-zinc-800 px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 z-10 bg-surface-2 border-b border-line-strong px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div>
-              <div className="text-[10px] tracking-[0.3em] uppercase text-stone-500 dark:text-zinc-500 mb-0.5 font-bold">
+              <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute mb-0.5 font-bold">
                 Soruyla Birlikte Verilen Belgeler
               </div>
               <div className="font-display text-lg tracking-tight font-bold">
@@ -50,10 +50,10 @@ export const BelgeModal = ({ belgeler, onKapat }: Props) => {
                     key={i}
                     onClick={() => setAktifIdx(i)}
                     className={`text-[10px] tracking-[0.2em] uppercase font-bold px-2.5 py-1.5 rounded transition ${
-                      i === aktifIdx
-                        ? 'bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900'
-                        : 'bg-white dark:bg-zinc-800 text-stone-600 dark:text-zinc-400 hover:bg-stone-200 dark:hover:bg-zinc-700'
-                    }`}
+ i === aktifIdx
+ ? 'bg-ink text-bg '
+ : 'bg-surface text-ink-soft hover:bg-line-soft '
+ }`}
                   >
                     {belgeKisaAd(b)}
                   </button>
@@ -63,12 +63,12 @@ export const BelgeModal = ({ belgeler, onKapat }: Props) => {
           </div>
           <button
             onClick={onKapat}
-            className="text-stone-500 hover:text-stone-900 dark:hover:text-zinc-100"
+            className="text-ink-mute hover:text-ink"
           >
             <Icon name="X" size={20} />
           </button>
         </div>
-        <div className="p-4 sm:p-8 bg-stone-200/40 dark:bg-zinc-900">
+        <div className="p-4 sm:p-8 bg-line-soft/40">
           {aktif.tur === 'fatura' && <FaturaGorunum f={aktif} />}
           {aktif.tur === 'perakende-fis' && <PerakendeFisGorunum f={aktif} />}
           {aktif.tur === 'cek' && <CekGorunum c={aktif} />}
@@ -156,19 +156,19 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
   const baslik = f.baslik || (f.faturaTipi === 'iade' ? 'İADE FATURASI' : 'TİCARİ FATURA');
 
   return (
-    <div className="bg-white text-stone-900 max-w-3xl mx-auto px-8 sm:px-12 py-10 shadow-xl border border-stone-200 font-sans">
+    <div className="bg-surface text-ink max-w-3xl mx-auto px-8 sm:px-12 py-10 shadow-xl border border-line font-sans">
       {/* Üst pill başlık */}
       <div className="flex justify-center mb-3">
-        <div className="border border-stone-900 rounded-full px-5 py-1 text-xs tracking-wide font-semibold">
+        <div className="border border-ink rounded-full px-5 py-1 text-xs tracking-wide font-semibold">
           {f.satici.unvan}
         </div>
       </div>
 
       {/* TİCARİ FATURA başlığı */}
       <div className="flex items-center justify-center gap-3 mb-7">
-        <span className="text-orange-500 text-xl">✻</span>
+        <span className="text-premium text-xl">✻</span>
         <h2 className="font-display text-2xl sm:text-3xl tracking-tight font-bold">{baslik}</h2>
-        <span className="text-orange-500 text-xl">✻</span>
+        <span className="text-premium text-xl">✻</span>
       </div>
 
       {/* Fatura No / Tarih */}
@@ -182,7 +182,7 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
           <span>{f.tarih}</span>
         </div>
         {f.ettn && (
-          <div className="text-[10px] text-stone-500 font-mono">
+          <div className="text-[10px] text-ink-mute font-mono">
             ETTN: {f.ettn}
           </div>
         )}
@@ -197,7 +197,7 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
       {/* Kalemler tablosu */}
       <table className="w-full text-xs border-collapse mb-6">
         <thead>
-          <tr className="border-b-2 border-stone-900">
+          <tr className="border-b-2 border-ink">
             <th className="text-left font-bold py-2 pr-2">Açıklama</th>
             <th className="text-right font-bold py-2 px-2 w-16">Miktar</th>
             <th className="text-right font-bold py-2 px-2 w-14">KDV</th>
@@ -209,11 +209,11 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
           {f.kalemler.map((k, i) => {
             const t = tutarlar[i];
             return (
-              <tr key={i} className="border-b border-stone-200">
+              <tr key={i} className="border-b border-line">
                 <td className="py-3 pr-2">
                   {k.aciklama}
                   {k.iskontoOrani ? (
-                    <span className="block text-[10px] text-stone-500">
+                    <span className="block text-[10px] text-ink-mute">
                       İskonto: %{k.iskontoOrani}
                     </span>
                   ) : null}
@@ -233,14 +233,14 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
       </table>
 
       {/* Toplamlar */}
-      <div className="border-t-2 border-stone-900 pt-4">
+      <div className="border-t-2 border-ink pt-4">
         <div className="ml-auto max-w-xs space-y-1.5 text-xs font-mono">
           <div className="flex justify-between">
             <span className="font-bold">ARA TOPLAM</span>
             <span>{paraFormat(toplamBrut)} ₺</span>
           </div>
           {toplamIskonto > 0 && (
-            <div className="flex justify-between text-stone-600">
+            <div className="flex justify-between text-ink-soft">
               <span>İSKONTO</span>
               <span>− {paraFormat(toplamIskonto)} ₺</span>
             </div>
@@ -250,12 +250,12 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
             <span>{paraFormat(toplamKdv)} ₺</span>
           </div>
           {tevkifatli && (
-            <div className="flex justify-between text-stone-600">
+            <div className="flex justify-between text-ink-soft">
               <span>KDV TEVKİFATI ({f.tevkifatPay}/{f.tevkifatPayda})</span>
               <span>− {paraFormat(tevkifatTutar)} ₺</span>
             </div>
           )}
-          <div className="flex justify-between border-t border-stone-900 pt-2 mt-2 text-sm font-bold">
+          <div className="flex justify-between border-t border-ink pt-2 mt-2 text-sm font-bold">
             <span>GENEL TOPLAM</span>
             <span>{paraFormat(odenecek)} ₺</span>
           </div>
@@ -263,13 +263,13 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
       </div>
 
       {/* Yalnız + notlar */}
-      <div className="mt-6 pt-4 border-t border-stone-200 text-xs space-y-2">
+      <div className="mt-6 pt-4 border-t border-line text-xs space-y-2">
         <div>
           <span className="font-bold">Yalnız: </span>
           <span className="font-display italic">#{tutarYazi(odenecek)}#</span>
         </div>
         {f.tevkifatAciklama && (
-          <div className="text-stone-500 italic">{f.tevkifatAciklama}</div>
+          <div className="text-ink-mute italic">{f.tevkifatAciklama}</div>
         )}
         {f.odemeBilgisi && (
           <div>
@@ -277,7 +277,7 @@ const FaturaGorunum = ({ f }: { f: FaturaBelge }) => {
             {f.odemeBilgisi}
           </div>
         )}
-        {f.not && <div className="text-stone-600">{f.not}</div>}
+        {f.not && <div className="text-ink-soft">{f.not}</div>}
       </div>
     </div>
   );
@@ -287,7 +287,7 @@ const FaturaTaraf = ({ etiket, t }: { etiket: string; t: import('../types').Tara
   <div>
     <div className="font-bold mb-1">{etiket}</div>
     <div className="font-bold">{t.unvan}</div>
-    <div className="text-stone-600 leading-relaxed mt-1 space-y-0.5">
+    <div className="text-ink-soft leading-relaxed mt-1 space-y-0.5">
       {t.adres && <div>{t.adres}</div>}
       {t.vergiDairesi && <div>V.D. {t.vergiDairesi}</div>}
       {t.vkn && <div className="font-mono">VKN: {t.vkn}</div>}
@@ -312,7 +312,7 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
   const bosSatir = Math.max(0, 7 - f.kalemler.length);
 
   return (
-    <div className="bg-white max-w-md mx-auto p-6 shadow-xl border-2 border-stone-900 text-stone-900 font-serif">
+    <div className="bg-surface max-w-md mx-auto p-6 shadow-xl border-2 border-ink text-ink font-serif">
       {/* Üst kısım: firma | mali damga | başlık */}
       <div className="grid grid-cols-3 gap-3 items-start mb-4">
         <div className="col-span-1">
@@ -324,7 +324,7 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
             {f.isletme.adres ? (
               <span>{f.isletme.adres}</span>
             ) : (
-              <span className="border-b border-dotted border-stone-400 inline-block min-w-[80px]" />
+              <span className="border-b border-dotted border-line-strong inline-block min-w-[80px]" />
             )}
           </div>
         </div>
@@ -409,7 +409,7 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
       <div className="flex items-end justify-between gap-3 mb-3 text-xs">
         <div className="flex-1">
           <span className="font-semibold">Müşteri: </span>
-          <span className="border-b border-dotted border-stone-400 inline-block min-w-[120px]">
+          <span className="border-b border-dotted border-line-strong inline-block min-w-[120px]">
             {f.not || ''}
           </span>
         </div>
@@ -420,13 +420,13 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
       </div>
 
       {/* Kalemler tablosu */}
-      <table className="w-full text-xs border-collapse border-2 border-stone-900 mb-3">
+      <table className="w-full text-xs border-collapse border-2 border-ink mb-3">
         <thead>
-          <tr className="border-b border-stone-900">
-            <th className="border-r border-stone-900 px-2 py-1 font-semibold tracking-wide">
+          <tr className="border-b border-ink">
+            <th className="border-r border-ink px-2 py-1 font-semibold tracking-wide">
               CİNSİ
             </th>
-            <th className="border-r border-stone-900 px-2 py-1 font-semibold tracking-wide w-16">
+            <th className="border-r border-ink px-2 py-1 font-semibold tracking-wide w-16">
               MİKTARI
             </th>
             <th className="px-2 py-1 font-semibold tracking-wide w-24">TUTARI</th>
@@ -436,9 +436,9 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
           {f.kalemler.map((k, i) => {
             const t = tutarlar[i];
             return (
-              <tr key={i} className="border-b border-stone-300">
-                <td className="border-r border-stone-300 px-2 py-1.5">{k.aciklama}</td>
-                <td className="border-r border-stone-300 px-2 py-1.5 text-center font-mono">
+              <tr key={i} className="border-b border-line-strong">
+                <td className="border-r border-line-strong px-2 py-1.5">{k.aciklama}</td>
+                <td className="border-r border-line-strong px-2 py-1.5 text-center font-mono">
                   {k.miktar.toLocaleString('tr-TR')}
                 </td>
                 <td className="px-2 py-1.5 text-right font-mono">{paraFormat(t.toplam)}</td>
@@ -446,9 +446,9 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
             );
           })}
           {Array.from({ length: bosSatir }).map((_, i) => (
-            <tr key={`b${i}`} className="border-b border-stone-300">
-              <td className="border-r border-stone-300 px-2 py-1.5">&nbsp;</td>
-              <td className="border-r border-stone-300 px-2 py-1.5">&nbsp;</td>
+            <tr key={`b${i}`} className="border-b border-line-strong">
+              <td className="border-r border-line-strong px-2 py-1.5">&nbsp;</td>
+              <td className="border-r border-line-strong px-2 py-1.5">&nbsp;</td>
               <td className="px-2 py-1.5">&nbsp;</td>
             </tr>
           ))}
@@ -458,39 +458,39 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
       {/* Yalnız satırı */}
       <div className="text-xs mb-3">
         <span className="font-semibold">Yalnız: </span>
-        <span className="border-b border-dotted border-stone-400 inline-block min-w-[60%] font-display italic">
+        <span className="border-b border-dotted border-line-strong inline-block min-w-[60%] font-display italic">
           {tutarYazi(odenecek)}
         </span>
       </div>
 
       {/* KDV/TOPLAM kutuları */}
-      <div className="grid grid-cols-2 border-2 border-stone-900 text-xs">
-        <div className="border-r border-stone-900 grid grid-cols-2">
-          <div className="border-r border-stone-900 px-2 py-1.5 font-semibold">K.D.V.</div>
+      <div className="grid grid-cols-2 border-2 border-ink text-xs">
+        <div className="border-r border-ink grid grid-cols-2">
+          <div className="border-r border-ink px-2 py-1.5 font-semibold">K.D.V.</div>
           <div className="px-2 py-1.5 text-center font-mono">
             {paraFormat(toplamKdv)}
           </div>
         </div>
         <div className="grid grid-cols-2">
-          <div className="border-r border-stone-900 px-2 py-1.5 font-semibold">TOPLAM</div>
+          <div className="border-r border-ink px-2 py-1.5 font-semibold">TOPLAM</div>
           <div className="px-2 py-1.5 text-center font-mono font-bold">
             {paraFormat(odenecek)}
           </div>
         </div>
-        <div className="border-t border-r border-stone-900 px-2 py-1 text-[10px] text-center col-span-2 font-semibold">
+        <div className="border-t border-r border-ink px-2 py-1 text-[10px] text-center col-span-2 font-semibold">
           K.D.V. DAHİLDİR
         </div>
       </div>
 
       {/* Alt: ödeme yöntemi */}
       {f.odemeYontemi && (
-        <div className="mt-3 text-[10px] text-stone-600 text-right">
+        <div className="mt-3 text-[10px] text-ink-soft text-right">
           Ödeme: <span className="font-bold">{f.odemeYontemi}</span>
         </div>
       )}
 
       {/* Vergi dairesi/VKN */}
-      <div className="mt-3 pt-2 border-t border-stone-300 text-[9px] text-stone-500 leading-tight">
+      <div className="mt-3 pt-2 border-t border-line-strong text-[9px] text-ink-mute leading-tight">
         {f.isletme.vergiDairesi && f.isletme.vkn && (
           <div>
             {f.isletme.vergiDairesi} V.D. {f.isletme.vkn}
@@ -508,17 +508,17 @@ const PerakendeFisGorunum = ({ f }: { f: PerakendeFisBelge }) => {
 // =====================
 const CekGorunum = ({ c }: { c: CekBelge }) => (
   <div className="flex justify-center py-2">
-    <div className="relative bg-stone-100 max-w-2xl w-full p-3 shadow-2xl">
+    <div className="relative bg-surface-2 max-w-2xl w-full p-3 shadow-2xl">
       {/* Wavy çek body */}
       <div
-        className="relative border-2 border-stone-300 bg-white overflow-hidden"
+        className="relative border-2 border-line-strong bg-surface overflow-hidden"
         style={{
           backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='40' viewBox='0 0 200 40'><path d='M0 20 Q 25 5 50 20 T 100 20 T 150 20 T 200 20' fill='none' stroke='%23d6d3d1' stroke-width='1' opacity='0.6'/><path d='M0 30 Q 25 15 50 30 T 100 30 T 150 30 T 200 30' fill='none' stroke='%23d6d3d1' stroke-width='1' opacity='0.4'/></svg>")`,
           backgroundSize: '200px 40px',
           backgroundRepeat: 'repeat',
         }}
       >
-        <div className="px-7 py-6 text-stone-900 font-sans">
+        <div className="px-7 py-6 text-ink font-sans">
           {/* Üst: Banka adı | Nº */}
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -526,12 +526,12 @@ const CekGorunum = ({ c }: { c: CekBelge }) => (
                 {c.bankaAdi}
               </div>
               {c.subeAdi && (
-                <div className="text-[11px] text-stone-600 mt-0.5">{c.subeAdi}</div>
+                <div className="text-[11px] text-ink-soft mt-0.5">{c.subeAdi}</div>
               )}
             </div>
             <div className="text-right">
-              <span className="text-stone-600 text-sm align-top">N</span>
-              <sup className="text-stone-600 text-xs">o</sup>
+              <span className="text-ink-soft text-sm align-top">N</span>
+              <sup className="text-ink-soft text-xs">o</sup>
               <span className="font-display font-bold text-xl tracking-wider ml-0.5">
                 {c.cekNo}
               </span>
@@ -540,38 +540,38 @@ const CekGorunum = ({ c }: { c: CekBelge }) => (
 
           {/* Ödemeyi Alacak | TL */}
           <div className="grid grid-cols-[auto_1fr_auto_auto] gap-3 items-end mb-5">
-            <div className="text-xs text-stone-700">Ödemeyi Alacak</div>
-            <div className="font-display text-lg font-bold border-b border-stone-400 pb-0.5 px-2">
+            <div className="text-xs text-ink-soft">Ödemeyi Alacak</div>
+            <div className="font-display text-lg font-bold border-b border-line-strong pb-0.5 px-2">
               {c.lehtar}
             </div>
-            <div className="text-xs text-stone-700">TL</div>
-            <div className="font-display text-lg font-bold bg-white border border-stone-300 px-3 py-0.5 min-w-[110px] text-right">
+            <div className="text-xs text-ink-soft">TL</div>
+            <div className="font-display text-lg font-bold bg-surface border border-line-strong px-3 py-0.5 min-w-[110px] text-right">
               {paraFormat(c.tutar)}
             </div>
           </div>
 
           {/* Yazıyla */}
           <div className="grid grid-cols-[1fr_auto] gap-3 items-end mb-6">
-            <div className="font-display text-base italic font-semibold border-b border-stone-400 pb-0.5 text-center px-2">
+            <div className="font-display text-base italic font-semibold border-b border-line-strong pb-0.5 text-center px-2">
               #{yaziyla(c.tutar)}#
             </div>
-            <div className="text-xs text-stone-700">Türk Lirası</div>
+            <div className="text-xs text-ink-soft">Türk Lirası</div>
           </div>
 
           {/* imza | Tarih */}
           <div className="grid grid-cols-[auto_1fr_auto_auto] gap-3 items-end mb-3">
-            <div className="text-xs text-stone-700">imza</div>
-            <div className="font-display italic text-base border-b border-stone-400 pb-0.5 text-center px-2 text-stone-700">
+            <div className="text-xs text-ink-soft">imza</div>
+            <div className="font-display italic text-base border-b border-line-strong pb-0.5 text-center px-2 text-ink-soft">
               {c.kesideci.unvan}
             </div>
-            <div className="text-xs text-stone-700">Tarih</div>
-            <div className="font-mono text-sm border-b border-stone-400 pb-0.5 px-2">
+            <div className="text-xs text-ink-soft">Tarih</div>
+            <div className="font-mono text-sm border-b border-line-strong pb-0.5 px-2">
               {c.duzenlemeTarihi}
             </div>
           </div>
 
           {/* MICR satırı */}
-          <div className="font-mono text-base tracking-[0.2em] text-stone-700 mt-6 pt-2">
+          <div className="font-mono text-base tracking-[0.2em] text-ink-soft mt-6 pt-2">
             {(c.cekNo + (c.subeKodu || '0000') + (c.hesapNo?.replace(/[^0-9]/g, '') || '00000000') + '00')
               .slice(0, 22)
               .padEnd(22, '0')}
@@ -580,16 +580,16 @@ const CekGorunum = ({ c }: { c: CekBelge }) => (
       </div>
 
       {/* Vade tarihi yan etiket — çekin altına minik info */}
-      <div className="flex justify-between items-center px-3 pt-3 text-[10px] text-stone-500 font-mono">
+      <div className="flex justify-between items-center px-3 pt-3 text-[10px] text-ink-mute font-mono">
         <span>
-          Vade: <span className="text-red-700 font-bold">{c.vadeTarihi}</span>
+          Vade: <span className="text-danger font-bold">{c.vadeTarihi}</span>
           {c.duzenlemeYeri && <span className="ml-2">· Yer: {c.duzenlemeYeri}</span>}
         </span>
         {c.iban && <span className="text-[9px]">{c.iban}</span>}
       </div>
 
       {c.not && (
-        <div className="mt-2 px-3 text-[11px] text-stone-600 italic">{c.not}</div>
+        <div className="mt-2 px-3 text-[11px] text-ink-soft italic">{c.not}</div>
       )}
     </div>
   </div>
@@ -603,7 +603,7 @@ const SenetGorunum = ({ s }: { s: SenetBelge }) => {
 
   return (
     <div className="flex justify-center py-2">
-      <div className="bg-white max-w-3xl w-full p-6 sm:p-10 shadow-2xl border border-stone-300 text-stone-900 font-serif">
+      <div className="bg-surface max-w-3xl w-full p-6 sm:p-10 shadow-2xl border border-line-strong text-ink font-serif">
         {/* Üst beş kolon: Vade | Ödeme Tarihi | Türk Lirası | Kuruş | No */}
         <div className="grid grid-cols-5 gap-3 mb-6">
           <SenetUstAlan etiket="Vade" deger={s.vadeTarihi} kirmizi />
@@ -642,12 +642,12 @@ const SenetGorunum = ({ s }: { s: SenetBelge }) => {
               .toString()
               .padStart(2, '0')}
           />{' '}
-          Kuruş ödeyeceği<span className="text-red-700 font-bold">m</span>. Bedeli{' '}
+          Kuruş ödeyeceği<span className="text-danger font-bold">m</span>. Bedeli{' '}
           <SenetDolgu deger={s.not ? s.not.toLocaleLowerCase('tr-TR') : 'nakden'} /> ahzolunmuştur.
           İşbu bono vadesinde ödenmediği takdirde müteakip bonolarında muacceliyet kesbedeceğini,
           ihtilaf halinde <SenetDolgu deger={s.vadeYeri || 'İstanbul'} /> Mahkemelerinin yetkili
           olduğunu şimdiden kabul ederi
-          <span className="text-red-700 font-bold">m</span>.
+          <span className="text-danger font-bold">m</span>.
         </p>
 
         {/* Düzenleme tarihi sağ */}
@@ -658,9 +658,9 @@ const SenetGorunum = ({ s }: { s: SenetBelge }) => {
         {/* Alt: Ödeyecek | imza */}
         <div className="grid grid-cols-3 gap-6 mt-4">
           <div className="col-span-2 relative">
-            <div className="absolute left-0 top-0 bottom-0 w-px bg-stone-900" />
-            <div className="absolute left-0 top-0 w-2 h-px bg-stone-900" />
-            <div className="absolute left-0 bottom-0 w-2 h-px bg-stone-900" />
+            <div className="absolute left-0 top-0 bottom-0 w-px bg-ink" />
+            <div className="absolute left-0 top-0 w-2 h-px bg-ink" />
+            <div className="absolute left-0 bottom-0 w-2 h-px bg-ink" />
             <div className="pl-4">
               <div
                 className="absolute -left-2 top-1/2 -translate-y-1/2 origin-center text-base font-display font-bold tracking-widest"
@@ -699,10 +699,10 @@ const SenetGorunum = ({ s }: { s: SenetBelge }) => {
 
           <div className="flex flex-col items-center justify-end pb-2">
             <div className="grid grid-cols-2 gap-6 text-center text-sm mb-3">
-              <div className="text-stone-700">imza</div>
-              <div className="text-stone-700">imza</div>
+              <div className="text-ink-soft">imza</div>
+              <div className="text-ink-soft">imza</div>
             </div>
-            <div className="text-red-700 font-display italic text-base font-bold leading-tight text-center">
+            <div className="text-danger font-display italic text-base font-bold leading-tight text-center">
               ıslak
               <br />
               imza
@@ -728,9 +728,9 @@ const SenetUstAlan = ({
   <div className="text-center">
     <div className="font-display font-bold text-sm mb-2">{etiket}</div>
     <div
-      className={`border-b border-dotted border-stone-700 pb-0.5 min-h-[1.5rem] ${
-        kirmizi ? 'text-red-700' : 'text-stone-900'
-      } ${mono ? 'font-mono' : 'font-display italic'} font-bold text-sm`}
+      className={`border-b border-dotted border-line-strong pb-0.5 min-h-[1.5rem] ${
+ kirmizi ? 'text-danger' : 'text-ink'
+ } ${mono ? 'font-mono' : 'font-display italic'} font-bold text-sm`}
     >
       {deger || '\u00A0'}
     </div>
@@ -749,11 +749,11 @@ const SenetDolgu = ({
   dolgun?: boolean;
 }) => (
   <span
-    className={`relative inline-block border-b border-dotted border-stone-700 text-red-700 ${
-      mono ? 'font-mono' : 'font-display italic'
-    } font-bold text-center px-1 ${
-      dolgun ? 'flex-1 min-w-0' : genis ? 'min-w-[140px]' : 'min-w-[80px]'
-    }`}
+    className={`relative inline-block border-b border-dotted border-line-strong text-danger ${
+ mono ? 'font-mono' : 'font-display italic'
+ } font-bold text-center px-1 ${
+ dolgun ? 'flex-1 min-w-0' : genis ? 'min-w-[140px]' : 'min-w-[80px]'
+ }`}
     style={dolgun ? { flex: 1 } : undefined}
   >
     {deger || '\u00A0'}
@@ -781,22 +781,22 @@ const DekontGorunum = ({ d }: { d: DekontBelge }) => {
   const net = d.netTutar ?? d.tutar - (d.bsmv ?? 0) - (d.masraf ?? 0);
 
   return (
-    <div className="bg-white max-w-3xl mx-auto p-6 sm:p-8 shadow-xl border border-stone-200 text-stone-900 font-sans">
+    <div className="bg-surface max-w-3xl mx-auto p-6 sm:p-8 shadow-xl border border-line text-ink font-sans">
       {/* Üst başlık: banka logo + banka legal info */}
       <div className="flex items-start justify-between gap-4 mb-1 pb-3">
         <div className="flex items-center gap-2">
           <svg
             viewBox="0 0 28 28"
-            className="w-6 h-6 text-emerald-600"
+            className="w-6 h-6 text-success"
             fill="currentColor"
           >
             <path d="M14 4 C 8 4 6 9 6 13 C 6 17 9 21 14 24 C 19 21 22 17 22 13 C 22 9 20 4 14 4 Z M 14 8 C 17 8 19 10 19 13 C 19 16 17 19 14 21 C 11 19 9 16 9 13 C 9 10 11 8 14 8 Z" />
           </svg>
-          <div className="font-display text-xl font-bold tracking-tight text-emerald-700 uppercase">
+          <div className="font-display text-xl font-bold tracking-tight text-success uppercase">
             {d.bankaAdi}
           </div>
         </div>
-        <div className="text-right text-[10px] text-stone-700 leading-snug">
+        <div className="text-right text-[10px] text-ink-soft leading-snug">
           <div className="font-bold">{d.bankaAdi.toUpperCase()}</div>
           <div>Vergi No: 0000000000</div>
           <div>Vergi Dairesi: Büyük Mükellefler V.D.</div>
@@ -806,13 +806,13 @@ const DekontGorunum = ({ d }: { d: DekontBelge }) => {
       </div>
 
       {/* İşlem türü merkezde */}
-      <div className="text-center text-sm font-semibold border-b border-stone-300 pb-3 mb-4">
+      <div className="text-center text-sm font-semibold border-b border-line-strong pb-3 mb-4">
         {islemTuruEtiket(d.islemTuru)}
       </div>
 
       {/* Üst iki sütun blok */}
-      <div className="border border-stone-300 grid grid-cols-1 sm:grid-cols-2 mb-3 text-xs">
-        <div className="p-3 border-r border-stone-300 space-y-1.5">
+      <div className="border border-line-strong grid grid-cols-1 sm:grid-cols-2 mb-3 text-xs">
+        <div className="p-3 border-r border-line-strong space-y-1.5">
           <DekontSatir etiket="Şube Adı" deger={d.subeAdi || '—'} />
           <DekontSatir
             etiket="TC Kimlik No"
@@ -835,7 +835,7 @@ const DekontGorunum = ({ d }: { d: DekontBelge }) => {
       </div>
 
       {/* Gönderen / Gönderilen blok */}
-      <div className="border border-stone-300 mb-3 text-xs">
+      <div className="border border-line-strong mb-3 text-xs">
         <div className="p-3 space-y-1.5">
           <DekontSatir
             etiket={cikis ? 'Gönderen Kişi' : 'Alıcı Kişi'}
@@ -860,16 +860,16 @@ const DekontGorunum = ({ d }: { d: DekontBelge }) => {
       </div>
 
       {/* Tutar barı */}
-      <div className="border border-stone-300 px-3 py-2 mb-3 text-xs flex items-center gap-3">
+      <div className="border border-line-strong px-3 py-2 mb-3 text-xs flex items-center gap-3">
         <span className="font-semibold">
           Tutar {paraFormat(d.tutar)} TL
         </span>
-        <span className="text-stone-600">Yalnız {yaziyla(d.tutar).replace('türklirası', ' Türk Lirası')}</span>
+        <span className="text-ink-soft">Yalnız {yaziyla(d.tutar).replace('türklirası', ' Türk Lirası')}</span>
       </div>
 
       {/* BSMV / Masraf detayı (varsa) */}
       {((d.bsmv ?? 0) > 0 || (d.masraf ?? 0) > 0) && (
-        <div className="border border-stone-300 px-3 py-2 mb-3 text-xs space-y-1">
+        <div className="border border-line-strong px-3 py-2 mb-3 text-xs space-y-1">
           {d.bsmv != null && d.bsmv > 0 && (
             <div className="flex justify-between">
               <span>BSMV</span>
@@ -882,10 +882,10 @@ const DekontGorunum = ({ d }: { d: DekontBelge }) => {
               <span className="font-mono">{paraFormat(d.masraf)} TL</span>
             </div>
           )}
-          <div className="flex justify-between border-t border-stone-300 pt-1 mt-1 font-bold">
+          <div className="flex justify-between border-t border-line-strong pt-1 mt-1 font-bold">
             <span>{cikis ? 'Hesaptan Çıkan Net' : 'Hesaba Giren Net'}</span>
             <span
-              className={`font-mono ${cikis ? 'text-rose-700' : 'text-emerald-700'}`}
+              className={`font-mono ${cikis ? 'text-danger' : 'text-success'}`}
             >
               {cikis ? '−' : '+'} {paraFormat(net)} TL
             </span>
@@ -894,19 +894,19 @@ const DekontGorunum = ({ d }: { d: DekontBelge }) => {
       )}
 
       {d.bakiye != null && (
-        <div className="text-[10px] text-stone-600 mb-2">
+        <div className="text-[10px] text-ink-soft mb-2">
           İşlem Sonrası Bakiye:{' '}
           <span className="font-mono font-bold">{paraFormat(d.bakiye)} TL</span>
         </div>
       )}
 
       {/* Footer */}
-      <div className="text-center text-[10px] text-stone-600 pt-3 border-t border-stone-200">
+      <div className="text-center text-[10px] text-ink-soft pt-3 border-t border-line">
         Büyükdere Cad. No:000 Şişli/İstanbul · www.{d.bankaAdi.toLowerCase().replace(/\s+/g, '')}.com.tr
       </div>
 
       {d.not && (
-        <div className="mt-2 text-[11px] text-stone-600 italic">{d.not}</div>
+        <div className="mt-2 text-[11px] text-ink-soft italic">{d.not}</div>
       )}
     </div>
   );
@@ -923,7 +923,7 @@ const DekontSatir = ({
 }) => (
   <div className="flex items-baseline gap-3">
     <span className="font-semibold w-32 shrink-0">{etiket}</span>
-    <span className="text-stone-600">:</span>
+    <span className="text-ink-soft">:</span>
     <span className={mono ? 'font-mono break-all' : ''}>{deger}</span>
   </div>
 );

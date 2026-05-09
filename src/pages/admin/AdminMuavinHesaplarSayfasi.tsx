@@ -179,7 +179,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
               <h1 className="font-display text-3xl font-bold tracking-tight">
                 Muavin Hesaplar
               </h1>
-              <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
+              <p className="text-[13.5px] text-ink-soft mt-1">
                 Alt/yardımcı hesaplar — örn: <code className="font-mono">120.001 ABC Ticaret</code>.
                 Bir ana hesabın muavini varsa, soru editörü ana hesap kullanımını uyaracak.
               </p>
@@ -187,7 +187,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
             {duzenlenen && (
               <button
                 onClick={yeniBaslat}
-                className="inline-flex items-center gap-2 px-3 py-2 text-[11px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 rounded-lg hover:bg-stone-50 dark:hover:bg-zinc-800/50 transition"
+                className="inline-flex items-center gap-2 px-3 py-2 text-[11px] tracking-[0.2em] uppercase font-bold border border-line-strong rounded-lg hover:bg-bg-tint transition"
               >
                 <Icon name="Plus" size={12} />
                 Yeni Muavin
@@ -196,14 +196,14 @@ export const AdminMuavinHesaplarSayfasi = () => {
           </div>
 
           {/* Form */}
-          <section className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-2xl p-6">
+          <section className="bg-surface border border-line rounded-2xl p-6">
             <h2 className="font-display text-lg font-bold mb-4">
               {duzenlenen ? `Düzenle: ${form.kod}` : 'Yeni Muavin'}
             </h2>
             <form onSubmit={kaydet} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                     Ana Hesap
                   </label>
                   <select
@@ -211,7 +211,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
                     onChange={(e) => anaHesapDegisti(e.target.value)}
                     required
                     disabled={!!duzenlenen}
-                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink disabled:opacity-60"
                   >
                     <option value="">— seç —</option>
                     {HESAP_PLANI.map((h) => (
@@ -223,13 +223,13 @@ export const AdminMuavinHesaplarSayfasi = () => {
                 </div>
 
                 <div>
-                  <label className="flex items-baseline justify-between text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                  <label className="flex items-baseline justify-between text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                     <span>Muavin Kodu</span>
                     {!kodManuel && !duzenlenen && (
                       <button
                         type="button"
                         onClick={() => setKodManuel(true)}
-                        className="text-[9px] text-blue-600 dark:text-blue-400 hover:underline normal-case tracking-normal"
+                        className="text-[9px] text-brand dark:text-brand-mute hover:underline normal-case tracking-normal"
                       >
                         manuel düzenle
                       </button>
@@ -243,19 +243,19 @@ export const AdminMuavinHesaplarSayfasi = () => {
                     disabled={!!duzenlenen}
                     required
                     placeholder="120.001"
-                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-mono outline-none focus:border-stone-900 dark:focus:border-zinc-400 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-mono outline-none focus:border-ink disabled:opacity-60"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                  <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                     Tip
                   </label>
                   <select
                     value={form.tip}
                     onChange={(e) => setForm((f) => ({ ...f, tip: e.target.value as MuavinTip }))}
                     required
-                    className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                    className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
                   >
                     {TIP_LISTESI.map((t) => (
                       <option key={t} value={t}>
@@ -267,7 +267,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                   Ad
                 </label>
                 <input
@@ -276,12 +276,12 @@ export const AdminMuavinHesaplarSayfasi = () => {
                   onChange={(e) => setForm((f) => ({ ...f, ad: e.target.value }))}
                   required
                   placeholder="ABC Ticaret Ltd. Şti."
-                  className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                  className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-1.5">
+                <label className="block text-[10px] tracking-[0.2em] uppercase font-bold text-ink-mute mb-1.5">
                   Açıklama (opsiyonel)
                 </label>
                 <textarea
@@ -291,7 +291,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
                   }
                   rows={2}
                   placeholder="Tedarikçi olarak çalıştığımız tekstil firması, vs."
-                  className="w-full px-3 py-2.5 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-sm font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 resize-none"
+                  className="w-full px-3 py-2.5 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink resize-none"
                 />
               </div>
 
@@ -302,7 +302,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, aktif: e.target.checked }))
                   }
-                  className="w-4 h-4 rounded border-stone-300 dark:border-zinc-600 cursor-pointer"
+                  className="w-4 h-4 rounded border-line-strong cursor-pointer"
                 />
                 <span className="text-sm font-medium">
                   Aktif (yeni sorular için seçilebilir)
@@ -310,13 +310,13 @@ export const AdminMuavinHesaplarSayfasi = () => {
               </label>
 
               {hata && (
-                <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+                <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
                   <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
                   <span>{hata}</span>
                 </div>
               )}
               {basarili && (
-                <div className="flex items-start gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-lg text-[13px] text-emerald-800 dark:text-emerald-300 font-medium">
+                <div className="flex items-start gap-2 p-3 bg-success-soft border border-success-soft rounded-lg text-[13px] text-success font-medium">
                   <Icon name="CheckCircle2" size={16} className="flex-shrink-0 mt-0.5" />
                   <span>{basarili}</span>
                 </div>
@@ -327,7 +327,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
                   <button
                     type="button"
                     onClick={yeniBaslat}
-                    className="px-4 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold border border-stone-300 dark:border-zinc-700 rounded-lg hover:bg-stone-50 dark:hover:bg-zinc-800/50 transition"
+                    className="px-4 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold border border-line-strong rounded-lg hover:bg-bg-tint transition"
                   >
                     Vazgeç
                   </button>
@@ -335,7 +335,7 @@ export const AdminMuavinHesaplarSayfasi = () => {
                 <button
                   type="submit"
                   disabled={kaydediliyor}
-                  className="inline-flex items-center gap-2 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2.5 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:opacity-90 active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Icon
                     name={kaydediliyor ? 'Loader2' : 'Save'}
@@ -360,12 +360,12 @@ export const AdminMuavinHesaplarSayfasi = () => {
                   value={arama}
                   onChange={(e) => setArama(e.target.value)}
                   placeholder="Ara: kod, ad, ana hesap"
-                  className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400 w-56"
+                  className="px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-medium outline-none focus:border-ink w-56"
                 />
                 <select
                   value={tipFiltresi}
                   onChange={(e) => setTipFiltresi(e.target.value as MuavinTip | 'hepsi')}
-                  className="px-3 py-2 bg-stone-50 dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-lg text-[13px] font-medium outline-none focus:border-stone-900 dark:focus:border-zinc-400"
+                  className="px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-[13px] font-medium outline-none focus:border-ink"
                 >
                   <option value="hepsi">Tüm tipler</option>
                   {TIP_LISTESI.map((t) => (
@@ -378,9 +378,9 @@ export const AdminMuavinHesaplarSayfasi = () => {
             </div>
 
             {yukleniyor ? (
-              <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+              <div className="text-sm text-ink-quiet">Yükleniyor…</div>
             ) : filtreli.length === 0 ? (
-              <div className="text-sm text-stone-400 dark:text-zinc-600 text-center py-8 border border-dashed border-stone-300 dark:border-zinc-700 rounded-xl">
+              <div className="text-sm text-ink-quiet text-center py-8 border border-dashed border-line-strong rounded-xl">
                 {list.length === 0
                   ? 'Henüz muavin yok. Yukarıdaki formdan ilk muavini ekle.'
                   : 'Filtreyle eşleşen muavin yok.'}
@@ -390,28 +390,28 @@ export const AdminMuavinHesaplarSayfasi = () => {
                 {filtreli.map((m) => (
                   <div
                     key={m.kod}
-                    className={`flex items-start gap-3 p-4 bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl ${
-                      !m.aktif ? 'opacity-60' : ''
-                    } ${duzenlenen === m.kod ? 'ring-2 ring-blue-500/30' : ''}`}
+                    className={`flex items-start gap-3 p-4 bg-surface border border-line rounded-xl ${
+ !m.aktif ? 'opacity-60' : ''
+ } ${duzenlenen === m.kod ? 'ring-2 ring-blue-500/30' : ''}`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="font-mono font-bold text-[14px]">{m.kod}</span>
                         <span className="font-bold text-[14px]">{m.ad}</span>
-                        <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-stone-500 dark:text-zinc-500 bg-stone-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-ink-mute bg-surface-2 px-1.5 py-0.5 rounded">
                           {TIP_ETIKETLERI[m.tip]}
                         </span>
                         {!m.aktif && (
-                          <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-amber-700 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] tracking-wider uppercase font-mono font-bold text-premium-deep bg-premium-soft px-1.5 py-0.5 rounded">
                             Pasif
                           </span>
                         )}
-                        <span className="text-[11px] text-stone-400 dark:text-zinc-600 font-mono ml-auto">
+                        <span className="text-[11px] text-ink-quiet font-mono ml-auto">
                           ana: {m.ana_kod}
                         </span>
                       </div>
                       {m.aciklama && (
-                        <div className="text-[12.5px] text-stone-600 dark:text-zinc-400 leading-snug line-clamp-2">
+                        <div className="text-[12.5px] text-ink-soft leading-snug line-clamp-2">
                           {m.aciklama}
                         </div>
                       )}
@@ -420,21 +420,21 @@ export const AdminMuavinHesaplarSayfasi = () => {
                       <button
                         onClick={() => aktifDegistir(m)}
                         title={m.aktif ? 'Pasifleştir' : 'Aktifleştir'}
-                        className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-700 rounded-lg transition"
+                        className="p-2 hover:bg-surface-2 rounded-lg transition"
                       >
                         <Icon name={m.aktif ? 'EyeOff' : 'Eye'} size={14} />
                       </button>
                       <button
                         onClick={() => duzenleBaslat(m)}
                         title="Düzenle"
-                        className="p-2 hover:bg-stone-100 dark:hover:bg-zinc-700 rounded-lg transition"
+                        className="p-2 hover:bg-surface-2 rounded-lg transition"
                       >
                         <Icon name="Pencil" size={14} />
                       </button>
                       <button
                         onClick={() => sil(m.kod)}
                         title="Sil (kalıcı)"
-                        className="p-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-700 dark:text-rose-400 rounded-lg transition"
+                        className="p-2 hover:bg-danger-soft text-danger dark:text-danger rounded-lg transition"
                       >
                         <Icon name="Trash2" size={14} />
                       </button>

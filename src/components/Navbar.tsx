@@ -63,8 +63,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                 <button
                   onClick={() => nav(l.id)}
                   className={`relative text-[13.5px] font-medium tracking-tight transition py-1 ${
-                    l.aktif ? 'text-ink' : 'text-ink-soft hover:text-ink'
-                  }`}
+ l.aktif ? 'text-ink' : 'text-ink-soft hover:text-ink'
+ }`}
                 >
                   {l.ad}
                   {l.aktif && (
@@ -187,8 +187,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                   setMobilMenuAcik(false);
                 }}
                 className={`w-full px-2 py-3 text-left text-[15px] flex items-center justify-between border-b border-line-soft last:border-b-0 ${
-                  l.aktif ? 'text-ink font-medium' : 'text-ink-soft'
-                }`}
+ l.aktif ? 'text-ink font-medium' : 'text-ink-soft'
+ }`}
               >
                 <span>{l.ad}</span>
                 {l.aktif && <span className="folio">●</span>}
@@ -234,8 +234,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                   setMobilMenuAcik(false);
                 }}
                 className={`w-full px-2 py-3 text-left text-[14px] flex items-center gap-2.5 ${
-                  aktifAdmin ? 'text-ink font-medium' : 'text-ink-soft'
-                }`}
+ aktifAdmin ? 'text-ink font-medium' : 'text-ink-soft'
+ }`}
               >
                 <Icon name="Shield" size={14} />
                 Admin

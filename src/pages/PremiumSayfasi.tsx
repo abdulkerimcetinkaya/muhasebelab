@@ -210,28 +210,28 @@ export const PremiumSayfasi = () => {
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-20">
       {/* ─── HERO ─────────────────────────────────────────────────── */}
       <div className="text-center mb-10 md:mb-14">
-        <div className="text-[10px] tracking-[0.3em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-4">
+        <div className="text-[10px] tracking-[0.3em] uppercase font-bold text-ink-mute mb-4">
           Fiyatlandırma
         </div>
         <h1 className="font-display text-5xl md:text-6xl tracking-tight font-bold mb-3 leading-[1.02]">
           Planını seç
         </h1>
-        <p className="text-base md:text-lg text-stone-600 dark:text-zinc-400 font-medium max-w-xl mx-auto leading-relaxed">
+        <p className="text-base md:text-lg text-ink-soft font-medium max-w-xl mx-auto leading-relaxed">
           Soru çözmek her zaman ücretsiz. Premium öğrenmeyi hızlandıran katmandır.
         </p>
       </div>
 
       {/* ─── BİREYSEL / SINIF TOGGLE ─────────────────────────────── */}
       <div className="flex justify-center mb-8 md:mb-10">
-        <div className="inline-flex items-center bg-stone-100 dark:bg-zinc-900 rounded-full p-1">
+        <div className="inline-flex items-center bg-surface-2 rounded-full p-1">
           <button
             type="button"
             onClick={() => setMod('bireysel')}
             className={`px-5 md:px-6 py-2 text-[13px] font-bold tracking-tight rounded-full transition ${
-              mod === 'bireysel'
-                ? 'bg-white dark:bg-zinc-700 text-stone-900 dark:text-zinc-100 shadow-sm'
-                : 'text-stone-500 dark:text-zinc-500 hover:text-stone-700 dark:hover:text-zinc-300'
-            }`}
+ mod === 'bireysel'
+ ? 'bg-surface text-ink shadow-sm'
+ : 'text-ink-mute hover:text-ink-soft '
+ }`}
           >
             Bireysel
           </button>
@@ -239,10 +239,10 @@ export const PremiumSayfasi = () => {
             type="button"
             onClick={() => setMod('kurum')}
             className={`px-5 md:px-6 py-2 text-[13px] font-bold tracking-tight rounded-full transition ${
-              mod === 'kurum'
-                ? 'bg-white dark:bg-zinc-700 text-stone-900 dark:text-zinc-100 shadow-sm'
-                : 'text-stone-500 dark:text-zinc-500 hover:text-stone-700 dark:hover:text-zinc-300'
-            }`}
+ mod === 'kurum'
+ ? 'bg-surface text-ink shadow-sm'
+ : 'text-ink-mute hover:text-ink-soft '
+ }`}
           >
             Sınıf · Kurum
           </button>
@@ -251,15 +251,15 @@ export const PremiumSayfasi = () => {
 
       {/* ─── AYLIK / YILLIK TOGGLE ──────────────────────────────── */}
       <div className="flex justify-center mb-8 md:mb-12">
-        <div className="inline-flex items-center bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-full p-1">
+        <div className="inline-flex items-center bg-surface border border-line rounded-full p-1">
           <button
             type="button"
             onClick={() => setDonem('aylik')}
             className={`px-4 md:px-5 py-1.5 text-[12.5px] font-semibold tracking-tight rounded-full transition ${
-              donem === 'aylik'
-                ? 'bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900'
-                : 'text-stone-600 dark:text-zinc-400'
-            }`}
+ donem === 'aylik'
+ ? 'bg-ink text-bg '
+ : 'text-ink-soft'
+ }`}
           >
             Aylık
           </button>
@@ -267,19 +267,19 @@ export const PremiumSayfasi = () => {
             type="button"
             onClick={() => setDonem('yillik')}
             className={`px-4 md:px-5 py-1.5 text-[12.5px] font-semibold tracking-tight rounded-full transition flex items-center gap-1.5 ${
-              donem === 'yillik'
-                ? 'bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900'
-                : 'text-stone-600 dark:text-zinc-400'
-            }`}
+ donem === 'yillik'
+ ? 'bg-ink text-bg '
+ : 'text-ink-soft'
+ }`}
           >
             Yıllık
             {yillikTasarrufYuzde > 0 && (
               <span
                 className={`text-[9px] tracking-[0.15em] uppercase font-bold px-1.5 py-0.5 rounded ${
-                  donem === 'yillik'
-                    ? 'bg-amber-400 text-stone-900'
-                    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
-                }`}
+ donem === 'yillik'
+ ? 'bg-premium text-ink'
+ : 'bg-success-soft text-success dark:text-success'
+ }`}
               >
                 −%{yillikTasarrufYuzde}
               </span>
@@ -290,14 +290,14 @@ export const PremiumSayfasi = () => {
 
       {/* ─── PREMIUM AKTİF ─────────────────────────────────────── */}
       {isPremium && premiumBitis && (
-        <div className="mb-10 max-w-2xl mx-auto p-4 rounded-2xl bg-gradient-to-r from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-950/30 border border-amber-300/60 dark:border-amber-700/40 text-center">
+        <div className="mb-10 max-w-2xl mx-auto p-4 rounded-2xl bg-gradient-to-r from-premium-soft to-premium-soft border border-premium/60 dark:border-premium-deep/40 text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
-            <Icon name="BadgeCheck" size={16} className="text-amber-700 dark:text-amber-300" />
-            <span className="font-display text-base font-bold text-amber-900 dark:text-amber-100">
+            <Icon name="BadgeCheck" size={16} className="text-premium-deep" />
+            <span className="font-display text-base font-bold text-premium-deep dark:text-premium-soft">
               Premium aktif
             </span>
           </div>
-          <div className="text-[12.5px] text-amber-800 dark:text-amber-200/80 font-medium">
+          <div className="text-[12.5px] text-premium-deep dark:text-premium-soft/80 font-medium">
             Bitiş: {new Date(premiumBitis).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
           </div>
         </div>
@@ -307,33 +307,33 @@ export const PremiumSayfasi = () => {
       {mod === 'bireysel' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 mb-12">
           {/* ── Card 1: Ücretsiz ── */}
-          <div className="rounded-3xl border-2 border-stone-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-7 md:p-8 flex flex-col">
+          <div className="rounded-3xl border-2 border-line bg-surface p-7 md:p-8 flex flex-col">
             <div className="flex items-baseline gap-1.5 mb-1">
               <h3 className="font-display text-2xl font-bold tracking-tight">Ücretsiz</h3>
             </div>
-            <div className="text-[12.5px] text-stone-500 dark:text-zinc-500 font-medium mb-6">
+            <div className="text-[12.5px] text-ink-mute font-medium mb-6">
               Daima ücretsiz · sınırsız soru
             </div>
             <div className="mb-6">
               <span className="font-display text-5xl font-bold tracking-tight">₺0</span>
-              <span className="text-sm text-stone-500 dark:text-zinc-500 font-medium ml-1">
+              <span className="text-sm text-ink-mute font-medium ml-1">
                 / ay
               </span>
             </div>
             <button
               type="button"
               disabled
-              className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-stone-100 dark:bg-zinc-800 text-stone-500 dark:text-zinc-500 cursor-not-allowed"
+              className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-surface-2 text-ink-mute cursor-not-allowed"
             >
               Mevcut Planın
             </button>
-            <ul className="space-y-2.5 text-[13.5px] text-stone-700 dark:text-zinc-300">
+            <ul className="space-y-2.5 text-[13.5px] text-ink-soft">
               {UCRETSIZ_OZELLIKLER.map((o) => (
                 <li key={o} className="flex items-start gap-2.5">
                   <Icon
                     name="Check"
                     size={14}
-                    className="text-stone-400 dark:text-zinc-600 flex-shrink-0 mt-1"
+                    className="text-ink-quiet flex-shrink-0 mt-1"
                   />
                   <span className="leading-relaxed">{o}</span>
                 </li>
@@ -342,7 +342,7 @@ export const PremiumSayfasi = () => {
           </div>
 
           {/* ── Card 2: Premium (HIGHLIGHTED) ── */}
-          <div className="relative rounded-3xl border-2 border-stone-900 dark:border-amber-400 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 p-7 md:p-8 flex flex-col shadow-2xl shadow-stone-900/20 dark:shadow-amber-500/20 md:-my-2">
+          <div className="relative rounded-3xl border-2 border-ink dark:border-premium bg-ink text-bg p-7 md:p-8 flex flex-col shadow-2xl dark: md:-my-2">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <span
                 className="text-[10px] tracking-[0.25em] uppercase font-bold px-3 py-1 rounded-full"
@@ -357,7 +357,7 @@ export const PremiumSayfasi = () => {
             <div className="flex items-baseline gap-1.5 mb-1">
               <h3 className="font-display text-2xl font-bold tracking-tight flex items-center gap-2">
                 Premium
-                <Icon name="Sparkles" size={16} className="text-amber-400 dark:text-amber-600" />
+                <Icon name="Sparkles" size={16} className="text-premium dark:text-premium" />
               </h3>
             </div>
             <div className="text-[12.5px] opacity-70 font-medium mb-6">
@@ -392,7 +392,7 @@ export const PremiumSayfasi = () => {
               type="button"
               onClick={() => aktifPlan && planSatinAl(aktifPlan.kod)}
               disabled={!aktifPlan || secilenPlan !== null}
-              className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-900 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-premium hover:bg-premium text-ink transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {secilenPlan === aktifPlan?.kod ? (
                 <>
@@ -411,7 +411,7 @@ export const PremiumSayfasi = () => {
                 <Icon
                   name="Check"
                   size={14}
-                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                  className="text-premium dark:text-premium flex-shrink-0 mt-1"
                 />
                 <span className="leading-relaxed">
                   <strong>Ücretsizdeki her şey</strong>
@@ -422,7 +422,7 @@ export const PremiumSayfasi = () => {
                   <Icon
                     name="Check"
                     size={14}
-                    className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                    className="text-premium dark:text-premium flex-shrink-0 mt-1"
                   />
                   <span className="leading-relaxed">{o}</span>
                 </li>
@@ -431,7 +431,7 @@ export const PremiumSayfasi = () => {
           </div>
 
           {/* ── Card 3: Erken Erişim ── */}
-          <div className="rounded-3xl border-2 border-stone-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-7 md:p-8 flex flex-col relative overflow-hidden">
+          <div className="rounded-3xl border-2 border-line bg-surface p-7 md:p-8 flex flex-col relative overflow-hidden">
             <div
               className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-20"
               style={{ backgroundColor: 'var(--copper, #b87333)' }}
@@ -443,16 +443,16 @@ export const PremiumSayfasi = () => {
                   <Thiings name="rocket" size={20} />
                 </h3>
               </div>
-              <div className="text-[12.5px] text-stone-500 dark:text-zinc-500 font-medium mb-6">
+              <div className="text-[12.5px] text-ink-mute font-medium mb-6">
                 Beta dönemi · sınırlı kontenjan
               </div>
               <div className="mb-1">
                 <span className="font-display text-5xl font-bold tracking-tight">₺0</span>
-                <span className="text-sm text-stone-500 dark:text-zinc-500 font-medium ml-1">
+                <span className="text-sm text-ink-mute font-medium ml-1">
                   / 1 yıl
                 </span>
               </div>
-              <div className="text-[12px] text-stone-500 dark:text-zinc-500 font-mono mb-6 h-4">
+              <div className="text-[12px] text-ink-mute font-mono mb-6 h-4">
                 {erkenKontenjanKalan !== null && erkenKontenjanKalan > 0
                   ? `${erkenKontenjanKalan} / 100 yer kaldı`
                   : erkenKontenjanKalan === 0
@@ -464,7 +464,7 @@ export const PremiumSayfasi = () => {
                   type="button"
                   onClick={erkenAktivasyon}
                   disabled={yukleniyorAktivasyon}
-                  className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-ink text-bg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <Icon name="Sparkles" size={13} />
                   {yukleniyorAktivasyon ? 'Aktive ediliyor…' : '1 Yıl Ücretsiz Aç'}
@@ -473,28 +473,28 @@ export const PremiumSayfasi = () => {
                 <button
                   type="button"
                   disabled
-                  className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-stone-100 dark:bg-zinc-800 text-stone-500 dark:text-zinc-500 cursor-not-allowed"
+                  className="w-full py-3 mb-7 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl bg-surface-2 text-ink-mute cursor-not-allowed"
                 >
                   Kontenjan Dolu
                 </button>
               )}
-              <ul className="space-y-2.5 text-[13.5px] text-stone-700 dark:text-zinc-300">
+              <ul className="space-y-2.5 text-[13.5px] text-ink-soft">
                 <li className="flex items-start gap-2.5">
-                  <Icon name="Check" size={14} className="text-emerald-600 flex-shrink-0 mt-1" />
+                  <Icon name="Check" size={14} className="text-success flex-shrink-0 mt-1" />
                   <span className="leading-relaxed">
                     <strong>Premium’un tamamı</strong>
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <Icon name="Check" size={14} className="text-emerald-600 flex-shrink-0 mt-1" />
+                  <Icon name="Check" size={14} className="text-success flex-shrink-0 mt-1" />
                   <span className="leading-relaxed">1 yıl boyunca ücretsiz</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <Icon name="Check" size={14} className="text-emerald-600 flex-shrink-0 mt-1" />
+                  <Icon name="Check" size={14} className="text-success flex-shrink-0 mt-1" />
                   <span className="leading-relaxed">Kart bilgisi istemiyoruz</span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <Icon name="Check" size={14} className="text-emerald-600 flex-shrink-0 mt-1" />
+                  <Icon name="Check" size={14} className="text-success flex-shrink-0 mt-1" />
                   <span className="leading-relaxed">Karşılığında geri bildirim bekliyoruz</span>
                 </li>
               </ul>
@@ -505,7 +505,7 @@ export const PremiumSayfasi = () => {
 
       {/* ─── HATA (BİREYSEL) ──────────────────────────────────── */}
       {mod === 'bireysel' && hata && (
-        <div className="mb-6 text-center text-sm text-red-700 dark:text-red-400 font-medium">
+        <div className="mb-6 text-center text-sm text-danger dark:text-danger font-medium">
           {hata}
         </div>
       )}
@@ -518,38 +518,38 @@ export const PremiumSayfasi = () => {
               <button
                 type="button"
                 onClick={() => setIndirimAcik(true)}
-                className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-stone-700 dark:text-zinc-300 hover:text-stone-900 dark:hover:text-zinc-100 transition"
+                className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-soft hover:text-ink transition"
               >
                 <Icon name="Tag" size={13} />
                 İndirim kodum var
               </button>
             </div>
           ) : indirimYuzde > 0 ? (
-            <div className="flex items-center justify-between gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
+            <div className="flex items-center justify-between gap-2 p-3 rounded-xl bg-success-soft border border-success-soft">
               <div className="flex items-center gap-2 min-w-0">
                 <Icon
                   name="BadgeCheck"
                   size={15}
-                  className="text-emerald-700 dark:text-emerald-400 flex-shrink-0"
+                  className="text-success dark:text-success flex-shrink-0"
                 />
-                <span className="text-[13px] font-mono font-semibold text-emerald-800 dark:text-emerald-200 truncate">
+                <span className="text-[13px] font-mono font-semibold text-success dark:text-success-soft truncate">
                   {indirimKodu.toUpperCase()}
                 </span>
-                <span className="text-[12px] text-emerald-700 dark:text-emerald-400">
+                <span className="text-[12px] text-success dark:text-success">
                   −%{indirimYuzde}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={indirimKaldir}
-                className="text-[12px] text-emerald-700 dark:text-emerald-400 hover:underline flex-shrink-0"
+                className="text-[12px] text-success dark:text-success hover:underline flex-shrink-0"
               >
                 Kaldır
               </button>
             </div>
           ) : (
-            <div className="rounded-2xl border border-stone-200 dark:border-zinc-800 p-4 bg-white dark:bg-zinc-900/40">
-              <label className="block text-[10px] tracking-[0.25em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-2">
+            <div className="rounded-2xl border border-line p-4 bg-surface">
+              <label className="block text-[10px] tracking-[0.25em] uppercase font-bold text-ink-mute mb-2">
                 İndirim kodu
               </label>
               <div className="flex gap-2">
@@ -564,19 +564,19 @@ export const PremiumSayfasi = () => {
                     }
                   }}
                   placeholder="Kodunu yaz"
-                  className="flex-1 h-10 px-3 text-[13px] font-mono uppercase bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-lg outline-none focus:border-stone-900 dark:focus:border-zinc-300"
+                  className="flex-1 h-10 px-3 text-[13px] font-mono uppercase bg-bg-tint border border-line rounded-lg outline-none focus:border-ink"
                 />
                 <button
                   type="button"
                   onClick={indirimUygula}
                   disabled={indirimDoğrulanıyor || !indirimKodu.trim()}
-                  className="px-4 h-10 text-[11px] tracking-[0.15em] uppercase font-bold rounded-lg bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="px-4 h-10 text-[11px] tracking-[0.15em] uppercase font-bold rounded-lg bg-ink text-bg hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {indirimDoğrulanıyor ? '…' : 'Uygula'}
                 </button>
               </div>
               {indirimMesaj && (
-                <div className="mt-2 text-[11.5px] text-rose-700 dark:text-rose-400">
+                <div className="mt-2 text-[11.5px] text-danger dark:text-danger">
                   {indirimMesaj}
                 </div>
               )}
@@ -588,7 +588,7 @@ export const PremiumSayfasi = () => {
       {/* ─── SINIF · KURUM (sade kart) ─────────────────────────── */}
       {mod === 'kurum' && (
         <div className="mb-12">
-          <div className="max-w-2xl mx-auto rounded-3xl border-2 border-stone-900 dark:border-amber-400 bg-stone-900 dark:bg-zinc-100 text-stone-50 dark:text-zinc-900 p-8 md:p-10 shadow-2xl shadow-stone-900/20 dark:shadow-amber-500/20 relative">
+          <div className="max-w-2xl mx-auto rounded-3xl border-2 border-ink dark:border-premium bg-ink text-bg p-8 md:p-10 shadow-2xl dark: relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <span
                 className="text-[10px] tracking-[0.25em] uppercase font-bold px-3 py-1 rounded-full"
@@ -610,7 +610,7 @@ export const PremiumSayfasi = () => {
             </div>
 
             {/* Fiyat — kişi başı, bireyselle aynı */}
-            <div className="text-center py-5 border-y border-white/10 dark:border-zinc-900/10 mb-6">
+            <div className="text-center py-5 border-y border-bg mb-6">
               <div className="text-[10px] tracking-[0.3em] uppercase font-bold opacity-60 mb-2">
                 Kişi başı fiyat
               </div>
@@ -635,7 +635,7 @@ export const PremiumSayfasi = () => {
                 <Icon
                   name="Check"
                   size={14}
-                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                  className="text-premium dark:text-premium flex-shrink-0 mt-1"
                 />
                 <span className="leading-relaxed">
                   Premium’un <strong>tüm özellikleri</strong> her öğrenci için açılır
@@ -645,7 +645,7 @@ export const PremiumSayfasi = () => {
                 <Icon
                   name="Check"
                   size={14}
-                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                  className="text-premium dark:text-premium flex-shrink-0 mt-1"
                 />
                 <span className="leading-relaxed">
                   <strong>Kişi sayısını ödeme adımında</strong> belirleyeceksin
@@ -655,7 +655,7 @@ export const PremiumSayfasi = () => {
                 <Icon
                   name="Check"
                   size={14}
-                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                  className="text-premium dark:text-premium flex-shrink-0 mt-1"
                 />
                 <span className="leading-relaxed">Kurumsal e-fatura desteği</span>
               </li>
@@ -663,7 +663,7 @@ export const PremiumSayfasi = () => {
                 <Icon
                   name="Check"
                   size={14}
-                  className="text-amber-400 dark:text-amber-600 flex-shrink-0 mt-1"
+                  className="text-premium dark:text-premium flex-shrink-0 mt-1"
                 />
                 <span className="leading-relaxed">
                   Öğretmen yönetim paneli{' '}
@@ -677,7 +677,7 @@ export const PremiumSayfasi = () => {
             <button
               type="button"
               onClick={() => nav(kurumOdemeUrl)}
-              className="w-full inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-stone-900 px-5 py-3.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl transition"
+              className="w-full inline-flex items-center justify-center gap-2 bg-premium hover:bg-premium text-ink px-5 py-3.5 text-[12px] tracking-[0.2em] uppercase font-bold rounded-xl transition"
             >
               <Icon name="ArrowRight" size={13} />
               Devam Et
@@ -690,14 +690,14 @@ export const PremiumSayfasi = () => {
       )}
 
       {/* ─── HASSAS NOT ───────────────────────────────────────── */}
-      <div className="text-center text-[11.5px] text-stone-500 dark:text-zinc-500 font-medium leading-relaxed mb-16 max-w-2xl mx-auto">
+      <div className="text-center text-[11.5px] text-ink-mute font-medium leading-relaxed mb-16 max-w-2xl mx-auto">
         Tutarlar KDV dahildir · 7 gün koşulsuz iade · İstediğin zaman iptal · iyzico ile güvenli ödeme
       </div>
 
       {/* ─── SSS ───────────────────────────────────────────────── */}
       <section className="mb-12 max-w-3xl mx-auto">
         <div className="text-center mb-8">
-          <div className="text-[10px] tracking-[0.3em] uppercase font-bold text-stone-500 dark:text-zinc-500 mb-2">
+          <div className="text-[10px] tracking-[0.3em] uppercase font-bold text-ink-mute mb-2">
             Sıkça Sorulanlar
           </div>
           <h2 className="font-display text-3xl md:text-4xl tracking-tight font-bold">
@@ -705,7 +705,7 @@ export const PremiumSayfasi = () => {
           </h2>
         </div>
 
-        <div className="divide-y divide-stone-200 dark:divide-zinc-800 border-y border-stone-200 dark:border-zinc-800">
+        <div className="divide-y divide-stone-200 border-y border-line">
           {SSS.map((s, i) => {
             const acik = acikSoru === i;
             return (
@@ -721,11 +721,11 @@ export const PremiumSayfasi = () => {
                   <Icon
                     name={acik ? 'Minus' : 'Plus'}
                     size={16}
-                    className="text-stone-400 dark:text-zinc-600 flex-shrink-0 group-hover:text-stone-700 dark:group-hover:text-zinc-300 transition"
+                    className="text-ink-quiet flex-shrink-0 group-hover:text-ink-soft dark:group-hover:text-ink-soft transition"
                   />
                 </button>
                 {acik && (
-                  <div className="pb-5 text-[14px] text-stone-600 dark:text-zinc-400 leading-relaxed font-medium">
+                  <div className="pb-5 text-[14px] text-ink-soft leading-relaxed font-medium">
                     {s.cevap}
                   </div>
                 )}

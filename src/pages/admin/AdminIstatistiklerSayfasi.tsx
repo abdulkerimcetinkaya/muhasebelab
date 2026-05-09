@@ -144,20 +144,20 @@ export const AdminIstatistiklerSayfasi = () => {
             <h1 className="font-display text-3xl font-bold tracking-tight">
               İstatistikler
             </h1>
-            <p className="text-[13.5px] text-stone-600 dark:text-zinc-400 mt-1">
+            <p className="text-[13.5px] text-ink-soft mt-1">
               Gerçek zamanlı kullanıcı, ödeme ve çözüm metrikleri
             </p>
           </div>
 
           {hata && (
-            <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-lg text-[13px] text-rose-800 dark:text-rose-300 font-medium">
+            <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
               <Icon name="AlertCircle" size={16} className="flex-shrink-0 mt-0.5" />
               <span>{hata}</span>
             </div>
           )}
 
           {yukleniyor ? (
-            <div className="text-sm text-stone-400 dark:text-zinc-600">Yükleniyor…</div>
+            <div className="text-sm text-ink-quiet">Yükleniyor…</div>
           ) : data ? (
             <>
               {/* Kullanıcılar */}
@@ -190,7 +190,7 @@ export const AdminIstatistiklerSayfasi = () => {
                   />
                 </div>
                 {data.banli > 0 && (
-                  <div className="mt-2 text-[12px] text-rose-700 dark:text-rose-400">
+                  <div className="mt-2 text-[12px] text-danger dark:text-danger">
                     <Icon name="Lock" size={11} className="inline mr-1" />
                     {data.banli} banlı kullanıcı
                   </div>
@@ -217,18 +217,18 @@ export const AdminIstatistiklerSayfasi = () => {
                 <h2 className="font-display text-lg font-bold mb-3">
                   Çözüm Trendi (son 30 gün)
                 </h2>
-                <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
+                <div className="bg-surface border border-line rounded-xl p-4">
                   <div className="flex items-end gap-1 h-32">
                     {data.trend.map((t) => (
                       <div
                         key={t.tarih}
-                        className="flex-1 bg-blue-500/80 dark:bg-blue-400/70 rounded-t hover:bg-blue-600 dark:hover:bg-blue-300 transition relative group min-h-[2px]"
+                        className="flex-1 bg-brand rounded-t hover:bg-brand transition relative group min-h-[2px]"
                         style={{ height: `${(t.sayi / trendMaks) * 100}%` }}
                         title={`${new Date(t.tarih).toLocaleDateString('tr-TR')}: ${t.sayi} çözüm`}
                       />
                     ))}
                   </div>
-                  <div className="flex justify-between text-[10px] text-stone-400 dark:text-zinc-600 font-mono mt-2">
+                  <div className="flex justify-between text-[10px] text-ink-quiet font-mono mt-2">
                     <span>{new Date(data.trend[0]?.tarih ?? '').toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })}</span>
                     <span>bugün</span>
                   </div>
@@ -271,22 +271,22 @@ interface KartProps {
 
 const Kart = ({ etiket, deger, altMetin, icon, renk = 'stone' }: KartProps) => {
   const renkler = {
-    emerald: 'text-emerald-700 dark:text-emerald-400',
-    blue: 'text-blue-700 dark:text-blue-400',
-    amber: 'text-amber-700 dark:text-amber-400',
-    stone: 'text-stone-600 dark:text-zinc-400',
+    emerald: 'text-success dark:text-success',
+    blue: 'text-brand dark:text-brand-mute',
+    amber: 'text-premium-deep',
+    stone: 'text-ink-soft',
   };
   return (
-    <div className="bg-white dark:bg-zinc-800/40 border border-stone-200 dark:border-zinc-700 rounded-xl p-4">
+    <div className="bg-surface border border-line rounded-xl p-4">
       <div className="flex items-center justify-between">
-        <div className="text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+        <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
           {etiket}
         </div>
         <Icon name={icon} size={14} className={renkler[renk]} />
       </div>
       <div className="text-2xl font-display font-bold mt-1">{deger}</div>
       {altMetin && (
-        <div className="text-[11px] text-stone-500 dark:text-zinc-500 mt-0.5">
+        <div className="text-[11px] text-ink-mute mt-0.5">
           {altMetin}
         </div>
       )}

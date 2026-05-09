@@ -94,35 +94,35 @@ export const KocTuru = ({ adimlar, acik, onKapat }: Props) => {
           }}
         />
       ) : (
-        <div className="fixed inset-0 z-[100] bg-stone-950/30 pointer-events-none" aria-hidden />
+        <div className="fixed inset-0 z-[100] bg-ink/55 pointer-events-none" aria-hidden />
       )}
       <div
         role="dialog"
         aria-label={aktif.baslik}
-        className="koc-turu-kart fixed z-[102] bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-700 rounded-2xl shadow-2xl p-5 animate-[koc-tour-pop_0.28s_cubic-bezier(0.22,1,0.36,1)_both]"
+        className="koc-turu-kart fixed z-[102] bg-surface border border-line-strong rounded-2xl shadow-2xl p-5 animate-[koc-tour-pop_0.28s_cubic-bezier(0.22,1,0.36,1)_both]"
       >
         <div className="flex items-center justify-between mb-3">
-          <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-stone-500 dark:text-zinc-500 font-bold">
+          <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
             Adım {adim + 1} / {adimlar.length}
           </span>
           <button
             onClick={onKapat}
-            className="text-stone-400 hover:text-stone-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition"
+            className="text-ink-quiet hover:text-ink transition"
             aria-label="Turu kapat"
           >
             <Icon name="X" size={14} />
           </button>
         </div>
-        <h3 className="font-display text-[18px] font-bold text-stone-900 dark:text-zinc-100 leading-snug mb-2">
+        <h3 className="font-display text-[18px] font-bold text-ink leading-snug mb-2">
           {aktif.baslik}
         </h3>
-        <p className="text-[13.5px] leading-relaxed text-stone-600 dark:text-zinc-400 mb-4">
+        <p className="text-[13.5px] leading-relaxed text-ink-soft mb-4">
           {aktif.metin}
         </p>
         <div className="flex items-center justify-between gap-3">
           <button
             onClick={onKapat}
-            className="text-[12px] font-semibold text-stone-500 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-zinc-200 transition"
+            className="text-[12px] font-semibold text-ink-mute hover:text-ink transition"
           >
             Atla
           </button>
@@ -130,14 +130,14 @@ export const KocTuru = ({ adimlar, acik, onKapat }: Props) => {
             {adim > 0 && (
               <button
                 onClick={() => setAdim((a) => a - 1)}
-                className="px-3 py-1.5 text-[12px] font-bold border border-stone-300 dark:border-zinc-700 rounded-lg hover:border-stone-900 dark:hover:border-zinc-300 transition"
+                className="px-3 py-1.5 text-[12px] font-bold border border-line-strong rounded-lg hover:border-ink transition"
               >
                 Geri
               </button>
             )}
             <button
               onClick={ileri}
-              className="px-4 py-1.5 text-[12px] font-bold bg-stone-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg hover:bg-stone-800 dark:hover:bg-white transition flex items-center gap-1.5"
+              className="px-4 py-1.5 text-[12px] font-bold bg-ink text-bg rounded-lg hover:bg-ink-soft dark:hover:bg-surface transition flex items-center gap-1.5"
             >
               {sonAdim ? 'Bitir' : 'Sonraki'}
               {!sonAdim && <Icon name="ArrowRight" size={12} />}
