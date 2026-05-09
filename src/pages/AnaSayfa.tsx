@@ -470,7 +470,7 @@ const NASIL_ADIMLAR: NasilAdim[] = [
     aciklama: 'Gerçek bir fatura, makbuz ya da dekont. Olay, taraflar, tutar.',
     snippet: [
       { tip: 'baslik', not: '// Müşteriye 1.000 ₺ peşin satış' },
-      { tip: 'baslik', not: '// KDV %18 dahil — 1.180 ₺ tahsilat' },
+      { tip: 'baslik', not: '// KDV %20 dahil — 1.200 ₺ tahsilat' },
     ],
   },
   {
@@ -478,9 +478,9 @@ const NASIL_ADIMLAR: NasilAdim[] = [
     baslik: 'Fişe kaydet',
     aciklama: 'TDHP hesap kodunu yaz, borç-alacak tarafına tutarı bırak.',
     snippet: [
-      { tip: 'satir', kod: '100', ad: 'KASA', borc: '1.180' },
+      { tip: 'satir', kod: '100', ad: 'KASA', borc: '1.200' },
       { tip: 'satir', kod: '600', ad: 'YURT İÇİ SAT.', alacak: '1.000' },
-      { tip: 'satir', kod: '391', ad: 'HESAP. KDV', alacak: '180' },
+      { tip: 'satir', kod: '391', ad: 'HESAP. KDV', alacak: '200' },
     ],
   },
   {
@@ -628,7 +628,7 @@ const AnonimAnaSayfa = () => {
                   Peşin Mal Satışı
                 </h4>
                 <p className="text-[12.5px] text-ink-soft leading-relaxed mb-6">
-                  KDV dahil <span className="font-mono tnum text-ink">1.180,00 ₺</span>{' '}
+                  KDV dahil <span className="font-mono tnum text-ink">1.200,00 ₺</span>{' '}
                   tutarındaki satış nakit tahsil edildi.
                 </p>
 
@@ -653,7 +653,7 @@ const AnonimAnaSayfa = () => {
                         <span className="font-mono tnum text-ink-mute mr-2 text-[11.5px]">100</span>
                         <span className="text-ink">KASA</span>
                       </td>
-                      <td className="py-2.5 text-right font-mono tnum text-ink">1.180,00</td>
+                      <td className="py-2.5 text-right font-mono tnum text-ink">1.200,00</td>
                       <td className="py-2.5 text-right text-ink-quiet">—</td>
                     </tr>
                     <tr className="border-b border-line/50">
@@ -670,7 +670,7 @@ const AnonimAnaSayfa = () => {
                         <span className="text-ink">HESAPLANAN KDV</span>
                       </td>
                       <td className="py-2.5 text-right text-ink-quiet">—</td>
-                      <td className="py-2.5 text-right font-mono tnum text-ink">180,00</td>
+                      <td className="py-2.5 text-right font-mono tnum text-ink">200,00</td>
                     </tr>
                   </tbody>
                 </table>
