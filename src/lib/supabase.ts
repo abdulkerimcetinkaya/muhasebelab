@@ -15,5 +15,8 @@ export const supabase = createClient<Database>(url, anonKey, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
+    // PKCE: kod query param'da gelir (?code=...), HashRouter ile çakışmaz.
+    // Implicit flow fragment kullanır (#access_token=...) → HashRouter karıştırır.
+    flowType: 'pkce',
   },
 });
