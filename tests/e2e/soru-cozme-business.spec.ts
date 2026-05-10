@@ -66,7 +66,7 @@ test.describe('Soru çözme business logic', () => {
       // Hesap kodu
       const kodInput = page.locator(`input[data-row="${i}"][data-col="kod"]`);
       await kodInput.click();
-      await kodInput.fill(c.hesap_kodu);
+      await kodInput.fill(c.kod);
       // Autocomplete dropdown çıkıyorsa kapat (Escape)
       await page.keyboard.press('Escape');
 
