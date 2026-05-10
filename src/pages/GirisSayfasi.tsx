@@ -22,8 +22,9 @@ export const GirisSayfasi = () => {
   const [sifre, setSifre] = useState('');
   const [sifreTekrar, setSifreTekrar] = useState('');
   const [kullaniciAdi, setKullaniciAdi] = useState('');
-  const [kvkkOnay, setKvkkOnay] = useState(false);
-  const [bultenIzni, setBultenIzni] = useState(false);
+  // KVKK ve bülten — kayıt formunda implicit (kayıt butonuna basınca kabul edilmiş sayılır)
+  // Disclaimer butonun altında gösterilir. State'e gerek yok, sabit true.
+  const bultenIzni = true;
 
   const [adDurum, setAdDurum] = useState<AdDurum>('bos');
   const [adHata, setAdHata] = useState<string | null>(null);
@@ -112,8 +113,10 @@ export const GirisSayfasi = () => {
         setHata('Şifreler eşleşmiyor.');
         return;
       }
-      if (!kvkkOnay) {
-        setHata('Devam etmek için KVKK Aydınlatma Metni\'ni onaylamalısın.');
+      // Şifre güçlülük kontrolü: min 8 karakter + en az 1 harf + en az 1 rakam
+      const sifreGuclu = /^(?=.*[A-Za-zÇĞİÖŞÜçğıöşü])(?=.*\d).{8,}$/.test(sifre);
+      if (!sifreGuclu) {
+        setHata('Şifre en az 8 karakter olmalı, en az 1 harf ve 1 rakam içermeli.');
         return;
       }
     }
@@ -345,9 +348,9 @@ export const GirisSayfasi = () => {
                   onChange={(e) => setSifre(e.target.value)}
                   autoComplete={mod === 'giris' ? 'current-password' : 'new-password'}
                   required
-                  minLength={6}
+                  minLength={mod === 'kayit' ? 8 : 6}
                   className="w-full pl-3 pr-10 py-2.5 bg-surface-2/30 border border-line focus:border-ink-soft rounded-lg text-[14px] font-medium outline-none transition focus:ring-2 focus:ring-blue-500/15"
-                  placeholder="En az 6 karakter"
+                  placeholder={mod === 'kayit' ? 'En az 8 karakter, harf + rakam' : 'Şifren'}
                 />
                 <button
                   type="button"
@@ -399,43 +402,6 @@ export const GirisSayfasi = () => {
               </div>
             )}
 
-            {mod === 'kayit' && (
-              <div className="space-y-2.5 pt-1">
-                <label className="flex items-start gap-2.5 cursor-pointer text-[13px]">
-                  <input
-                    type="checkbox"
-                    checked={kvkkOnay}
-                    onChange={(e) => setKvkkOnay(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-line text-brand focus:ring-blue-500/30 cursor-pointer"
-                    required
-                  />
-                  <span className="text-ink-soft leading-snug font-medium">
-                    <button
-                      type="button"
-                      onClick={() => window.open('#/kvkk', '_blank')}
-                      className="text-copper-deep hover:underline font-bold"
-                    >
-                      KVKK Aydınlatma Metni
-                    </button>
-                    'ni okudum, kişisel verilerimin işlenmesini kabul ediyorum.{' '}
-                    <span className="text-danger">*</span>
-                  </span>
-                </label>
-
-                <label className="flex items-start gap-2.5 cursor-pointer text-[13px]">
-                  <input
-                    type="checkbox"
-                    checked={bultenIzni}
-                    onChange={(e) => setBultenIzni(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-line text-brand focus:ring-blue-500/30 cursor-pointer"
-                  />
-                  <span className="text-ink-mute leading-snug font-medium">
-                    Yeni özelliklerden e-posta ile haberdar olmak istiyorum.{' '}
-                    <span className="text-ink-mute">(opsiyonel)</span>
-                  </span>
-                </label>
-              </div>
-            )}
 
             {hata && (
               <div className="flex items-start gap-2 p-3 bg-danger-soft border border-danger-soft rounded-lg text-[13px] text-danger font-medium">
@@ -460,6 +426,21 @@ export const GirisSayfasi = () => {
               {mod === 'giris' ? 'Giriş Yap' : 'Hesabı Oluştur'}
               {!yukleniyor && <Icon name="ArrowRight" size={13} />}
             </button>
+
+            {/* Kayıt sekmesinde KVKK + bülten implicit kabul disclaimer'ı */}
+            {mod === 'kayit' && (
+              <p className="text-[11px] text-ink-mute leading-relaxed text-center mt-3 px-2">
+                Hesabı Oluştur'a tıklayarak{' '}
+                <button
+                  type="button"
+                  onClick={() => window.open('#/kvkk', '_blank')}
+                  className="text-brand-deep hover:underline font-semibold"
+                >
+                  KVKK Aydınlatma Metni
+                </button>
+                'ni kabul etmiş ve e-posta haberlerine abone olmuş sayılırsın.
+              </p>
+            )}
           </form>
         </div>
 

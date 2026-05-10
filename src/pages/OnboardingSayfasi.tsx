@@ -15,6 +15,8 @@ interface Props {
 type Adim = 'hosgeldin' | 'tani' | 'unite';
 
 interface ProfilBilgi {
+  ad: string;
+  soyad: string;
   universite: string;
   bolum: string;
   sinif: '' | '1' | '2' | '3' | '4' | 'mezun' | 'diger';
@@ -43,6 +45,8 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
   const { uniteler } = useUniteler();
   const [adim, setAdim] = useState<Adim>('hosgeldin');
   const [profil, setProfil] = useState<ProfilBilgi>({
+    ad: '',
+    soyad: '',
     universite: '',
     bolum: '',
     sinif: '',
@@ -62,12 +66,17 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
     setHata(null);
 
     // Profil bilgilerini Supabase'e yaz — boş alanlar atlanır
+    // Ad/Soyad zorunlu (validation form'da yapılır), diğerleri opsiyonel
     const guncelleme: {
+      ad?: string;
+      soyad?: string;
       universite?: string;
       bolum?: string;
       sinif?: '1' | '2' | '3' | '4' | 'mezun' | 'diger';
       hedef?: 'vize-final' | 'kpss' | 'genel' | 'belirsiz';
     } = {};
+    if (profil.ad.trim()) guncelleme.ad = profil.ad.trim();
+    if (profil.soyad.trim()) guncelleme.soyad = profil.soyad.trim();
     if (profil.universite.trim()) guncelleme.universite = profil.universite.trim();
     if (profil.bolum.trim()) guncelleme.bolum = profil.bolum.trim();
     if (profil.sinif) guncelleme.sinif = profil.sinif;
@@ -158,12 +167,42 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
               Seni biraz tanıyalım
             </h1>
             <p className="text-ink-soft font-medium">
-              Bu bilgiler sana uygun içeriği ve liderlik tablosunu sunmamızı sağlar.{' '}
-              <span className="text-ink-mute">Hepsi opsiyonel.</span>
+              Ad ve soyad gerekli — geri kalanı opsiyonel.
             </p>
           </div>
 
           <div className="bg-surface border border-line rounded-2xl p-6 sm:p-8 space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
+                  Ad <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={profil.ad}
+                  onChange={(e) => setProfil({ ...profil, ad: e.target.value })}
+                  maxLength={40}
+                  required
+                  placeholder="Adın"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
+                  Soyad <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={profil.soyad}
+                  onChange={(e) => setProfil({ ...profil, soyad: e.target.value })}
+                  maxLength={40}
+                  required
+                  placeholder="Soyadın"
+                  className="w-full bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 outline-none px-3 py-2.5 rounded-lg text-sm font-medium"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold mb-2">
                 Üniversite
@@ -258,7 +297,8 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
             </button>
             <button
               onClick={() => setAdim('unite')}
-              className="flex-1 bg-ink text-bg py-3 text-sm tracking-wide uppercase font-bold hover:opacity-90 active:scale-[0.98] transition flex items-center justify-center gap-2 rounded-xl shadow-md"
+              disabled={!profil.ad.trim() || !profil.soyad.trim()}
+              className="flex-1 bg-ink text-bg py-3 text-sm tracking-wide uppercase font-bold hover:opacity-90 active:scale-[0.98] transition flex items-center justify-center gap-2 rounded-xl shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Devam
               <Icon name="ArrowRight" size={14} />

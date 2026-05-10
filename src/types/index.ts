@@ -228,6 +228,9 @@ export interface CozulenKayit {
 
 export interface Ilerleme {
   kullaniciAdi: string;
+  // Ad/Soyad — onboarding'de toplanır, AnaSayfa "Merhaba, {ad}" için
+  ad: string | null;
+  soyad: string | null;
   cozulenler: Record<string, CozulenKayit>;
   yanlislar: Record<string, number>;
   puan: number;

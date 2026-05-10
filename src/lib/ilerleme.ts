@@ -3,6 +3,8 @@ import type { Ilerleme, Istatistik, SoruWithUnite, Unite } from '../types';
 
 export const varsayilanIlerleme = (): Ilerleme => ({
   kullaniciAdi: 'Öğrenci',
+  ad: null,
+  soyad: null,
   cozulenler: {},
   yanlislar: {},
   puan: 0,

@@ -45,7 +45,11 @@ export const ilerlemeYukleSupabase = async (
   tumSorular: SoruWithUnite[],
 ): Promise<Ilerleme> => {
   const [profilSonuc, ilerlemeSonuc, rozetlerSonuc, aktiviteSonuc] = await Promise.all([
-    supabase.from('kullanicilar').select('kullanici_adi, tema, onboarding_tamam_at').eq('id', userId).maybeSingle(),
+    supabase
+      .from('kullanicilar')
+      .select('kullanici_adi, ad, soyad, tema, onboarding_tamam_at')
+      .eq('id', userId)
+      .maybeSingle(),
     supabase
       .from('ilerleme')
       .select('soru_id, dogru_mu, created_at, kullanilan_ai, cozum_gosterildi, kazanilan_puan')
@@ -59,6 +63,8 @@ export const ilerlemeYukleSupabase = async (
   if (profil) {
     baslangic.kullaniciAdi = profil.kullanici_adi;
     baslangic.tema = profil.tema;
+    baslangic.ad = profil.ad ?? null;
+    baslangic.soyad = profil.soyad ?? null;
   }
 
   const soruZorluk = soruZorlukMap(tumSorular);
@@ -192,7 +198,13 @@ export const rozetKaydetSupabase = async (userId: string, rozetId: string): Prom
 
 export const profilKaydetSupabase = async (
   userId: string,
-  guncel: Partial<{ kullanici_adi: string; tema: 'light' | 'dark' }>,
+  guncel: Partial<{
+    kullanici_adi: string;
+    ad: string;
+    soyad: string;
+    tema: 'light' | 'dark';
+    onboarding_tamam_at: string;
+  }>,
 ): Promise<void> => {
   await supabase.from('kullanicilar').update(guncel).eq('id', userId);
 };
