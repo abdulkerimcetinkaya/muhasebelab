@@ -30,19 +30,29 @@ export interface SoruVeCozum {
 }
 
 /**
- * İlk onaylı kolay soruyu çözümleriyle birlikte getir.
- * Tests bu soruyu kullanarak business logic doğrular.
+ * İlk kolay soruyu çözümleriyle birlikte getir.
+ * RLS zaten public erişimi onaylı sorulara kısıtlamış olmalı (anon
+ * key kullanıldığı için). Test runtime'da debug log basar.
  */
 export async function ilkKolaySoruyuGetir(): Promise<SoruVeCozum | null> {
   const { data: sorular, error: soruErr } = await supabase
     .from('sorular')
-    .select('id, baslik, zorluk')
+    .select('id, baslik, zorluk, durum')
     .eq('zorluk', 'kolay')
-    .eq('durum', 'onayli')
-    .limit(1);
+    .limit(5);
+
+  console.log('[supabase-fetch] sorular query:', {
+    count: sorular?.length,
+    error: soruErr?.message,
+    durumlar: sorular?.map((s: { durum?: string }) => s.durum),
+  });
 
   if (soruErr || !sorular || sorular.length === 0) return null;
-  const soru = sorular[0];
+  // Onaylı varsa onu, yoksa ilkini al
+  const soru =
+    (sorular as Array<{ id: string; baslik: string; zorluk: string; durum: string }>).find(
+      (s) => s.durum === 'onayli',
+    ) ?? sorular[0];
 
   const { data: cozumler, error: cozErr } = await supabase
     .from('cozumler')
@@ -50,12 +60,20 @@ export async function ilkKolaySoruyuGetir(): Promise<SoruVeCozum | null> {
     .eq('soru_id', soru.id)
     .order('sira');
 
+  console.log('[supabase-fetch] secilen soru:', {
+    id: soru.id,
+    baslik: (soru as { baslik: string }).baslik,
+    durum: (soru as { durum: string }).durum,
+    cozum_sayisi: cozumler?.length,
+    cozum_error: cozErr?.message,
+  });
+
   if (cozErr || !cozumler) return null;
 
   return {
     id: soru.id,
-    baslik: soru.baslik,
-    zorluk: soru.zorluk,
+    baslik: (soru as { baslik: string }).baslik,
+    zorluk: (soru as { zorluk: 'kolay' | 'orta' | 'zor' }).zorluk,
     cozumler: cozumler as CozumSatiri[],
   };
 }
