@@ -18,13 +18,14 @@ import { girisYap } from './helpers/giris-yap';
 import { git } from './helpers/wait-for-app';
 import { ilkKolaySoruyuGetir } from './helpers/supabase-fetch';
 
-const TEST_EMAIL = process.env.TEST_USER_EMAIL;
-const TEST_PASSWORD = process.env.TEST_USER_PASSWORD;
-
 test.describe('Soru çözme business logic', () => {
-  test.skip(!TEST_EMAIL || !TEST_PASSWORD, 'TEST_USER env gerekli');
-
   test('doğru cevap → "doğrulandı" feedback + puan', async ({ page }) => {
+    // Env runtime'da kontrol et (module-load'da değil) — playwright env
+    // loader main process'te çalışıyor, worker'a inheritance bazen geç
+    const TEST_EMAIL = process.env.TEST_USER_EMAIL;
+    const TEST_PASSWORD = process.env.TEST_USER_PASSWORD;
+    test.skip(!TEST_EMAIL || !TEST_PASSWORD, 'TEST_USER env gerekli');
+
     // 1. Supabase'den seed soruyu getir (test runtime, dinamik)
     const seed = await ilkKolaySoruyuGetir();
     test.skip(!seed, 'Onaylı kolay soru bulunamadı — seed sorun var mı?');
