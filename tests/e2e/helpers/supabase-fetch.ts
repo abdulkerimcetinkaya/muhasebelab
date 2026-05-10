@@ -16,10 +16,10 @@ if (!url || !anon) {
 export const supabase = createClient(url, anon);
 
 export interface CozumSatiri {
-  hesap_kodu: string;
+  kod: string;
   borc: number;
   alacak: number;
-  aciklama?: string | null;
+  sira: number;
 }
 
 export interface SoruVeCozum {
@@ -56,7 +56,7 @@ export async function ilkKolaySoruyuGetir(): Promise<SoruVeCozum | null> {
 
   const { data: cozumler, error: cozErr } = await supabase
     .from('cozumler')
-    .select('hesap_kodu, borc, alacak, aciklama')
+    .select('kod, borc, alacak, sira')
     .eq('soru_id', soru.id)
     .order('sira');
 
