@@ -63,10 +63,12 @@ export const girisYap = async (email: string, sifre: string): Promise<AuthSonuc>
  * gerekli. Yoksa "provider is not enabled" hatası alır.
  */
 export const googleIleGiris = async (): Promise<AuthSonuc> => {
+  // PKCE flow: Supabase ?code=... query param'ı ekler, HashRouter dokunmaz.
+  // Hash'siz redirectTo (sade origin) HashRouter'ın default '/' route'una düşürür.
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/#/`,
+      redirectTo: `${window.location.origin}/`,
       queryParams: { access_type: 'offline', prompt: 'consent' },
     },
   });
