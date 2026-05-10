@@ -54,19 +54,24 @@ export const girisYap = async (email: string, sifre: string): Promise<AuthSonuc>
 };
 
 /**
- * Google OAuth ile giriş.
- * Kullanıcıyı Google'a yönlendirir; izin verince Supabase callback'ine döner,
- * sonra `${origin}/#/` adresine yönlendirilir. Yeni kullanıcılar onboarding'e
- * gönderilir (OnboardingGuard tarafından, onboarding_tamam_at NULL olduğu için).
+ * Google OAuth ile giriş — PKCE flow.
+ *
+ * Implicit flow (default) tokenları URL fragment'ine yazıyordu
+ * (`#access_token=...`), HashRouter bunu route olarak yorumlayıp tüketiyor;
+ * kullanıcı giriş ekranına geri düşüyordu. PKCE flow `?code=...` query
+ * param'ı kullanır — HashRouter dokunmaz, Supabase JS otomatik exchange eder.
+ *
+ * `redirectTo` hash'siz: HashRouter sayfayı yüklerken default `/` route'una
+ * düşer, AnaSayfa kullanıcıyı user durumuna göre dashboard'a yönlendirir.
  *
  * Supabase Dashboard → Auth → Providers → Google enable + Client ID/Secret
- * gerekli. Yoksa "provider is not enabled" hatası alır.
+ * + Auth → URL Configuration → Redirect URLs içine `${origin}/` eklenmeli.
  */
 export const googleIleGiris = async (): Promise<AuthSonuc> => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/#/`,
+      redirectTo: `${window.location.origin}/`,
       queryParams: { access_type: 'offline', prompt: 'consent' },
     },
   });
