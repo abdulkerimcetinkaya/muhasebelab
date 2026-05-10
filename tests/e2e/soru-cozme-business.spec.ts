@@ -44,7 +44,19 @@ test.describe('Soru çözme business logic', () => {
 
     // 2. Login + navigate
     await girisYap(page, TEST_EMAIL, TEST_PASSWORD);
+    console.log('[DEBUG] Login sonrasi URL:', page.url());
+
     await git(page, `/#/problemler/${seed.id}`);
+    await page.waitForLoadState('networkidle');
+    console.log('[DEBUG] Soru sayfasi sonrasi URL:', page.url());
+
+    // OnboardingGuard redirect olduysa açıkça uyar
+    if (page.url().includes('/onboarding')) {
+      throw new Error(
+        'Onboarding redirect. SQL ile TEST_USER\'in onboarding_tamam_at\'ini doldur:\n' +
+          "update kullanicilar set onboarding_tamam_at = now() where id in (select id from auth.users where email = 'test@gmail.com');",
+      );
+    }
 
     // Yevmiye fişi formu yüklendi mi?
     await expect(page.getByPlaceholder(/Fiş açıklaması/i)).toBeVisible({
