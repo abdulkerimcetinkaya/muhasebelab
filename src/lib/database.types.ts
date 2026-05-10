@@ -93,6 +93,9 @@ export type KullaniciRow = {
   id: string;
   kullanici_adi: string;
   email: string | null;
+  // Ad/Soyad — onboarding'de zorunlu (20260510000001 migration)
+  ad: string | null;
+  soyad: string | null;
   tema: 'light' | 'dark';
   premium_bitis: string | null;
   gunluk_limit_reset: string | null;

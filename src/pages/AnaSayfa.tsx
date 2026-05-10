@@ -66,7 +66,8 @@ const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
   const devamSoru = useMemo(() => devamEtSorusu(ilerleme, tumSorular), [ilerleme, tumSorular]);
   const yanlisSoru = useMemo(() => enCokYanlisSoru(ilerleme, tumSorular), [ilerleme, tumSorular]);
 
-  const ad = ilerleme.kullaniciAdi || 'Öğrenci';
+  // Karşılama: önce gerçek ad (Onboarding'de toplandı), yoksa kullanıcı adı, yoksa "Öğrenci"
+  const ad = ilerleme.ad?.trim() || ilerleme.kullaniciAdi || 'Öğrenci';
 
   const aktifUnite = useMemo(() => {
     if (!devamSoru) return null;
