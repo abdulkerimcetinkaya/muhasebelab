@@ -16,6 +16,8 @@ const cevirHata = (mesaj: string): string => {
     return 'Şifre en az 6 karakter olmalı.';
   if (mesaj.includes('Unable to validate email address'))
     return 'Geçerli bir e-posta adresi gir.';
+  if (mesaj.toLowerCase().includes('provider is not enabled'))
+    return 'Google ile giriş şu an aktif değil. Lütfen e-posta + şifre ile dene.';
   return mesaj;
 };
 
@@ -45,6 +47,27 @@ export const girisYap = async (email: string, sifre: string): Promise<AuthSonuc>
   const { data, error } = await supabase.auth.signInWithPassword({ email, password: sifre });
   if (error) return { basarili: false, hata: cevirHata(error.message) };
   return { basarili: true, user: data.user };
+};
+
+/**
+ * Google OAuth ile giriş.
+ * Kullanıcıyı Google'a yönlendirir; izin verince Supabase callback'ine döner,
+ * sonra `${origin}/#/` adresine yönlendirilir. Yeni kullanıcılar onboarding'e
+ * gönderilir (OnboardingGuard tarafından, onboarding_tamam_at NULL olduğu için).
+ *
+ * Supabase Dashboard → Auth → Providers → Google enable + Client ID/Secret
+ * gerekli. Yoksa "provider is not enabled" hatası alır.
+ */
+export const googleIleGiris = async (): Promise<AuthSonuc> => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/#/`,
+      queryParams: { access_type: 'offline', prompt: 'consent' },
+    },
+  });
+  if (error) return { basarili: false, hata: cevirHata(error.message) };
+  return { basarili: true };
 };
 
 export const cikisYap = async (): Promise<AuthSonuc> => {
