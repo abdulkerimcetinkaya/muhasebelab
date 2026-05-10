@@ -20,23 +20,31 @@ import { ilkKolaySoruyuGetir } from './helpers/supabase-fetch';
 
 test.describe('Soru çözme business logic', () => {
   test('doğru cevap → "doğrulandı" feedback + puan', async ({ page }) => {
-    // Env runtime'da kontrol et (module-load'da değil) — playwright env
-    // loader main process'te çalışıyor, worker'a inheritance bazen geç
+    // Debug: env'leri görelim
+    console.log('[DEBUG] TEST_USER_EMAIL =', JSON.stringify(process.env.TEST_USER_EMAIL));
+    console.log('[DEBUG] TEST_USER_PASSWORD set?', !!process.env.TEST_USER_PASSWORD);
+    console.log('[DEBUG] VITE_SUPABASE_URL set?', !!process.env.VITE_SUPABASE_URL);
+
     const TEST_EMAIL = process.env.TEST_USER_EMAIL;
     const TEST_PASSWORD = process.env.TEST_USER_PASSWORD;
-    test.skip(!TEST_EMAIL || !TEST_PASSWORD, 'TEST_USER env gerekli');
+
+    if (!TEST_EMAIL || !TEST_PASSWORD) {
+      throw new Error(
+        `TEST_USER env eksik. EMAIL='${TEST_EMAIL}', PASSWORD='${TEST_PASSWORD}'`,
+      );
+    }
 
     // 1. Supabase'den seed soruyu getir (test runtime, dinamik)
     const seed = await ilkKolaySoruyuGetir();
-    test.skip(!seed, 'Onaylı kolay soru bulunamadı — seed sorun var mı?');
-    test.skip(
-      !seed!.cozumler || seed!.cozumler.length === 0,
-      'Çözüm satırı yok',
-    );
+    if (!seed) throw new Error('Onaylı kolay soru bulunamadı — seed yok');
+    if (!seed.cozumler || seed.cozumler.length === 0) {
+      throw new Error('Çözüm satırı yok');
+    }
+    console.log('[DEBUG] Seed soru:', seed.id, seed.baslik, 'cozumler:', seed.cozumler.length);
 
     // 2. Login + navigate
-    await girisYap(page, TEST_EMAIL!, TEST_PASSWORD!);
-    await git(page, `/#/problemler/${seed!.id}`);
+    await girisYap(page, TEST_EMAIL, TEST_PASSWORD);
+    await git(page, `/#/problemler/${seed.id}`);
 
     // Yevmiye fişi formu yüklendi mi?
     await expect(page.getByPlaceholder(/Fiş açıklaması/i)).toBeVisible({
@@ -44,7 +52,7 @@ test.describe('Soru çözme business logic', () => {
     });
 
     // 3. İhtiyaç kadar satır ekle (default 2 satır var, eksikse "Satır Ekle")
-    const gerekenSatir = seed!.cozumler.length;
+    const gerekenSatir = seed.cozumler.length;
     let mevcutSatir = await page.locator('input[data-col="kod"]').count();
     while (mevcutSatir < gerekenSatir) {
       await page.getByRole('button', { name: /Satır Ekle/i }).click();
@@ -52,8 +60,8 @@ test.describe('Soru çözme business logic', () => {
     }
 
     // 4. Her satırı doldur
-    for (let i = 0; i < seed!.cozumler.length; i++) {
-      const c = seed!.cozumler[i];
+    for (let i = 0; i < seed.cozumler.length; i++) {
+      const c = seed.cozumler[i];
 
       // Hesap kodu
       const kodInput = page.locator(`input[data-row="${i}"][data-col="kod"]`);
