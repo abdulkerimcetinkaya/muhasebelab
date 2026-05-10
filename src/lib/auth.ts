@@ -25,6 +25,8 @@ export interface KayitBilgileri {
   email: string;
   sifre: string;
   kullaniciAdi: string;
+  ad: string;
+  soyad: string;
   bultenIzni: boolean;
 }
 
@@ -35,6 +37,8 @@ export const kayitOl = async (kayit: KayitBilgileri): Promise<AuthSonuc> => {
     options: {
       data: {
         kullanici_adi: kayit.kullaniciAdi.trim(),
+        ad: kayit.ad.trim(),
+        soyad: kayit.soyad.trim(),
         bulten_izni: kayit.bultenIzni,
       },
     },

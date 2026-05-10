@@ -22,6 +22,8 @@ export const GirisSayfasi = () => {
   const [sifre, setSifre] = useState('');
   const [sifreTekrar, setSifreTekrar] = useState('');
   const [kullaniciAdi, setKullaniciAdi] = useState('');
+  const [ad, setAd] = useState('');
+  const [soyad, setSoyad] = useState('');
   // KVKK ve bülten — kayıt formunda implicit (kayıt butonuna basınca kabul edilmiş sayılır)
   // Disclaimer butonun altında gösterilir. State'e gerek yok, sabit true.
   const bultenIzni = true;
@@ -100,6 +102,10 @@ export const GirisSayfasi = () => {
     }
 
     if (mod === 'kayit') {
+      if (!ad.trim() || !soyad.trim()) {
+        setHata('Ad ve soyad zorunlu.');
+        return;
+      }
       const yapisal = adYapisalKontrol(kullaniciAdi);
       if (!yapisal.gecerli) {
         setHata(yapisal.hata ?? 'Kullanıcı adı geçersiz.');
@@ -129,6 +135,8 @@ export const GirisSayfasi = () => {
             email: email.trim(),
             sifre,
             kullaniciAdi: kullaniciAdi.trim(),
+            ad: ad.trim(),
+            soyad: soyad.trim(),
             bultenIzni,
           });
     setYukleniyor(false);
@@ -152,6 +160,8 @@ export const GirisSayfasi = () => {
     setSifreTekrar('');
     if (yeni === 'giris') {
       setKullaniciAdi('');
+      setAd('');
+      setSoyad('');
       setOneriler([]);
       setAdDurum('bos');
     }
@@ -274,6 +284,41 @@ export const GirisSayfasi = () => {
           </div>
 
           <form onSubmit={gonder} className="space-y-4">
+            {mod === 'kayit' && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold mb-1.5">
+                    Ad
+                  </label>
+                  <input
+                    type="text"
+                    value={ad}
+                    onChange={(e) => setAd(e.target.value)}
+                    autoComplete="given-name"
+                    required
+                    maxLength={40}
+                    className="w-full px-3 py-2.5 bg-surface-2/30 border border-line focus:border-ink-soft rounded-lg text-[14px] font-medium outline-none transition focus:ring-2 focus:ring-blue-500/15"
+                    placeholder="Adın"
+                  />
+                </div>
+                <div>
+                  <label className="block font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold mb-1.5">
+                    Soyad
+                  </label>
+                  <input
+                    type="text"
+                    value={soyad}
+                    onChange={(e) => setSoyad(e.target.value)}
+                    autoComplete="family-name"
+                    required
+                    maxLength={40}
+                    className="w-full px-3 py-2.5 bg-surface-2/30 border border-line focus:border-ink-soft rounded-lg text-[14px] font-medium outline-none transition focus:ring-2 focus:ring-blue-500/15"
+                    placeholder="Soyadın"
+                  />
+                </div>
+              </div>
+            )}
+
             {mod === 'kayit' && (
               <div>
                 <label className="block font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold mb-1.5">

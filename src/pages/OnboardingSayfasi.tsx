@@ -60,19 +60,25 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
     if (!yukleniyor && !user) nav('/giris', { replace: true });
   }, [user, yukleniyor, nav]);
 
-  // Google OAuth ile gelen kullanıcılar için ad/soyad pre-fill —
-  // user.user_metadata'da Google'dan dönen given_name/family_name var.
+  // Ad/Soyad pre-fill — iki kaynak:
+  // - E-posta kayıt: meta.ad / meta.soyad (kayıt formundan)
+  // - Google OAuth: meta.given_name / meta.family_name (Google'dan)
   useEffect(() => {
     if (!user) return;
     const meta = user.user_metadata as Record<string, string> | undefined;
     if (!meta) return;
     setProfil((p) => {
-      // Sadece boşken doldur; kullanıcı manuel düzenlediyse override etme
       if (p.ad || p.soyad) return p;
       const ad =
-        meta.given_name ?? meta.name?.split(' ').slice(0, -1).join(' ') ?? '';
+        meta.ad ??
+        meta.given_name ??
+        meta.name?.split(' ').slice(0, -1).join(' ') ??
+        '';
       const soyad =
-        meta.family_name ?? meta.name?.split(' ').slice(-1)[0] ?? '';
+        meta.soyad ??
+        meta.family_name ??
+        meta.name?.split(' ').slice(-1)[0] ??
+        '';
       if (!ad && !soyad) return p;
       return { ...p, ad: ad.trim(), soyad: soyad.trim() };
     });
