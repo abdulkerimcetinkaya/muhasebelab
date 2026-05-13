@@ -106,7 +106,7 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 
 | Secret | Nereden alınır |
 |---|---|
-| `COHERE_API_KEY` | dashboard.cohere.com → API keys → Create Trial key (kart yok, ücretsiz) |
+| `OPENAI_API_KEY` | platform.openai.com → API keys → "Create new secret key" |
 | `SUPABASE_URL` | Supabase Dashboard → Project Settings → API → `Project URL` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → `service_role` (yeni format: `sb_secret_...`) |
 
