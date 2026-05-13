@@ -93,6 +93,17 @@
       "kritiklik": "yuksek"
     },
     {
+      "id": "msugt-aciklamali",
+      "baslik": "Açıklamalı Tek Düzen Hesap Planı Rehberi (Müfettiş/YMM yorumu)",
+      "kategori": "rehber",
+      "yayinci": "Ümit Güner (umitguner.com.tr)",
+      "url": "storage://rag-kaynaklar/msugt-aciklamali.pdf",
+      "kaynak_url": "https://www.umitguner.com.tr/Dosyalar/mh.pdf",
+      "format": "pdf",
+      "konular": ["hesap-plani", "tum-uniteler"],
+      "not": "2 vergi müfettişi + 1 YMM'in hazırladığı açıklamalı versiyon. Yazar tarafından umitguner.com.tr üzerinden serbest paylaşım."
+    },
+    {
       "id": "tms-2",
       "baslik": "TMS 2 — Stoklar",
       "kategori": "standart",
