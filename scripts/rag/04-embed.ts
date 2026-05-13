@@ -1,23 +1,26 @@
 /**
- * Adım 4 — Google Gemini text-embedding-004 ile chunk embedding'leri üret.
+ * Adım 4 — Google Gemini gemini-embedding-001 ile chunk embedding'leri üret.
  *
  * Neden Gemini:
  *   - Ücretsiz tier'da 1500 request/gün (bizim için fazlasıyla yeter)
  *   - Türkçe kalitesi yüksek
  *   - Kredi kartı zorunluluğu yok
  *
- * Dimension: 768 (text-embedding-004 default).
- * Migration `rag_chunks.embedding` kolonu da vector(768) olarak tanımlı.
+ * Not (2026): Eski `text-embedding-004` modeli deprecate edildi.
+ * `gemini-embedding-001` modelini kullanıyoruz; 3072 boyutlu çıktı üretir
+ * ama `outputDimensionality=768` parametresi ile bizim schema'ya
+ * (vector(768)) sığdırıyoruz. Truncate edilmiş 768d embedding kalitesi
+ * tam 3072'ye çok yakın — ücretsiz tier'da sığacak.
  *
- * Batch sınırı: API başına 100 input. Biz 100'lük batch kullanıyoruz —
- * rate limit'e takılmıyor, retry mantığına gerek bırakmıyor.
+ * Batch sınırı: API başına 100 input. Rate limit dakikada 15K token.
  *
  * EMBEDDING_MODEL env var ile model değiştirilebilir.
  */
 
 import type { Chunk, EmbeddedChunk } from './lib/types.js';
 
-const MODEL = process.env.EMBEDDING_MODEL || 'text-embedding-004';
+const MODEL = process.env.EMBEDDING_MODEL || 'gemini-embedding-001';
+const OUTPUT_DIM = 768;
 const BATCH = 100;
 
 const apiUrl = (model: string, apiKey: string) =>
@@ -35,6 +38,8 @@ const embed = async (metinler: string[]): Promise<number[][]> => {
     requests: metinler.map((text) => ({
       model: `models/${MODEL}`,
       content: { parts: [{ text }] },
+      outputDimensionality: OUTPUT_DIM,
+      taskType: 'RETRIEVAL_DOCUMENT',
     })),
   };
 
