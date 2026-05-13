@@ -1,82 +1,61 @@
 /**
- * Adım 4 — Cohere embed-multilingual-v3.0 ile chunk embedding'leri üret.
+ * Adım 4 — OpenAI text-embedding-3-small ile chunk embedding'leri üret.
  *
- * Neden Cohere:
- *   - Free trial: 1000 çağrı/ay (bizim için fazlasıyla yeter)
- *   - Türkçe için özel tunlanmış (100+ dilde eğitildi)
- *   - Kredi kartı zorunluluğu yok
+ * Neden OpenAI:
+ *   - Cohere/Gemini ücretsiz tier'larıyla yorucu rate limit dansı yaptık.
+ *   - $0.020 / 1M token — pratikte 12 kaynak için ~$0.05 (5 sent)
+ *   - $5 minimum yatırım ~80 yıl yeter (kullanıcı dahil).
+ *   - Rate limit endişesi yok (tier 1: 5000 RPM, 5M TPM).
  *
- * Model: embed-multilingual-v3.0 (1024 boyut, vector(1024))
+ * Model: text-embedding-3-small
+ *   - 1536 boyutlu vektör (vector(1536) schema'ya uygun)
+ *   - Türkçe için yeterli kalite (OpenAI multilingual eğitildi)
  *
- * RATE LIMIT — Trial tier:
- *   - 100 RPM (request per minute)
- *   - 100.000 token/dakika
- *
- * 100K tok/dakika sınırının altında kalmak için:
- *   - BATCH = 48 chunk (~12K tok/batch ortalama)
- *   - Her batch sonrası 15 saniye sleep (yaklaşık 4 batch/dakika = 48K tok/dakika)
- *   - 429 hatasında 60 saniye bekle + tek retry
- *
- * Total ~5000 chunk için tahmini süre: ~26 dakika.
+ * Batch: API başına 2048 input desteklerken biz 100'lük güvenli batch
+ * kullanıyoruz — payload boyutu kontrolü için.
  */
 
 import type { Chunk, EmbeddedChunk } from './lib/types.js';
 
-const COHERE_URL = 'https://api.cohere.com/v2/embed';
-const MODEL = process.env.EMBEDDING_MODEL || 'embed-multilingual-v3.0';
-const BATCH = 48;
-const BATCH_ARASI_MS = 15_000; // 100K tok/dakika limit için güvenli aralık
-const RETRY_BEKLEME_MS = 65_000; // 429 sonrası 1 dakika+5s bekle
+const OPENAI_URL = 'https://api.openai.com/v1/embeddings';
+const MODEL = process.env.EMBEDDING_MODEL || 'text-embedding-3-small';
+const BATCH = 100;
 
-interface CohereResp {
-  embeddings: { float: number[][] };
+interface OpenAIResp {
+  data: Array<{ embedding: number[]; index: number }>;
+  usage: { prompt_tokens: number; total_tokens: number };
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Tek bir batch embedding çağrısı. 429 hatasında bir kez retry yapar. */
-const embedTekRetry = async (
-  metinler: string[],
-  apiKey: string,
-  retryEttiMi = false,
-): Promise<number[][]> => {
-  const body = {
-    model: MODEL,
-    texts: metinler,
-    input_type: 'search_document',
-    embedding_types: ['float'],
-  };
+const embed = async (metinler: string[], retryEttiMi = false): Promise<number[][]> => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPENAI_API_KEY env değişkeni tanımlı değil');
 
-  const yanit = await fetch(COHERE_URL, {
+  const yanit = await fetch(OPENAI_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ model: MODEL, input: metinler }),
   });
 
+  // 429 rate limit → 30 saniye bekle + tek retry
   if (yanit.status === 429 && !retryEttiMi) {
-    console.log(
-      `  ⏸ rate limit yedik, ${RETRY_BEKLEME_MS / 1000}s bekleniyor sonra retry...`,
-    );
-    await sleep(RETRY_BEKLEME_MS);
-    return embedTekRetry(metinler, apiKey, true);
+    console.log(`  ⏸ 429 rate limit, 30 saniye bekleniyor + retry...`);
+    await sleep(30_000);
+    return embed(metinler, true);
   }
 
   if (!yanit.ok) {
     const hata = await yanit.text();
-    throw new Error(`Cohere embedding hatası ${yanit.status}: ${hata}`);
+    throw new Error(`OpenAI embedding hatası ${yanit.status}: ${hata}`);
   }
 
-  const json = (await yanit.json()) as CohereResp;
-  return json.embeddings.float;
-};
-
-const embed = (metinler: string[]): Promise<number[][]> => {
-  const apiKey = process.env.COHERE_API_KEY;
-  if (!apiKey) throw new Error('COHERE_API_KEY env değişkeni tanımlı değil');
-  return embedTekRetry(metinler, apiKey);
+  const json = (await yanit.json()) as OpenAIResp;
+  json.data.sort((a, b) => a.index - b.index);
+  return json.data.map((d) => d.embedding);
 };
 
 export const chunklariGom = async (chunks: Chunk[]): Promise<EmbeddedChunk[]> => {
@@ -102,15 +81,16 @@ export const chunklariGom = async (chunks: Chunk[]): Promise<EmbeddedChunk[]> =>
       `  ⚡ embedding: ${ilerleme}/${chunks.length} chunk (~${toplamToken} tok, ${sure}ms)`,
     );
 
-    // Rate limit dostu bekleme (sadece daha batch varsa)
     if (i + BATCH < chunks.length) {
-      await sleep(BATCH_ARASI_MS);
+      await sleep(200);
     }
   }
 
+  // Maliyet tahmini ($0.020 / 1M token)
+  const maliyetUSD = (toplamToken / 1_000_000) * 0.020;
   const toplamSure = Math.round((Date.now() - baslangic) / 1000);
   console.log(
-    `  💰 maliyet: $0 (Cohere ücretsiz tier — ${toplamToken} tok, ${toplamSure}s)`,
+    `  💰 maliyet: $${maliyetUSD.toFixed(4)} (${toplamToken} tok, ${toplamSure}s)`,
   );
 
   return sonuc;

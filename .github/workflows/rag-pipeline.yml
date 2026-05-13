@@ -34,10 +34,10 @@ jobs:
 
       - name: Pipeline'ı çalıştır
         env:
-          COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          EMBEDDING_MODEL: embed-multilingual-v3.0
+          EMBEDDING_MODEL: text-embedding-3-small
         run: npx tsx scripts/rag/pipeline.ts "${{ inputs.kaynaklar }}"
 
       - name: Hata özeti (failure path)
