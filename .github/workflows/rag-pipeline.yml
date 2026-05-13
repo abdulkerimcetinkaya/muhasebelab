@@ -37,7 +37,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          EMBEDDING_MODEL: text-embedding-004
+          EMBEDDING_MODEL: gemini-embedding-001
         run: npx tsx scripts/rag/pipeline.ts "${{ inputs.kaynaklar }}"
 
       - name: Hata özeti (failure path)
