@@ -1,13 +1,14 @@
 {
-  "$schema_note": "Bu dosya RAG pipeline'ın işleyeceği kaynak listesidir. Yeni kaynak ekleyince GitHub Actions workflow'u tetikleyince otomatik işlenir.",
-  "$kategori_kuralı": "Sadece Kategori 1 = açık/resmi kaynaklar burada bulunur. Telifli kaynak eklemek için önce telif uyarısı kontrolü yapılmalı.",
+  "$schema_note": "RAG pipeline kaynak listesi. URL şemaları: 'https://...' = direkt indir; 'storage://bucket/file' = Supabase Storage (env SUPABASE_URL'den çözülür).",
+  "$kategori_kurali": "Sadece Kategori 1 = açık/resmi kaynaklar. Telifli içerik girilemez.",
+  "$tertip_notu": "mevzuat.gov.tr URL'lerinde Tertip: pre-1980 kanunlar 1.4.X, post-1980 1.5.X formatındadır.",
   "kaynaklar": [
     {
       "id": "vuk",
       "baslik": "Vergi Usul Kanunu (213 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.213.pdf",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.4.213.pdf",
       "format": "pdf",
       "yayim_tarihi": "1961-01-10",
       "konular": ["belge-duzeni", "degerleme", "defter", "amortisman", "ceza"]
@@ -17,7 +18,7 @@
       "baslik": "Gelir Vergisi Kanunu (193 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.193.pdf",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.4.193.pdf",
       "format": "pdf",
       "yayim_tarihi": "1960-12-31",
       "konular": ["personel", "ucret", "stopaj", "gelir-vergisi"]
@@ -77,28 +78,29 @@
       "baslik": "Muhasebe Sistemi Uygulama Genel Tebliği (Sıra No: 1) — Tek Düzen Hesap Planı",
       "kategori": "teblig",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.resmigazete.gov.tr/arsiv/22150_1.pdf",
+      "url": "storage://rag-kaynaklar/msugt-1.pdf",
       "format": "pdf",
       "yayim_tarihi": "1992-12-26",
       "konular": ["hesap-plani", "tum-uniteler"],
       "kritiklik": "yuksek",
-      "not": "TDHP'nin anayasası — 272 hesabın açıklamaları, grup başlıkları, terminoloji burada."
+      "not": "Resmi Gazete arşiv URL'leri kararsız — Supabase Storage'a manuel yüklenir."
     },
     {
       "id": "tms-2",
       "baslik": "TMS 2 — Stoklar",
       "kategori": "standart",
       "yayinci": "KGK",
-      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TMS/TMS_2_2018.pdf",
+      "url": "storage://rag-kaynaklar/tms-2.pdf",
       "format": "pdf",
-      "konular": ["stoklar", "mal-alis", "mal-satis", "stok-degerleme"]
+      "konular": ["stoklar", "mal-alis", "mal-satis", "stok-degerleme"],
+      "not": "KGK PDF URL'leri 2026'da değişti — Storage'a manuel yüklenir."
     },
     {
       "id": "tms-16",
       "baslik": "TMS 16 — Maddi Duran Varlıklar",
       "kategori": "standart",
       "yayinci": "KGK",
-      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TMS/TMS_16_2018.pdf",
+      "url": "storage://rag-kaynaklar/tms-16.pdf",
       "format": "pdf",
       "konular": ["mdv", "amortisman", "donem-sonu"]
     },
@@ -107,7 +109,7 @@
       "baslik": "TMS 37 — Karşılıklar, Koşullu Borçlar ve Koşullu Varlıklar",
       "kategori": "standart",
       "yayinci": "KGK",
-      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TMS/TMS_37_2018.pdf",
+      "url": "storage://rag-kaynaklar/tms-37.pdf",
       "format": "pdf",
       "konular": ["reeskont", "karsilik"]
     },
@@ -116,20 +118,10 @@
       "baslik": "TFRS 15 — Müşteri Sözleşmelerinden Hasılat",
       "kategori": "standart",
       "yayinci": "KGK",
-      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TFRS/TFRS_15_2018.pdf",
+      "url": "storage://rag-kaynaklar/tfrs-15.pdf",
       "format": "pdf",
       "konular": ["hasilat", "gelir-tablosu", "satis"]
-    },
-    {
-      "id": "vuk-genel-tebligleri-yururlukteki",
-      "baslik": "VUK Genel Tebliğleri — Yürürlükteki Seri",
-      "kategori": "teblig",
-      "yayinci": "GİB",
-      "url": "https://www.gib.gov.tr/yardim-ve-kaynaklar/yararli-bilgiler/vuk-genel-tebligleri",
-      "format": "html",
-      "konular": ["belge-duzeni", "e-fatura", "e-belge", "amortisman-orani"],
-      "not": "Bu URL indeks sayfasıdır — pipeline bu sayfadan yürürlükteki tebliğleri ayıklayıp tek tek indirir.",
-      "kompozit": true
     }
-  ]
+  ],
+  "$pasif_kaynaklar_notu": "VUK Genel Tebliğleri (100+ ayrı PDF) geçici olarak çıkarıldı — ayrı bir scraper gerekiyor. İlk batch çalıştıktan sonra eklenecek."
 }

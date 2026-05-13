@@ -43,7 +43,33 @@ npm run rag:tek vuk,tms-2
 
 ## İlk kurulum (sadece bir kez)
 
-### 1. Supabase migration'ı uygula
+### 1. KGK ve MSUGT PDF'lerini Supabase Storage'a yükle
+
+Resmi sitelerin URL'leri değişebildiği için 5 kaynak Supabase Storage'tan okutuluyor.
+
+**a)** Supabase Dashboard → **Storage** → **New bucket**
+- Name: `rag-kaynaklar`
+- Public bucket: **ON** (pipeline anon olarak okuyacak)
+- Create
+
+**b)** Aşağıdaki 5 PDF'i tarayıcıdan indir ve bucket'a yükle (dosya isimleri **birebir** olmalı):
+
+| Dosya adı | Kaynak |
+|---|---|
+| `msugt-1.pdf` | Muhasebe Sistemi Uygulama Genel Tebliği Sıra 1 (TDHP — Resmi Gazete 26.12.1992 arşivi) |
+| `tms-2.pdf` | TMS 2 Stoklar — kgk.gov.tr |
+| `tms-16.pdf` | TMS 16 Maddi Duran Varlıklar — kgk.gov.tr |
+| `tms-37.pdf` | TMS 37 Karşılıklar — kgk.gov.tr |
+| `tfrs-15.pdf` | TFRS 15 Hasılat — kgk.gov.tr |
+
+> Tüm bunları **kgk.gov.tr** ana sayfasından arama ile bulabilirsin. Eğer tek tek aramak zor geliyorsa, KGK her sene "TMS/TFRS Seti" diye tek zip yayınlıyor — onu indirip içindeki PDF'leri ayrı ayrı upload edebilirsin.
+
+**c)** Yüklediğinde URL'ler şu formatta olmalı (test et):
+```
+https://<proje>.supabase.co/storage/v1/object/public/rag-kaynaklar/tms-2.pdf
+```
+
+### 2. Supabase migration'ı uygula
 
 `supabase/migrations/20260513000001_rag_vektor.sql` migration'ını uygulanmış olmalı. Supabase Dashboard → SQL Editor'da çalıştır, ya da Supabase CLI ile push et.
 
@@ -53,7 +79,7 @@ Bu migration:
 - `rag_ara()` RPC fonksiyonunu tanımlar (similarity search)
 - RLS politikalarını kurar (public read, service_role write)
 
-### 2. GitHub Secrets ekle
+### 3. GitHub Secrets ekle
 
 Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
 
@@ -63,7 +89,7 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 | `SUPABASE_URL` | Supabase Dashboard → Project Settings → API → `Project URL` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → `service_role` key (⚠ SECRET — anon key DEĞİL) |
 
-### 3. İlk workflow run
+### 4. İlk workflow run
 
 Actions → RAG Pipeline → Run workflow → boş bırak (hepsi) → Run.
 
