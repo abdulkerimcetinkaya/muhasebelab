@@ -1,0 +1,135 @@
+{
+  "$schema_note": "Bu dosya RAG pipeline'ın işleyeceği kaynak listesidir. Yeni kaynak ekleyince GitHub Actions workflow'u tetikleyince otomatik işlenir.",
+  "$kategori_kuralı": "Sadece Kategori 1 = açık/resmi kaynaklar burada bulunur. Telifli kaynak eklemek için önce telif uyarısı kontrolü yapılmalı.",
+  "kaynaklar": [
+    {
+      "id": "vuk",
+      "baslik": "Vergi Usul Kanunu (213 sayılı)",
+      "kategori": "kanun",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.213.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "1961-01-10",
+      "konular": ["belge-duzeni", "degerleme", "defter", "amortisman", "ceza"]
+    },
+    {
+      "id": "gvk",
+      "baslik": "Gelir Vergisi Kanunu (193 sayılı)",
+      "kategori": "kanun",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.193.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "1960-12-31",
+      "konular": ["personel", "ucret", "stopaj", "gelir-vergisi"]
+    },
+    {
+      "id": "kvk",
+      "baslik": "Kurumlar Vergisi Kanunu (5520 sayılı)",
+      "kategori": "kanun",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5520.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "2006-06-13",
+      "konular": ["kurumlar-vergisi", "gelir-tablosu", "kapanis"]
+    },
+    {
+      "id": "kdvk",
+      "baslik": "Katma Değer Vergisi Kanunu (3065 sayılı)",
+      "kategori": "kanun",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.3065.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "1984-11-02",
+      "konular": ["kdv", "tevkifat", "kdv-iade"]
+    },
+    {
+      "id": "ttk",
+      "baslik": "Türk Ticaret Kanunu (6102 sayılı)",
+      "kategori": "kanun",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.6102.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "2011-01-14",
+      "konular": ["defter-tutma", "ticari-alacak", "ticari-borc", "cek", "senet", "police"]
+    },
+    {
+      "id": "sgk-5510",
+      "baslik": "Sosyal Sigortalar ve Genel Sağlık Sigortası Kanunu (5510 sayılı)",
+      "kategori": "kanun",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5510.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "2006-05-31",
+      "konular": ["personel", "sgk-primi", "is-kazasi"]
+    },
+    {
+      "id": "is-kanunu-4857",
+      "baslik": "İş Kanunu (4857 sayılı)",
+      "kategori": "kanun",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.4857.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "2003-05-22",
+      "konular": ["personel", "is-sozlesmesi", "kidem", "ihbar"]
+    },
+    {
+      "id": "msugt-1",
+      "baslik": "Muhasebe Sistemi Uygulama Genel Tebliği (Sıra No: 1) — Tek Düzen Hesap Planı",
+      "kategori": "teblig",
+      "yayinci": "Resmi Gazete",
+      "url": "https://www.resmigazete.gov.tr/arsiv/22150_1.pdf",
+      "format": "pdf",
+      "yayim_tarihi": "1992-12-26",
+      "konular": ["hesap-plani", "tum-uniteler"],
+      "kritiklik": "yuksek",
+      "not": "TDHP'nin anayasası — 272 hesabın açıklamaları, grup başlıkları, terminoloji burada."
+    },
+    {
+      "id": "tms-2",
+      "baslik": "TMS 2 — Stoklar",
+      "kategori": "standart",
+      "yayinci": "KGK",
+      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TMS/TMS_2_2018.pdf",
+      "format": "pdf",
+      "konular": ["stoklar", "mal-alis", "mal-satis", "stok-degerleme"]
+    },
+    {
+      "id": "tms-16",
+      "baslik": "TMS 16 — Maddi Duran Varlıklar",
+      "kategori": "standart",
+      "yayinci": "KGK",
+      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TMS/TMS_16_2018.pdf",
+      "format": "pdf",
+      "konular": ["mdv", "amortisman", "donem-sonu"]
+    },
+    {
+      "id": "tms-37",
+      "baslik": "TMS 37 — Karşılıklar, Koşullu Borçlar ve Koşullu Varlıklar",
+      "kategori": "standart",
+      "yayinci": "KGK",
+      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TMS/TMS_37_2018.pdf",
+      "format": "pdf",
+      "konular": ["reeskont", "karsilik"]
+    },
+    {
+      "id": "tfrs-15",
+      "baslik": "TFRS 15 — Müşteri Sözleşmelerinden Hasılat",
+      "kategori": "standart",
+      "yayinci": "KGK",
+      "url": "https://kgk.gov.tr/Portalv2Uploads/files/Duyurular/v2/TFRS/TFRS_15_2018.pdf",
+      "format": "pdf",
+      "konular": ["hasilat", "gelir-tablosu", "satis"]
+    },
+    {
+      "id": "vuk-genel-tebligleri-yururlukteki",
+      "baslik": "VUK Genel Tebliğleri — Yürürlükteki Seri",
+      "kategori": "teblig",
+      "yayinci": "GİB",
+      "url": "https://www.gib.gov.tr/yardim-ve-kaynaklar/yararli-bilgiler/vuk-genel-tebligleri",
+      "format": "html",
+      "konular": ["belge-duzeni", "e-fatura", "e-belge", "amortisman-orani"],
+      "not": "Bu URL indeks sayfasıdır — pipeline bu sayfadan yürürlükteki tebliğleri ayıklayıp tek tek indirir.",
+      "kompozit": true
+    }
+  ]
+}

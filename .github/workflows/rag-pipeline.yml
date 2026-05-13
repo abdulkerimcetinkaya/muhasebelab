@@ -1,0 +1,46 @@
+name: RAG Pipeline
+
+# İki tetikleme:
+# 1. workflow_dispatch — manuel "Run workflow" butonu (GitHub UI)
+# 2. schedule — haftalık otomatik tarama (yeni tebliğ var mı?)
+on:
+  workflow_dispatch:
+    inputs:
+      kaynaklar:
+        description: "Sadece belirli kaynakları işle (virgülle ayır, boş = hepsi)"
+        required: false
+        default: ""
+  schedule:
+    # Her Pazartesi 03:00 UTC (Türkiye saatiyle 06:00)
+    - cron: "0 3 * * 1"
+
+jobs:
+  rag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180  # 3 saat — büyük tebliğ setleri için
+
+    steps:
+      - name: Repo checkout
+        uses: actions/checkout@v4
+
+      - name: Node 20 kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: Pipeline'ı çalıştır
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          EMBEDDING_MODEL: text-embedding-3-small
+        run: npx tsx scripts/rag/pipeline.ts "${{ inputs.kaynaklar }}"
+
+      - name: Hata özeti (failure path)
+        if: failure()
+        run: |
+          echo "::error::RAG pipeline başarısız oldu — logları kontrol et"
