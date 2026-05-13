@@ -7,12 +7,12 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import { kullaniciDogrula, premiumKontrol } from '../_shared/auth.ts';
 import { anthropicCagir, type AnthropicMesaj } from '../_shared/anthropic.ts';
-import { embed } from '../_shared/embed.ts';
+import { embedOpenAI } from '../_shared/embed-openai.ts';
 import { guncelBilgiGerekiyor, tavilyAra, type TavilySonuc } from '../_shared/tavily.ts';
 
 const FREE_GUNLUK_LIMIT = 3;
-const MEVZUAT_TOP_K = 3;             // multilingual-e5 daha temiz, biraz açabiliriz
-const MEVZUAT_MIN_BENZERLIK = 0.72;  // multilingual-e5 için orta eşik (gte-small'a göre daha güvenilir)
+const MEVZUAT_TOP_K = 5;             // OpenAI 3-small kaliteli, 5 chunk veriyoruz
+const MEVZUAT_MIN_BENZERLIK = 0.35;  // OpenAI cosine eşiği — HF e5'ten farklı dağılım
 
 interface Istek {
   mesajlar: AnthropicMesaj[];
@@ -22,9 +22,22 @@ interface Istek {
   };
 }
 
+// rag_ara RPC'sinden dönen ham shape
+interface RagAraRow {
+  chunk_id: string;
+  kaynak_id: string;
+  kaynak_baslik: string;
+  kaynak_url: string | null;
+  chunk_baslik: string | null;
+  madde_no: string | null;
+  metin: string;
+  benzerlik: number;
+}
+
 interface MevzuatChunk {
-  kaynak: string;
-  baslik: string;
+  kaynak: string;       // örn. "Vergi Usul Kanunu (213 sayılı)"
+  baslik: string;       // örn. "Madde 274 — Emtia" veya kaynak başlığı
+  madde_no: string | null;
   url: string | null;
   metin: string;
   benzerlik: number;
@@ -257,15 +270,28 @@ Deno.serve(async (req) => {
           .filter(Boolean)
           .join('\n');
 
-        const sorguEmb = await embed(sorguMetni, 'query');
+        const sorguEmb = await embedOpenAI(sorguMetni);
         const { data: chunks, error: aramaErr } = await yetki.supabase.rpc(
-          'mevzuat_ara',
-          { sorgu_emb: sorguEmb, limit_n: MEVZUAT_TOP_K },
+          'rag_ara',
+          {
+            _embedding: sorguEmb,
+            _limit: MEVZUAT_TOP_K,
+            _esik: MEVZUAT_MIN_BENZERLIK,
+          },
         );
         if (!aramaErr && Array.isArray(chunks)) {
-          mevzuatChunklar = (chunks as MevzuatChunk[]).filter(
-            (c) => c.benzerlik >= MEVZUAT_MIN_BENZERLIK,
-          );
+          mevzuatChunklar = (chunks as RagAraRow[]).map((c) => ({
+            kaynak: c.kaynak_baslik,
+            // chunk_baslik dolu ise onu (örn. "Madde 274 — Emtia"); değilse
+            // kaynak başlığını kullan (TMS chunk'ları için)
+            baslik: c.chunk_baslik ?? c.kaynak_baslik,
+            madde_no: c.madde_no,
+            url: c.kaynak_url,
+            metin: c.metin,
+            benzerlik: c.benzerlik,
+          }));
+        } else if (aramaErr) {
+          console.error('rag_ara RPC hatası:', aramaErr.message);
         }
       }
     } catch (e) {
@@ -358,6 +384,7 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
         kaynaklar: mevzuatChunklar.map((c) => ({
           kaynak: c.kaynak,
           baslik: c.baslik,
+          madde_no: c.madde_no,
           url: c.url,
           benzerlik: Math.round(c.benzerlik * 100) / 100,
         })),
