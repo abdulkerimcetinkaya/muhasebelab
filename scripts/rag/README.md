@@ -106,9 +106,9 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 
 | Secret | Nereden alınır |
 |---|---|
-| `OPENAI_API_KEY` | platform.openai.com → API Keys |
+| `GEMINI_API_KEY` | aistudio.google.com/apikey → Create API key (kart yok, ücretsiz) |
 | `SUPABASE_URL` | Supabase Dashboard → Project Settings → API → `Project URL` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → `service_role` key (⚠ SECRET — anon key DEĞİL) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → `service_role` (yeni format: `sb_secret_...`) |
 
 ### 4. İlk workflow run
 
@@ -172,16 +172,18 @@ PR aç, merge et. Sonraki workflow run otomatik işler.
 | Kalem | Bir seferlik | Aylık (incremental) |
 |---|---|---|
 | GitHub Actions | 0 (ücretsiz quota'da) | 0 |
-| OpenAI embedding | ~$10-15 (5000 sayfa) | ~$0.50 (sadece değişen) |
+| Gemini embedding | **0** (ücretsiz tier, 1500 req/gün) | **0** |
 | Supabase storage | 0 (free tier 500MB) | 0 |
-| **Toplam** | **~$15** | **~$0.50** |
+| **Toplam** | **$0** | **$0** |
+
+Premium kullanıcı geldikçe Claude Sonnet 4.5'a yükseltme yapılabilir (sohbet için ayrı PR'da yapılacak).
 
 ---
 
 ## Sık karşılaşılan sorunlar
 
-**`OpenAI embedding hatası 429: rate limit`**
-→ Free tier OpenAI hesabında saatlik limit düşük. Tier upgrade et, ya da 100→25 batch indir.
+**`Gemini embedding hatası 429: rate limit`**
+→ Free tier'da dakika başı 15K token / gün 1500 request limiti var. Batch'i küçült (100→50) ya da uzun çalışmayı 2 güne böl.
 
 **`Kaynak indirilemedi: HTTP 403`**
 → Resmi siteler User-Agent kontrolü yapıyor. `01-download.ts`'deki UA'yı güncelle.
