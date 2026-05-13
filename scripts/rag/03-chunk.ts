@@ -28,16 +28,17 @@ const MIN_KARAKTER = tokenToKarakter(MIN_TOKEN);
 const MADDE_REGEX = /(?:^|\n|\s|\.)(MADDE|Madde)\s+(\d+[A-Za-z]?)\s*[\-–—]\s*([^\n]{0,100})/g;
 
 // TMS/TFRS paragraf numarası pattern'i.
-// KGK standartları "Madde X" değil, paragraf numarasıyla yapılandırılır:
-//   "6 Aşağıdaki terimler bu Standartta..."
-//   "11 Stokların satın alma maliyetleri..."
-//   "25 23'üncü paragrafta belirtilenler dışında..." (rakamla başlayan paragraf)
-// Kurallar:
-// - (?:^|\n|[.;:]\s) → satır başı veya cümle ayıracı sonrası
-// - (\d{1,3}) → 1-3 haneli paragraf no (2025 gibi yıllarla karışmasın)
-// - \s+ → boşluk
-// - en az 5 kelimelik içerik snippet (tablo satırlarını dışla)
-const PARAGRAF_REGEX = /(?:^|\n|[.;:]\s)(\d{1,3})\s+(\S+(?:\s+\S+){4,})/g;
+// KGK standartları "Madde X" değil, paragraf numarasıyla yapılandırılır.
+// TMS PDF'te bölüm başlığı sonrası paragraf no NOKTASIZ geliyor:
+//   "Stokların ölçümü 9 Stoklar, maliyet değeri..."
+//   "Açıklamalar 36 Finansal tablolarda..."
+// Bu yüzden ön şart sadece [.;:]\s değil, GENEL BOŞLUK kabul edilmeli.
+// False-positive engellemek için:
+// - Sayıdan SONRA gelen kelime Türkçe büyük harfle başlamalı
+//   ("Madde 5 –" pattern'inde tire büyük harf değil → otomatik dışlanır)
+// - Min 5 kelimelik içerik (tablo satırları kısa olur)
+// - Max 3 haneli sayı (2025 gibi yıllarla karışmasın)
+const PARAGRAF_REGEX = /(?:^|\n|\s)(\d{1,3})\s+([A-ZÇĞİÖŞÜ]\S+(?:\s+\S+){4,})/g;
 
 // Bölüm/Kısım/§ başlıkları (TMS standartları için)
 const BASLIK_REGEX = /(?:^|\n|\s)(BÖLÜM|Bölüm|KISIM|Kısım|§)\s+(\d+)/g;
