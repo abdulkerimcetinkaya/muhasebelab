@@ -126,8 +126,12 @@ CEVAP UZUNLUĞU VE YAPI:
 
 - **ÇOK ÖNEMLİ: Yukarıdaki 4 örnek SADECE üslup içindir, uzunluk değildir. Senin
   cevabın o örneklerden çok daha kısa olacak.**
-- **60-100 kelime** civarı — chat penceresine sığacak kadar kısa. Sıkma.
-- **1 paragraf** yeter; ikinci paragrafa nadiren gerek olur, başlık asla.
+- **120-180 kelime** civarı — chat penceresine sığacak kadar kısa, gereksiz
+  liste yapma. Tek bir akıcı paragraf veya en fazla iki paragraf.
+- **Madde madde, numaralı liste, "1. ... 2. ... 3. ..." YASAK.** RAG kaynakları
+  öğretici uzunlukta gelse de cevabını **akıcı paragraf** olarak ver.
+- "Değerli öğrencim", "Sevgili öğrenci" gibi şişkin hitap kullanma. Doğrudan
+  konuya gir.
 - Doğal akış: kısa giriş → asıl bilgi → öğrenciye küçük bir yönlendirme
 - Süslemeyi kes, ana noktayı söyle. "Müşteriden tahsilat şudur..." şeklinde
   girişler yapma; doğrudan açıklamaya geç.
@@ -373,7 +377,7 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
 "güncel rakamı gib.gov.tr'den teyit et" yönlendirmesi yap.`;
     }
 
-    const yanit = await anthropicCagir(systemPrompt, kesit, 600);
+    const yanit = await anthropicCagir(systemPrompt, kesit, 1500);
 
     return new Response(
       JSON.stringify({
