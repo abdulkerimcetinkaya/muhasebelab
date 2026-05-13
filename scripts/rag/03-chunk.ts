@@ -24,17 +24,22 @@ const HEDEF_KARAKTER = tokenToKarakter(HEDEF_TOKEN);
 const MAX_KARAKTER = tokenToKarakter(MAX_TOKEN);
 const MIN_KARAKTER = tokenToKarakter(MIN_TOKEN);
 
-// "Madde 274 –" pattern.
-// - (?:^|\n|\s|\.) → satır başı, newline, boşluk veya nokta önde olabilir
-//   (PDF text bazen satırları birleştiriyor, satır içinde geçen "Madde X" da yakalanmalı)
-// - (MADDE|Madde) → büyük/küçük M kabul; küçük harf "madde" referans cümlesi olur, atla
-// - (\d+[A-Za-z]?) → 5 veya 175A gibi numara
-// - [\-–—] (zorunlu) → tire/en-dash/em-dash. Referans cümleleri ("5'inci madde")
-//   bu tireyi taşımaz, böylece false-positive engelleniyor
-// - (.{0,100}) → tire sonrası kısa içerik öneki (snippet)
+// "Madde 274 –" pattern (kanun + tebliğ metinlerinde).
 const MADDE_REGEX = /(?:^|\n|\s|\.)(MADDE|Madde)\s+(\d+[A-Za-z]?)\s*[\-–—]\s*([^\n]{0,100})/g;
 
-// Bölüm/Kısım başlıkları (TMS standartları için) — yine permissive
+// TMS/TFRS paragraf numarası pattern'i.
+// KGK standartları "Madde X" değil, paragraf numarasıyla yapılandırılır:
+//   "6 Aşağıdaki terimler bu Standartta..."
+//   "11 Stokların satın alma maliyetleri..."
+//   "25 23'üncü paragrafta belirtilenler dışında..." (rakamla başlayan paragraf)
+// Kurallar:
+// - (?:^|\n|[.;:]\s) → satır başı veya cümle ayıracı sonrası
+// - (\d{1,3}) → 1-3 haneli paragraf no (2025 gibi yıllarla karışmasın)
+// - \s+ → boşluk
+// - en az 5 kelimelik içerik snippet (tablo satırlarını dışla)
+const PARAGRAF_REGEX = /(?:^|\n|[.;:]\s)(\d{1,3})\s+(\S+(?:\s+\S+){4,})/g;
+
+// Bölüm/Kısım/§ başlıkları (TMS standartları için)
 const BASLIK_REGEX = /(?:^|\n|\s)(BÖLÜM|Bölüm|KISIM|Kısım|§)\s+(\d+)/g;
 
 interface BaslikIsareti {
@@ -45,9 +50,10 @@ interface BaslikIsareti {
 
 const baslikAyrist = (metin: string): BaslikIsareti[] => {
   const isaretler: BaslikIsareti[] = [];
-
-  MADDE_REGEX.lastIndex = 0;
   let m: RegExpExecArray | null;
+
+  // 1. "Madde X –" pattern'i (kanunlar + tebliğler)
+  MADDE_REGEX.lastIndex = 0;
   while ((m = MADDE_REGEX.exec(metin)) !== null) {
     const madde_no = m[2];
     const altBaslik = (m[3] || '').trim().slice(0, 80);
@@ -58,6 +64,20 @@ const baslikAyrist = (metin: string): BaslikIsareti[] => {
     });
   }
 
+  // 2. TMS/TFRS paragraf numarası pattern'i
+  //    Sadece MADDE eşleşmediği yerlerde çalışsın diye sonra arıyoruz.
+  PARAGRAF_REGEX.lastIndex = 0;
+  while ((m = PARAGRAF_REGEX.exec(metin)) !== null) {
+    const paragraf_no = m[1];
+    const onek = (m[2] || '').trim().slice(0, 80);
+    isaretler.push({
+      index: m.index,
+      baslik: `§ ${paragraf_no} — ${onek}`,
+      madde_no: paragraf_no,
+    });
+  }
+
+  // 3. Bölüm/Kısım başlıkları
   BASLIK_REGEX.lastIndex = 0;
   while ((m = BASLIK_REGEX.exec(metin)) !== null) {
     isaretler.push({
@@ -67,6 +87,9 @@ const baslikAyrist = (metin: string): BaslikIsareti[] => {
     });
   }
 
+  // İndex'e göre sırala. Aynı pozisyonda hem MADDE hem PARAGRAF eşleşmesi
+  // teorik mümkün değil (MADDE "Madde" ile başlar, PARAGRAF sayıyla);
+  // ama olursa MADDE'yi tercih ederiz (öncelik sırasıyla push ettik).
   return isaretler.sort((a, b) => a.index - b.index);
 };
 
