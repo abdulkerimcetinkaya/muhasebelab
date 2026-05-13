@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
 import { MarkdownLite } from './MarkdownLite';
 import { useIsPremium } from '../contexts/AuthContext';
-import { aiAsistan, AIKotaHatasi, type AIMesaj } from '../lib/ai';
+import { aiAsistanStream, AIKotaHatasi, type AIMesaj } from '../lib/ai';
 
 interface Props {
   acik: boolean;
@@ -57,21 +57,41 @@ export const AIAsistanYanPanel = ({ acik, onKapat, baglam }: Props) => {
     if (!metin || yukleniyor || kotaBitti) return;
     setHata(null);
     const yeni: AIMesaj[] = [...mesajlar, { role: 'user', content: metin }];
-    setMesajlar(yeni);
+    // Boş bir assistant balonu ekle — stream chunk'ları buraya akacak
+    setMesajlar([...yeni, { role: 'assistant', content: '' }]);
     setGirdi('');
     setYukleniyor(true);
     try {
-      const sonuc = await aiAsistan({
-        // İlk hoşgeldin mesajı backend'e geçmesin (her oturumda yeni oluşur)
-        mesajlar: yeni.slice(1),
-        baglam,
-      });
-      setMesajlar((prev) => [
-        ...prev,
-        { role: 'assistant' as const, content: sonuc.metin },
-      ]);
-      if (sonuc.kalan != null) setKalan(sonuc.kalan);
+      await aiAsistanStream(
+        {
+          // İlk hoşgeldin mesajı backend'e geçmesin
+          mesajlar: yeni.slice(1),
+          baglam,
+        },
+        (chunk) => {
+          // Her chunk için son assistant balonunun content'ine ekle
+          setMesajlar((prev) => {
+            const copy = [...prev];
+            const last = copy[copy.length - 1];
+            if (last && last.role === 'assistant') {
+              copy[copy.length - 1] = { ...last, content: last.content + chunk };
+            }
+            return copy;
+          });
+        },
+        (meta) => {
+          if (meta.kalan != null) setKalan(meta.kalan);
+        },
+      );
     } catch (e) {
+      // Stream hatası → son boş/eksik assistant balonunu temizle
+      setMesajlar((prev) => {
+        const last = prev[prev.length - 1];
+        if (last && last.role === 'assistant' && !last.content) {
+          return prev.slice(0, -1);
+        }
+        return prev;
+      });
       if (e instanceof AIKotaHatasi) {
         setKotaBitti(true);
         setKalan(0);

@@ -103,6 +103,93 @@ export const aiAsistan = (params: {
   baglam?: { soruBaslik?: string; senaryo?: string };
 }): Promise<AIYanit> => edgeFetch<AIYanit>('ai-asistan', params);
 
+/**
+ * Streaming sürüm — AI cevabı token-token gelir.
+ * onChunk her parçada çağrılır, onDone final metayla biter (kalan, premium).
+ * AIKotaHatasi fırlatabilir (kotanın bittiği durum).
+ */
+export const aiAsistanStream = async (
+  params: {
+    mesajlar: AIMesaj[];
+    baglam?: { soruBaslik?: string; senaryo?: string };
+  },
+  onChunk: (text: string) => void,
+  onDone?: (meta: { kalan?: number | null; premium?: boolean }) => void,
+): Promise<void> => {
+  const { data: oturum } = await supabase.auth.getSession();
+  const token = oturum.session?.access_token;
+  if (!token) throw new Error('Giriş yapmanız gerekiyor');
+
+  const supaUrl = import.meta.env.VITE_SUPABASE_URL;
+  if (!supaUrl) throw new Error('VITE_SUPABASE_URL tanımlı değil');
+  const url = `${supaUrl.replace(/\/$/, '')}/functions/v1/ai-asistan?stream=1`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  if (!res.ok || !res.body) {
+    // 4xx / 5xx: body'yi parse edip uygun hata fırlat
+    const body = await res.text().catch(() => '');
+    try {
+      const parsed = JSON.parse(body) as { premium_gerekli?: boolean; limit?: number; hata?: string };
+      if (parsed?.premium_gerekli) throw new AIKotaHatasi(parsed.limit ?? 3);
+      throw new Error(parsed?.hata ?? `Stream hatası ${res.status}`);
+    } catch (e) {
+      if (e instanceof AIKotaHatasi) throw e;
+      throw new Error(`Stream hatası ${res.status}: ${body.slice(0, 200)}`);
+    }
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let meta: { kalan?: number | null; premium?: boolean } = {};
+  let bittiSignal = false;
+
+  while (!bittiSignal) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const parts = buffer.split('\n\n');
+    buffer = parts.pop() ?? '';
+
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (!trimmed.startsWith('data:')) continue;
+      const json = trimmed.slice(5).trim();
+      if (!json) continue;
+      try {
+        const data = JSON.parse(json) as
+          | { type: 'meta'; kalan?: number | null; premium?: boolean }
+          | { type: 'chunk'; text: string }
+          | { type: 'done' }
+          | { type: 'error'; message: string };
+        if (data.type === 'meta') {
+          meta = { kalan: data.kalan, premium: data.premium };
+        } else if (data.type === 'chunk') {
+          onChunk(data.text);
+        } else if (data.type === 'error') {
+          throw new Error(data.message);
+        } else if (data.type === 'done') {
+          bittiSignal = true;
+        }
+      } catch (parseErr) {
+        // Parse hatası — sadece logla, devam et
+        console.warn('SSE parse hatası:', parseErr);
+      }
+    }
+  }
+
+  onDone?.(meta);
+};
+
 export const aiBelgeUret = (params: {
   soruBaslik: string;
   senaryo: string;
