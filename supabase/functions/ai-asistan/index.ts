@@ -7,6 +7,7 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import { kullaniciDogrula, premiumKontrol } from '../_shared/auth.ts';
 import { anthropicCagir, type AnthropicMesaj } from '../_shared/anthropic.ts';
+import { geminiStream } from '../_shared/gemini-stream.ts';
 import { embedOpenAI } from '../_shared/embed-openai.ts';
 import { guncelBilgiGerekiyor, tavilyAra, type TavilySonuc } from '../_shared/tavily.ts';
 
@@ -394,6 +395,55 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
 "güncel rakamı gib.gov.tr'den teyit et" yönlendirmesi yap.`;
     }
 
+    // Streaming mode: URL'de ?stream=1 varsa SSE format yanıt döner.
+    // Kullanıcı yazıyorken token-token görür, algılanan süre azalır.
+    const stream = new URL(req.url).searchParams.get('stream') === '1';
+    if (stream) {
+      const encoder = new TextEncoder();
+      const contents = kesit.map((m) => ({
+        role: (m.role === 'assistant' ? 'model' : 'user') as 'user' | 'model',
+        parts: [{ text: m.content }],
+      }));
+
+      const responseStream = new ReadableStream({
+        async start(controller) {
+          // Açılış meta — quota ve premium bilgisi
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({ type: 'meta', kalan, premium })}\n\n`,
+            ),
+          );
+
+          try {
+            for await (const chunk of geminiStream(systemPrompt, contents, 400)) {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ type: 'chunk', text: chunk })}\n\n`),
+              );
+            }
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
+          } catch (e) {
+            controller.enqueue(
+              encoder.encode(
+                `data: ${JSON.stringify({ type: 'error', message: (e as Error).message })}\n\n`,
+              ),
+            );
+          } finally {
+            controller.close();
+          }
+        },
+      });
+
+      return new Response(responseStream, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/event-stream; charset=utf-8',
+          'Cache-Control': 'no-cache, no-transform',
+          'X-Accel-Buffering': 'no', // proxy buffering kapat
+        },
+      });
+    }
+
+    // Non-stream (geri uyumluluk) — eski JSON yolu
     const yanit = await anthropicCagir(systemPrompt, kesit, 400);
 
     return new Response(
