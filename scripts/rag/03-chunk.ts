@@ -24,11 +24,18 @@ const HEDEF_KARAKTER = tokenToKarakter(HEDEF_TOKEN);
 const MAX_KARAKTER = tokenToKarakter(MAX_TOKEN);
 const MIN_KARAKTER = tokenToKarakter(MIN_TOKEN);
 
-// "Madde 274" veya "Madde 274 —" veya "MADDE 274 - Emtia" gibi
-const MADDE_REGEX = /(?:^|\n)\s*(MADDE|Madde)\s+(\d+[A-Za-z]?)\s*[—\-–:.]?\s*(.*?)(?=\n|$)/g;
+// "Madde 274 –" pattern.
+// - (?:^|\n|\s|\.) → satır başı, newline, boşluk veya nokta önde olabilir
+//   (PDF text bazen satırları birleştiriyor, satır içinde geçen "Madde X" da yakalanmalı)
+// - (MADDE|Madde) → büyük/küçük M kabul; küçük harf "madde" referans cümlesi olur, atla
+// - (\d+[A-Za-z]?) → 5 veya 175A gibi numara
+// - [\-–—] (zorunlu) → tire/en-dash/em-dash. Referans cümleleri ("5'inci madde")
+//   bu tireyi taşımaz, böylece false-positive engelleniyor
+// - (.{0,100}) → tire sonrası kısa içerik öneki (snippet)
+const MADDE_REGEX = /(?:^|\n|\s|\.)(MADDE|Madde)\s+(\d+[A-Za-z]?)\s*[\-–—]\s*([^\n]{0,100})/g;
 
-// Bölüm/Kısım başlıkları (TMS standartları için)
-const BASLIK_REGEX = /(?:^|\n)\s*(BÖLÜM|Bölüm|KISIM|Kısım|§)\s+(\d+)/g;
+// Bölüm/Kısım başlıkları (TMS standartları için) — yine permissive
+const BASLIK_REGEX = /(?:^|\n|\s)(BÖLÜM|Bölüm|KISIM|Kısım|§)\s+(\d+)/g;
 
 interface BaslikIsareti {
   index: number;          // metin içindeki konum
