@@ -1,0 +1,62 @@
+name: Supabase Edge Functions Deploy
+
+# Tetikleyiciler:
+# 1. main'e push olduğunda + supabase/functions/** altında değişiklik varsa
+# 2. workflow_dispatch — manuel "Run workflow" düğmesi (acil deploy için)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/functions/**'
+      - 'supabase/migrations/**'
+      - '.github/workflows/supabase-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      function:
+        description: 'Sadece belirli function deploy et (boş = hepsi)'
+        required: false
+        default: ''
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Repo checkout
+        uses: actions/checkout@v4
+
+      - name: Supabase CLI kur
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Tüm Edge Function'ları deploy et
+        if: ${{ inputs.function == '' || github.event_name == 'push' }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -e
+          for dir in supabase/functions/*/; do
+            name=$(basename "$dir")
+            if [ "$name" = "_shared" ]; then continue; fi
+            echo "→ deploy ediliyor: $name"
+            supabase functions deploy "$name" --project-ref "$SUPABASE_PROJECT_REF"
+          done
+
+      - name: Tek bir function deploy et (manuel input)
+        if: ${{ inputs.function != '' && github.event_name == 'workflow_dispatch' }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          supabase functions deploy "${{ inputs.function }}" --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Hata özeti
+        if: failure()
+        run: |
+          echo "::error::Edge Function deploy başarısız — logları kontrol et"
+          echo "Sık karşılaşılan sorunlar:"
+          echo "  - SUPABASE_ACCESS_TOKEN secret'ı eksik veya geçersiz"
+          echo "  - SUPABASE_PROJECT_REF yanlış (Settings → General → Reference ID)"
+          echo "  - Edge Function kodu derlenmiyor (Deno syntax hatası)"
