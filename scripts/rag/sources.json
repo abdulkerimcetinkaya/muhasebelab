@@ -1,14 +1,15 @@
 {
-  "$schema_note": "RAG pipeline kaynak listesi. URL şemaları: 'https://...' = direkt indir; 'storage://bucket/file' = Supabase Storage (env SUPABASE_URL'den çözülür).",
+  "$schema_note": "RAG kaynak listesi. Tüm URL'ler 'storage://bucket/file' şemasındadır — Supabase Storage'tan okunur. SUPABASE_URL env'ine göre çözülür.",
   "$kategori_kurali": "Sadece Kategori 1 = açık/resmi kaynaklar. Telifli içerik girilemez.",
-  "$tertip_notu": "mevzuat.gov.tr URL'lerinde Tertip: pre-1980 kanunlar 1.4.X, post-1980 1.5.X formatındadır.",
+  "$kurulum_notu": "Bu listenin çalışması için Supabase Storage'da 'rag-kaynaklar' adında Public bucket olmalı ve 12 PDF aşağıdaki dosya isimleriyle yüklenmiş olmalı. Tam talimat: scripts/rag/README.md",
   "kaynaklar": [
     {
       "id": "vuk",
       "baslik": "Vergi Usul Kanunu (213 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.4.213.pdf",
+      "url": "storage://rag-kaynaklar/vuk.pdf",
+      "kaynak_url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.4.213.pdf",
       "format": "pdf",
       "yayim_tarihi": "1961-01-10",
       "konular": ["belge-duzeni", "degerleme", "defter", "amortisman", "ceza"]
@@ -18,7 +19,8 @@
       "baslik": "Gelir Vergisi Kanunu (193 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.4.193.pdf",
+      "url": "storage://rag-kaynaklar/gvk.pdf",
+      "kaynak_url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.4.193.pdf",
       "format": "pdf",
       "yayim_tarihi": "1960-12-31",
       "konular": ["personel", "ucret", "stopaj", "gelir-vergisi"]
@@ -28,17 +30,19 @@
       "baslik": "Kurumlar Vergisi Kanunu (5520 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5520.pdf",
+      "url": "storage://rag-kaynaklar/kvk.pdf",
+      "kaynak_url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5520.pdf",
       "format": "pdf",
       "yayim_tarihi": "2006-06-13",
       "konular": ["kurumlar-vergisi", "gelir-tablosu", "kapanis"]
     },
     {
-      "id": "kdvk",
+      "id": "kdv",
       "baslik": "Katma Değer Vergisi Kanunu (3065 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.3065.pdf",
+      "url": "storage://rag-kaynaklar/kdv.pdf",
+      "kaynak_url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.3065.pdf",
       "format": "pdf",
       "yayim_tarihi": "1984-11-02",
       "konular": ["kdv", "tevkifat", "kdv-iade"]
@@ -48,7 +52,8 @@
       "baslik": "Türk Ticaret Kanunu (6102 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.6102.pdf",
+      "url": "storage://rag-kaynaklar/ttk.pdf",
+      "kaynak_url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.6102.pdf",
       "format": "pdf",
       "yayim_tarihi": "2011-01-14",
       "konular": ["defter-tutma", "ticari-alacak", "ticari-borc", "cek", "senet", "police"]
@@ -58,7 +63,8 @@
       "baslik": "Sosyal Sigortalar ve Genel Sağlık Sigortası Kanunu (5510 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5510.pdf",
+      "url": "storage://rag-kaynaklar/sgk-5510.pdf",
+      "kaynak_url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5510.pdf",
       "format": "pdf",
       "yayim_tarihi": "2006-05-31",
       "konular": ["personel", "sgk-primi", "is-kazasi"]
@@ -68,7 +74,8 @@
       "baslik": "İş Kanunu (4857 sayılı)",
       "kategori": "kanun",
       "yayinci": "Resmi Gazete",
-      "url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.4857.pdf",
+      "url": "storage://rag-kaynaklar/is-kanunu-4857.pdf",
+      "kaynak_url": "https://www.mevzuat.gov.tr/MevzuatMetin/1.5.4857.pdf",
       "format": "pdf",
       "yayim_tarihi": "2003-05-22",
       "konular": ["personel", "is-sozlesmesi", "kidem", "ihbar"]
@@ -79,11 +86,11 @@
       "kategori": "teblig",
       "yayinci": "Resmi Gazete",
       "url": "storage://rag-kaynaklar/msugt-1.pdf",
+      "kaynak_url": "https://www.resmigazete.gov.tr/arsiv/21447_1.pdf",
       "format": "pdf",
       "yayim_tarihi": "1992-12-26",
       "konular": ["hesap-plani", "tum-uniteler"],
-      "kritiklik": "yuksek",
-      "not": "Resmi Gazete arşiv URL'leri kararsız — Supabase Storage'a manuel yüklenir."
+      "kritiklik": "yuksek"
     },
     {
       "id": "tms-2",
@@ -91,9 +98,9 @@
       "kategori": "standart",
       "yayinci": "KGK",
       "url": "storage://rag-kaynaklar/tms-2.pdf",
+      "kaynak_url": "https://www.kgk.gov.tr/",
       "format": "pdf",
-      "konular": ["stoklar", "mal-alis", "mal-satis", "stok-degerleme"],
-      "not": "KGK PDF URL'leri 2026'da değişti — Storage'a manuel yüklenir."
+      "konular": ["stoklar", "mal-alis", "mal-satis", "stok-degerleme"]
     },
     {
       "id": "tms-16",
@@ -101,6 +108,7 @@
       "kategori": "standart",
       "yayinci": "KGK",
       "url": "storage://rag-kaynaklar/tms-16.pdf",
+      "kaynak_url": "https://www.kgk.gov.tr/",
       "format": "pdf",
       "konular": ["mdv", "amortisman", "donem-sonu"]
     },
@@ -110,6 +118,7 @@
       "kategori": "standart",
       "yayinci": "KGK",
       "url": "storage://rag-kaynaklar/tms-37.pdf",
+      "kaynak_url": "https://www.kgk.gov.tr/",
       "format": "pdf",
       "konular": ["reeskont", "karsilik"]
     },
@@ -119,9 +128,14 @@
       "kategori": "standart",
       "yayinci": "KGK",
       "url": "storage://rag-kaynaklar/tfrs-15.pdf",
+      "kaynak_url": "https://www.kgk.gov.tr/",
       "format": "pdf",
       "konular": ["hasilat", "gelir-tablosu", "satis"]
     }
   ],
-  "$pasif_kaynaklar_notu": "VUK Genel Tebliğleri (100+ ayrı PDF) geçici olarak çıkarıldı — ayrı bir scraper gerekiyor. İlk batch çalıştıktan sonra eklenecek."
+  "$ileride_eklenecekler": [
+    "VUK Genel Tebliğleri (~100+ PDF) — ayrı bir batch upload sonrası eklenecek",
+    "TFRS 9 Finansal Araçlar — ileride personel/maaş için önemli",
+    "TMS 12 Gelir Vergileri — ertelenmiş vergi için"
+  ]
 }

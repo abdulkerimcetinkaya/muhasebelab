@@ -11,7 +11,10 @@ export interface Kaynak {
   baslik: string;
   kategori: Kategori;
   yayinci: string;
+  /** Pipeline'ın PDF'i indirdiği yer (storage:// veya https://). DB'ye yazılmaz. */
   url: string;
+  /** Kullanıcıya gösterilecek orijinal kaynak linki (DB'ye yazılır, AI cevabında atıf olur). */
+  kaynak_url?: string;
   format: Format;
   yayim_tarihi?: string;
   konular?: string[];

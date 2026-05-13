@@ -43,30 +43,51 @@ npm run rag:tek vuk,tms-2
 
 ## İlk kurulum (sadece bir kez)
 
-### 1. KGK ve MSUGT PDF'lerini Supabase Storage'a yükle
+### 1. Tüm 12 PDF'i Supabase Storage'a yükle
 
-Resmi sitelerin URL'leri değişebildiği için 5 kaynak Supabase Storage'tan okutuluyor.
+Tüm kaynaklar Supabase Storage'tan okunur — tek bir yer, kararlı, anti-bot derdi yok.
 
 **a)** Supabase Dashboard → **Storage** → **New bucket**
 - Name: `rag-kaynaklar`
 - Public bucket: **ON** (pipeline anon olarak okuyacak)
 - Create
 
-**b)** Aşağıdaki 5 PDF'i tarayıcıdan indir ve bucket'a yükle (dosya isimleri **birebir** olmalı):
+**b)** Aşağıdaki 12 PDF'i indir + bucket'a yükle (dosya isimleri **birebir** olmalı):
 
-| Dosya adı | Kaynak |
+#### Kanunlar (mevzuat.gov.tr — link tıklayınca PDF indirme başlar)
+
+| Bağlantı | Dosya adı | Boyut |
+|---|---|---|
+| [VUK — 213 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.4.213.pdf) | `vuk.pdf` | 1.4 MB |
+| [GVK — 193 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.4.193.pdf) | `gvk.pdf` | 1.2 MB |
+| [KVK — 5520 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5520.pdf) | `kvk.pdf` | 0.9 MB |
+| [KDV — 3065 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.3065.pdf) | `kdv.pdf` | 0.8 MB |
+| [TTK — 6102 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.6102.pdf) | `ttk.pdf` | 3.5 MB |
+| [SGK — 5510 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5510.pdf) | `sgk-5510.pdf` | 2.4 MB |
+| [İş Kanunu — 4857 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.4857.pdf) | `is-kanunu-4857.pdf` | 0.6 MB |
+
+#### MSUGT (Tek Düzen Hesap Planı)
+
+| Bağlantı | Dosya adı |
 |---|---|
-| `msugt-1.pdf` | Muhasebe Sistemi Uygulama Genel Tebliği Sıra 1 (TDHP — Resmi Gazete 26.12.1992 arşivi) |
-| `tms-2.pdf` | TMS 2 Stoklar — kgk.gov.tr |
-| `tms-16.pdf` | TMS 16 Maddi Duran Varlıklar — kgk.gov.tr |
-| `tms-37.pdf` | TMS 37 Karşılıklar — kgk.gov.tr |
-| `tfrs-15.pdf` | TFRS 15 Hasılat — kgk.gov.tr |
+| [Resmi Gazete 26.12.1992 (21447) arşivi](https://www.resmigazete.gov.tr/arsiv/21447_1.pdf) | `msugt-1.pdf` |
 
-> Tüm bunları **kgk.gov.tr** ana sayfasından arama ile bulabilirsin. Eğer tek tek aramak zor geliyorsa, KGK her sene "TMS/TFRS Seti" diye tek zip yayınlıyor — onu indirip içindeki PDF'leri ayrı ayrı upload edebilirsin.
+> Eğer Resmi Gazete arşivi açılmazsa Google'da `"Muhasebe Sistemi Uygulama Genel Tebliği Sıra No 1" filetype:pdf` aratıp ilk sonucu indir — kanun metni ortaktır, copyright yok.
 
-**c)** Yüklediğinde URL'ler şu formatta olmalı (test et):
+#### TMS/TFRS standartları (kgk.gov.tr)
+
+KGK ana sayfası → **"Yayınlar"** → **"Türkiye Finansal Raporlama Standartları (TFRS) Seti"** zip'i indir, içinden şu 4 dosyayı çıkar ve **yeniden adlandır**:
+
+| KGK içindeki dosya adı | Bizim dosya adımız |
+|---|---|
+| TMS 2 ile başlayan PDF | `tms-2.pdf` |
+| TMS 16 ile başlayan PDF | `tms-16.pdf` |
+| TMS 37 ile başlayan PDF | `tms-37.pdf` |
+| TFRS 15 ile başlayan PDF | `tfrs-15.pdf` |
+
+**c)** Yükleme sonrası test et — şu URL tarayıcıda PDF açmalı:
 ```
-https://<proje>.supabase.co/storage/v1/object/public/rag-kaynaklar/tms-2.pdf
+https://<proje-id>.supabase.co/storage/v1/object/public/rag-kaynaklar/vuk.pdf
 ```
 
 ### 2. Supabase migration'ı uygula
