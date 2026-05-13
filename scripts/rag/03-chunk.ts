@@ -50,7 +50,7 @@ interface BaslikIsareti {
   madde_no: string | null;
 }
 
-const baslikAyrist = (metin: string): BaslikIsareti[] => {
+const baslikAyrist = (metin: string, kategori?: string): BaslikIsareti[] => {
   const isaretler: BaslikIsareti[] = [];
   let m: RegExpExecArray | null;
 
@@ -66,17 +66,23 @@ const baslikAyrist = (metin: string): BaslikIsareti[] => {
     });
   }
 
-  // 2. TMS/TFRS paragraf numarası pattern'i
-  //    Sadece MADDE eşleşmediği yerlerde çalışsın diye sonra arıyoruz.
-  PARAGRAF_REGEX.lastIndex = 0;
-  while ((m = PARAGRAF_REGEX.exec(metin)) !== null) {
-    const paragraf_no = m[1];
-    const onek = (m[2] || '').trim().slice(0, 80);
-    isaretler.push({
-      index: m.index,
-      baslik: `§ ${paragraf_no} — ${onek}`,
-      madde_no: paragraf_no,
-    });
+  // 2. TMS/TFRS paragraf numarası pattern'i.
+  //    Standartlar için bu pattern'i ATLA — TMS PDF iç yapısı tutarsız,
+  //    paragraf numaraları unpdf çıktısında güvenilir çıkmıyor.
+  //    Bunun yerine standart chunk'ları null madde_no ile bırakıp atıfı
+  //    "TMS X — başlık" (genel) düzeyinde tutuyoruz. İleride PDF-yapısı-
+  //    duyarlı bir parser yazılırsa açılır.
+  if (kategori !== 'standart') {
+    PARAGRAF_REGEX.lastIndex = 0;
+    while ((m = PARAGRAF_REGEX.exec(metin)) !== null) {
+      const paragraf_no = m[1];
+      const onek = (m[2] || '').trim().slice(0, 80);
+      isaretler.push({
+        index: m.index,
+        baslik: `§ ${paragraf_no} — ${onek}`,
+        madde_no: paragraf_no,
+      });
+    }
   }
 
   // 3. Bölüm/Kısım başlıkları
@@ -89,17 +95,14 @@ const baslikAyrist = (metin: string): BaslikIsareti[] => {
     });
   }
 
-  // İndex'e göre sırala. Aynı pozisyonda hem MADDE hem PARAGRAF eşleşmesi
-  // teorik mümkün değil (MADDE "Madde" ile başlar, PARAGRAF sayıyla);
-  // ama olursa MADDE'yi tercih ederiz (öncelik sırasıyla push ettik).
   return isaretler.sort((a, b) => a.index - b.index);
 };
 
 /**
  * Madde sınırlarına göre böl. Madde yoksa paragraf+boyut bazlı böl.
  */
-const segmentle = (metin: string): { baslik: string | null; madde_no: string | null; metin: string }[] => {
-  const isaretler = baslikAyrist(metin);
+const segmentle = (metin: string, kategori?: string): { baslik: string | null; madde_no: string | null; metin: string }[] => {
+  const isaretler = baslikAyrist(metin, kategori);
 
   if (isaretler.length > 0) {
     // Madde sınırlarına göre kes
@@ -191,7 +194,7 @@ const segmentiBol = (
 
 export const chunkla = (cikartilmis: CikartilmisKaynak): Chunk[] => {
   const { kaynak, metin } = cikartilmis;
-  const segmentler = segmentle(metin);
+  const segmentler = segmentle(metin, kaynak.kategori);
   const chunks: Chunk[] = [];
   let sira = 0;
 
