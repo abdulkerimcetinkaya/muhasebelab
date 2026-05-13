@@ -29,13 +29,17 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 const BATCH = 50; // PgREST insert payload sınırı (~5MB)
 
 export const kaynakKaydet = async (kaynak: Kaynak, icerikHash: string) => {
+  // DB'deki url = kullanıcıya gösterilen orijinal link (kaynak_url varsa o,
+  // yoksa pipeline'ın indirdiği URL — storage:// olmamalı, kullanıcı görür).
+  const kullaniciyaGosterilenUrl = kaynak.kaynak_url ?? kaynak.url;
+
   const { error } = await supabase.from('rag_kaynaklar').upsert(
     {
       id: kaynak.id,
       baslik: kaynak.baslik,
       kategori: kaynak.kategori,
       yayinci: kaynak.yayinci,
-      url: kaynak.url,
+      url: kullaniciyaGosterilenUrl,
       format: kaynak.format,
       yayim_tarihi: kaynak.yayim_tarihi ?? null,
       son_indirme: new Date().toISOString(),

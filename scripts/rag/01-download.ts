@@ -21,18 +21,54 @@ const USER_AGENT =
 
 const TIMEOUT_MS = 60_000;
 
-const indir = async (url: string, format: 'pdf' | 'html'): Promise<Buffer | string> => {
+/**
+ * URL şemasını çöz:
+ *   - https://... → değişmez
+ *   - storage://bucket/file → Supabase Storage public URL'ine genişletilir
+ *
+ * Storage şeması projenin SUPABASE_URL env'inden çözülür — config taşınabilir,
+ * proje URL'i değişirse sources.json güncellemeye gerek yok.
+ */
+export const urlCoz = (url: string): string => {
+  if (url.startsWith('storage://')) {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    if (!supabaseUrl) {
+      throw new Error('SUPABASE_URL env tanımlı değil — storage:// URL çözülemez');
+    }
+    const yol = url.slice('storage://'.length); // bucket/file
+    return `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/${yol}`;
+  }
+  return url;
+};
+
+const indir = async (
+  url: string,
+  format: 'pdf' | 'html',
+): Promise<Buffer | string> => {
+  const cozulmusUrl = urlCoz(url);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const yanit = await fetch(url, {
-      headers: { 'User-Agent': USER_AGENT, Accept: format === 'pdf' ? 'application/pdf' : 'text/html' },
+    const yanit = await fetch(cozulmusUrl, {
+      headers: {
+        'User-Agent': USER_AGENT,
+        Accept: format === 'pdf' ? 'application/pdf' : 'text/html',
+      },
+      redirect: 'follow',
       signal: controller.signal,
     });
 
     if (!yanit.ok) {
-      throw new Error(`HTTP ${yanit.status} ${yanit.statusText}`);
+      throw new Error(`HTTP ${yanit.status} ${yanit.statusText} (${cozulmusUrl})`);
+    }
+
+    // Content-Type kontrolü: error sayfası (HTML) PDF olarak geldiyse algıla
+    const contentType = yanit.headers.get('content-type') ?? '';
+    if (format === 'pdf' && !contentType.includes('application/pdf')) {
+      throw new Error(
+        `PDF beklenirdi ama '${contentType}' döndü. URL muhtemelen geçersiz: ${cozulmusUrl}`,
+      );
     }
 
     if (format === 'pdf') {

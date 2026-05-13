@@ -43,7 +43,54 @@ npm run rag:tek vuk,tms-2
 
 ## İlk kurulum (sadece bir kez)
 
-### 1. Supabase migration'ı uygula
+### 1. Tüm 12 PDF'i Supabase Storage'a yükle
+
+Tüm kaynaklar Supabase Storage'tan okunur — tek bir yer, kararlı, anti-bot derdi yok.
+
+**a)** Supabase Dashboard → **Storage** → **New bucket**
+- Name: `rag-kaynaklar`
+- Public bucket: **ON** (pipeline anon olarak okuyacak)
+- Create
+
+**b)** Aşağıdaki 12 PDF'i indir + bucket'a yükle (dosya isimleri **birebir** olmalı):
+
+#### Kanunlar (mevzuat.gov.tr — link tıklayınca PDF indirme başlar)
+
+| Bağlantı | Dosya adı | Boyut |
+|---|---|---|
+| [VUK — 213 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.4.213.pdf) | `vuk.pdf` | 1.4 MB |
+| [GVK — 193 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.4.193.pdf) | `gvk.pdf` | 1.2 MB |
+| [KVK — 5520 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5520.pdf) | `kvk.pdf` | 0.9 MB |
+| [KDV — 3065 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.3065.pdf) | `kdv.pdf` | 0.8 MB |
+| [TTK — 6102 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.6102.pdf) | `ttk.pdf` | 3.5 MB |
+| [SGK — 5510 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.5510.pdf) | `sgk-5510.pdf` | 2.4 MB |
+| [İş Kanunu — 4857 sayılı](https://www.mevzuat.gov.tr/MevzuatMetin/1.5.4857.pdf) | `is-kanunu-4857.pdf` | 0.6 MB |
+
+#### MSUGT (Tek Düzen Hesap Planı)
+
+| Bağlantı | Dosya adı |
+|---|---|
+| [Resmi Gazete 26.12.1992 (21447) arşivi](https://www.resmigazete.gov.tr/arsiv/21447_1.pdf) | `msugt-1.pdf` |
+
+> Eğer Resmi Gazete arşivi açılmazsa Google'da `"Muhasebe Sistemi Uygulama Genel Tebliği Sıra No 1" filetype:pdf` aratıp ilk sonucu indir — kanun metni ortaktır, copyright yok.
+
+#### TMS/TFRS standartları (kgk.gov.tr)
+
+KGK ana sayfası → **"Yayınlar"** → **"Türkiye Finansal Raporlama Standartları (TFRS) Seti"** zip'i indir, içinden şu 4 dosyayı çıkar ve **yeniden adlandır**:
+
+| KGK içindeki dosya adı | Bizim dosya adımız |
+|---|---|
+| TMS 2 ile başlayan PDF | `tms-2.pdf` |
+| TMS 16 ile başlayan PDF | `tms-16.pdf` |
+| TMS 37 ile başlayan PDF | `tms-37.pdf` |
+| TFRS 15 ile başlayan PDF | `tfrs-15.pdf` |
+
+**c)** Yükleme sonrası test et — şu URL tarayıcıda PDF açmalı:
+```
+https://<proje-id>.supabase.co/storage/v1/object/public/rag-kaynaklar/vuk.pdf
+```
+
+### 2. Supabase migration'ı uygula
 
 `supabase/migrations/20260513000001_rag_vektor.sql` migration'ını uygulanmış olmalı. Supabase Dashboard → SQL Editor'da çalıştır, ya da Supabase CLI ile push et.
 
@@ -53,7 +100,7 @@ Bu migration:
 - `rag_ara()` RPC fonksiyonunu tanımlar (similarity search)
 - RLS politikalarını kurar (public read, service_role write)
 
-### 2. GitHub Secrets ekle
+### 3. GitHub Secrets ekle
 
 Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
 
@@ -63,7 +110,7 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 | `SUPABASE_URL` | Supabase Dashboard → Project Settings → API → `Project URL` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → `service_role` key (⚠ SECRET — anon key DEĞİL) |
 
-### 3. İlk workflow run
+### 4. İlk workflow run
 
 Actions → RAG Pipeline → Run workflow → boş bırak (hepsi) → Run.
 
