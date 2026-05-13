@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
 import { MarkdownLite } from './MarkdownLite';
 import { useIsPremium } from '../contexts/AuthContext';
-import { aiAsistan, AIKotaHatasi, type AIMesaj } from '../lib/ai';
+import { aiAsistan, AIKotaHatasi, type AIMesaj, type AIKaynak } from '../lib/ai';
 
 interface Props {
   acik: boolean;
@@ -11,17 +11,62 @@ interface Props {
   baglam?: { soruBaslik?: string; senaryo?: string };
 }
 
-const ilkMesaj = (baglam?: { soruBaslik?: string; senaryo?: string }): AIMesaj => ({
+// Panel içinde assistant mesajları RAG kaynaklarını da taşıyor.
+// API'ye giderken (sadece role+content beklenir) kaynaklar atılır.
+interface PanelMesaj extends AIMesaj {
+  kaynaklar?: AIKaynak[];
+}
+
+const ilkMesaj = (baglam?: { soruBaslik?: string; senaryo?: string }): PanelMesaj => ({
   role: 'assistant',
   content: baglam?.soruBaslik
     ? `Merhaba! Şu an **${baglam.soruBaslik}** üzerinde çalışıyorsun. Bu soruyu doğrudan çözmem ama takıldığın kavramı, hesap kodunu, KDV oranını veya yevmiye kuralını sorabilirsin — yol göstereyim.`
     : 'Merhaba! Tek Düzen Hesap Planı, yevmiye kayıtları, KDV, amortisman ve dönem sonu işlemleri konularında sana yardımcı olabilirim.',
 });
 
+const KaynakListesi = ({ kaynaklar }: { kaynaklar: AIKaynak[] }) => (
+  <div className="mt-3 pt-3 border-t border-line-soft space-y-1">
+    <div className="text-[9px] tracking-[0.22em] uppercase text-ink-mute font-bold mb-1.5">
+      Kaynaklar
+    </div>
+    {kaynaklar.map((k, i) => {
+      const etiket = k.madde_no
+        ? `Madde ${k.madde_no}`
+        : k.baslik !== k.kaynak
+          ? k.baslik
+          : '';
+      const link = k.url;
+      const icerik = (
+        <span className="flex items-baseline gap-1.5">
+          <span className="text-[11px] font-semibold text-ink truncate">{k.kaynak}</span>
+          {etiket && (
+            <span className="text-[10px] text-ink-mute font-mono">— {etiket}</span>
+          )}
+        </span>
+      );
+      return link ? (
+        <a
+          key={i}
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block hover:bg-bg-tint -mx-1 px-1 py-0.5 rounded transition"
+        >
+          {icerik}
+        </a>
+      ) : (
+        <div key={i} className="px-1 py-0.5">
+          {icerik}
+        </div>
+      );
+    })}
+  </div>
+);
+
 export const AIAsistanYanPanel = ({ acik, onKapat, baglam }: Props) => {
   const nav = useNavigate();
   const isPremium = useIsPremium();
-  const [mesajlar, setMesajlar] = useState<AIMesaj[]>(() => [ilkMesaj(baglam)]);
+  const [mesajlar, setMesajlar] = useState<PanelMesaj[]>(() => [ilkMesaj(baglam)]);
   const [girdi, setGirdi] = useState('');
   const [yukleniyor, setYukleniyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
@@ -56,19 +101,24 @@ export const AIAsistanYanPanel = ({ acik, onKapat, baglam }: Props) => {
     const metin = girdi.trim();
     if (!metin || yukleniyor || kotaBitti) return;
     setHata(null);
-    const yeni: AIMesaj[] = [...mesajlar, { role: 'user', content: metin }];
+    const yeni: PanelMesaj[] = [...mesajlar, { role: 'user', content: metin }];
     setMesajlar(yeni);
     setGirdi('');
     setYukleniyor(true);
     try {
       const sonuc = await aiAsistan({
         // İlk hoşgeldin mesajı backend'e geçmesin (her oturumda yeni oluşur)
-        mesajlar: yeni.slice(1),
+        // ve kaynaklar field'ı API'ye gitmesin — sadece role+content
+        mesajlar: yeni.slice(1).map((m): AIMesaj => ({ role: m.role, content: m.content })),
         baglam,
       });
       setMesajlar((prev) => [
         ...prev,
-        { role: 'assistant' as const, content: sonuc.metin },
+        {
+          role: 'assistant' as const,
+          content: sonuc.metin,
+          kaynaklar: sonuc.kaynaklar,
+        },
       ]);
       if (sonuc.kalan != null) setKalan(sonuc.kalan);
     } catch (e) {
@@ -153,7 +203,12 @@ export const AIAsistanYanPanel = ({ acik, onKapat, baglam }: Props) => {
                   {m.role === 'user' ? (
                     <div className="text-sm font-medium whitespace-pre-wrap">{m.content}</div>
                   ) : (
-                    <MarkdownLite text={m.content} />
+                    <>
+                      <MarkdownLite text={m.content} />
+                      {m.kaynaklar && m.kaynaklar.length > 0 && (
+                        <KaynakListesi kaynaklar={m.kaynaklar} />
+                      )}
+                    </>
                   )}
                 </div>
               </div>
