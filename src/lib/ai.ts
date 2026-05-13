@@ -7,10 +7,11 @@ export interface AIMesaj {
 }
 
 export interface AIKaynak {
-  kaynak: string;       // 'TDHP-MSUGT', 'VUK', 'KDV-UT' ...
-  baslik: string;       // 'Madde 234', '100 - KASA'
+  kaynak: string;             // örn. "Vergi Usul Kanunu (213 sayılı)"
+  baslik: string;             // örn. "Madde 274 — Emtia"
+  madde_no?: string | null;   // örn. "274" (chunk seviyesinde madde/paragraf no)
   url: string | null;
-  benzerlik: number;    // 0..1
+  benzerlik: number;          // 0..1
 }
 
 interface AIYanit {
