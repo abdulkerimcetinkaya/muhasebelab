@@ -1,4 +1,4 @@
-import type { Zorluk } from '../types';
+import type { ModulZorluk, Zorluk } from '../types';
 
 export const SINIF_ISIMLERI: Record<string, string> = {
   '1': 'Dönen Varlıklar',
@@ -115,6 +115,37 @@ export const ZORLUK_SIRA: Record<Zorluk, number> = {
   kolay: 1,
   orta: 2,
   zor: 3,
+};
+
+// Modül zorluk seviyesi — soru zorluğundan ayrı bir kavram (modül seviyesi).
+// Sadece badge / kart kenar çizgisi için kullanılır, ana arayüzde değil.
+
+export const MODUL_ZORLUK_AD: Record<ModulZorluk, string> = {
+  baslangic: 'Başlangıç',
+  orta: 'Orta',
+  ileri: 'İleri',
+  sinav: 'Sınav',
+};
+
+// Mevcut palet tokenları üzerinden — yeni sabit renk eklemiyoruz.
+// success → yeşil ailesi, premium → sarı/amber, danger → kırmızı, brand-deep → lacivert/mor
+export const MODUL_ZORLUK_BADGE: Record<ModulZorluk, string> = {
+  baslangic:
+    'bg-success/10 text-success border-success/30 dark:bg-success/15 dark:border-success/40',
+  orta:
+    'bg-premium-soft text-premium-deep border-premium-soft dark:bg-premium-soft/30 dark:text-premium dark:border-premium-deep/40',
+  ileri:
+    'bg-danger-soft text-danger border-danger/30 dark:bg-danger/15 dark:text-danger dark:border-danger/40',
+  sinav:
+    'bg-brand-soft text-brand-deep border-brand-soft dark:bg-brand-soft/30 dark:text-brand dark:border-brand-deep/40',
+};
+
+// Modül kartı sol kenar çizgisi (accent stripe). border-l-4 ile birlikte kullanılır.
+export const MODUL_ZORLUK_KENAR: Record<ModulZorluk, string> = {
+  baslangic: 'border-l-success',
+  orta: 'border-l-premium-deep dark:border-l-premium',
+  ileri: 'border-l-danger',
+  sinav: 'border-l-brand-deep dark:border-l-brand',
 };
 
 export const STORAGE_KEY = 'mli_progress_v3';

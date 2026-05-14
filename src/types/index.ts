@@ -154,6 +154,8 @@ export interface Soru {
   cozum: CozumSatir[];
   belgeler?: Belge[];
   konuId?: string | null;
+  /** Yeni atölye yapısı: hangi alt başlığa bağlı. Null ise eski seed. */
+  altBaslikId?: string | null;
   /** Katkıcı ekledi ise yazar user_id'si. Adı/unvanı ek sorguyla çekilir. */
   ekleyenId?: string | null;
 }
@@ -189,6 +191,43 @@ export interface Unite {
   sorular: Soru[];
   /** Alt-konular — sırayla. Boşsa eski yapı (sorular doğrudan ünitede). */
   konular?: Konu[];
+  /** Yeni atölye yapısı — modüller. Boşsa bu ünite henüz modüllenmedi. */
+  moduller?: Modul[];
+}
+
+/**
+ * Modül zorluk seviyesi — soru zorluğundan ayrı bir kavram.
+ * Modül seviyeyi temsil eder; modül içindeki sorular `Zorluk` (kolay/orta/zor) taşır.
+ */
+export type ModulZorluk = 'baslangic' | 'orta' | 'ileri' | 'sinav';
+
+/**
+ * Atölye modülü — bir ünitenin altında sıralı çalışma birimi.
+ * Modül 1 → 9 ilerleyişi, her modül kendi alt başlıkları üzerinden tamamlanır.
+ */
+export interface Modul {
+  id: string;
+  uniteId: string;
+  sira: number;
+  baslik: string;
+  aciklama: string | null;
+  zorlukSeviyesi: ModulZorluk;
+  /** Opsiyonel modüller bir sonrakini kilitlemez (örn. M8). */
+  opsiyonel: boolean;
+  altBasliklar: AltBaslik[];
+}
+
+/**
+ * Alt başlık — bir modülün içindeki atölye birimi.
+ * Senaryolar (sorular) buraya bağlanır. Karma alt başlıklar UI'da yıldız ile vurgulanır.
+ */
+export interface AltBaslik {
+  id: string;
+  modulId: string;
+  sira: number;
+  baslik: string;
+  karma: boolean;
+  sorular: Soru[];
 }
 
 export interface UserRow {
