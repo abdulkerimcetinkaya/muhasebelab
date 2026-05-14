@@ -45,6 +45,7 @@ export type SorularRow = {
   id: string;
   unite_id: string;
   konu_id: string | null;
+  alt_baslik_id: string | null;
   baslik: string;
   zorluk: Zorluk;
   senaryo: string;
@@ -68,6 +69,30 @@ export type UniteKonusuRow = {
   icerik: unknown | null;
   icerik_guncellendi: string | null;
   sira: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ModulZorlukDb = 'baslangic' | 'orta' | 'ileri' | 'sinav';
+
+export type UniteModuluRow = {
+  id: string;
+  unite_id: string;
+  sira: number;
+  baslik: string;
+  aciklama: string | null;
+  zorluk_seviyesi: ModulZorlukDb;
+  opsiyonel: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ModulAltBaslikRow = {
+  id: string;
+  modul_id: string;
+  sira: number;
+  baslik: string;
+  karma: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -353,12 +378,13 @@ export type Database = {
       };
       sorular: {
         Row: SorularRow;
-        Insert: Omit<SorularRow, 'created_at' | 'updated_at' | 'belgeler' | 'durum' | 'ekleyen_id'> & {
+        Insert: Omit<SorularRow, 'created_at' | 'updated_at' | 'belgeler' | 'durum' | 'ekleyen_id' | 'alt_baslik_id'> & {
           created_at?: string;
           updated_at?: string;
           belgeler?: unknown;
           durum?: SoruDurum;
           ekleyen_id?: string | null;
+          alt_baslik_id?: string | null;
         };
         Update: Partial<SorularRow>;
         Relationships: [];
@@ -474,6 +500,30 @@ export type Database = {
           sira?: number;
         };
         Update: Partial<UniteKonusuRow>;
+        Relationships: [];
+      };
+      unite_modulleri: {
+        Row: UniteModuluRow;
+        Insert: Omit<UniteModuluRow, 'created_at' | 'updated_at' | 'aciklama' | 'sira' | 'zorluk_seviyesi' | 'opsiyonel'> & {
+          created_at?: string;
+          updated_at?: string;
+          aciklama?: string | null;
+          sira?: number;
+          zorluk_seviyesi?: ModulZorlukDb;
+          opsiyonel?: boolean;
+        };
+        Update: Partial<UniteModuluRow>;
+        Relationships: [];
+      };
+      modul_alt_basliklari: {
+        Row: ModulAltBaslikRow;
+        Insert: Omit<ModulAltBaslikRow, 'created_at' | 'updated_at' | 'sira' | 'karma'> & {
+          created_at?: string;
+          updated_at?: string;
+          sira?: number;
+          karma?: boolean;
+        };
+        Update: Partial<ModulAltBaslikRow>;
         Relationships: [];
       };
       bildirimler: {

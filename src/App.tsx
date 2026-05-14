@@ -54,6 +54,8 @@ const KatkiciSoruEkleSayfasi = lazy(() => import('./pages/KatkiciSoruEkleSayfasi
 const SozlukSayfasi = lazy(() => import('./pages/SozlukSayfasi').then((m) => ({ default: m.SozlukSayfasi })));
 const SozlukTerimSayfasi = lazy(() => import('./pages/SozlukTerimSayfasi').then((m) => ({ default: m.SozlukTerimSayfasi })));
 const KonuSayfasi = lazy(() => import('./pages/KonuSayfasi').then((m) => ({ default: m.KonuSayfasi })));
+const ModulSayfasi = lazy(() => import('./pages/ModulSayfasi').then((m) => ({ default: m.ModulSayfasi })));
+const AltBaslikSayfasi = lazy(() => import('./pages/AltBaslikSayfasi').then((m) => ({ default: m.AltBaslikSayfasi })));
 const DashboardSayfasi = lazy(() => import('./pages/DashboardSayfasi').then((m) => ({ default: m.DashboardSayfasi })));
 
 const SayfaYukleniyor = () => (
@@ -356,6 +358,14 @@ const App = () => {
             <Route path="/premium/kurum-odeme" element={<KurumOdemeSayfasi />} />
             <Route path="/uniteler" element={<UnitelerSayfasi ilerleme={ilerleme} />} />
             <Route path="/uniteler/:uniteId" element={<UniteSayfasi ilerleme={ilerleme} />} />
+            <Route
+              path="/uniteler/:uniteId/modul/:modulId"
+              element={<ModulSayfasi ilerleme={ilerleme} />}
+            />
+            <Route
+              path="/uniteler/:uniteId/modul/:modulId/alt/:altBaslikId"
+              element={<AltBaslikSayfasi ilerleme={ilerleme} />}
+            />
             <Route
               path="/uniteler/:uniteId/:konuId"
               element={<KonuSayfasi ilerleme={ilerleme} />}

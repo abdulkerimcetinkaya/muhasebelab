@@ -5,8 +5,20 @@ import { Thiings } from '../components/Thiings';
 import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
 import { TamamRozeti } from '../components/TamamRozeti';
 import { useUniteler } from '../contexts/UnitelerContext';
-import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
+import {
+  MODUL_ZORLUK_AD,
+  MODUL_ZORLUK_BADGE,
+  MODUL_ZORLUK_KENAR,
+  ZORLUK_AD,
+  ZORLUK_PUAN,
+  ZORLUK_STIL,
+} from '../data/sabitler';
 import { konuKilitliMi, konuTamamlandiMi } from '../lib/konu-kilit';
+import {
+  modulIlerlemeYuzde,
+  modulKilitDurumu,
+  uniteModulIlerleme,
+} from '../lib/modul-kilit';
 import type { Ilerleme } from '../types';
 
 const icerikDolu = (icerik: unknown | null | undefined): boolean =>
@@ -33,10 +45,12 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
     }
 
     // Akıllı yönlendirme (Yaklaşım C):
-    // Kullanıcı bu üniteye başladıysa (en az 1 soru çözmüş veya konu açmış)
-    // ve overview explicit istenmemişse → bıraktığı/devam edeceği konuya götür
+    // Modül yapısı varsa redirect kapalı — kullanıcı her zaman ünite overview'unda
+    // başlasın ve modül kartlarını görsün.
     if (overviewIstendi) return;
+    if ((unite.moduller?.length ?? 0) > 0) return;
 
+    // Eski konu yapısı için: en az 1 soru çözmüşse bıraktığı konuya götür.
     const cozulen = unite.sorular.filter((s) => ilerleme.cozulenler[s.id]).length;
     const ilkTamamlanmamisKonu = unite.konular?.find(
       (k) => !konuTamamlandiMi(k, ilerleme),
@@ -50,8 +64,11 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
 
   if (!unite) return null;
 
+  const moduller = unite.moduller ?? [];
+  const modulleriVar = moduller.length > 0;
   const konular = unite.konular ?? [];
-  const konulariVar = konular.length > 0;
+  // Modül yapısı varsa eski konu seksiyonunu gizle — atölye yapısı önceliklidir.
+  const konulariVar = !modulleriVar && konular.length > 0;
 
   // Konuya bağlanmamış sorular (eski seed) — geriye dönük uyum için ünite seviyesinde listelenir
   const baglanmamisSorular = unite.sorular.filter((s) => !s.konuId);
@@ -59,6 +76,16 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
   const toplam = unite.sorular.length;
   const cozulen = unite.sorular.filter((s) => ilerleme.cozulenler[s.id]).length;
   const yuzde = toplam > 0 ? Math.round((cozulen / toplam) * 100) : 0;
+
+  // Modül bazlı ilerleme — sadece moduller varsa kullanılır.
+  const modulIlerleme = modulleriVar
+    ? uniteModulIlerleme(moduller, ilerleme)
+    : null;
+
+  // İlk açık (kilitsiz, henüz tamamlanmamış) modül — "Devam Et" / "Başla" butonu için
+  const ilkAcikModul = modulleriVar
+    ? moduller.find((m) => modulKilitDurumu(moduller, m, ilerleme) === 'acik')
+    : null;
 
   // İlk tamamlanmamış konu — "Devam Et" butonu için. Yumuşak kilit:
   // sıralı ilerleyişi öneriyoruz, dolayısıyla "ilk tamamlanmamış" doğal olarak
@@ -105,7 +132,16 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
           <p className="text-lg text-ink-soft leading-relaxed font-medium max-w-2xl">
             {unite.aciklama}
           </p>
-          {konulariVar && ilkTamamlanmamisKonu ? (
+          {modulleriVar && ilkAcikModul ? (
+            <button
+              onClick={() => nav(`/uniteler/${unite.id}/modul/${ilkAcikModul.id}`)}
+              className="mt-6 bg-brand-deep hover:bg-brand-deep dark:bg-brand text-bg px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center gap-2 rounded-xl shadow-md"
+            >
+              <Icon name="Zap" size={14} />
+              {(modulIlerleme?.tamamAltBaslik ?? 0) > 0 ? 'Devam Et' : 'Atölyeye Başla'}
+              <Icon name="ArrowRight" size={14} />
+            </button>
+          ) : konulariVar && ilkTamamlanmamisKonu ? (
             <button
               onClick={() => nav(`/uniteler/${unite.id}/${ilkTamamlanmamisKonu.id}`)}
               className="mt-6 bg-brand-deep hover:bg-brand-deep dark:bg-brand text-bg px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center gap-2 rounded-xl shadow-md"
@@ -114,7 +150,7 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
               {cozulen > 0 ? 'Devam Et' : 'Çalışmaya Başla'}
               <Icon name="ArrowRight" size={14} />
             </button>
-          ) : !konulariVar && ilkCozulmemis ? (
+          ) : !konulariVar && !modulleriVar && ilkCozulmemis ? (
             <button
               onClick={() => nav(`/problemler/${ilkCozulmemis.id}`)}
               className="mt-6 bg-brand-deep hover:bg-brand-deep dark:bg-brand text-bg px-6 py-3 text-sm tracking-wide uppercase font-bold transition inline-flex items-center gap-2 rounded-xl shadow-md"
@@ -130,28 +166,177 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
           <div className="text-[10px] tracking-[0.3em] uppercase text-ink-mute mb-4 font-bold">
             İlerleme
           </div>
-          <div className="flex items-baseline justify-between mb-2">
-            <span className="font-display text-4xl font-bold tracking-tight">{cozulen}</span>
-            <span className="font-mono text-sm text-ink-mute font-bold">
-              / {toplam} soru
-            </span>
-          </div>
-          <div className="h-2 bg-surface-2 rounded overflow-hidden mb-4">
-            <div
-              className="h-full bg-brand-deep transition-all"
-              style={{ width: `${yuzde}%` }}
-            />
-          </div>
-          <div className="text-xs text-ink-mute font-semibold">
-            %{yuzde} tamamlandı
-          </div>
-          {konulariVar && (
-            <div className="mt-4 pt-4 border-t border-line text-[11px] text-ink-mute font-semibold">
-              {konular.length} alt-konu
-            </div>
+          {modulleriVar && modulIlerleme ? (
+            <>
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="font-display text-4xl font-bold tracking-tight">
+                  {modulIlerleme.tamamAltBaslik}
+                </span>
+                <span className="font-mono text-sm text-ink-mute font-bold">
+                  / {modulIlerleme.toplamAltBaslik} atölye
+                </span>
+              </div>
+              <div className="h-2 bg-surface-2 rounded overflow-hidden mb-4">
+                <div
+                  className="h-full bg-brand-deep transition-all"
+                  style={{ width: `${modulIlerleme.yuzde}%` }}
+                />
+              </div>
+              <div className="text-xs text-ink-mute font-semibold">
+                %{modulIlerleme.yuzde} tamamlandı
+              </div>
+              <div className="mt-4 pt-4 border-t border-line text-[11px] text-ink-mute font-semibold">
+                {moduller.length} modül · Yaklaşık 8-10 saatlik atölye
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="font-display text-4xl font-bold tracking-tight">{cozulen}</span>
+                <span className="font-mono text-sm text-ink-mute font-bold">
+                  / {toplam} soru
+                </span>
+              </div>
+              <div className="h-2 bg-surface-2 rounded overflow-hidden mb-4">
+                <div
+                  className="h-full bg-brand-deep transition-all"
+                  style={{ width: `${yuzde}%` }}
+                />
+              </div>
+              <div className="text-xs text-ink-mute font-semibold">
+                %{yuzde} tamamlandı
+              </div>
+              {konulariVar && (
+                <div className="mt-4 pt-4 border-t border-line text-[11px] text-ink-mute font-semibold">
+                  {konular.length} alt-konu
+                </div>
+              )}
+            </>
           )}
         </aside>
       </div>
+
+      {/* Modül kartları — atölye yapısı (yeni) */}
+      {modulleriVar && (
+        <section className="mb-12">
+          <div className="flex items-baseline justify-between mb-4">
+            <div className="flex items-baseline gap-3">
+              <h2 className="font-display text-2xl font-bold tracking-tight">Atölye Modülleri</h2>
+              <span className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+                Sırayla ilerle
+              </span>
+            </div>
+            <span className="text-xs text-ink-mute font-semibold">
+              {moduller.length} modül
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {moduller.map((m) => {
+              const durum = modulKilitDurumu(moduller, m, ilerleme);
+              const yuzdeMod = modulIlerlemeYuzde(m, ilerleme);
+              const altBaslikSayi = m.altBasliklar.length;
+              const tamamAltBaslik = m.altBasliklar.filter((a) =>
+                a.sorular.length > 0 && a.sorular.every((s) => !!ilerleme.cozulenler[s.id]),
+              ).length;
+              const kilitli = durum === 'kilitli';
+              const tamam = durum === 'tamamlandi';
+              return (
+                <button
+                  key={m.id}
+                  onClick={() =>
+                    !kilitli && nav(`/uniteler/${unite.id}/modul/${m.id}`)
+                  }
+                  disabled={kilitli}
+                  title={
+                    kilitli
+                      ? 'Önceki modülü tamamlayarak aç'
+                      : tamam
+                        ? 'Bu modülü tamamladın'
+                        : undefined
+                  }
+                  className={`text-left bg-surface border border-l-4 ${MODUL_ZORLUK_KENAR[m.zorlukSeviyesi]} rounded-2xl p-5 transition group ${
+                    kilitli
+                      ? 'border-line opacity-55 cursor-not-allowed'
+                      : tamam
+                        ? 'border-brand-soft dark:border-brand-deep/50 hover:border-brand hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]'
+                        : 'border-line hover:border-ink hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <span className="font-display text-3xl font-bold tracking-tight text-ink-mute font-mono leading-none">
+                      {String(m.sira).padStart(2, '0')}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[9px] tracking-[0.18em] uppercase font-bold px-2 py-0.5 rounded border ${MODUL_ZORLUK_BADGE[m.zorlukSeviyesi]}`}
+                      >
+                        {MODUL_ZORLUK_AD[m.zorlukSeviyesi]}
+                      </span>
+                      {m.opsiyonel && (
+                        <Icon
+                          name="Star"
+                          size={14}
+                          className="text-premium-deep dark:text-premium"
+                        />
+                      )}
+                      {kilitli ? (
+                        <Icon name="Lock" size={15} className="text-ink-quiet" />
+                      ) : tamam ? (
+                        <TamamRozeti size={16} />
+                      ) : tamamAltBaslik > 0 ? (
+                        <Icon
+                          name="CircleDashed"
+                          size={16}
+                          className="text-brand dark:text-brand-mute"
+                        />
+                      ) : (
+                        <Icon name="Circle" size={16} className="text-ink-quiet" />
+                      )}
+                    </div>
+                  </div>
+                  <h3
+                    className={`font-display text-lg font-bold tracking-tight mb-1.5 leading-snug transition ${
+                      kilitli
+                        ? 'text-ink-mute'
+                        : 'group-hover:text-brand dark:group-hover:text-brand-mute'
+                    }`}
+                  >
+                    {m.baslik}
+                  </h3>
+                  {m.aciklama && (
+                    <p className="text-xs text-ink-mute leading-relaxed font-medium line-clamp-2 mb-3 min-h-[2.4em]">
+                      {m.aciklama}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between gap-3 mt-3">
+                    <div className="flex-1 h-1.5 bg-surface-2 rounded overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${tamam ? 'bg-brand-deep dark:bg-brand' : 'bg-brand-deep'}`}
+                        style={{ width: `${yuzdeMod}%` }}
+                      />
+                    </div>
+                    <span className="font-mono text-[11px] text-ink-mute font-bold tabular-nums whitespace-nowrap">
+                      {tamamAltBaslik}/{altBaslikSayi}
+                    </span>
+                  </div>
+                  {kilitli && (
+                    <div className="mt-2 text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold flex items-center gap-1.5">
+                      <Icon name="Lock" size={10} />
+                      Önceki modülü tamamla
+                    </div>
+                  )}
+                  {m.opsiyonel && !kilitli && (
+                    <div className="mt-2 text-[10px] tracking-[0.2em] uppercase text-premium-deep dark:text-premium font-bold flex items-center gap-1.5">
+                      <Icon name="Star" size={10} />
+                      Opsiyonel
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Konu kartları — yeni LeetCode-tarzı yapı */}
       {konulariVar && (
