@@ -35,8 +35,25 @@ Seçim kuralları:
 - Banka havalesi/EFT, kredi, faiz, masraf → dekont
 
 Gerçekçi Türk unvanları kullan ("Deniz Tekstil Ltd. Şti.", "ABC Mobilya A.Ş."),
-geçerli format VKN (10 hane), TC (11 hane), IBAN (TR + 24 hane), fatura/dekont numaraları uydur.
+geçerli format VKN (10 hane), TC (11 hane), IBAN (TR + 24 hane).
 Tutarları çözümdeki borç/alacak satırlarından çıkar. Tarihleri yakın geçmiş (2025-2026) kullan.
+
+BELGE NUMARASI FORMATI (zorunlu):
+- Fatura → faturaNo: 16 karakter, "ABC[YIL]000000001" formatında.
+    • İlk 3 harf: işletmenin ünsuz-ağırlıklı kısaltması.
+      Algoritma: Türkçe harfleri ASCII'ye çevir (ç→c, ğ→g, ı→i, ö→o, ş→s, ü→u),
+      büyük harf yap, ilk harf ünlüyse al, sonra sadece ünsuzları al; 3 harfe ulaşana kadar.
+      Örnek: "Yıldız Beyaz Eşya" → YLD, "Demirören" → DMR, "Bosch" → BSC,
+              "Akel" → AKL, "Mavi Toptan" → MVT.
+      Alış faturasında SATICI unvanı, satış faturasında ALICI unvanı kullanılır.
+    • Sonraki 4 hane: belgenin tarihindeki yıl (örn. 2025).
+    • Son 9 hane: sıra numarası, soldan sıfır dolgulu, 000000001'den başlar.
+    • Örnek: "YLD2025000000001", "DMR2026000000002".
+- Dekont → dekontNo: 6 haneli sıralı sayı, soldan sıfır dolgulu.
+    • Örnek: "000001", "000437".
+- Perakende fiş → fisNo: tek soruda üretiliyor — 6-8 haneli sayı uydur.
+- Çek → cekNo: 7 haneli sayı uydur (örn. "1234567").
+- Senet → senetNo: 6 haneli sayı uydur.
 
 ÇIKTI FORMATI — kesin şema:
 {
