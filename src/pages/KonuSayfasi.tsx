@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
@@ -7,6 +7,7 @@ import { TamamRozeti } from '../components/TamamRozeti';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
 import { kilidiAcanKonu, konuKilitliMi } from '../lib/konu-kilit';
+import { konuIcerikYukle } from '../lib/uniteler-loader';
 import type { Ilerleme } from '../types';
 
 const icerikDolu = (icerik: unknown | null | undefined): boolean =>
@@ -42,6 +43,31 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
     }
   }, [unite, konu, uniteId, nav]);
 
+  // İçerik lazy yüklenir — uniteler-loader liste yüklemesinde icerik çekmiyor.
+  // Hook'lar erken return'dan ÖNCE.
+  const cachedIcerik = konu?.icerik ?? null;
+  const [icerik, setIcerik] = useState<unknown>(cachedIcerik);
+  const [icerikYukleniyor, setIcerikYukleniyor] = useState(!cachedIcerik && !!konu);
+
+  useEffect(() => {
+    if (!konu?.id) return;
+    if (konu.icerik) {
+      setIcerik(konu.icerik);
+      setIcerikYukleniyor(false);
+      return;
+    }
+    let iptal = false;
+    setIcerikYukleniyor(true);
+    konuIcerikYukle(konu.id).then((i) => {
+      if (iptal) return;
+      setIcerik(i);
+      setIcerikYukleniyor(false);
+    });
+    return () => {
+      iptal = true;
+    };
+  }, [konu?.id, konu?.icerik]);
+
   if (!unite || !konu) return null;
 
   const aktifIndex = konular.findIndex((k) => k.id === konu.id);
@@ -54,7 +80,7 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
   const tamamlandi = toplam > 0 && cozulen === toplam;
 
   const ilkCozulmemis = konu.sorular.find((s) => !ilerleme.cozulenler[s.id]);
-  const anlatimVar = icerikDolu(konu.icerik);
+  const anlatimVar = icerikDolu(icerik);
   const kilitliyse = konuKilitliMi(konular, konu, ilerleme);
   const acanKonu = kilidiAcanKonu(konular, konu, ilerleme);
 
@@ -239,9 +265,15 @@ export const KonuSayfasi = ({ ilerleme }: Props) => {
             {/* İçerik */}
             <section>
               <SectionTitle>İçerik</SectionTitle>
-              {anlatimVar ? (
+              {icerikYukleniyor ? (
+                <div className="bg-surface border border-line rounded-2xl px-6 py-10 animate-pulse">
+                  <div className="h-3 bg-surface-2 rounded w-3/4 mb-3" />
+                  <div className="h-3 bg-surface-2 rounded w-full mb-3" />
+                  <div className="h-3 bg-surface-2 rounded w-5/6" />
+                </div>
+              ) : anlatimVar ? (
                 <div className="bg-surface border border-line rounded-2xl px-2 py-2 sm:px-4 sm:py-4">
-                  <IcerikGoruntuleyici key={konu.id} icerik={konu.icerik} />
+                  <IcerikGoruntuleyici key={konu.id} icerik={icerik} />
                 </div>
               ) : (
                 <div className="bg-surface border border-dashed border-line-strong rounded-2xl px-6 py-8 text-center">
