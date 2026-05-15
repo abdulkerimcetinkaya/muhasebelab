@@ -10,7 +10,6 @@ import { PremiumGate } from '../components/PremiumGate';
 import { AIAsistanYanPanel } from '../components/AIAsistanYanPanel';
 import { MarkdownLite } from '../components/MarkdownLite';
 import { KocTuru, type KocTuruAdim } from '../components/KocTuru';
-import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
 import { useAuth } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
@@ -195,8 +194,6 @@ const SoruEkraniIci = ({
   const [aiMetin, setAiMetin] = useState<string | null>(null);
   const [aiHata, setAiHata] = useState<string | null>(null);
   const [kocTuruAcik, setKocTuruAcik] = useState(false);
-  const [konuModalAcik, setKonuModalAcik] = useState(false);
-  const konuIcerikVar = Array.isArray(unite?.icerik) && (unite?.icerik as unknown[]).length > 0;
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -514,15 +511,6 @@ const SoruEkraniIci = ({
             <Icon name="BookOpen" size={14} className="flex-shrink-0" />
             <span>Hesap Planı</span>
           </button>
-          {konuIcerikVar && (
-            <button
-              onClick={() => setKonuModalAcik(true)}
-              className="flex items-center gap-2.5 px-3 py-2.5 border border-line-strong hover:border-ink transition text-left text-sm font-semibold rounded-lg"
-            >
-              <Icon name="Info" size={14} className="text-premium flex-shrink-0" />
-              <span>Konuyu Hatırlat</span>
-            </button>
-          )}
           <button
             onClick={() => {
               setAiAsistanAcik(true);
@@ -1004,34 +992,6 @@ const SoruEkraniIci = ({
         acik={kocTuruAcik}
         onKapat={kocTuruKapat}
       />
-      {konuModalAcik && konuIcerikVar && unite && (
-        <div
-          className="fixed inset-0 z-[90] bg-ink/55 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-4 sm:p-8 animate-[koc-tour-pop_0.28s_cubic-bezier(0.22,1,0.36,1)_both]"
-          onClick={() => setKonuModalAcik(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-3xl my-auto bg-surface border border-line rounded-2xl p-6 sm:p-8 shadow-2xl"
-          >
-            <button
-              onClick={() => setKonuModalAcik(false)}
-              className="absolute -top-3 -right-3 z-10 w-9 h-9 rounded-full bg-surface border border-line-strong shadow-lg flex items-center justify-center hover:bg-bg-tint transition"
-              aria-label="Kapat"
-            >
-              <Icon name="X" size={14} />
-            </button>
-            <div className="flex items-baseline gap-3 mb-5">
-              <span className="text-[10px] tracking-[0.3em] uppercase text-ink-mute font-bold">
-                Konu Anlatımı
-              </span>
-              <h3 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-ink">
-                {unite.ad}
-              </h3>
-            </div>
-            <IcerikGoruntuleyici icerik={unite.icerik} />
-          </div>
-        </div>
-      )}
     </main>
   );
 };
