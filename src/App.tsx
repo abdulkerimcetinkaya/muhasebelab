@@ -360,7 +360,7 @@ const App = () => {
             <Route path="/premium" element={<PremiumSayfasi />} />
             <Route path="/premium/sonuc" element={<PremiumSonucSayfasi />} />
             <Route path="/premium/kurum-odeme" element={<KurumOdemeSayfasi />} />
-            <Route path="/uniteler" element={<UnitelerSayfasi ilerleme={ilerleme} />} />
+            <Route path="/uniteler" element={<UnitelerSayfasi />} />
             <Route path="/uniteler/:uniteId" element={<UniteSayfasi ilerleme={ilerleme} />} />
             <Route
               path="/uniteler/:uniteId/modul/:modulId"
