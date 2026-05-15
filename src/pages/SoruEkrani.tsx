@@ -6,7 +6,6 @@ import { HesapKoduInput } from '../components/HesapKoduInput';
 import { CozumModal } from '../components/CozumModal';
 import { BelgeModal } from '../components/BelgeModal';
 import { HataBildirModal } from '../components/HataBildirModal';
-import { PremiumGate } from '../components/PremiumGate';
 import { AIAsistanYanPanel } from '../components/AIAsistanYanPanel';
 import { MarkdownLite } from '../components/MarkdownLite';
 import { KocTuru, type KocTuruAdim } from '../components/KocTuru';
@@ -15,7 +14,7 @@ import { useUniteler } from '../contexts/UnitelerContext';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
 import { bugununTarihi, paraFormat } from '../lib/format';
 import { yanlisAnaliziYap, type YanlisAnaliz } from '../lib/kontrol';
-import { aiYanlisAnalizi } from '../lib/ai';
+import { aiYanlisAnalizi, AIKotaHatasi } from '../lib/ai';
 import { authDonusYaz } from '../lib/auth-donus';
 import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
 import { UNVAN_ETIKETLERI } from '../lib/katkici';
@@ -170,6 +169,7 @@ const SoruEkraniIci = ({
   const location = useLocation();
   const liste = (location.state as { liste?: string[] } | null)?.liste ?? null;
   const { uniteler, tumSorular } = useUniteler();
+  const { user } = useAuth();
   const unite = uniteler.find((u) => u.id === soru.uniteId);
   const [kayitlar, setKayitlar] = useState<UserRow[]>([bosSatir(), bosSatir()]);
   const [fis, setFis] = useState<FisBilgi>(() =>
@@ -193,6 +193,7 @@ const SoruEkraniIci = ({
   const [cozumGosterildi, setCozumGosterildi] = useState(false);
   const [aiMetin, setAiMetin] = useState<string | null>(null);
   const [aiHata, setAiHata] = useState<string | null>(null);
+  const [aiKotaDoldu, setAiKotaDoldu] = useState(false);
   const [kocTuruAcik, setKocTuruAcik] = useState(false);
 
   useEffect(() => {
@@ -287,13 +288,27 @@ const SoruEkraniIci = ({
     setBelgeAcik(false);
     setAiMetin(null);
     setAiHata(null);
+    setAiKotaDoldu(false);
     setKullanilanAi(false);
     setCozumGosterildi(false);
   }, [soru.id]);
 
+  const aiCacheKey = user ? `mli_ai_yanlis_${user.id}_${soru.id}` : null;
+
   const aiAnalizCalistir = async () => {
-    setAiYukleniyor(true);
     setAiHata(null);
+    setAiKotaDoldu(false);
+
+    if (aiCacheKey) {
+      const cached = localStorage.getItem(aiCacheKey);
+      if (cached) {
+        setAiMetin(cached);
+        setKullanilanAi(true);
+        return;
+      }
+    }
+
+    setAiYukleniyor(true);
     try {
       const kullaniciCevap: CozumSatir[] = kayitlar
         .filter((k) => k.kod && (+k.borc > 0 || +k.alacak > 0))
@@ -305,8 +320,20 @@ const SoruEkraniIci = ({
         kullaniciCevap,
       });
       setAiMetin(sonuc.metin);
+      setKullanilanAi(true);
+      if (aiCacheKey) {
+        try {
+          localStorage.setItem(aiCacheKey, sonuc.metin);
+        } catch {
+          // quota / private mode — sessizce geç
+        }
+      }
     } catch (e) {
-      setAiHata((e as Error).message);
+      if (e instanceof AIKotaHatasi) {
+        setAiKotaDoldu(true);
+      } else {
+        setAiHata((e as Error).message);
+      }
     } finally {
       setAiYukleniyor(false);
     }
@@ -871,49 +898,68 @@ const SoruEkraniIci = ({
             )}
           </div>
 
-          <PremiumGate
-            ozellikAdi="AI Yanlış Analizi"
-            aciklama="Yapay zeka cevabını satır satır inceler ve nerede hata yaptığını kavramsal olarak açıklar."
-          >
-            {!aiMetin && !aiYukleniyor && (
+          {!aiMetin && !aiYukleniyor && !aiKotaDoldu && (
+            <button
+              onClick={aiAnalizCalistir}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-premium-soft to-premium-soft hover:from-premium-soft hover:to-premium-soft text-ink text-sm font-bold rounded-xl transition shadow-md"
+            >
+              <Icon name="Sparkles" size={14} />
+              AI ile Yanlışını Anla
+            </button>
+          )}
+          {aiYukleniyor && (
+            <div className="flex items-center justify-center gap-2 px-4 py-4 bg-premium-soft/60 border border-premium/50 dark:border-premium-deep/40 rounded-xl text-sm text-premium-deep font-semibold">
+              <Icon name="Loader2" size={14} className="animate-spin" />
+              AI yanlışını analiz ediyor...
+            </div>
+          )}
+          {aiMetin && (
+            <div className="p-5 bg-gradient-to-br from-premium-soft to-bg border border-premium/50 dark:border-premium-deep/40 rounded-xl">
+              <div className="flex items-center gap-2 mb-3 text-[10px] tracking-[0.2em] uppercase font-bold text-premium-deep">
+                <Icon name="Sparkles" size={12} />
+                AI Yanlış Analizi
+              </div>
+              <MarkdownLite text={aiMetin} />
               <button
-                onClick={aiAnalizCalistir}
-                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-premium-soft to-premium-soft hover:from-premium-soft hover:to-premium-soft text-ink text-sm font-bold rounded-xl transition shadow-md"
+                onClick={() => {
+                  setAiMetin(null);
+                  setAiHata(null);
+                }}
+                className="mt-3 text-xs text-ink-mute hover:text-ink font-semibold"
               >
-                <Icon name="Sparkles" size={14} />
-                AI ile Yanlışını Anla
+                Kapat
               </button>
-            )}
-            {aiYukleniyor && (
-              <div className="flex items-center justify-center gap-2 px-4 py-4 bg-premium-soft/60 border border-premium/50 dark:border-premium-deep/40 rounded-xl text-sm text-premium-deep font-semibold">
-                <Icon name="Loader2" size={14} className="animate-spin" />
-                AI yanlışını analiz ediyor...
+            </div>
+          )}
+          {aiKotaDoldu && (
+            <div className="rounded-2xl border-2 border-dashed border-premium/70 dark:border-premium-deep/40 bg-gradient-to-br from-premium-soft to-bg p-6 text-center">
+              <div className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-gradient-to-br from-premium-soft to-premium-soft mb-3">
+                <Icon name="Sparkles" size={18} className="text-premium-deep" />
               </div>
-            )}
-            {aiMetin && (
-              <div className="p-5 bg-gradient-to-br from-premium-soft to-bg border border-premium/50 dark:border-premium-deep/40 rounded-xl">
-                <div className="flex items-center gap-2 mb-3 text-[10px] tracking-[0.2em] uppercase font-bold text-premium-deep">
-                  <Icon name="Sparkles" size={12} />
-                  AI Yanlış Analizi
-                </div>
-                <MarkdownLite text={aiMetin} />
-                <button
-                  onClick={() => {
-                    setAiMetin(null);
-                    setAiHata(null);
-                  }}
-                  className="mt-3 text-xs text-ink-mute hover:text-ink font-semibold"
-                >
-                  Kapat
-                </button>
+              <div className="text-[10px] tracking-[0.3em] uppercase text-premium-deep font-bold mb-1">
+                Günlük AI Hakkın Doldu
               </div>
-            )}
-            {aiHata && (
-              <div className="text-sm text-danger dark:text-danger font-medium mt-2">
-                AI yanıtı alınamadı: {aiHata}
-              </div>
-            )}
-          </PremiumGate>
+              <h3 className="font-display text-lg font-bold tracking-tight mb-1">
+                Bugün için 3 analiz yaptın
+              </h3>
+              <p className="text-[13px] text-ink-soft font-medium max-w-sm mx-auto mb-4">
+                Free hesap günde 3 AI analizi alır. Premium ile sınırsız analiz,
+                yanlışlarını her seferinde aynı detayda gör.
+              </p>
+              <button
+                onClick={() => nav('/premium')}
+                className="inline-flex items-center gap-2 bg-ink text-bg px-5 py-2 text-xs tracking-wide uppercase font-bold rounded-xl hover:opacity-90 active:scale-[0.98] transition shadow-md"
+              >
+                <Icon name="Sparkles" size={12} />
+                Premium&apos;u Keşfet
+              </button>
+            </div>
+          )}
+          {aiHata && (
+            <div className="text-sm text-danger dark:text-danger font-medium mt-2">
+              AI yanıtı alınamadı: {aiHata}
+            </div>
+          )}
         </div>
       )}
 
