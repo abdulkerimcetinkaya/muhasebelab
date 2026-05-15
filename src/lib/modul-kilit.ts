@@ -60,12 +60,18 @@ const modulKilitAciciMi = (modul: Modul, ilerleme: Ilerleme): boolean => {
 /**
  * Sıraya göre dizilmiş modül listesinde verilen modülün durumu.
  * Modül 1 her zaman açık; sonraki modüller bir önceki ZORUNLU modüle bakar.
+ * Opsiyonel modüller bağımsız konular olduğu için her zaman açıktır.
  */
 export const modulKilitDurumu = (
   moduller: Modul[],
   modul: Modul,
   ilerleme: Ilerleme,
 ): ModulKilitDurumu => {
+  // Opsiyonel modüller bağımsız — kilit sırasından muaf, baştan açık.
+  if (modul.opsiyonel) {
+    return modulTamamlandiMi(modul, ilerleme) ? 'tamamlandi' : 'acik';
+  }
+
   const idx = moduller.findIndex((m) => m.id === modul.id);
   if (idx <= 0) {
     // İlk modül — sadece tamamlandı/açık ayrımı
