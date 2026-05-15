@@ -5,7 +5,7 @@
 // ve sistem prompt'una inject eder. Mevzuat referansını AI cevabında kullanır.
 
 import { corsHeaders } from '../_shared/cors.ts';
-import { kullaniciDogrula, premiumKontrol } from '../_shared/auth.ts';
+import { kullaniciDogrula, premiumKontrol, adminKontrol } from '../_shared/auth.ts';
 import { anthropicCagir, type AnthropicMesaj } from '../_shared/anthropic.ts';
 import { geminiStream } from '../_shared/gemini-stream.ts';
 import { embedOpenAI } from '../_shared/embed-openai.ts';
@@ -237,10 +237,11 @@ Deno.serve(async (req) => {
     if (yetki instanceof Response) return yetki;
 
     const premium = await premiumKontrol(yetki.supabase, yetki.user.id);
+    const admin = adminKontrol(yetki.user);
 
-    // Free: günlük kontör artır; Premium: bypass
+    // Free: günlük kontör artır; Premium/Admin: bypass
     let kalan: number | null = null;
-    if (!premium) {
+    if (!premium && !admin) {
       const { data: quota, error: qErr } = await yetki.supabase.rpc('ai_quota_artir', {
         _max: FREE_GUNLUK_LIMIT,
       });
@@ -433,7 +434,7 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
                 _ozellik: 'asistan',
                 _input_token: Math.ceil(inputKarakter / 4),
                 _output_token: Math.ceil(outputKarakter / 4),
-                _premium: premium,
+                _premium: premium || admin,
               })
               .then(({ error }) => {
                 if (error) console.error('ai_log_yaz hata:', error.message);
@@ -469,7 +470,7 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
         _ozellik: 'asistan',
         _input_token: yanit.inputToken ?? 0,
         _output_token: yanit.outputToken ?? 0,
-        _premium: premium,
+        _premium: premium || admin,
       })
       .then(({ error }) => {
         if (error) console.error('ai_log_yaz hata:', error.message);

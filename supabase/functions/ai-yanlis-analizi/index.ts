@@ -3,7 +3,7 @@
 // Prompt v2 (16 Mayıs 2026): öğrencinin yazdığı satıra birebir referans veren çıktı.
 
 import { corsHeaders } from '../_shared/cors.ts';
-import { kullaniciDogrula, premiumKontrol } from '../_shared/auth.ts';
+import { kullaniciDogrula, premiumKontrol, adminKontrol } from '../_shared/auth.ts';
 import { anthropicCagir } from '../_shared/anthropic.ts';
 
 const FREE_GUNLUK_LIMIT = 3;
@@ -73,10 +73,11 @@ Deno.serve(async (req) => {
     if (yetki instanceof Response) return yetki;
 
     const premium = await premiumKontrol(yetki.supabase, yetki.user.id);
+    const admin = adminKontrol(yetki.user);
 
-    // Free: günlük kota artır; Premium: bypass
+    // Free: günlük kota artır; Premium/Admin: bypass
     let kalan: number | null = null;
-    if (!premium) {
+    if (!premium && !admin) {
       const { data: quota, error: qErr } = await yetki.supabase.rpc('ai_quota_artir', {
         _max: FREE_GUNLUK_LIMIT,
       });
@@ -124,7 +125,7 @@ tırnak içinde aynen referans al.`;
         _ozellik: 'yanlis_analizi',
         _input_token: yanit.inputToken ?? 0,
         _output_token: yanit.outputToken ?? 0,
-        _premium: premium,
+        _premium: premium || admin,
       })
       .then(({ error }) => {
         if (error) console.error('ai_log_yaz hata:', error.message);
