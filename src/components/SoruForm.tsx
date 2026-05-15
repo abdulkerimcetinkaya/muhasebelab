@@ -5,13 +5,21 @@ import { BelgeEditor } from './BelgeEditor';
 import { supabase } from '../lib/supabase';
 import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
 import { hesapAdiBul } from '../lib/hesap';
-import type { SoruDurum, UniteKonusuRow, UnitesRow, Zorluk } from '../lib/database.types';
+import type {
+  ModulAltBaslikRow,
+  SoruDurum,
+  UniteKonusuRow,
+  UniteModuluRow,
+  UnitesRow,
+  Zorluk,
+} from '../lib/database.types';
 import type { Belge } from '../types';
 
 export interface SoruFormDegerleri {
   id: string;
   unite_id: string;
   konu_id: string;
+  alt_baslik_id: string;
   baslik: string;
   zorluk: Zorluk;
   senaryo: string;
@@ -27,6 +35,7 @@ export const bosForm = (): SoruFormDegerleri => ({
   id: '',
   unite_id: '',
   konu_id: '',
+  alt_baslik_id: '',
   baslik: '',
   zorluk: 'kolay',
   senaryo: '',
@@ -52,6 +61,8 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
   const [d, setD] = useState<SoruFormDegerleri>(baslangic);
   const [uniteler, setUniteler] = useState<UnitesRow[]>([]);
   const [konular, setKonular] = useState<UniteKonusuRow[]>([]);
+  const [moduller, setModuller] = useState<UniteModuluRow[]>([]);
+  const [altBasliklar, setAltBasliklar] = useState<ModulAltBaslikRow[]>([]);
   const [muavinler, setMuavinler] = useState<MuavinHesap[]>([]);
   const [kaydediliyor, setKaydediliyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
@@ -97,6 +108,47 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
           setD((p) => ({ ...p, konu_id: '' }));
         }
       });
+    return () => {
+      iptal = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [d.unite_id]);
+
+  // Ünite değişince modülleri + alt başlıkları yükle. alt_baslik_id ünite ile uyumsuzsa sıfırla.
+  useEffect(() => {
+    if (!d.unite_id) {
+      setModuller([]);
+      setAltBasliklar([]);
+      if (d.alt_baslik_id) setD((p) => ({ ...p, alt_baslik_id: '' }));
+      return;
+    }
+    let iptal = false;
+    (async () => {
+      const { data: modData } = await supabase
+        .from('unite_modulleri')
+        .select('*')
+        .eq('unite_id', d.unite_id)
+        .order('sira');
+      if (iptal) return;
+      const modList = (modData ?? []) as UniteModuluRow[];
+      setModuller(modList);
+      if (modList.length === 0) {
+        setAltBasliklar([]);
+        if (d.alt_baslik_id) setD((p) => ({ ...p, alt_baslik_id: '' }));
+        return;
+      }
+      const { data: altData } = await supabase
+        .from('modul_alt_basliklari')
+        .select('*')
+        .in('modul_id', modList.map((m) => m.id))
+        .order('sira');
+      if (iptal) return;
+      const altList = (altData ?? []) as ModulAltBaslikRow[];
+      setAltBasliklar(altList);
+      if (d.alt_baslik_id && !altList.some((a) => a.id === d.alt_baslik_id)) {
+        setD((p) => ({ ...p, alt_baslik_id: '' }));
+      }
+    })();
     return () => {
       iptal = true;
     };
@@ -220,7 +272,7 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
           <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
             Alt-konu{' '}
             <span className="text-ink-quiet font-normal normal-case tracking-normal">
-              (opsiyonel — LeetCode-tarzı sol nav için)
+              (opsiyonel — eski yapı, teori içerik)
             </span>
           </label>
           <select
@@ -241,6 +293,46 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
                 {k.sira}. {k.ad}
               </option>
             ))}
+          </select>
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
+            Atölye Alt Başlığı{' '}
+            <span className="text-ink-quiet font-normal normal-case tracking-normal">
+              (opsiyonel — yeni atölye yapısı, sıralı modül akışı)
+            </span>
+          </label>
+          <select
+            value={d.alt_baslik_id}
+            onChange={(e) => setD({ ...d, alt_baslik_id: e.target.value })}
+            disabled={!d.unite_id || altBasliklar.length === 0}
+            className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium disabled:opacity-50"
+          >
+            <option value="">
+              {!d.unite_id
+                ? '— Önce ünite seç —'
+                : moduller.length === 0
+                  ? '— Bu ünitede modül yok —'
+                  : '— Alt başlık seçme (ünite seviyesinde kalsın) —'}
+            </option>
+            {moduller.map((m) => {
+              const modulAltlari = altBasliklar.filter((a) => a.modul_id === m.id);
+              if (modulAltlari.length === 0) return null;
+              return (
+                <optgroup
+                  key={m.id}
+                  label={`Modül ${m.sira} — ${m.baslik}${m.opsiyonel ? ' (opsiyonel)' : ''}`}
+                >
+                  {modulAltlari.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {m.sira}.{a.sira} {a.baslik}
+                      {a.karma ? ' ★' : ''}
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
           </select>
         </div>
 

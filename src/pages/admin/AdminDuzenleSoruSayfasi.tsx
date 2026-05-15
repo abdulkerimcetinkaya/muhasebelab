@@ -35,6 +35,7 @@ export const AdminDuzenleSoruSayfasi = () => {
         id: s.id,
         unite_id: s.unite_id,
         konu_id: s.konu_id ?? '',
+        alt_baslik_id: s.alt_baslik_id ?? '',
         baslik: s.baslik,
         zorluk: s.zorluk,
         senaryo: s.senaryo,
@@ -64,6 +65,7 @@ export const AdminDuzenleSoruSayfasi = () => {
       .update({
         unite_id: d.unite_id,
         konu_id: d.konu_id || null,
+        alt_baslik_id: d.alt_baslik_id || null,
         baslik: d.baslik,
         zorluk: d.zorluk,
         senaryo: d.senaryo,

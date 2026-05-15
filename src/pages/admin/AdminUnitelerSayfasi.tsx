@@ -215,9 +215,17 @@ export const AdminUnitelerSayfasi = () => {
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
                   <button
+                    onClick={() => nav(`/admin/uniteler/${u.id}/moduller`)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 text-ink text-[11.5px] font-bold tracking-wide hover:bg-line-soft transition"
+                    title="Atölye modülleri (yeni — sıralı atölye yapısı)"
+                  >
+                    <Icon name="ListChecks" size={12} />
+                    Modüller
+                  </button>
+                  <button
                     onClick={() => nav(`/admin/uniteler/${u.id}/konular`)}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 text-ink text-[11.5px] font-bold tracking-wide hover:bg-line-soft transition"
-                    title="Alt-konular (LeetCode-tarzı mikro yapı)"
+                    title="Alt-konular (eski yapı — teori içerik)"
                   >
                     <Icon name="LayoutList" size={12} />
                     Konular
