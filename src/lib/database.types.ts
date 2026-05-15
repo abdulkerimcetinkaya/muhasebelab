@@ -83,6 +83,9 @@ export type UniteModuluRow = {
   aciklama: string | null;
   zorluk_seviyesi: ModulZorlukDb;
   opsiyonel: boolean;
+  // 20260515000009 — modül seviyesi BlockNote içerik
+  icerik: unknown | null;
+  icerik_guncellendi: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -93,6 +96,9 @@ export type ModulAltBaslikRow = {
   sira: number;
   baslik: string;
   karma: boolean;
+  // 20260515000009 — alt başlık seviyesi BlockNote içerik
+  icerik: unknown | null;
+  icerik_guncellendi: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -504,24 +510,46 @@ export type Database = {
       };
       unite_modulleri: {
         Row: UniteModuluRow;
-        Insert: Omit<UniteModuluRow, 'created_at' | 'updated_at' | 'aciklama' | 'sira' | 'zorluk_seviyesi' | 'opsiyonel'> & {
+        Insert: Omit<
+          UniteModuluRow,
+          | 'created_at'
+          | 'updated_at'
+          | 'aciklama'
+          | 'sira'
+          | 'zorluk_seviyesi'
+          | 'opsiyonel'
+          | 'icerik'
+          | 'icerik_guncellendi'
+        > & {
           created_at?: string;
           updated_at?: string;
           aciklama?: string | null;
           sira?: number;
           zorluk_seviyesi?: ModulZorlukDb;
           opsiyonel?: boolean;
+          icerik?: unknown | null;
+          icerik_guncellendi?: string | null;
         };
         Update: Partial<UniteModuluRow>;
         Relationships: [];
       };
       modul_alt_basliklari: {
         Row: ModulAltBaslikRow;
-        Insert: Omit<ModulAltBaslikRow, 'created_at' | 'updated_at' | 'sira' | 'karma'> & {
+        Insert: Omit<
+          ModulAltBaslikRow,
+          | 'created_at'
+          | 'updated_at'
+          | 'sira'
+          | 'karma'
+          | 'icerik'
+          | 'icerik_guncellendi'
+        > & {
           created_at?: string;
           updated_at?: string;
           sira?: number;
           karma?: boolean;
+          icerik?: unknown | null;
+          icerik_guncellendi?: string | null;
         };
         Update: Partial<ModulAltBaslikRow>;
         Relationships: [];
