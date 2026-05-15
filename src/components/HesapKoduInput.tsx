@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { HESAP_PLANI } from '../data/hesap-plani';
 import { useIsPremium } from '../contexts/AuthContext';
@@ -37,6 +38,13 @@ export const HesapKoduInput = ({
   const [seciliIdx, setSeciliIdx] = useState(0);
   const [muavinModalAcik, setMuavinModalAcik] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  // Portal koordinatları — viewport'a göre fixed konum + akıllı flip (yukarı/aşağı)
+  const [dropdownPos, setDropdownPos] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
 
   const sayisalMi = /^[0-9.]+$/.test(value);
 
@@ -94,13 +102,47 @@ export const HesapKoduInput = ({
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const inContainer = containerRef.current?.contains(target);
+      const inDropdown = dropdownRef.current?.contains(target);
+      if (!inContainer && !inDropdown) {
         setDropdownAcik(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  // Portal pozisyonunu hesapla — dropdown açıldığında/öneriler değiştiğinde.
+  // Input'un altında yer yoksa üstüne aç (akıllı flip).
+  useLayoutEffect(() => {
+    if (!dropdownAcik || oneriler.length === 0 || !containerRef.current) {
+      setDropdownPos(null);
+      return;
+    }
+    const rect = containerRef.current.getBoundingClientRect();
+    const istenenY = Math.min(384, oneriler.length * 38 + 24);
+    const altSpace = window.innerHeight - rect.bottom;
+    const ustSpace = rect.top;
+    const yukariAc = altSpace < istenenY && ustSpace > altSpace;
+    setDropdownPos({
+      top: yukariAc ? Math.max(8, rect.top - istenenY - 4) : rect.bottom + 4,
+      left: rect.left,
+      width: Math.max(rect.width, 380),
+    });
+  }, [dropdownAcik, oneriler.length]);
+
+  // Scroll/resize'da dropdown'u kapat — pozisyon eski kalmasın.
+  useEffect(() => {
+    if (!dropdownAcik) return;
+    const kapat = () => setDropdownAcik(false);
+    window.addEventListener('scroll', kapat, true);
+    window.addEventListener('resize', kapat);
+    return () => {
+      window.removeEventListener('scroll', kapat, true);
+      window.removeEventListener('resize', kapat);
+    };
+  }, [dropdownAcik]);
 
   const oneriKodu = (o: Oneri): string =>
     o.tip === 'ana' ? o.hesap.kod : o.muavin.kod;
@@ -194,11 +236,23 @@ export const HesapKoduInput = ({
           </div>
         )}
 
-        {/* Dropdown */}
-        {dropdownAcik && oneriler.length > 0 && (
+      </div>
+
+      {/* Dropdown — portal ile body'ye render; parent overflow'a takılmaz, viewport'a göre konumlanır */}
+      {dropdownAcik &&
+        oneriler.length > 0 &&
+        dropdownPos &&
+        createPortal(
           <div
-            className="autocomplete-dropdown absolute top-full left-0 mt-1 bg-surface border border-ink/10 z-50 max-h-64 overflow-auto rounded-xl"
-            style={{ minWidth: '380px' }}
+            ref={dropdownRef}
+            className="autocomplete-dropdown bg-surface border border-ink/10 max-h-96 overflow-auto rounded-xl shadow-xl"
+            style={{
+              position: 'fixed',
+              top: dropdownPos.top,
+              left: dropdownPos.left,
+              width: dropdownPos.width,
+              zIndex: 100,
+            }}
           >
             {oneriler.map((o, i) =>
               o.tip === 'ana' ? (
@@ -217,16 +271,16 @@ export const HesapKoduInput = ({
                   <span className="flex-1">{o.hesap.ad}</span>
                   <span
                     className={`text-[9px] tracking-widest uppercase font-semibold ${
- o.hesap.tur === 'AKTİF'
- ? 'text-brand dark:text-brand-mute'
- : o.hesap.tur === 'PASİF'
- ? 'text-premium-deep'
- : o.hesap.tur === 'GELİR'
- ? 'text-success dark:text-success'
- : o.hesap.tur === 'GİDER'
- ? 'text-danger dark:text-danger'
- : 'text-ink-mute'
- }`}
+                      o.hesap.tur === 'AKTİF'
+                        ? 'text-brand dark:text-brand-mute'
+                        : o.hesap.tur === 'PASİF'
+                          ? 'text-premium-deep'
+                          : o.hesap.tur === 'GELİR'
+                            ? 'text-success dark:text-success'
+                            : o.hesap.tur === 'GİDER'
+                              ? 'text-danger dark:text-danger'
+                              : 'text-ink-mute'
+                    }`}
                   >
                     {o.hesap.tur}
                   </span>
@@ -267,9 +321,9 @@ export const HesapKoduInput = ({
                 <span>{modalAnaKod} altına yeni muavin ekle</span>
               </button>
             )}
-          </div>
+          </div>,
+          document.body,
         )}
-      </div>
 
       {muavinModalAcik && (
         <YeniMuavinModal
