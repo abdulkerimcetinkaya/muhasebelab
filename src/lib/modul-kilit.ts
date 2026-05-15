@@ -59,39 +59,19 @@ const modulKilitAciciMi = (modul: Modul, ilerleme: Ilerleme): boolean => {
 
 /**
  * Sıraya göre dizilmiş modül listesinde verilen modülün durumu.
- * Modül 1 her zaman açık; sonraki modüller bir önceki ZORUNLU modüle bakar.
- * Opsiyonel modüller bağımsız konular olduğu için her zaman açıktır.
+ *
+ * GEÇİCİ: Tüm modüller şimdilik açık. Öğrenci istediği modüle istediği
+ * sırada girebilir. Kilit zinciri (önceki zorunlu modülü bitir kuralı)
+ * şu an devre dışı; ileride yeniden aktif edilebilir.
+ *
+ * Tamamlanma kontrolü çalışmaya devam ediyor — bitmiş modüller
+ * "tamamlandi" işaretini almaya devam eder.
  */
 export const modulKilitDurumu = (
-  moduller: Modul[],
+  _moduller: Modul[],
   modul: Modul,
   ilerleme: Ilerleme,
 ): ModulKilitDurumu => {
-  // Opsiyonel modüller bağımsız — kilit sırasından muaf, baştan açık.
-  if (modul.opsiyonel) {
-    return modulTamamlandiMi(modul, ilerleme) ? 'tamamlandi' : 'acik';
-  }
-
-  const idx = moduller.findIndex((m) => m.id === modul.id);
-  if (idx <= 0) {
-    // İlk modül — sadece tamamlandı/açık ayrımı
-    return modulTamamlandiMi(modul, ilerleme) ? 'tamamlandi' : 'acik';
-  }
-
-  // En yakın ZORUNLU önceki modüle bak (opsiyonelleri atla)
-  let onceki: Modul | null = null;
-  for (let i = idx - 1; i >= 0; i--) {
-    if (!moduller[i].opsiyonel) {
-      onceki = moduller[i];
-      break;
-    }
-  }
-  // Hiç zorunlu önceki yoksa (kuramsal — pratikte hep var) açık say
-  if (!onceki) {
-    return modulTamamlandiMi(modul, ilerleme) ? 'tamamlandi' : 'acik';
-  }
-
-  if (!modulKilitAciciMi(onceki, ilerleme)) return 'kilitli';
   return modulTamamlandiMi(modul, ilerleme) ? 'tamamlandi' : 'acik';
 };
 
