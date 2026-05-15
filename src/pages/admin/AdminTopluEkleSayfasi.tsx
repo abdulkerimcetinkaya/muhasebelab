@@ -49,9 +49,9 @@ const ORNEK_JSON = `[
     "durum": "taslak",
     "kaynak": "ai",
     "cozumler": [
-      { "kod": "100", "borc": 12000, "alacak": 0 },
-      { "kod": "600", "borc": 0, "alacak": 10000 },
-      { "kod": "391", "borc": 0, "alacak": 2000 }
+      { "kod": "100.001", "borc": 12000, "alacak": 0 },
+      { "kod": "600.001", "borc": 0, "alacak": 10000 },
+      { "kod": "391.001", "borc": 0, "alacak": 2000 }
     ]
   }
 ]`;
@@ -69,10 +69,11 @@ export const AdminTopluEkleSayfasi = () => {
   useEffect(() => {
     Promise.all([
       supabase.from('unites').select('id'),
-      supabase.from('hesap_plani').select('kod'),
-    ]).then(([uR, hR]) => {
+      // Muavin kodları kabul ediyoruz (cozumler.kod -> muavin_hesaplar FK)
+      supabase.from('muavin_hesaplar').select('kod').eq('aktif', true),
+    ]).then(([uR, mR]) => {
       setUniteIdler(new Set((uR.data ?? []).map((u) => u.id)));
-      setHesapKodlari(new Set((hR.data ?? []).map((h) => h.kod)));
+      setHesapKodlari(new Set((mR.data ?? []).map((m) => m.kod)));
     });
   }, []);
 
@@ -115,8 +116,11 @@ export const AdminTopluEkleSayfasi = () => {
           hatalar.push(`cozum[${i}]: kod yok.`);
           return;
         }
-        if (!hesapKodlari.has(cc.kod)) {
-          hatalar.push(`cozum[${i}]: bilinmeyen hesap kodu ${cc.kod}`);
+        const muavinFormat = /^[0-9]{3}(\.[0-9]+)+$/;
+        if (!muavinFormat.test(cc.kod)) {
+          hatalar.push(`cozum[${i}]: "${cc.kod}" ana hesap — muavin kullan (${cc.kod}.001 gibi).`);
+        } else if (!hesapKodlari.has(cc.kod)) {
+          hatalar.push(`cozum[${i}]: tanımsız muavin ${cc.kod} — önce muavin tablosuna ekle.`);
         }
         const borc = Number(cc.borc) || 0;
         const alacak = Number(cc.alacak) || 0;
