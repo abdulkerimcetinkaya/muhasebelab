@@ -54,7 +54,7 @@ export const DashboardSayfasi = ({ ilerleme, stat }: Props) => {
   const aktif = useMemo(() => aktifNoktaBul(uniteler, ilerleme), [uniteler, ilerleme]);
   const ilkCozulmemis = useMemo(() => devamEtSorusu(ilerleme, tumSorular), [ilerleme, tumSorular]);
   const enYanlis = useMemo(() => enCokYanlisSoru(ilerleme, tumSorular), [ilerleme, tumSorular]);
-  const gununS = useMemo(() => gununSorusu(tumSorular), [tumSorular]);
+  const gununS = useMemo(() => gununSorusu(tumSorular, ilerleme), [tumSorular, ilerleme]);
 
   // "Devam Et" CTA için bir adres seç — konu varsa konuya, yoksa ilk soruya
   const siradaki: SiradakiAdres | null = useMemo(() => {

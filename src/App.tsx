@@ -139,6 +139,7 @@ const App = () => {
   const [yanPanelAcik, setYanPanelAcik] = useState(false);
   const [rozetKuyrugu, setRozetKuyrugu] = useState<Rozet[]>([]);
   const sonUserId = useRef<string | null>(null);
+  const sonGirisKaydi = useRef<string | null>(null);
 
   // Oturum durumu değişince veriyi doğru kaynaktan tekrar yükle.
   // Uniteler yüklenmeden ilerleme yüklenemez (zorluk lookup lazım).
@@ -148,18 +149,51 @@ const App = () => {
     if (user) {
       if (sonUserId.current === user.id) return;
       sonUserId.current = user.id;
+      const bugun = bugununTarihi();
+      sonGirisKaydi.current = bugun;
       const yerel = ilerlemeYukle();
       ilerlemeMigrateSupabase(user.id, yerel)
         // Önce login kaydını yaz, ki yukleme sırasında streak doğru hesaplansın
-        .then(() => gunlukGirisKaydetSupabase(user.id, bugununTarihi()))
+        .then(() => gunlukGirisKaydetSupabase(user.id, bugun))
         .then(() => ilerlemeYukleSupabase(user.id, tumSorular))
         .then(setIlerleme)
         .catch((e) => console.error('İlerleme yüklenemedi', e));
     } else {
       sonUserId.current = null;
+      sonGirisKaydi.current = null;
       setIlerleme(ilerlemeYukle());
     }
   }, [user, oturumYukleniyor, uniteYukleniyor, tumSorular]);
+
+  // Gün değişimini handle et — sayfa uzun süre açık kalırsa bile aktivite kaydı
+  // ertesi gün yeniden yazılsın. visibilitychange ile tab'a dönüşte ve sayfa
+  // odakta kalsa bile saatlik intervalle kontrol edilir.
+  useEffect(() => {
+    if (!user) return;
+    if (uniteYukleniyor) return;
+
+    const kontrol = async () => {
+      if (document.hidden) return;
+      const bugun = bugununTarihi();
+      if (sonGirisKaydi.current === bugun) return;
+      sonGirisKaydi.current = bugun;
+      try {
+        await gunlukGirisKaydetSupabase(user.id, bugun);
+        const guncel = await ilerlemeYukleSupabase(user.id, tumSorular);
+        setIlerleme(guncel);
+      } catch (e) {
+        console.error('Günlük giriş kayıt hatası', e);
+      }
+    };
+
+    document.addEventListener('visibilitychange', kontrol);
+    // Saatlik interval — kullanıcı tab'ı açık tutsa bile gün değişimini yakala
+    const id = window.setInterval(kontrol, 60 * 60 * 1000);
+    return () => {
+      document.removeEventListener('visibilitychange', kontrol);
+      window.clearInterval(id);
+    };
+  }, [user, uniteYukleniyor, tumSorular]);
 
   // localStorage cache + tema sınıfı her zaman güncel
   useEffect(() => {
