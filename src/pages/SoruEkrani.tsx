@@ -22,7 +22,20 @@ import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
 import { UNVAN_ETIKETLERI } from '../lib/katkici';
 import { hesapAdiBul } from '../lib/hesap';
 import { supabase } from '../lib/supabase';
-import type { CozumSatir, FisBilgi, FisTuru, Soru, SoruWithUnite, UserRow } from '../types';
+import type {
+  Belge,
+  CekBelge,
+  CozumSatir,
+  DekontBelge,
+  FaturaBelge,
+  FisBilgi,
+  FisTuru,
+  PerakendeFisBelge,
+  SenetBelge,
+  Soru,
+  SoruWithUnite,
+  UserRow,
+} from '../types';
 
 type Durum = 'bos' | 'dogru' | 'yanlis';
 
@@ -59,6 +72,77 @@ const yevmiyeNoUret = (soruId: string): string => {
   return String(Math.abs(hash) % 9999 + 1).padStart(4, '0');
 };
 
+const faturaAciklamasi = (f: FaturaBelge): string => {
+  if (f.faturaTipi === 'alis') return `Mal alımı — ${f.satici.unvan}`;
+  if (f.faturaTipi === 'satis') return `Mal satışı — ${f.alici.unvan}`;
+  if (f.faturaTipi === 'iade') return `Fatura iadesi — ${f.satici.unvan}`;
+  return `Fatura — ${f.satici.unvan}`;
+};
+
+// Belgeden fiş header'ını türet. Belge yoksa eski davranış (bugünün tarihi,
+// boş alanlar). Fiş türü her zaman 'M' default — pedagojik olarak öğrencinin
+// karar vermesi gereken bir alan.
+const belgedenFis = (soruId: string, belge?: Belge): FisBilgi => {
+  const taban: FisBilgi = {
+    yevmiyeNo: yevmiyeNoUret(soruId),
+    tarih: bugununTarihi(),
+    fisTuru: 'M',
+    belgeNo: '',
+    aciklama: '',
+  };
+  if (!belge) return taban;
+
+  switch (belge.tur) {
+    case 'fatura': {
+      const f = belge as FaturaBelge;
+      return {
+        ...taban,
+        tarih: f.tarih,
+        belgeNo: f.faturaNo,
+        aciklama: faturaAciklamasi(f),
+      };
+    }
+    case 'perakende-fis': {
+      const f = belge as PerakendeFisBelge;
+      return {
+        ...taban,
+        tarih: f.tarih,
+        belgeNo: f.fisNo,
+        aciklama: `Perakende satış fişi — ${f.isletme.unvan}`,
+      };
+    }
+    case 'cek': {
+      const c = belge as CekBelge;
+      return {
+        ...taban,
+        tarih: c.duzenlemeTarihi,
+        belgeNo: c.cekNo,
+        aciklama: `Çek — ${c.bankaAdi}`,
+      };
+    }
+    case 'senet': {
+      const s = belge as SenetBelge;
+      return {
+        ...taban,
+        tarih: s.duzenlemeTarihi,
+        belgeNo: s.senetNo,
+        aciklama: `Senet — ${s.lehtar.unvan}`,
+      };
+    }
+    case 'dekont': {
+      const d = belge as DekontBelge;
+      return {
+        ...taban,
+        tarih: d.islemTarihi,
+        belgeNo: d.dekontNo,
+        aciklama: d.aciklama || `Banka işlemi — ${d.bankaAdi}`,
+      };
+    }
+    default:
+      return taban;
+  }
+};
+
 const FisField = ({
   label,
   className,
@@ -89,13 +173,9 @@ const SoruEkraniIci = ({
   const { uniteler, tumSorular } = useUniteler();
   const unite = uniteler.find((u) => u.id === soru.uniteId);
   const [kayitlar, setKayitlar] = useState<UserRow[]>([bosSatir(), bosSatir()]);
-  const [fis, setFis] = useState<FisBilgi>(() => ({
-    yevmiyeNo: yevmiyeNoUret(soru.id),
-    tarih: bugununTarihi(),
-    fisTuru: 'M',
-    belgeNo: '',
-    aciklama: '',
-  }));
+  const [fis, setFis] = useState<FisBilgi>(() =>
+    belgedenFis(soru.id, soru.belgeler?.[0]),
+  );
   const [durum, setDurum] = useState<Durum>('bos');
   const [muavinler, setMuavinler] = useState<MuavinHesap[]>([]);
   const [yazar, setYazar] = useState<{ ad: string; unvan: string | null } | null>(null);
@@ -199,13 +279,7 @@ const SoruEkraniIci = ({
 
   useEffect(() => {
     setKayitlar([bosSatir(), bosSatir()]);
-    setFis({
-      yevmiyeNo: yevmiyeNoUret(soru.id),
-      tarih: bugununTarihi(),
-      fisTuru: 'M',
-      belgeNo: '',
-      aciklama: '',
-    });
+    setFis(belgedenFis(soru.id, soru.belgeler?.[0]));
     setDurum('bos');
     setSatirSonuclari([]);
     setYanlisAnaliz(null);
