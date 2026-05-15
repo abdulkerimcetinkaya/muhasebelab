@@ -405,6 +405,9 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
         parts: [{ text: m.content }],
       }));
 
+      // Stream'de token sayısı API'den dönmüyor — karakter/4 yaklaşımıyla tahmin
+      const inputKarakter = systemPrompt.length + kesit.reduce((s, m) => s + m.content.length, 0);
+
       const responseStream = new ReadableStream({
         async start(controller) {
           // Açılış meta — quota ve premium bilgisi
@@ -414,13 +417,27 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
             ),
           );
 
+          let outputKarakter = 0;
           try {
             for await (const chunk of geminiStream(systemPrompt, contents, 400)) {
+              outputKarakter += chunk.length;
               controller.enqueue(
                 encoder.encode(`data: ${JSON.stringify({ type: 'chunk', text: chunk })}\n\n`),
               );
             }
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
+
+            // Stream bitti — maliyet izleme (tahmini token)
+            yetki.supabase
+              .rpc('ai_log_yaz', {
+                _ozellik: 'asistan',
+                _input_token: Math.ceil(inputKarakter / 4),
+                _output_token: Math.ceil(outputKarakter / 4),
+                _premium: premium,
+              })
+              .then(({ error }) => {
+                if (error) console.error('ai_log_yaz hata:', error.message);
+              });
           } catch (e) {
             controller.enqueue(
               encoder.encode(
@@ -445,6 +462,18 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
 
     // Non-stream (geri uyumluluk) — eski JSON yolu
     const yanit = await anthropicCagir(systemPrompt, kesit, 400);
+
+    // Maliyet izleme
+    yetki.supabase
+      .rpc('ai_log_yaz', {
+        _ozellik: 'asistan',
+        _input_token: yanit.inputToken ?? 0,
+        _output_token: yanit.outputToken ?? 0,
+        _premium: premium,
+      })
+      .then(({ error }) => {
+        if (error) console.error('ai_log_yaz hata:', error.message);
+      });
 
     return new Response(
       JSON.stringify({

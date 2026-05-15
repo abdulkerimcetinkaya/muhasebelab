@@ -53,6 +53,7 @@ const AdminIstatistiklerSayfasi = lazy(() => import('./pages/admin/AdminIstatist
 const AdminKatkicilarSayfasi = lazy(() => import('./pages/admin/AdminKatkicilarSayfasi').then((m) => ({ default: m.AdminKatkicilarSayfasi })));
 const AdminIndirimKodlariSayfasi = lazy(() => import('./pages/admin/AdminIndirimKodlariSayfasi').then((m) => ({ default: m.AdminIndirimKodlariSayfasi })));
 const AdminLogSayfasi = lazy(() => import('./pages/admin/AdminLogSayfasi').then((m) => ({ default: m.AdminLogSayfasi })));
+const AdminAIMaliyetSayfasi = lazy(() => import('./pages/admin/AdminAIMaliyetSayfasi').then((m) => ({ default: m.AdminAIMaliyetSayfasi })));
 const KatkiciBasvuruSayfasi = lazy(() => import('./pages/KatkiciBasvuruSayfasi').then((m) => ({ default: m.KatkiciBasvuruSayfasi })));
 const KatkiciSoruEkleSayfasi = lazy(() => import('./pages/KatkiciSoruEkleSayfasi').then((m) => ({ default: m.KatkiciSoruEkleSayfasi })));
 const SozlukSayfasi = lazy(() => import('./pages/SozlukSayfasi').then((m) => ({ default: m.SozlukSayfasi })));
@@ -555,6 +556,14 @@ const App = () => {
               element={
                 <ProtectedAdminRoute>
                   <AdminLogSayfasi />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/ai-maliyet"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminAIMaliyetSayfasi />
                 </ProtectedAdminRoute>
               }
             />

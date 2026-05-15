@@ -33,6 +33,7 @@ const linkler: MenuItem[] = [
   { to: '/admin/indirim-kodlari', etiket: 'İndirim Kodları', icon: 'Tag', end: true, rol: 'operasyon' },
   // Süper
   { to: '/admin/yetkililer', etiket: 'Yetkililer', icon: 'ShieldCheck', end: true, rol: 'super' },
+  { to: '/admin/ai-maliyet', etiket: 'AI Maliyet', icon: 'DollarSign', end: true, rol: 'super' },
   { to: '/admin/log', etiket: 'Admin Log', icon: 'FileText', end: true, rol: 'super' },
 ];
 
