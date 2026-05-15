@@ -19,6 +19,7 @@ import { authDonusYaz } from '../lib/auth-donus';
 import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
 import { UNVAN_ETIKETLERI } from '../lib/katkici';
 import { hesapAdiBul } from '../lib/hesap';
+import { soruBelgeleriniYukle } from '../lib/uniteler-loader';
 import { supabase } from '../lib/supabase';
 import type {
   Belge,
@@ -172,8 +173,11 @@ const SoruEkraniIci = ({
   const { user } = useAuth();
   const unite = uniteler.find((u) => u.id === soru.uniteId);
   const [kayitlar, setKayitlar] = useState<UserRow[]>([bosSatir(), bosSatir()]);
+  // Belgeler lazy yüklenir (egress optimizasyonu) — initial undefined,
+  // useEffect ile soru.id değişince Supabase'den çekilir
+  const [belgeler, setBelgeler] = useState<Belge[] | undefined>(soru.belgeler);
   const [fis, setFis] = useState<FisBilgi>(() =>
-    belgedenFis(soru.id, soru.belgeler?.[0]),
+    belgedenFis(soru.id, belgeler?.[0]),
   );
   const [durum, setDurum] = useState<Durum>('bos');
   const [muavinler, setMuavinler] = useState<MuavinHesap[]>([]);
@@ -277,7 +281,9 @@ const SoruEkraniIci = ({
 
   useEffect(() => {
     setKayitlar([bosSatir(), bosSatir()]);
+    // Önce cached belge varsa onu kullan, yoksa fiş başlangıçta boş
     setFis(belgedenFis(soru.id, soru.belgeler?.[0]));
+    setBelgeler(soru.belgeler);
     setDurum('bos');
     setSatirSonuclari([]);
     setYanlisAnaliz(null);
@@ -288,10 +294,25 @@ const SoruEkraniIci = ({
     setBelgeAcik(false);
     setAiMetin(null);
     setAiHata(null);
+
     setAiKotaDoldu(false);
     setKullanilanAi(false);
     setCozumGosterildi(false);
-  }, [soru.id]);
+
+    // Belgeyi lazy yükle — uniteler-loader artık belgeler kolonunu çekmiyor
+    // (egress optimizasyonu). Cache'de eski format varsa zaten dolu gelir.
+    let iptal = false;
+    soruBelgeleriniYukle(soru.id).then((b) => {
+      if (iptal) return;
+      const yenisi = b.length > 0 ? b : undefined;
+      setBelgeler(yenisi);
+      // Fiş başlıkları (tarih, belge no, açıklama) belgeden türer → güncelle
+      setFis(belgedenFis(soru.id, yenisi?.[0]));
+    });
+    return () => {
+      iptal = true;
+    };
+  }, [soru.id, soru.belgeler]);
 
   const aiCacheKey = user ? `mli_ai_yanlis_${user.id}_${soru.id}` : null;
 
@@ -515,7 +536,7 @@ const SoruEkraniIci = ({
 
         {/* YAN TOOLBAR */}
         <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
-          {soru.belgeler && soru.belgeler.length > 0 && (
+          {belgeler && belgeler.length > 0 && (
             <button
               onClick={() => setBelgeAcik(true)}
               className="flex items-center gap-2.5 px-3 py-2.5 border border-brand-soft dark:border-brand-deep/50 bg-gradient-to-r from-brand-soft to-transparent hover:border-brand transition text-left text-sm font-semibold rounded-lg col-span-2 lg:col-span-1"
@@ -527,7 +548,7 @@ const SoruEkraniIci = ({
               />
               <span>Belgeyi Görüntüle</span>
               <span className="ml-auto text-[9px] tracking-[0.2em] uppercase font-bold text-brand dark:text-brand-mute font-mono">
-                {soru.belgeler.length}
+                {belgeler.length}
               </span>
             </button>
           )}
@@ -1018,8 +1039,8 @@ const SoruEkraniIci = ({
           </div>
         </div>
       )}
-      {belgeAcik && soru.belgeler && (
-        <BelgeModal belgeler={soru.belgeler} onKapat={() => setBelgeAcik(false)} />
+      {belgeAcik && belgeler && (
+        <BelgeModal belgeler={belgeler} onKapat={() => setBelgeAcik(false)} />
       )}
       {hataAcik && (
         <HataBildirModal

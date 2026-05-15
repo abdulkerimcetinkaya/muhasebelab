@@ -10,11 +10,12 @@ import type {
   Unite,
 } from '../types';
 
-// v8: Ünite/modül/alt başlık `aktif` alanı + 3 pasif işletme türü ünitesi — eski cache invalidate.
-const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v8';
+// v9: `sorular.belgeler` JSONB kolonu artık liste yüklemesinde çekilmiyor
+// (egress optimizasyonu). SoruEkrani belgeleri ayrı yükler.
+const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v9';
 
 interface OnbellekPaketi {
-  v: 8;
+  v: 9;
   ts: number;
   uniteler: Unite[];
 }
@@ -23,6 +24,12 @@ export interface UnitelerVerisi {
   uniteler: Unite[];
   tumSorular: SoruWithUnite[];
 }
+
+// sorular tablosundan liste yüklemesi sırasında çekilen kolonlar.
+// `belgeler` JSONB kolonu büyük (fatura/dekont JSON'u, ~10 KB/satır) ve
+// liste için gereksiz — bu yüzden hariç. SoruEkrani açılınca ayrıca çekilir.
+const SORU_LISTE_KOLONLARI =
+  'id, baslik, zorluk, senaryo, ipucu, aciklama, durum, unite_id, konu_id, alt_baslik_id, ekleyen_id';
 
 const duzleTumSorular = (uniteler: Unite[]): SoruWithUnite[] =>
   uniteler.flatMap((u) =>
@@ -43,7 +50,7 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       supabase.from('modul_alt_basliklari').select('*').order('sira'),
       supabase
         .from('sorular')
-        .select('*')
+        .select(SORU_LISTE_KOLONLARI)
         .eq('durum', 'onayli')
         .order('unite_id')
         .order('id'),
@@ -70,7 +77,6 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   const sorularByAltBaslik: Record<string, Soru[]> = {};
   (sorularR.data ?? []).forEach((s) => {
     if (!sorularByUnite[s.unite_id]) sorularByUnite[s.unite_id] = [];
-    const belgeler = Array.isArray(s.belgeler) ? (s.belgeler as Belge[]) : undefined;
     const altBaslikId = (s as { alt_baslik_id?: string | null }).alt_baslik_id ?? null;
     const soru: Soru = {
       id: s.id,
@@ -80,7 +86,8 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       ipucu: s.ipucu ?? '',
       aciklama: s.aciklama ?? '',
       cozum: cozumById[s.id] ?? [],
-      belgeler: belgeler && belgeler.length > 0 ? belgeler : undefined,
+      // belgeler liste yüklemesinde çekilmez — SoruEkrani lazy yükler
+      belgeler: undefined,
       konuId: s.konu_id ?? null,
       altBaslikId,
       ekleyenId: s.ekleyen_id ?? null,
@@ -166,12 +173,31 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   return { uniteler, tumSorular: duzleTumSorular(uniteler) };
 };
 
+/**
+ * Tek bir sorunun belgelerini ayrı bir query ile çek. Liste yüklemesinde
+ * `belgeler` kolonu hariç tutulduğu için SoruEkrani'nde lazy çağrılır.
+ * Belge yoksa boş array döner.
+ */
+export const soruBelgeleriniYukle = async (soruId: string): Promise<Belge[]> => {
+  const { data, error } = await supabase
+    .from('sorular')
+    .select('belgeler')
+    .eq('id', soruId)
+    .maybeSingle();
+  if (error) {
+    console.error(`Belgeler yüklenemedi (${soruId}):`, error.message);
+    return [];
+  }
+  const belgeler = (data as { belgeler?: unknown })?.belgeler;
+  return Array.isArray(belgeler) ? (belgeler as Belge[]) : [];
+};
+
 export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
   try {
     const raw = localStorage.getItem(UNITELER_CACHE_KEY);
     if (!raw) return null;
     const paket = JSON.parse(raw) as OnbellekPaketi;
-    if (paket.v !== 8 || !Array.isArray(paket.uniteler)) return null;
+    if (paket.v !== 9 || !Array.isArray(paket.uniteler)) return null;
     return { uniteler: paket.uniteler, tumSorular: duzleTumSorular(paket.uniteler) };
   } catch {
     return null;
@@ -180,7 +206,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
 
 export const uniteleriCacheeYaz = (uniteler: Unite[]): void => {
   try {
-    const paket: OnbellekPaketi = { v: 8, ts: Date.now(), uniteler };
+    const paket: OnbellekPaketi = { v: 9, ts: Date.now(), uniteler };
     localStorage.setItem(UNITELER_CACHE_KEY, JSON.stringify(paket));
   } catch {
     // ignore (quota)
