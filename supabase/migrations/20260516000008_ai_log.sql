@@ -22,7 +22,8 @@ create table if not exists ai_log (
 
 create index if not exists ai_log_created_at_idx on ai_log (created_at desc);
 create index if not exists ai_log_ozellik_idx on ai_log (ozellik, created_at desc);
-create index if not exists ai_log_gun_idx on ai_log (date_trunc('day', created_at), ozellik);
+-- date_trunc fonksiyonel indeksi IMMUTABLE olmadığı için kullanılamaz;
+-- ai_log_created_at_idx zaten gün-bazlı sorguları cover ediyor.
 
 alter table ai_log enable row level security;
 
