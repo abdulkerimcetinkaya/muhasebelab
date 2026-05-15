@@ -224,7 +224,7 @@ export const ModulLayout = ({
                       <span className="font-mono text-[10px] text-ink-quiet font-bold tabular-nums flex-shrink-0 w-7">
                         {modul.sira}.{a.sira}
                       </span>
-                      <span className="text-sm leading-snug min-w-0 flex-1 truncate">
+                      <span className="text-sm leading-snug min-w-0 flex-1 break-words">
                         {a.baslik}
                       </span>
                       {a.karma && (
