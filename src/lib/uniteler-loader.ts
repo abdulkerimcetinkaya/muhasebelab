@@ -10,14 +10,15 @@ import type {
   Unite,
 } from '../types';
 
-// v10: `icerik` JSONB kolonları (unite_modulleri, modul_alt_basliklari,
-// unite_konulari) liste yüklemesinde çekilmiyor — BlockNote içerikleri
-// büyük (50-500 KB toplam) ve sadece ilgili sayfa açıldığında gerekli.
-// Egress optimizasyonu için lazy load.
-const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v10';
+// v11: mevcut 213 soru arsive cekildi (yeni soru seti baslayacak) —
+// eski cache'lerde hala onaylı sorular var, invalidate gerekir.
+// v10 not'u: `icerik` JSONB kolonları (unite_modulleri,
+// modul_alt_basliklari, unite_konulari) liste yüklemesinde çekilmiyor,
+// lazy load yapılıyor (egress optimizasyonu).
+const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v11';
 
 interface OnbellekPaketi {
-  v: 10;
+  v: 11;
   ts: number;
   uniteler: Unite[];
 }
@@ -263,7 +264,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
     const raw = localStorage.getItem(UNITELER_CACHE_KEY);
     if (!raw) return null;
     const paket = JSON.parse(raw) as OnbellekPaketi;
-    if (paket.v !== 10 || !Array.isArray(paket.uniteler)) return null;
+    if (paket.v !== 11 || !Array.isArray(paket.uniteler)) return null;
     return { uniteler: paket.uniteler, tumSorular: duzleTumSorular(paket.uniteler) };
   } catch {
     return null;
@@ -272,7 +273,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
 
 export const uniteleriCacheeYaz = (uniteler: Unite[]): void => {
   try {
-    const paket: OnbellekPaketi = { v: 10, ts: Date.now(), uniteler };
+    const paket: OnbellekPaketi = { v: 11, ts: Date.now(), uniteler };
     localStorage.setItem(UNITELER_CACHE_KEY, JSON.stringify(paket));
   } catch {
     // ignore (quota)
