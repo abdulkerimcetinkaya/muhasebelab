@@ -153,6 +153,20 @@ export const AdminAltBasliklarSayfasi = () => {
     yukle();
   };
 
+  const aktifToggle = async (a: ModulAltBaslikRow) => {
+    const yeni = !a.aktif;
+    const r = await supabase
+      .from('modul_alt_basliklari')
+      .update({ aktif: yeni })
+      .eq('id', a.id);
+    if (r.error) {
+      alert('Aktif durumu güncellenemedi: ' + r.error.message);
+      return;
+    }
+    await unitelerYenile().catch(() => {});
+    yukle();
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
       <AdminYanMenu />
@@ -228,7 +242,7 @@ export const AdminAltBasliklarSayfasi = () => {
           />
         ) : (
           <div className="border border-line rounded-xl overflow-hidden bg-surface">
-            <div className="grid grid-cols-[64px_1fr_90px_80px_290px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
+            <div className="grid grid-cols-[64px_1fr_90px_80px_360px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <div>Sıra</div>
               <div>Alt Başlık</div>
               <div>Karma</div>
@@ -238,7 +252,7 @@ export const AdminAltBasliklarSayfasi = () => {
             {filtreli.map((a) => (
               <div
                 key={a.id}
-                className="grid grid-cols-[64px_1fr_90px_80px_290px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
+                className="grid grid-cols-[64px_1fr_90px_80px_360px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
               >
                 <div>
                   <input
@@ -257,6 +271,11 @@ export const AdminAltBasliklarSayfasi = () => {
                         size={12}
                         className="text-premium-deep dark:text-premium flex-shrink-0"
                       />
+                    )}
+                    {!a.aktif && (
+                      <span className="text-[9px] tracking-[0.18em] uppercase font-bold px-1.5 py-0.5 rounded bg-premium-soft text-premium-deep">
+                        Pasif
+                      </span>
                     )}
                   </div>
                   <div className="font-mono text-[11px] text-ink-quiet mt-0.5">
@@ -282,6 +301,17 @@ export const AdminAltBasliklarSayfasi = () => {
                   </span>
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
+                  <button
+                    onClick={() => aktifToggle(a)}
+                    title={a.aktif ? 'Aktif — pasif yap' : 'Pasif — aktif yap'}
+                    className={`text-[10px] tracking-[0.18em] uppercase font-bold px-2 py-1 rounded border transition ${
+                      a.aktif
+                        ? 'bg-success-soft text-success border-success/30 hover:opacity-80'
+                        : 'bg-premium-soft text-premium-deep border-premium-soft hover:opacity-80'
+                    }`}
+                  >
+                    {a.aktif ? 'Aktif' : 'Pasif'}
+                  </button>
                   <button
                     onClick={() =>
                       nav(

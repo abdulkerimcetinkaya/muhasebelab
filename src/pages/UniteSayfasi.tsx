@@ -228,22 +228,26 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
               ).length;
               const kilitli = durum === 'kilitli';
               const tamam = durum === 'tamamlandi';
+              const pasif = m.aktif === false;
+              const tiklanamaz = kilitli || pasif;
               return (
                 <button
                   key={m.id}
                   onClick={() =>
-                    !kilitli && nav(`/uniteler/${unite.id}/modul/${m.id}`)
+                    !tiklanamaz && nav(`/uniteler/${unite.id}/modul/${m.id}`)
                   }
-                  disabled={kilitli}
+                  disabled={tiklanamaz}
                   title={
-                    kilitli
-                      ? 'Önceki modülü tamamlayarak aç'
-                      : tamam
-                        ? 'Bu modülü tamamladın'
-                        : undefined
+                    pasif
+                      ? 'Bu modül henüz hazırlanıyor'
+                      : kilitli
+                        ? 'Önceki modülü tamamlayarak aç'
+                        : tamam
+                          ? 'Bu modülü tamamladın'
+                          : undefined
                   }
                   className={`text-left bg-surface border border-l-4 ${MODUL_ZORLUK_KENAR[m.zorlukSeviyesi]} rounded-2xl p-5 transition group ${
-                    kilitli
+                    tiklanamaz
                       ? 'border-line opacity-55 cursor-not-allowed'
                       : tamam
                         ? 'border-brand-soft dark:border-brand-deep/50 hover:border-brand hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]'
@@ -267,7 +271,9 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
                           className="text-premium-deep dark:text-premium"
                         />
                       )}
-                      {kilitli ? (
+                      {pasif ? (
+                        <Icon name="Lock" size={15} className="text-premium-deep" />
+                      ) : kilitli ? (
                         <Icon name="Lock" size={15} className="text-ink-quiet" />
                       ) : tamam ? (
                         <TamamRozeti size={16} />
@@ -284,7 +290,7 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
                   </div>
                   <h3
                     className={`font-display text-lg font-bold tracking-tight mb-1.5 leading-snug transition ${
-                      kilitli
+                      tiklanamaz
                         ? 'text-ink-mute'
                         : 'group-hover:text-brand dark:group-hover:text-brand-mute'
                     }`}
@@ -307,18 +313,22 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
                       {tamamAltBaslik}/{altBaslikSayi}
                     </span>
                   </div>
-                  {kilitli && (
+                  {pasif ? (
+                    <div className="mt-2 text-[10px] tracking-[0.2em] uppercase text-premium-deep font-bold flex items-center gap-1.5">
+                      <Icon name="Lock" size={10} />
+                      Yakında
+                    </div>
+                  ) : kilitli ? (
                     <div className="mt-2 text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold flex items-center gap-1.5">
                       <Icon name="Lock" size={10} />
                       Önceki modülü tamamla
                     </div>
-                  )}
-                  {m.opsiyonel && !kilitli && (
+                  ) : m.opsiyonel ? (
                     <div className="mt-2 text-[10px] tracking-[0.2em] uppercase text-premium-deep dark:text-premium font-bold flex items-center gap-1.5">
                       <Icon name="Star" size={10} />
                       Opsiyonel
                     </div>
-                  )}
+                  ) : null}
                 </button>
               );
             })}

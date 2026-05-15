@@ -146,6 +146,19 @@ export const AdminModullerSayfasi = () => {
     yukle();
   };
 
+  const aktifToggle = async (m: UniteModuluRow) => {
+    const r = await supabase
+      .from('unite_modulleri')
+      .update({ aktif: !m.aktif })
+      .eq('id', m.id);
+    if (r.error) {
+      alert('Aktif durumu güncellenemedi: ' + r.error.message);
+      return;
+    }
+    await unitelerYenile().catch(() => {});
+    yukle();
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
       <AdminYanMenu />
@@ -221,7 +234,7 @@ export const AdminModullerSayfasi = () => {
           />
         ) : (
           <div className="border border-line rounded-xl overflow-hidden bg-surface">
-            <div className="grid grid-cols-[64px_1fr_120px_120px_260px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
+            <div className="grid grid-cols-[64px_1fr_120px_120px_330px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <div>Sıra</div>
               <div>Modül</div>
               <div>Zorluk</div>
@@ -231,7 +244,7 @@ export const AdminModullerSayfasi = () => {
             {filtreli.map((m) => (
               <div
                 key={m.id}
-                className="grid grid-cols-[64px_1fr_120px_120px_260px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
+                className="grid grid-cols-[64px_1fr_120px_120px_330px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
               >
                 <div>
                   <input
@@ -242,8 +255,13 @@ export const AdminModullerSayfasi = () => {
                   />
                 </div>
                 <div className="min-w-0">
-                  <div className="font-display font-bold text-[15px] tracking-tight text-ink truncate">
+                  <div className="font-display font-bold text-[15px] tracking-tight text-ink truncate flex items-center gap-2">
                     {m.baslik}
+                    {!m.aktif && (
+                      <span className="text-[9px] tracking-[0.18em] uppercase font-bold px-1.5 py-0.5 rounded bg-premium-soft text-premium-deep">
+                        Pasif
+                      </span>
+                    )}
                   </div>
                   <div className="font-mono text-[11px] text-ink-quiet mt-0.5">
                     {m.id}
@@ -278,6 +296,17 @@ export const AdminModullerSayfasi = () => {
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
+                  <button
+                    onClick={() => aktifToggle(m)}
+                    title={m.aktif ? 'Aktif — pasif yap' : 'Pasif — aktif yap'}
+                    className={`text-[10px] tracking-[0.18em] uppercase font-bold px-2 py-1 rounded border transition ${
+                      m.aktif
+                        ? 'bg-success-soft text-success border-success/30 hover:opacity-80'
+                        : 'bg-premium-soft text-premium-deep border-premium-soft hover:opacity-80'
+                    }`}
+                  >
+                    {m.aktif ? 'Aktif' : 'Pasif'}
+                  </button>
                   <button
                     onClick={() =>
                       nav(`/admin/uniteler/${uniteId}/moduller/${m.id}/icerik`)

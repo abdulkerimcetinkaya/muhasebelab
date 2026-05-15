@@ -1,55 +1,42 @@
-// Üniteler ana sayfası — İşletme türü seçici (4 kart).
+// Üniteler ana sayfası — İşletme türü kartları, DB'den dinamik.
 //
-// Sade tek-tıklamalı akış: kullanıcı bir işletme türüne basar, doğrudan o
-// işletmenin modül grid'ine yönlenir. Şu an sadece Ticaret aktif (mal-alis-satis
-// ünitesine yönlenir); Üretim/Hizmet/İnşaat-Taahhüt "Yakında" rozetiyle pasif.
+// Her ünite bir işletme türü kartı olarak çıkar. `aktif` bayrağı kullanıcının
+// karta tıklayıp tıklayamayacağını belirler. Pasif kartlar "Yakında" rozetiyle
+// görünür. Admin DB üzerinden aktif/pasif kontrol eder.
 
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '../components/Icon';
+import { useUniteler } from '../contexts/UnitelerContext';
 
-interface IsletmeTuru {
-  id: 'ticaret' | 'uretim' | 'hizmet' | 'insaat';
-  ad: string;
-  altMetin: string;
-  icon: string;
-  aktif: boolean;
-  hedef?: string;
-}
+// Ünite ID → Lucide ikon eşlemesi. DB'deki thiings_icon alanı eski sistem
+// için (Thiings 3D PNG'leri); kart görünümünde Lucide tercih ediyoruz.
+const UNITE_ICON: Record<string, string> = {
+  'mal-alis-satis': 'Store',
+  'uretim-isletmesi': 'Factory',
+  'hizmet-isletmesi': 'Briefcase',
+  'insaat-taahhut': 'HardHat',
+};
 
-const ISLETME_TURLERI: IsletmeTuru[] = [
-  {
-    id: 'ticaret',
-    ad: 'Ticaret İşletmesi',
-    altMetin: 'Mal alım-satım, KDV, stopaj, çek-senet, duran varlık',
-    icon: 'Store',
-    aktif: true,
-    hedef: '/uniteler/mal-alis-satis?overview=1',
-  },
-  {
-    id: 'uretim',
-    ad: 'Üretim İşletmesi',
-    altMetin: 'Mamul üretim, maliyet muhasebesi, 7/B sınıfı',
-    icon: 'Factory',
-    aktif: false,
-  },
-  {
-    id: 'hizmet',
-    ad: 'Hizmet İşletmesi',
-    altMetin: 'Hizmet sunan işletmeler için özel kayıtlar',
-    icon: 'Briefcase',
-    aktif: false,
-  },
-  {
-    id: 'insaat',
-    ad: 'İnşaat / Taahhüt',
-    altMetin: 'Yıllara yaygın inşaat, hak ediş, taşeronlar',
-    icon: 'HardHat',
-    aktif: false,
-  },
-];
+const ikonAdi = (uniteId: string, thiingsIcon: string | null): string => {
+  if (UNITE_ICON[uniteId]) return UNITE_ICON[uniteId];
+  // Fallback: thiings_icon alanı Lucide ikon adı olarak kullanılabilirse al
+  // (örn. 'factory', 'briefcase') — capitalize et
+  if (thiingsIcon) {
+    return thiingsIcon.charAt(0).toUpperCase() + thiingsIcon.slice(1);
+  }
+  return 'Store';
+};
 
 export const UnitelerSayfasi = () => {
   const nav = useNavigate();
+  const { uniteler } = useUniteler();
+
+  // Sıraya göre listele (default sıra DB'den geliyor; aktif/pasif karışık)
+  const sirali = [...uniteler].sort((a, b) => {
+    // Önce aktif olanlar (yukarıda), sonra pasif olanlar
+    if (a.aktif !== b.aktif) return a.aktif ? -1 : 1;
+    return 0;
+  });
 
   return (
     <main className="relative overflow-hidden">
@@ -70,19 +57,19 @@ export const UnitelerSayfasi = () => {
           style={{ fontSize: 'clamp(14px, 1.2vw, 17px)' }}
         >
           Her işletme türü kendi senaryolarına, hesap planına ve özel kayıt akışına sahiptir.
-          Şu an Ticaret İşletmesi müfredatı yayında; diğerleri yakında.
+          Aktif olanlar üzerinde çalışmaya başlayabilirsin; diğerlerinin müfredatı hazırlanıyor.
         </p>
       </header>
 
-      {/* İŞLETME TÜRÜ KARTLARI */}
+      {/* İŞLETME TÜRÜ KARTLARI — DB'den dinamik */}
       <section className="relative max-w-[1240px] mx-auto px-5 sm:px-8 pb-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {ISLETME_TURLERI.map((t, i) => {
-            const pasif = !t.aktif;
+          {sirali.map((u, i) => {
+            const pasif = !u.aktif;
             return (
               <button
-                key={t.id}
-                onClick={() => t.aktif && t.hedef && nav(t.hedef)}
+                key={u.id}
+                onClick={() => !pasif && nav(`/uniteler/${u.id}?overview=1`)}
                 disabled={pasif}
                 className={`relative text-left bg-surface border rounded-2xl p-5 transition group min-h-[200px] flex flex-col justify-between ${
                   pasif
@@ -90,7 +77,6 @@ export const UnitelerSayfasi = () => {
                     : 'border-line hover:border-ink hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-14px_rgba(15,23,42,0.4)] active:scale-[0.99]'
                 }`}
               >
-                {/* Aktif kart için sol şerit (hover'da belirginleşir) */}
                 {!pasif && (
                   <span
                     className="absolute left-0 top-5 bottom-5 w-[3px] bg-brand-deep rounded-r opacity-0 group-hover:opacity-100 transition-opacity"
@@ -98,30 +84,29 @@ export const UnitelerSayfasi = () => {
                   />
                 )}
 
-                {/* Üst: numara + ikon */}
                 <div className="flex items-start justify-between">
                   <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-ink-quiet font-bold">
-                    {String(i + 1).padStart(2, '0')} / 04
+                    {String(i + 1).padStart(2, '0')} / {String(sirali.length).padStart(2, '0')}
                   </span>
                   <Icon
-                    name={t.icon}
+                    name={ikonAdi(u.id, u.thiingsIcon)}
                     size={22}
                     className={pasif ? 'text-ink-quiet' : 'text-ink'}
                   />
                 </div>
 
-                {/* Orta: başlık + alt metin */}
                 <div className="mt-6">
-                  <h3 className="font-display font-bold tracking-tight leading-[1.1] text-ink"
-                      style={{ fontSize: 'clamp(18px, 1.6vw, 22px)' }}>
-                    {t.ad}
+                  <h3
+                    className="font-display font-bold tracking-tight leading-[1.1] text-ink"
+                    style={{ fontSize: 'clamp(18px, 1.6vw, 22px)' }}
+                  >
+                    {u.ad}
                   </h3>
-                  <p className="text-[12.5px] text-ink-mute leading-snug mt-1.5 font-medium">
-                    {t.altMetin}
+                  <p className="text-[12.5px] text-ink-mute leading-snug mt-1.5 font-medium line-clamp-3">
+                    {u.aciklama}
                   </p>
                 </div>
 
-                {/* Alt: durum / CTA */}
                 <div className="mt-5 flex items-center justify-between">
                   {pasif ? (
                     <span className="font-mono text-[9.5px] tracking-[0.22em] uppercase font-bold text-premium-deep inline-flex items-center gap-1.5 bg-premium-soft/60 px-2 py-1 rounded">
@@ -139,6 +124,14 @@ export const UnitelerSayfasi = () => {
             );
           })}
         </div>
+
+        {sirali.length === 0 && (
+          <div className="bg-surface border border-dashed border-line-strong rounded-2xl px-6 py-16 text-center">
+            <p className="text-sm text-ink-mute">
+              Henüz işletme türü eklenmemiş. Admin panelinden ekleyebilirsin.
+            </p>
+          </div>
+        )}
       </section>
     </main>
   );
