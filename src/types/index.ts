@@ -214,6 +214,9 @@ export interface Modul {
   zorlukSeviyesi: ModulZorluk;
   /** Opsiyonel modüller bir sonrakini kilitlemez (örn. M8). */
   opsiyonel: boolean;
+  /** BlockNote Block[] — modülün "Genel Bakış" sayfasındaki konu anlatımı. */
+  icerik?: unknown[] | null;
+  icerikGuncellendi?: string | null;
   altBasliklar: AltBaslik[];
 }
 
@@ -227,6 +230,9 @@ export interface AltBaslik {
   sira: number;
   baslik: string;
   karma: boolean;
+  /** BlockNote Block[] — alt başlığın konu anlatımı (sorulardan önce gösterilir). */
+  icerik?: unknown[] | null;
+  icerikGuncellendi?: string | null;
   sorular: Soru[];
 }
 

@@ -10,11 +10,11 @@ import type {
   Unite,
 } from '../types';
 
-// v3: Modül + AltBaşlık yapısı eklendi (atölye hiyerarşisi)
-const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v3';
+// v4: Modül/alt başlık `icerik` (BlockNote) alanı eklendi — eski cache invalidate
+const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v4';
 
 interface OnbellekPaketi {
-  v: 3;
+  v: 4;
   ts: number;
   uniteler: Unite[];
 }
@@ -114,12 +114,16 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   const altBasliklarByModul: Record<string, AltBaslik[]> = {};
   (altBasliklarR.data ?? []).forEach((a) => {
     if (!altBasliklarByModul[a.modul_id]) altBasliklarByModul[a.modul_id] = [];
+    const altIcerik = (a as { icerik?: unknown }).icerik;
+    const altIcerikGuncellendi = (a as { icerik_guncellendi?: string | null }).icerik_guncellendi;
     altBasliklarByModul[a.modul_id].push({
       id: a.id,
       modulId: a.modul_id,
       sira: a.sira,
       baslik: a.baslik,
       karma: !!a.karma,
+      icerik: Array.isArray(altIcerik) ? (altIcerik as unknown[]) : null,
+      icerikGuncellendi: altIcerikGuncellendi ?? null,
       sorular: sorularByAltBaslik[a.id] ?? [],
     });
   });
@@ -128,6 +132,8 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   const modullerByUnite: Record<string, Modul[]> = {};
   (modullerR.data ?? []).forEach((m) => {
     if (!modullerByUnite[m.unite_id]) modullerByUnite[m.unite_id] = [];
+    const modulIcerik = (m as { icerik?: unknown }).icerik;
+    const modulIcerikGuncellendi = (m as { icerik_guncellendi?: string | null }).icerik_guncellendi;
     modullerByUnite[m.unite_id].push({
       id: m.id,
       uniteId: m.unite_id,
@@ -136,6 +142,8 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       aciklama: m.aciklama ?? null,
       zorlukSeviyesi: m.zorluk_seviyesi as ModulZorluk,
       opsiyonel: !!m.opsiyonel,
+      icerik: Array.isArray(modulIcerik) ? (modulIcerik as unknown[]) : null,
+      icerikGuncellendi: modulIcerikGuncellendi ?? null,
       altBasliklar: altBasliklarByModul[m.id] ?? [],
     });
   });
@@ -159,7 +167,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
     const raw = localStorage.getItem(UNITELER_CACHE_KEY);
     if (!raw) return null;
     const paket = JSON.parse(raw) as OnbellekPaketi;
-    if (paket.v !== 3 || !Array.isArray(paket.uniteler)) return null;
+    if (paket.v !== 4 || !Array.isArray(paket.uniteler)) return null;
     return { uniteler: paket.uniteler, tumSorular: duzleTumSorular(paket.uniteler) };
   } catch {
     return null;
@@ -168,7 +176,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
 
 export const uniteleriCacheeYaz = (uniteler: Unite[]): void => {
   try {
-    const paket: OnbellekPaketi = { v: 3, ts: Date.now(), uniteler };
+    const paket: OnbellekPaketi = { v: 4, ts: Date.now(), uniteler };
     localStorage.setItem(UNITELER_CACHE_KEY, JSON.stringify(paket));
   } catch {
     // ignore (quota)

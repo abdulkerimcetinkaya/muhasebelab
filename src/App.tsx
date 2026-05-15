@@ -39,7 +39,9 @@ const AdminIcerikSayfasi = lazy(() => import('./pages/admin/AdminIcerikSayfasi')
 const AdminKonularSayfasi = lazy(() => import('./pages/admin/AdminKonularSayfasi').then((m) => ({ default: m.AdminKonularSayfasi })));
 const AdminKonuIcerikSayfasi = lazy(() => import('./pages/admin/AdminKonuIcerikSayfasi').then((m) => ({ default: m.AdminKonuIcerikSayfasi })));
 const AdminModullerSayfasi = lazy(() => import('./pages/admin/AdminModullerSayfasi').then((m) => ({ default: m.AdminModullerSayfasi })));
+const AdminModulIcerikSayfasi = lazy(() => import('./pages/admin/AdminModulIcerikSayfasi').then((m) => ({ default: m.AdminModulIcerikSayfasi })));
 const AdminAltBasliklarSayfasi = lazy(() => import('./pages/admin/AdminAltBasliklarSayfasi').then((m) => ({ default: m.AdminAltBasliklarSayfasi })));
+const AdminAltBaslikIcerikSayfasi = lazy(() => import('./pages/admin/AdminAltBaslikIcerikSayfasi').then((m) => ({ default: m.AdminAltBaslikIcerikSayfasi })));
 const AdminMevzuatSayfasi = lazy(() => import('./pages/admin/AdminMevzuatSayfasi').then((m) => ({ default: m.AdminMevzuatSayfasi })));
 const AdminBildirimlerSayfasi = lazy(() => import('./pages/admin/AdminBildirimlerSayfasi').then((m) => ({ default: m.AdminBildirimlerSayfasi })));
 const AdminSozlukSayfasi = lazy(() => import('./pages/admin/AdminSozlukSayfasi').then((m) => ({ default: m.AdminSozlukSayfasi })));
@@ -445,10 +447,26 @@ const App = () => {
               }
             />
             <Route
+              path="/admin/uniteler/:uniteId/moduller/:modulId/icerik"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminModulIcerikSayfasi />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
               path="/admin/uniteler/:uniteId/moduller/:modulId/alt-basliklar"
               element={
                 <ProtectedAdminRoute>
                   <AdminAltBasliklarSayfasi />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/admin/uniteler/:uniteId/moduller/:modulId/alt-basliklar/:altId/icerik"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminAltBaslikIcerikSayfasi />
                 </ProtectedAdminRoute>
               }
             />
