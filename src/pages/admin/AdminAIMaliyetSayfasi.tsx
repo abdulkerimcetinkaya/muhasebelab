@@ -43,6 +43,20 @@ const cagriUSDMaliyet = (inputToken: number, outputToken: number): number => {
   );
 };
 
+/**
+ * Ücretsiz tier sonrası NET maliyet — günlük çağrı sayısı 3250'nin altındaysa 0,
+ * üstündeyse paid kısmın oranı kadar brüt maliyetin parçası.
+ *
+ * Yaklaşım: paid çağrıların oranı kadar gün-içi maliyet alınır (yaklaşık).
+ * Gerçek paid çağrıların hangileri olduğunu log'lara bakmadan bilemeyiz,
+ * o yüzden günün ortalama maliyeti × paid oran ile yaklaşık değer üretilir.
+ */
+const gunlukNetMaliyetUSD = (cagri: number, brutUSD: number): number => {
+  if (cagri <= FREE_TIER_TOPLAM_GUNLUK) return 0;
+  const paidCagri = cagri - FREE_TIER_TOPLAM_GUNLUK;
+  return brutUSD * (paidCagri / cagri);
+};
+
 const formatPara = (tl: number): string => {
   if (tl < 1) return `${(tl * 100).toFixed(1)} krş`;
   return `${tl.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺`;
@@ -125,29 +139,46 @@ export const AdminAIMaliyetSayfasi = () => {
     return { cagri, input, output, freecagri };
   }, [bugunSatirlari]);
 
-  const bugunMaliyetUSD = cagriUSDMaliyet(bugunToplam.input, bugunToplam.output);
-  const bugunMaliyetTL = bugunMaliyetUSD * usdTl;
+  const bugunBrutUSD = cagriUSDMaliyet(bugunToplam.input, bugunToplam.output);
+  const bugunBrutTL = bugunBrutUSD * usdTl;
+  const bugunNetUSD = gunlukNetMaliyetUSD(bugunToplam.cagri, bugunBrutUSD);
+  const bugunNetTL = bugunNetUSD * usdTl;
+  const bugunUcretsizMi = bugunToplam.cagri <= FREE_TIER_TOPLAM_GUNLUK;
 
   // Ücretsiz tier sayacı (eksiden 0'a, 0 = bitti)
   const freeSayac = bugunToplam.cagri - FREE_TIER_TOPLAM_GUNLUK;
   const freeKalan = Math.max(0, -freeSayac);
   const freeYuzde = Math.min(100, (bugunToplam.cagri / FREE_TIER_TOPLAM_GUNLUK) * 100);
 
-  // Son 7 gün toplam
-  const yedigunToplam = useMemo(() => {
-    let cagri = 0,
-      input = 0,
-      output = 0;
+  // Son 7 gün — her gün için NET maliyet hesapla (ücretsiz tier sonrası)
+  const yedigunNet = useMemo(() => {
+    const gunler: Record<string, { cagri: number; input: number; output: number }> = {};
     for (const s of satirlar) {
-      cagri += s.cagri_sayisi;
-      input += s.toplam_input_token;
-      output += s.toplam_output_token;
+      if (!gunler[s.gun]) gunler[s.gun] = { cagri: 0, input: 0, output: 0 };
+      gunler[s.gun].cagri += s.cagri_sayisi;
+      gunler[s.gun].input += s.toplam_input_token;
+      gunler[s.gun].output += s.toplam_output_token;
     }
-    return { cagri, input, output };
+    let toplamNetUSD = 0;
+    let toplamBrutUSD = 0;
+    let gunSayisi = 0;
+    for (const v of Object.values(gunler)) {
+      const brut = cagriUSDMaliyet(v.input, v.output);
+      toplamBrutUSD += brut;
+      toplamNetUSD += gunlukNetMaliyetUSD(v.cagri, brut);
+      gunSayisi += 1;
+    }
+    return { toplamNetUSD, toplamBrutUSD, gunSayisi };
   }, [satirlar]);
-  const yedigunMaliyetUSD = cagriUSDMaliyet(yedigunToplam.input, yedigunToplam.output);
-  const yedigunOrtalamaGunlukTL = (yedigunMaliyetUSD / 7) * usdTl;
-  const aylikTahminTL = yedigunOrtalamaGunlukTL * 30;
+
+  const aylikTahminTL =
+    yedigunNet.gunSayisi > 0
+      ? (yedigunNet.toplamNetUSD / yedigunNet.gunSayisi) * 30 * usdTl
+      : 0;
+  const aylikBrutTahminTL =
+    yedigunNet.gunSayisi > 0
+      ? (yedigunNet.toplamBrutUSD / yedigunNet.gunSayisi) * 30 * usdTl
+      : 0;
 
   // Bugünkü özellik bazında dağılım
   const ozellikDagilim = useMemo(() => {
@@ -227,15 +258,24 @@ export const AdminAIMaliyetSayfasi = () => {
           <div className="bg-surface border border-line rounded-2xl p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
-                Bugün maliyet
+                Bugün net maliyet
               </div>
               <Icon name="DollarSign" size={16} className="text-success" />
             </div>
             <div className="font-display text-3xl font-bold tracking-tight">
-              {yukleniyor ? '—' : formatPara(bugunMaliyetTL)}
+              {yukleniyor ? '—' : bugunUcretsizMi ? '0 ₺' : formatPara(bugunNetTL)}
             </div>
-            <div className="text-[11px] text-ink-mute font-medium mt-1 font-mono">
-              ${bugunMaliyetUSD.toFixed(4)} · {formatToken(bugunToplam.input)} in / {formatToken(bugunToplam.output)} out
+            <div className="text-[11px] text-ink-mute font-medium mt-1">
+              {bugunUcretsizMi ? (
+                <span>Ücretsiz tier dahilinde — cebinden çıkmıyor</span>
+              ) : (
+                <span className="font-mono">
+                  ${bugunNetUSD.toFixed(4)} (paid kısım)
+                </span>
+              )}
+            </div>
+            <div className="text-[10px] text-ink-mute font-mono mt-1">
+              Brüt token maliyeti: {formatPara(bugunBrutTL)} · {formatToken(bugunToplam.input)} in / {formatToken(bugunToplam.output)} out
             </div>
           </div>
 
@@ -271,15 +311,20 @@ export const AdminAIMaliyetSayfasi = () => {
           <div className="bg-surface border border-line rounded-2xl p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
-                Aylık tahmin
+                Aylık net tahmin
               </div>
               <Icon name="TrendingUp" size={16} className="text-brand" />
             </div>
             <div className="font-display text-3xl font-bold tracking-tight">
-              {yukleniyor ? '—' : formatPara(aylikTahminTL)}
+              {yukleniyor ? '—' : aylikTahminTL <= 0 ? '0 ₺' : formatPara(aylikTahminTL)}
             </div>
             <div className="text-[11px] text-ink-mute font-medium mt-1">
-              Son 7 gün ortalaması × 30
+              {aylikTahminTL <= 0
+                ? 'Ücretsiz tier yetiyor — paid maliyet beklenmiyor'
+                : 'Son 7 günün net günlük ortalaması × 30'}
+            </div>
+            <div className="text-[10px] text-ink-mute font-mono mt-1">
+              Brüt token maliyeti: {formatPara(aylikBrutTahminTL)}
             </div>
           </div>
         </section>
@@ -345,19 +390,27 @@ export const AdminAIMaliyetSayfasi = () => {
                     <th className="text-right px-4 py-3">Çağrı</th>
                     <th className="text-right px-4 py-3">Input token</th>
                     <th className="text-right px-4 py-3">Output token</th>
-                    <th className="text-right px-4 py-3">Maliyet</th>
+                    <th className="text-right px-4 py-3">Net (ödenen)</th>
+                    <th className="text-right px-4 py-3 text-ink-mute/70">Brüt token</th>
                   </tr>
                 </thead>
                 <tbody>
                   {gunlukOzet.map(([gun, v]) => {
-                    const usd = cagriUSDMaliyet(v.input, v.output);
+                    const brutUSD = cagriUSDMaliyet(v.input, v.output);
+                    const netUSD = gunlukNetMaliyetUSD(v.cagri, brutUSD);
+                    const ucretsiz = v.cagri <= FREE_TIER_TOPLAM_GUNLUK;
                     return (
                       <tr key={gun} className="border-t border-line">
                         <td className="px-4 py-3 font-mono text-xs text-ink">{gun}</td>
                         <td className="px-4 py-3 text-right font-mono">{v.cagri}</td>
                         <td className="px-4 py-3 text-right font-mono text-ink-soft">{formatToken(v.input)}</td>
                         <td className="px-4 py-3 text-right font-mono text-ink-soft">{formatToken(v.output)}</td>
-                        <td className="px-4 py-3 text-right font-semibold">{formatPara(usd * usdTl)}</td>
+                        <td className={`px-4 py-3 text-right font-semibold ${ucretsiz ? 'text-success' : 'text-ink'}`}>
+                          {ucretsiz ? '0 ₺' : formatPara(netUSD * usdTl)}
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono text-[11px] text-ink-mute">
+                          {formatPara(brutUSD * usdTl)}
+                        </td>
                       </tr>
                     );
                   })}
@@ -385,10 +438,20 @@ export const AdminAIMaliyetSayfasi = () => {
               <span className="text-ink-soft font-medium">Ücretsiz tier toplam (3 model)</span>
               <span className="font-mono font-semibold">{FREE_TIER_TOPLAM_GUNLUK.toLocaleString('tr-TR')} çağrı/gün</span>
             </div>
-            <div className="text-[11px] text-ink-mute pt-2">
-              Stream çağrıları için token sayısı karakter/4 yaklaşımıyla tahmin edilir
-              (Gemini'nin gerçek token sayısı ±%10 dahilinde olur). Pricing Google'ın
-              güncel sayfasına göre değişebilir.
+            <div className="text-[11px] text-ink-mute pt-2 space-y-1.5">
+              <div>
+                <strong className="text-ink-soft">Net (ödenen):</strong> Günlük çağrı sayısı 3.250'nin
+                altındaysa <strong>0 ₺</strong> — ücretsiz tier dahilindedir, cebinden çıkmaz.
+                Üstüne çıkılırsa sadece aşan kısmın oranı kadar token maliyeti hesaplanır.
+              </div>
+              <div>
+                <strong className="text-ink-soft">Brüt token:</strong> "Ücretsiz tier olmasaydı bu kadar
+                tutardı" — referans amaçlı, gerçek harcama değil.
+              </div>
+              <div>
+                Stream çağrıları için token sayısı karakter/4 yaklaşımıyla tahmin edilir (gerçek ±%10).
+                Pricing Google'ın güncel sayfasına göre değişebilir.
+              </div>
             </div>
           </div>
         </section>
