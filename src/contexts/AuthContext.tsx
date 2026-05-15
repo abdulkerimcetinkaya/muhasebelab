@@ -117,9 +117,11 @@ export const useHasAdminRol = (rol: AdminRol): boolean => {
 };
 
 export const useIsPremium = (): boolean => {
-  const { premiumBitis } = useAuth();
+  const { premiumBitis, adminRoller } = useAuth();
   return useMemo(() => {
+    // Admin'ler tüm premium özelliklere erişebilir (her zaman premium gibi davranır)
+    if ((adminRoller ?? []).length > 0) return true;
     if (!premiumBitis) return false;
     return new Date(premiumBitis) > new Date();
-  }, [premiumBitis]);
+  }, [premiumBitis, adminRoller]);
 };
