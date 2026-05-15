@@ -27,34 +27,12 @@ export const altBaslikTamamlandiMi = (
 };
 
 /**
- * Alt başlık sıradakini açacak durumda mı.
- * 0 soru olan alt başlık kilit akışını bloke etmez (geçilebilir).
- */
-const altBaslikKilitAciciMi = (
-  altBaslik: AltBaslik,
-  ilerleme: Ilerleme,
-): boolean => {
-  if (altBaslik.sorular.length === 0) return true;
-  return altBaslik.sorular.every((s) => !!ilerleme.cozulenler[s.id]);
-};
-
-/**
  * Modül tamamen tamamlandı mı — tüm alt başlıkları kilit-açıcı durumda mı.
  * Alt başlığı olmayan modül asla tamamlanmış sayılmaz (içerik hazırlanmamış).
  */
 export const modulTamamlandiMi = (modul: Modul, ilerleme: Ilerleme): boolean => {
   if (modul.altBasliklar.length === 0) return false;
   return modul.altBasliklar.every((a) => altBaslikTamamlandiMi(a, ilerleme));
-};
-
-/**
- * Modül kilidi açıcı mı — sıradaki modülün açılması için yeterli durum mu.
- * Alt başlığı olmayan modül "geçilebilir" sayılır (içerik henüz yoksa
- * öğrenciyi tıkamayalım — konuKilitAciciMi paterni).
- */
-const modulKilitAciciMi = (modul: Modul, ilerleme: Ilerleme): boolean => {
-  if (modul.altBasliklar.length === 0) return true;
-  return modul.altBasliklar.every((a) => altBaslikKilitAciciMi(a, ilerleme));
 };
 
 /**
