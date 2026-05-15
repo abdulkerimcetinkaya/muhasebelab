@@ -6,6 +6,7 @@
 //
 // İçerik admin'den `modul_alt_basliklari.icerik` alanına yazılır.
 
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
@@ -14,6 +15,7 @@ import { TamamRozeti } from '../components/TamamRozeti';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
 import { altBaslikTamamlandiMi, modulKilitDurumu } from '../lib/modul-kilit';
+import { altBaslikIcerikYukle } from '../lib/uniteler-loader';
 import type { Ilerleme } from '../types';
 
 interface Props {
@@ -37,6 +39,33 @@ export const AltBaslikSayfasi = ({ ilerleme }: Props) => {
   const modul = moduller.find((m) => m.id === modulId);
   const altBaslik = modul?.altBasliklar.find((a) => a.id === altBaslikId);
 
+  // İçerik lazy yüklenir — uniteler-loader liste yüklemesinde icerik çekmiyor.
+  // Hook'lar erken return'dan ÖNCE çağrılmalı (React kuralı).
+  const cachedIcerik = Array.isArray(altBaslik?.icerik)
+    ? (altBaslik.icerik as unknown[])
+    : null;
+  const [icerik, setIcerik] = useState<unknown[] | null>(cachedIcerik);
+  const [icerikYukleniyor, setIcerikYukleniyor] = useState(!cachedIcerik && !!altBaslik);
+
+  useEffect(() => {
+    if (!altBaslik?.id) return;
+    if (Array.isArray(altBaslik.icerik)) {
+      setIcerik(altBaslik.icerik as unknown[]);
+      setIcerikYukleniyor(false);
+      return;
+    }
+    let iptal = false;
+    setIcerikYukleniyor(true);
+    altBaslikIcerikYukle(altBaslik.id).then((r) => {
+      if (iptal) return;
+      setIcerik(r.icerik);
+      setIcerikYukleniyor(false);
+    });
+    return () => {
+      iptal = true;
+    };
+  }, [altBaslik?.id, altBaslik?.icerik]);
+
   if (!unite || !modul || !altBaslik) {
     return (
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
@@ -57,7 +86,7 @@ export const AltBaslikSayfasi = ({ ilerleme }: Props) => {
   const durum = modulKilitDurumu(moduller, modul, ilerleme);
   const kilitli = durum === 'kilitli';
   const tamam = altBaslikTamamlandiMi(altBaslik, ilerleme);
-  const icerikVar = icerikDolu(altBaslik.icerik);
+  const icerikVar = icerikDolu(icerik);
 
   // Sonraki alt başlık — aynı modül içinde
   const altIdx = modul.altBasliklar.findIndex((a) => a.id === altBaslik.id);
@@ -112,9 +141,15 @@ export const AltBaslikSayfasi = ({ ilerleme }: Props) => {
       )}
 
       {/* Konu anlatımı */}
-      {icerikVar ? (
+      {icerikYukleniyor ? (
+        <div className="bg-surface border border-line rounded-2xl px-6 py-10 mb-6 animate-pulse">
+          <div className="h-3 bg-surface-2 rounded w-3/4 mb-3" />
+          <div className="h-3 bg-surface-2 rounded w-full mb-3" />
+          <div className="h-3 bg-surface-2 rounded w-5/6" />
+        </div>
+      ) : icerikVar ? (
         <article className="bg-surface border border-line rounded-2xl px-2 py-2 sm:px-4 sm:py-4 mb-6">
-          <IcerikGoruntuleyici icerik={altBaslik.icerik} />
+          <IcerikGoruntuleyici icerik={icerik} />
         </article>
       ) : (
         <div className="bg-surface border border-dashed border-line-strong rounded-2xl px-6 py-8 text-center mb-6">

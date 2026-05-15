@@ -3,6 +3,7 @@
 // Sol sidebar (ModulLayout) + sağ panel: modülün BlockNote içeriği +
 // hızlı eylem (ilk açık alt başlığa zıpla). İçerik admin'den
 // `unite_modulleri.icerik` alanına yazılır.
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
@@ -15,6 +16,7 @@ import {
   modulIlerlemeYuzde,
   modulKilitDurumu,
 } from '../lib/modul-kilit';
+import { modulIcerikYukle } from '../lib/uniteler-loader';
 import type { AltBaslik, Ilerleme } from '../types';
 
 interface Props {
@@ -57,7 +59,34 @@ export const ModulSayfasi = ({ ilerleme }: Props) => {
   const acanModul = kilitli ? kilidiAcanModul(moduller, modul, ilerleme) : null;
   const altBasliklar = modul.altBasliklar;
   const tamamAlt = altBasliklar.filter((a) => altBaslikTamamlandiMi(a, ilerleme)).length;
-  const icerikVar = icerikDolu(modul.icerik);
+
+  // İçerik lazy yüklenir — uniteler-loader liste yüklemesinde icerik çekmiyor.
+  // Modül sayfası açılınca ayrı bir query ile çek.
+  const [icerik, setIcerik] = useState<unknown[] | null>(
+    Array.isArray(modul.icerik) ? (modul.icerik as unknown[]) : null,
+  );
+  const [icerikYukleniyor, setIcerikYukleniyor] = useState(!Array.isArray(modul.icerik));
+
+  useEffect(() => {
+    if (!modul.id) return;
+    if (Array.isArray(modul.icerik)) {
+      setIcerik(modul.icerik as unknown[]);
+      setIcerikYukleniyor(false);
+      return;
+    }
+    let iptal = false;
+    setIcerikYukleniyor(true);
+    modulIcerikYukle(modul.id).then((r) => {
+      if (iptal) return;
+      setIcerik(r.icerik);
+      setIcerikYukleniyor(false);
+    });
+    return () => {
+      iptal = true;
+    };
+  }, [modul.id, modul.icerik]);
+
+  const icerikVar = icerikDolu(icerik);
 
   // "Devam et / Başla" — ilk tamamlanmamış (ama başlanmış veya hiç başlanmamış) alt başlık
   const ilkAcikAlt: AltBaslik | undefined = altBasliklar.find(
@@ -135,9 +164,15 @@ export const ModulSayfasi = ({ ilerleme }: Props) => {
       )}
 
       {/* Konu anlatımı */}
-      {icerikVar ? (
+      {icerikYukleniyor ? (
+        <div className="bg-surface border border-line rounded-2xl px-6 py-10 mb-6 animate-pulse">
+          <div className="h-3 bg-surface-2 rounded w-3/4 mb-3" />
+          <div className="h-3 bg-surface-2 rounded w-full mb-3" />
+          <div className="h-3 bg-surface-2 rounded w-5/6" />
+        </div>
+      ) : icerikVar ? (
         <article className="bg-surface border border-line rounded-2xl px-2 py-2 sm:px-4 sm:py-4 mb-6">
-          <IcerikGoruntuleyici icerik={modul.icerik} />
+          <IcerikGoruntuleyici icerik={icerik} />
         </article>
       ) : (
         <div className="bg-surface border border-dashed border-line-strong rounded-2xl px-6 py-10 text-center mb-6">

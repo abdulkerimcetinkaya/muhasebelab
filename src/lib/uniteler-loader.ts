@@ -10,11 +10,14 @@ import type {
   Unite,
 } from '../types';
 
-// v8: Ünite/modül/alt başlık `aktif` alanı + 3 pasif işletme türü ünitesi — eski cache invalidate.
-const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v8';
+// v10: `icerik` JSONB kolonları (unite_modulleri, modul_alt_basliklari,
+// unite_konulari) liste yüklemesinde çekilmiyor — BlockNote içerikleri
+// büyük (50-500 KB toplam) ve sadece ilgili sayfa açıldığında gerekli.
+// Egress optimizasyonu için lazy load.
+const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v10';
 
 interface OnbellekPaketi {
-  v: 8;
+  v: 10;
   ts: number;
   uniteler: Unite[];
 }
@@ -23,6 +26,14 @@ export interface UnitelerVerisi {
   uniteler: Unite[];
   tumSorular: SoruWithUnite[];
 }
+
+// Liste yüklemesinde çekilen kolonlar — icerik/icerik_guncellendi YOK
+const SORU_LISTE_KOLONLARI =
+  'id, baslik, zorluk, senaryo, ipucu, aciklama, durum, unite_id, konu_id, alt_baslik_id, ekleyen_id';
+const MODUL_LISTE_KOLONLARI =
+  'id, unite_id, sira, baslik, aciklama, zorluk_seviyesi, opsiyonel, aktif';
+const ALT_BASLIK_LISTE_KOLONLARI = 'id, modul_id, sira, baslik, karma, aktif';
+const KONU_LISTE_KOLONLARI = 'id, unite_id, ad, aciklama, sira, aktif';
 
 const duzleTumSorular = (uniteler: Unite[]): SoruWithUnite[] =>
   uniteler.flatMap((u) =>
@@ -38,12 +49,15 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   const [unitesR, konularR, modullerR, altBasliklarR, sorularR, cozumlerR] =
     await Promise.all([
       supabase.from('unites').select('*').order('sira'),
-      supabase.from('unite_konulari').select('*').order('sira'),
-      supabase.from('unite_modulleri').select('*').order('sira'),
-      supabase.from('modul_alt_basliklari').select('*').order('sira'),
+      supabase.from('unite_konulari').select(KONU_LISTE_KOLONLARI).order('sira'),
+      supabase.from('unite_modulleri').select(MODUL_LISTE_KOLONLARI).order('sira'),
+      supabase
+        .from('modul_alt_basliklari')
+        .select(ALT_BASLIK_LISTE_KOLONLARI)
+        .order('sira'),
       supabase
         .from('sorular')
-        .select('*')
+        .select(SORU_LISTE_KOLONLARI)
         .eq('durum', 'onayli')
         .order('unite_id')
         .order('id'),
@@ -70,7 +84,6 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   const sorularByAltBaslik: Record<string, Soru[]> = {};
   (sorularR.data ?? []).forEach((s) => {
     if (!sorularByUnite[s.unite_id]) sorularByUnite[s.unite_id] = [];
-    const belgeler = Array.isArray(s.belgeler) ? (s.belgeler as Belge[]) : undefined;
     const altBaslikId = (s as { alt_baslik_id?: string | null }).alt_baslik_id ?? null;
     const soru: Soru = {
       id: s.id,
@@ -80,7 +93,8 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       ipucu: s.ipucu ?? '',
       aciklama: s.aciklama ?? '',
       cozum: cozumById[s.id] ?? [],
-      belgeler: belgeler && belgeler.length > 0 ? belgeler : undefined,
+      // belgeler liste yüklemesinde çekilmez — SoruEkrani lazy yükler
+      belgeler: undefined,
       konuId: s.konu_id ?? null,
       altBaslikId,
       ekleyenId: s.ekleyen_id ?? null,
@@ -104,7 +118,8 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       uniteId: k.unite_id,
       ad: k.ad,
       aciklama: k.aciklama ?? null,
-      icerik: (k as { icerik?: unknown }).icerik ?? null,
+      // icerik lazy — KonuSayfasi açılınca konuIcerikYukle çağrılır
+      icerik: null,
       sira: k.sira,
       aktif: (k as { aktif?: boolean }).aktif ?? true,
       sorular: sorularByKonu[k.id] ?? [],
@@ -115,16 +130,15 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   const altBasliklarByModul: Record<string, AltBaslik[]> = {};
   (altBasliklarR.data ?? []).forEach((a) => {
     if (!altBasliklarByModul[a.modul_id]) altBasliklarByModul[a.modul_id] = [];
-    const altIcerik = (a as { icerik?: unknown }).icerik;
-    const altIcerikGuncellendi = (a as { icerik_guncellendi?: string | null }).icerik_guncellendi;
     altBasliklarByModul[a.modul_id].push({
       id: a.id,
       modulId: a.modul_id,
       sira: a.sira,
       baslik: a.baslik,
       karma: !!a.karma,
-      icerik: Array.isArray(altIcerik) ? (altIcerik as unknown[]) : null,
-      icerikGuncellendi: altIcerikGuncellendi ?? null,
+      // icerik lazy — AltBaslikSayfasi açılınca altBaslikIcerikYukle çağrılır
+      icerik: null,
+      icerikGuncellendi: null,
       aktif: (a as { aktif?: boolean }).aktif ?? true,
       sorular: sorularByAltBaslik[a.id] ?? [],
     });
@@ -134,8 +148,6 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   const modullerByUnite: Record<string, Modul[]> = {};
   (modullerR.data ?? []).forEach((m) => {
     if (!modullerByUnite[m.unite_id]) modullerByUnite[m.unite_id] = [];
-    const modulIcerik = (m as { icerik?: unknown }).icerik;
-    const modulIcerikGuncellendi = (m as { icerik_guncellendi?: string | null }).icerik_guncellendi;
     modullerByUnite[m.unite_id].push({
       id: m.id,
       uniteId: m.unite_id,
@@ -144,8 +156,9 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       aciklama: m.aciklama ?? null,
       zorlukSeviyesi: m.zorluk_seviyesi as ModulZorluk,
       opsiyonel: !!m.opsiyonel,
-      icerik: Array.isArray(modulIcerik) ? (modulIcerik as unknown[]) : null,
-      icerikGuncellendi: modulIcerikGuncellendi ?? null,
+      // icerik lazy — ModulSayfasi açılınca modulIcerikYukle çağrılır
+      icerik: null,
+      icerikGuncellendi: null,
       aktif: (m as { aktif?: boolean }).aktif ?? true,
       altBasliklar: altBasliklarByModul[m.id] ?? [],
     });
@@ -166,12 +179,91 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
   return { uniteler, tumSorular: duzleTumSorular(uniteler) };
 };
 
+/**
+ * Tek bir sorunun belgelerini ayrı bir query ile çek (lazy load).
+ */
+export const soruBelgeleriniYukle = async (soruId: string): Promise<Belge[]> => {
+  const { data, error } = await supabase
+    .from('sorular')
+    .select('belgeler')
+    .eq('id', soruId)
+    .maybeSingle();
+  if (error) {
+    console.error(`Belgeler yüklenemedi (${soruId}):`, error.message);
+    return [];
+  }
+  const belgeler = (data as { belgeler?: unknown })?.belgeler;
+  return Array.isArray(belgeler) ? (belgeler as Belge[]) : [];
+};
+
+/**
+ * Modül içeriğini (BlockNote JSON) ayrı çek. ModulSayfasi açılınca çağrılır.
+ */
+export const modulIcerikYukle = async (
+  modulId: string,
+): Promise<{ icerik: unknown[] | null; icerikGuncellendi: string | null }> => {
+  const { data, error } = await supabase
+    .from('unite_modulleri')
+    .select('icerik, icerik_guncellendi')
+    .eq('id', modulId)
+    .maybeSingle();
+  if (error) {
+    console.error(`Modül içeriği yüklenemedi (${modulId}):`, error.message);
+    return { icerik: null, icerikGuncellendi: null };
+  }
+  const icerik = (data as { icerik?: unknown })?.icerik;
+  const ts = (data as { icerik_guncellendi?: string | null })?.icerik_guncellendi;
+  return {
+    icerik: Array.isArray(icerik) ? (icerik as unknown[]) : null,
+    icerikGuncellendi: ts ?? null,
+  };
+};
+
+/**
+ * Alt başlık içeriğini ayrı çek. AltBaslikSayfasi açılınca çağrılır.
+ */
+export const altBaslikIcerikYukle = async (
+  altBaslikId: string,
+): Promise<{ icerik: unknown[] | null; icerikGuncellendi: string | null }> => {
+  const { data, error } = await supabase
+    .from('modul_alt_basliklari')
+    .select('icerik, icerik_guncellendi')
+    .eq('id', altBaslikId)
+    .maybeSingle();
+  if (error) {
+    console.error(`Alt başlık içeriği yüklenemedi (${altBaslikId}):`, error.message);
+    return { icerik: null, icerikGuncellendi: null };
+  }
+  const icerik = (data as { icerik?: unknown })?.icerik;
+  const ts = (data as { icerik_guncellendi?: string | null })?.icerik_guncellendi;
+  return {
+    icerik: Array.isArray(icerik) ? (icerik as unknown[]) : null,
+    icerikGuncellendi: ts ?? null,
+  };
+};
+
+/**
+ * Konu içeriğini ayrı çek. KonuSayfasi açılınca çağrılır.
+ */
+export const konuIcerikYukle = async (konuId: string): Promise<unknown> => {
+  const { data, error } = await supabase
+    .from('unite_konulari')
+    .select('icerik')
+    .eq('id', konuId)
+    .maybeSingle();
+  if (error) {
+    console.error(`Konu içeriği yüklenemedi (${konuId}):`, error.message);
+    return null;
+  }
+  return (data as { icerik?: unknown })?.icerik ?? null;
+};
+
 export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
   try {
     const raw = localStorage.getItem(UNITELER_CACHE_KEY);
     if (!raw) return null;
     const paket = JSON.parse(raw) as OnbellekPaketi;
-    if (paket.v !== 8 || !Array.isArray(paket.uniteler)) return null;
+    if (paket.v !== 10 || !Array.isArray(paket.uniteler)) return null;
     return { uniteler: paket.uniteler, tumSorular: duzleTumSorular(paket.uniteler) };
   } catch {
     return null;
@@ -180,7 +272,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
 
 export const uniteleriCacheeYaz = (uniteler: Unite[]): void => {
   try {
-    const paket: OnbellekPaketi = { v: 8, ts: Date.now(), uniteler };
+    const paket: OnbellekPaketi = { v: 10, ts: Date.now(), uniteler };
     localStorage.setItem(UNITELER_CACHE_KEY, JSON.stringify(paket));
   } catch {
     // ignore (quota)
