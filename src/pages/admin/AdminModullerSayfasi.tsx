@@ -146,18 +146,6 @@ export const AdminModullerSayfasi = () => {
     yukle();
   };
 
-  const aktifToggle = async (m: UniteModuluRow) => {
-    const r = await supabase
-      .from('unite_modulleri')
-      .update({ aktif: !m.aktif })
-      .eq('id', m.id);
-    if (r.error) {
-      alert('Aktif durumu güncellenemedi: ' + r.error.message);
-      return;
-    }
-    await unitelerYenile().catch(() => {});
-    yukle();
-  };
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
@@ -234,7 +222,7 @@ export const AdminModullerSayfasi = () => {
           />
         ) : (
           <div className="border border-line rounded-xl overflow-hidden bg-surface">
-            <div className="grid grid-cols-[64px_1fr_120px_120px_330px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
+            <div className="grid grid-cols-[64px_1fr_120px_120px_260px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <div>Sıra</div>
               <div>Modül</div>
               <div>Zorluk</div>
@@ -244,7 +232,7 @@ export const AdminModullerSayfasi = () => {
             {filtreli.map((m) => (
               <div
                 key={m.id}
-                className="grid grid-cols-[64px_1fr_120px_120px_330px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
+                className="grid grid-cols-[64px_1fr_120px_120px_260px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
               >
                 <div>
                   <input
@@ -296,17 +284,6 @@ export const AdminModullerSayfasi = () => {
                   </div>
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
-                  <button
-                    onClick={() => aktifToggle(m)}
-                    title={m.aktif ? 'Aktif — pasif yap' : 'Pasif — aktif yap'}
-                    className={`text-[10px] tracking-[0.18em] uppercase font-bold px-2 py-1 rounded border transition ${
-                      m.aktif
-                        ? 'bg-success-soft text-success border-success/30 hover:opacity-80'
-                        : 'bg-premium-soft text-premium-deep border-premium-soft hover:opacity-80'
-                    }`}
-                  >
-                    {m.aktif ? 'Aktif' : 'Pasif'}
-                  </button>
                   <button
                     onClick={() =>
                       nav(`/admin/uniteler/${uniteId}/moduller/${m.id}/icerik`)
@@ -391,6 +368,7 @@ const ModulForm = ({
     duzenleniyor?.zorluk_seviyesi ?? 'baslangic',
   );
   const [opsiyonel, setOpsiyonel] = useState(duzenleniyor?.opsiyonel ?? false);
+  const [aktif, setAktif] = useState(duzenleniyor?.aktif ?? true);
   const [kaydediyor, setKaydediyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
 
@@ -416,6 +394,7 @@ const ModulForm = ({
         aciklama: aciklama.trim() || null,
         zorluk_seviyesi: zorlukSeviyesi,
         opsiyonel,
+        aktif,
       });
       setKaydediyor(false);
       if (r.error) {
@@ -431,6 +410,7 @@ const ModulForm = ({
           sira,
           zorluk_seviyesi: zorlukSeviyesi,
           opsiyonel,
+          aktif,
         })
         .eq('id', duzenleniyor!.id);
       setKaydediyor(false);
@@ -541,6 +521,22 @@ const ModulForm = ({
               <span className="block text-[11.5px] text-ink-mute mt-0.5">
                 İşaretlenirse bu modül sonraki modülün kilidini açma akışında atlanır
                 (öğrenci tamamlamadan da sonraki modüle geçebilir).
+              </span>
+            </span>
+          </label>
+
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={aktif}
+              onChange={(e) => setAktif(e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-ink"
+            />
+            <span className="text-[13px] leading-snug">
+              <span className="font-semibold text-ink">Aktif</span>
+              <span className="block text-[11.5px] text-ink-mute mt-0.5">
+                Pasif modül kullanıcı tarafında "Yakında" rozetiyle gösterilir
+                ve tıklanamaz. Alt başlık ve soru içerikleri silinmez.
               </span>
             </span>
           </label>
