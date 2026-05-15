@@ -12,12 +12,17 @@
 -- istediği zaman migration ile devre dışı bırakabilir.
 
 -- =====================================================================
--- Şema
+-- Şema (idempotent — kısmen uygulanmış bir kurulum üzerinde de güvenle çalışır)
 -- =====================================================================
 
-create type modul_zorluk as enum ('baslangic', 'orta', 'ileri', 'sinav');
+do $$
+begin
+  if not exists (select 1 from pg_type where typname = 'modul_zorluk') then
+    create type modul_zorluk as enum ('baslangic', 'orta', 'ileri', 'sinav');
+  end if;
+end$$;
 
-create table unite_modulleri (
+create table if not exists unite_modulleri (
   id text primary key,
   unite_id text not null references unites(id) on delete cascade,
   sira int not null default 0,
@@ -29,12 +34,13 @@ create table unite_modulleri (
   updated_at timestamptz not null default now()
 );
 
-create index unite_modulleri_unite_idx on unite_modulleri (unite_id, sira);
+create index if not exists unite_modulleri_unite_idx on unite_modulleri (unite_id, sira);
 
+drop trigger if exists unite_modulleri_updated_at on unite_modulleri;
 create trigger unite_modulleri_updated_at before update on unite_modulleri
   for each row execute function set_updated_at();
 
-create table modul_alt_basliklari (
+create table if not exists modul_alt_basliklari (
   id text primary key,
   modul_id text not null references unite_modulleri(id) on delete cascade,
   sira int not null default 0,
@@ -45,15 +51,16 @@ create table modul_alt_basliklari (
   updated_at timestamptz not null default now()
 );
 
-create index modul_alt_basliklari_modul_idx on modul_alt_basliklari (modul_id, sira);
+create index if not exists modul_alt_basliklari_modul_idx on modul_alt_basliklari (modul_id, sira);
 
+drop trigger if exists modul_alt_basliklari_updated_at on modul_alt_basliklari;
 create trigger modul_alt_basliklari_updated_at before update on modul_alt_basliklari
   for each row execute function set_updated_at();
 
 -- Soruyu alt başlığa bağla — nullable, eski sorular etkilenmez
-alter table sorular add column alt_baslik_id text
+alter table sorular add column if not exists alt_baslik_id text
   references modul_alt_basliklari(id) on delete set null;
-create index sorular_alt_baslik_idx on sorular (alt_baslik_id)
+create index if not exists sorular_alt_baslik_idx on sorular (alt_baslik_id)
   where alt_baslik_id is not null;
 
 -- =====================================================================
@@ -63,15 +70,19 @@ create index sorular_alt_baslik_idx on sorular (alt_baslik_id)
 alter table unite_modulleri enable row level security;
 alter table modul_alt_basliklari enable row level security;
 
+drop policy if exists "modul_public_read" on unite_modulleri;
 create policy "modul_public_read"
   on unite_modulleri for select using (true);
+drop policy if exists "modul_admin_all" on unite_modulleri;
 create policy "modul_admin_all"
   on unite_modulleri for all
   using (public.is_admin())
   with check (public.is_admin());
 
+drop policy if exists "alt_baslik_public_read" on modul_alt_basliklari;
 create policy "alt_baslik_public_read"
   on modul_alt_basliklari for select using (true);
+drop policy if exists "alt_baslik_admin_all" on modul_alt_basliklari;
 create policy "alt_baslik_admin_all"
   on modul_alt_basliklari for all
   using (public.is_admin())
