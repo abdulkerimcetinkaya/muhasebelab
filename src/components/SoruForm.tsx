@@ -8,7 +8,6 @@ import { hesapAdiBul } from '../lib/hesap';
 import type {
   ModulAltBaslikRow,
   SoruDurum,
-  UniteKonusuRow,
   UniteModuluRow,
   UnitesRow,
   Zorluk,
@@ -60,7 +59,6 @@ interface Props {
 export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => {
   const [d, setD] = useState<SoruFormDegerleri>(baslangic);
   const [uniteler, setUniteler] = useState<UnitesRow[]>([]);
-  const [konular, setKonular] = useState<UniteKonusuRow[]>([]);
   const [moduller, setModuller] = useState<UniteModuluRow[]>([]);
   const [altBasliklar, setAltBasliklar] = useState<ModulAltBaslikRow[]>([]);
   const [muavinler, setMuavinler] = useState<MuavinHesap[]>([]);
@@ -85,34 +83,6 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
   const muavinEklendi = (yeni: MuavinHesap) => {
     setMuavinler((p) => [...p, yeni].sort((a, b) => a.kod.localeCompare(b.kod)));
   };
-
-  // Ünite değişince o ünitenin konularını yükle. konu_id, ünite ile uyumsuzsa sıfırlar.
-  useEffect(() => {
-    if (!d.unite_id) {
-      setKonular([]);
-      if (d.konu_id) setD((p) => ({ ...p, konu_id: '' }));
-      return;
-    }
-    let iptal = false;
-    supabase
-      .from('unite_konulari')
-      .select('*')
-      .eq('unite_id', d.unite_id)
-      .order('sira')
-      .then(({ data }) => {
-        if (iptal) return;
-        const liste = (data ?? []) as UniteKonusuRow[];
-        setKonular(liste);
-        // Mevcut konu_id bu ünitede yoksa sıfırla
-        if (d.konu_id && !liste.some((k) => k.id === d.konu_id)) {
-          setD((p) => ({ ...p, konu_id: '' }));
-        }
-      });
-    return () => {
-      iptal = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [d.unite_id]);
 
   // Ünite değişince modülleri + alt başlıkları yükle. alt_baslik_id ünite ile uyumsuzsa sıfırla.
   useEffect(() => {
@@ -266,34 +236,6 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
               <option value="zor">Zor</option>
             </select>
           </div>
-        </div>
-
-        <div>
-          <label className="block text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold mb-2">
-            Alt-konu{' '}
-            <span className="text-ink-quiet font-normal normal-case tracking-normal">
-              (opsiyonel — eski yapı, teori içerik)
-            </span>
-          </label>
-          <select
-            value={d.konu_id}
-            onChange={(e) => setD({ ...d, konu_id: e.target.value })}
-            disabled={!d.unite_id || konular.length === 0}
-            className="w-full px-3 py-2 bg-bg-tint border border-line-strong focus:border-ink focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/30 outline-none text-sm rounded-lg font-medium disabled:opacity-50"
-          >
-            <option value="">
-              {!d.unite_id
-                ? '— Önce ünite seç —'
-                : konular.length === 0
-                  ? '— Bu ünitede konu yok —'
-                  : '— Konu seçme (ünite seviyesinde kalsın) —'}
-            </option>
-            {konular.map((k) => (
-              <option key={k.id} value={k.id}>
-                {k.sira}. {k.ad}
-              </option>
-            ))}
-          </select>
         </div>
 
         <div className="md:col-span-2">

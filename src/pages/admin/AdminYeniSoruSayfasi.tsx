@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AdminYanMenu } from '../../components/AdminYanMenu';
 import { SoruForm, bosForm } from '../../components/SoruForm';
 import type { SoruFormDegerleri } from '../../components/SoruForm';
@@ -31,7 +32,40 @@ const benzersizId = async (): Promise<string> => {
 
 export const AdminYeniSoruSayfasi = () => {
   const nav = useNavigate();
+  const [params] = useSearchParams();
   const { yenile } = useUniteler();
+  const [baslangic, setBaslangic] = useState<SoruFormDegerleri | null>(null);
+
+  // URL ?alt=<alt-baslik-id> ile geldiyse, o alt başlığın ünitesini bulup
+  // formu pre-fill et. (Alt başlık → modül → ünite zinciri ile.)
+  useEffect(() => {
+    const altId = params.get('alt');
+    if (!altId) {
+      setBaslangic(bosForm());
+      return;
+    }
+    (async () => {
+      const { data: alt } = await supabase
+        .from('modul_alt_basliklari')
+        .select('modul_id')
+        .eq('id', altId)
+        .maybeSingle();
+      let uniteId = '';
+      if (alt?.modul_id) {
+        const { data: mod } = await supabase
+          .from('unite_modulleri')
+          .select('unite_id')
+          .eq('id', alt.modul_id)
+          .maybeSingle();
+        uniteId = mod?.unite_id ?? '';
+      }
+      setBaslangic({
+        ...bosForm(),
+        unite_id: uniteId,
+        alt_baslik_id: altId,
+      });
+    })();
+  }, [params]);
 
   const kaydet = async (d: SoruFormDegerleri) => {
     const dolular = d.cozumler.filter((c) => c.kod.trim());
@@ -83,12 +117,14 @@ export const AdminYeniSoruSayfasi = () => {
         <p className="text-sm text-ink-soft font-medium mb-6">
           Manuel soru ekleme. Onaylı durumda kaydedilirse hemen yayında olur.
         </p>
-        <SoruForm
-          baslangic={bosForm()}
-          duzenleme={false}
-          onKaydet={kaydet}
-          onIptal={() => nav('/admin/sorular')}
-        />
+        {baslangic && (
+          <SoruForm
+            baslangic={baslangic}
+            duzenleme={false}
+            onKaydet={kaydet}
+            onIptal={() => nav('/admin/sorular')}
+          />
+        )}
       </div>
     </main>
   );
