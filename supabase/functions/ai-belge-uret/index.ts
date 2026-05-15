@@ -191,6 +191,18 @@ Bu soruya uygun belge(leri) JSON formatında üret.`;
       );
     }
 
+    // Maliyet izleme — admin dashboard için
+    yetki.supabase
+      .rpc('ai_log_yaz', {
+        _ozellik: 'belge_uret',
+        _input_token: yanit.inputToken ?? 0,
+        _output_token: yanit.outputToken ?? 0,
+        _premium: true,
+      })
+      .then(({ error }) => {
+        if (error) console.error('ai_log_yaz hata:', error.message);
+      });
+
     return new Response(
       JSON.stringify({ belgeler, token: yanit.inputToken + yanit.outputToken }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },

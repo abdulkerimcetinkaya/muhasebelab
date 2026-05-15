@@ -118,6 +118,18 @@ tırnak içinde aynen referans al.`;
 
     const yanit = await anthropicCagir(SYSTEM_PROMPT, [{ role: 'user', content: mesaj }], 600);
 
+    // Maliyet izleme — admin dashboard için (sessiz, başarısız olsa da AI yanıtını bloklamaz)
+    yetki.supabase
+      .rpc('ai_log_yaz', {
+        _ozellik: 'yanlis_analizi',
+        _input_token: yanit.inputToken ?? 0,
+        _output_token: yanit.outputToken ?? 0,
+        _premium: premium,
+      })
+      .then(({ error }) => {
+        if (error) console.error('ai_log_yaz hata:', error.message);
+      });
+
     return new Response(
       JSON.stringify({
         metin: yanit.metin,
