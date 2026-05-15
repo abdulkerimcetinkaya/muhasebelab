@@ -42,6 +42,7 @@ export const AdminYeniSoruSayfasi = () => {
       id: yeniId,
       unite_id: d.unite_id,
       konu_id: d.konu_id || null,
+      alt_baslik_id: d.alt_baslik_id || null,
       baslik: d.baslik,
       zorluk: d.zorluk,
       senaryo: d.senaryo,
