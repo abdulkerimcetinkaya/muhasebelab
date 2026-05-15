@@ -2,16 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
-import { IcerikGoruntuleyici } from '../components/IcerikGoruntuleyici';
 import { TamamRozeti } from '../components/TamamRozeti';
 import { useUniteler } from '../contexts/UnitelerContext';
 import {
   MODUL_ZORLUK_AD,
   MODUL_ZORLUK_BADGE,
   MODUL_ZORLUK_KENAR,
-  ZORLUK_AD,
-  ZORLUK_PUAN,
-  ZORLUK_STIL,
 } from '../data/sabitler';
 import { konuKilitliMi, konuTamamlandiMi } from '../lib/konu-kilit';
 import {
@@ -70,9 +66,6 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
   // Modül yapısı varsa eski konu seksiyonunu gizle — atölye yapısı önceliklidir.
   const konulariVar = !modulleriVar && konular.length > 0;
 
-  // Konuya bağlanmamış sorular (eski seed) — geriye dönük uyum için ünite seviyesinde listelenir
-  const baglanmamisSorular = unite.sorular.filter((s) => !s.konuId);
-
   const toplam = unite.sorular.length;
   const cozulen = unite.sorular.filter((s) => ilerleme.cozulenler[s.id]).length;
   const yuzde = toplam > 0 ? Math.round((cozulen / toplam) * 100) : 0;
@@ -100,11 +93,6 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
     return aCoz - bCoz;
   });
   const ilkCozulmemis = sirayaGoreSorular.find((s) => !ilerleme.cozulenler[s.id]);
-
-  const anlatimVar = icerikDolu(unite.icerik);
-  const aktifIndex = uniteler.findIndex((u) => u.id === unite.id);
-  const sonrakiUnite = aktifIndex >= 0 ? uniteler[aktifIndex + 1] : null;
-  const tamamlandi = toplam > 0 && cozulen === toplam;
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
@@ -429,143 +417,6 @@ export const UniteSayfasi = ({ ilerleme }: Props) => {
         </section>
       )}
 
-      {/* Eski ünite seviyesi anlatımı — sadece konu yapısı yoksa göster */}
-      {!konulariVar && anlatimVar && (
-        <section className="mb-12">
-          <div className="flex items-baseline gap-3 mb-4">
-            <h2 className="font-display text-2xl font-bold tracking-tight">Konu Anlatımı</h2>
-            <span className="text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
-              Editöryel
-            </span>
-          </div>
-          <div className="bg-surface border border-line rounded-2xl px-2 py-2 sm:px-4 sm:py-4">
-            <IcerikGoruntuleyici icerik={unite.icerik} />
-          </div>
-        </section>
-      )}
-
-      {!konulariVar && !anlatimVar && (
-        <section className="mb-12">
-          <div className="bg-surface border border-dashed border-line-strong rounded-2xl px-6 py-10 text-center">
-            <div className="text-[10px] tracking-[0.22em] uppercase text-ink-quiet font-bold mb-2">
-              Konu Anlatımı
-            </div>
-            <p className="text-[14px] text-ink-mute max-w-md mx-auto leading-relaxed">
-              Bu ünite için içerik henüz hazırlanmadı. Sorulara doğrudan başlayabilirsin —
-              anlatım yakında eklenecek.
-            </p>
-          </div>
-        </section>
-      )}
-
-      {/* Soru listesi:
-          - Konu yapısı yoksa: tüm sorular ünite seviyesinde
-          - Konu yapısı varsa: sadece konuya bağlanmamış olanlar (eski seed) */}
-      {(!konulariVar || baglanmamisSorular.length > 0) && (
-        <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className="font-display text-2xl font-bold tracking-tight">
-              {konulariVar ? 'Genel Sorular' : 'Sorular'}
-            </h2>
-            <span className="text-xs text-ink-mute font-semibold">
-              {(konulariVar ? baglanmamisSorular : unite.sorular).length} adet
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {(konulariVar ? baglanmamisSorular : unite.sorular).map((s, i) => {
-              const cozulmus = !!ilerleme.cozulenler[s.id];
-              const yanlisSayi = ilerleme.yanlislar[s.id] || 0;
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => nav(`/problemler/${s.id}`)}
-                  className="text-left bg-surface border border-line hover:border-ink rounded-xl p-5 transition active:scale-[0.99] group"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-ink-quiet font-bold font-mono">
-                      Soru {String(i + 1).padStart(2, '0')}
-                    </span>
-                    {cozulmus ? (
-                      <TamamRozeti size={16} />
-                    ) : yanlisSayi > 0 ? (
-                      <Icon name="XCircle" size={16} className="text-danger" />
-                    ) : (
-                      <Icon
-                        name="Circle"
-                        size={16}
-                        className="text-ink-quiet"
-                      />
-                    )}
-                  </div>
-                  <h3 className="font-display text-lg font-bold tracking-tight mb-2 group-hover:text-brand dark:group-hover:text-brand-mute transition">
-                    {s.baslik}
-                  </h3>
-                  <p className="text-xs text-ink-mute leading-relaxed font-medium line-clamp-2 mb-3">
-                    {s.senaryo}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-[10px] tracking-[0.2em] uppercase font-bold ${ZORLUK_STIL[s.zorluk]}`}
-                    >
-                      {ZORLUK_AD[s.zorluk]}
-                    </span>
-                    <span className="font-mono text-[10px] text-ink-quiet font-bold">
-                      {ZORLUK_PUAN[s.zorluk]}p
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {sonrakiUnite && (
-        <section className="mt-16">
-          <button
-            onClick={() => nav(`/uniteler/${sonrakiUnite.id}`)}
-            className={`w-full text-left rounded-2xl p-6 sm:p-8 border transition group ${
- tamamlandi
- ? 'bg-gradient-to-br from-brand-soft to-bg border-brand-soft dark:border-brand-deep/40 hover:border-brand'
- : 'bg-surface border-line hover:border-ink '
- }`}
-          >
-            <div className="flex items-center justify-between gap-6">
-              <div className="min-w-0">
-                {tamamlandi ? (
-                  <div className="flex items-center gap-2 mb-3">
-                    <TamamRozeti size={14} />
-                    <span className="text-[10px] tracking-[0.3em] uppercase font-bold text-brand-deep dark:text-brand-mute">
-                      Bu üniteyi tamamladın
-                    </span>
-                  </div>
-                ) : (
-                  <div className="text-[10px] tracking-[0.3em] uppercase font-bold text-ink-mute mb-3">
-                    Sıradaki ünite
-                  </div>
-                )}
-                <div className="flex items-center gap-4">
-                  <Thiings name={sonrakiUnite.thiingsIcon} size={48} />
-                  <div className="min-w-0">
-                    <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink mb-1 leading-tight">
-                      {sonrakiUnite.ad}
-                    </h3>
-                    <p className="text-sm text-ink-soft leading-relaxed font-medium line-clamp-2">
-                      {sonrakiUnite.aciklama}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-shrink-0 flex items-center gap-2 text-ink-mute group-hover:text-ink dark:group-hover:text-ink transition">
-                <span className="hidden sm:inline text-[11px] tracking-[0.18em] uppercase font-bold">
-                  Geç
-                </span>
-                <Icon name="ArrowRight" size={20} />
-              </div>
-            </div>
-          </button>
-        </section>
-      )}
     </main>
   );
 };
