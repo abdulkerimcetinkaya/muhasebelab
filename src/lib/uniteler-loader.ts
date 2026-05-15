@@ -10,11 +10,11 @@ import type {
   Unite,
 } from '../types';
 
-// v6: Modül 3-7 başlıkları ve 48 yeni alt başlık (Excel kaynağı) — eski cache invalidate.
-const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v6';
+// v7: mal-alis-satis ünite adı "Ticaret İşletmesi" olarak güncellendi — eski cache invalidate.
+const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v7';
 
 interface OnbellekPaketi {
-  v: 6;
+  v: 7;
   ts: number;
   uniteler: Unite[];
 }
@@ -167,7 +167,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
     const raw = localStorage.getItem(UNITELER_CACHE_KEY);
     if (!raw) return null;
     const paket = JSON.parse(raw) as OnbellekPaketi;
-    if (paket.v !== 6 || !Array.isArray(paket.uniteler)) return null;
+    if (paket.v !== 7 || !Array.isArray(paket.uniteler)) return null;
     return { uniteler: paket.uniteler, tumSorular: duzleTumSorular(paket.uniteler) };
   } catch {
     return null;
@@ -176,7 +176,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
 
 export const uniteleriCacheeYaz = (uniteler: Unite[]): void => {
   try {
-    const paket: OnbellekPaketi = { v: 6, ts: Date.now(), uniteler };
+    const paket: OnbellekPaketi = { v: 7, ts: Date.now(), uniteler };
     localStorage.setItem(UNITELER_CACHE_KEY, JSON.stringify(paket));
   } catch {
     // ignore (quota)
