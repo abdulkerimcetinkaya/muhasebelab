@@ -158,11 +158,18 @@ export const SoruForm = ({ baslangic, duzenleme, onKaydet, onIptal }: Props) => 
     if (!d.senaryo.trim()) return 'Senaryo gerekli.';
     const dolular = d.cozumler.filter((c) => c.kod.trim());
     if (dolular.length < 2) return 'En az 2 çözüm satırı gerekli.';
+    // Muavin format zorunlu: ana hesaba (örn "153") doğrudan kayıt yasak.
+    // Sadece muavin kodları (153.001, 120.002...) kabul edilir.
+    const muavinFormat = /^[0-9]{3}(\.[0-9]+)+$/;
     for (const c of dolular) {
+      const kod = c.kod.trim();
+      if (!muavinFormat.test(kod)) {
+        return `${kod}: Ana hesaba kayıt yapılamaz. Muavin kodu kullan (örn. ${kod}.001).`;
+      }
       const b = parseFloat(c.borc) || 0;
       const a = parseFloat(c.alacak) || 0;
-      if (b > 0 && a > 0) return `${c.kod}: bir satır ya borç ya alacak olur.`;
-      if (b === 0 && a === 0) return `${c.kod}: borç veya alacak girmelisin.`;
+      if (b > 0 && a > 0) return `${kod}: bir satır ya borç ya alacak olur.`;
+      if (b === 0 && a === 0) return `${kod}: borç veya alacak girmelisin.`;
     }
     if (!dengeli) return `Borç (${toplamBorc}) ve alacak (${toplamAlacak}) eşit değil.`;
     return null;
