@@ -10,11 +10,11 @@ import type {
   Unite,
 } from '../types';
 
-// v7: mal-alis-satis ünite adı "Ticaret İşletmesi" olarak güncellendi — eski cache invalidate.
-const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v7';
+// v8: Ünite/modül/alt başlık `aktif` alanı + 3 pasif işletme türü ünitesi — eski cache invalidate.
+const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v8';
 
 interface OnbellekPaketi {
-  v: 7;
+  v: 8;
   ts: number;
   uniteler: Unite[];
 }
@@ -106,6 +106,7 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       aciklama: k.aciklama ?? null,
       icerik: (k as { icerik?: unknown }).icerik ?? null,
       sira: k.sira,
+      aktif: (k as { aktif?: boolean }).aktif ?? true,
       sorular: sorularByKonu[k.id] ?? [],
     });
   });
@@ -124,6 +125,7 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       karma: !!a.karma,
       icerik: Array.isArray(altIcerik) ? (altIcerik as unknown[]) : null,
       icerikGuncellendi: altIcerikGuncellendi ?? null,
+      aktif: (a as { aktif?: boolean }).aktif ?? true,
       sorular: sorularByAltBaslik[a.id] ?? [],
     });
   });
@@ -144,6 +146,7 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
       opsiyonel: !!m.opsiyonel,
       icerik: Array.isArray(modulIcerik) ? (modulIcerik as unknown[]) : null,
       icerikGuncellendi: modulIcerikGuncellendi ?? null,
+      aktif: (m as { aktif?: boolean }).aktif ?? true,
       altBasliklar: altBasliklarByModul[m.id] ?? [],
     });
   });
@@ -154,6 +157,7 @@ export const uniteleriYukle = async (): Promise<UnitelerVerisi> => {
     thiingsIcon: u.thiings_icon ?? u.id,
     aciklama: u.aciklama ?? '',
     icerik: (u as { icerik?: unknown }).icerik ?? null,
+    aktif: (u as { aktif?: boolean }).aktif ?? true,
     sorular: sorularByUnite[u.id] ?? [],
     konular: konularByUnite[u.id] ?? [],
     moduller: modullerByUnite[u.id] ?? [],
@@ -167,7 +171,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
     const raw = localStorage.getItem(UNITELER_CACHE_KEY);
     if (!raw) return null;
     const paket = JSON.parse(raw) as OnbellekPaketi;
-    if (paket.v !== 7 || !Array.isArray(paket.uniteler)) return null;
+    if (paket.v !== 8 || !Array.isArray(paket.uniteler)) return null;
     return { uniteler: paket.uniteler, tumSorular: duzleTumSorular(paket.uniteler) };
   } catch {
     return null;
@@ -176,7 +180,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
 
 export const uniteleriCacheeYaz = (uniteler: Unite[]): void => {
   try {
-    const paket: OnbellekPaketi = { v: 7, ts: Date.now(), uniteler };
+    const paket: OnbellekPaketi = { v: 8, ts: Date.now(), uniteler };
     localStorage.setItem(UNITELER_CACHE_KEY, JSON.stringify(paket));
   } catch {
     // ignore (quota)

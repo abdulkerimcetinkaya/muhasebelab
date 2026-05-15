@@ -189,17 +189,20 @@ export const ModulLayout = ({
                   const aTamam = altBaslikTamamlandiMi(a, ilerleme);
                   const aBaslandi =
                     !aTamam && a.sorular.some((s) => !!ilerleme.cozulenler[s.id]);
-                  const disabledClass = modulKilitli
+                  const pasif = a.aktif === false;
+                  const tiklanamaz = modulKilitli || pasif;
+                  const disabledClass = tiklanamaz
                     ? 'opacity-55 cursor-not-allowed'
                     : '';
                   return (
                     <button
                       key={a.id}
                       onClick={() =>
-                        !modulKilitli &&
+                        !tiklanamaz &&
                         nav(`/uniteler/${unite.id}/modul/${modul.id}/alt/${a.id}`)
                       }
-                      disabled={modulKilitli}
+                      disabled={tiklanamaz}
+                      title={pasif ? 'Bu atölye henüz hazırlanıyor' : undefined}
                       className={`text-left flex items-center gap-2.5 px-3 py-2 rounded-lg transition border-l-2 ${
                         aktif
                           ? 'bg-brand-soft/40 dark:bg-brand-soft/15 border-brand-deep text-ink font-semibold'
@@ -207,7 +210,9 @@ export const ModulLayout = ({
                       } ${disabledClass}`}
                     >
                       <span className="flex-shrink-0 w-4 flex items-center justify-center">
-                        {modulKilitli ? (
+                        {pasif ? (
+                          <Icon name="Lock" size={12} className="text-premium-deep" />
+                        ) : modulKilitli ? (
                           <Icon name="Lock" size={12} className="text-ink-quiet" />
                         ) : aTamam ? (
                           <TamamRozeti size={14} />
@@ -227,7 +232,12 @@ export const ModulLayout = ({
                       <span className="text-sm leading-snug min-w-0 flex-1 break-words">
                         {a.baslik}
                       </span>
-                      {a.karma && (
+                      {pasif && (
+                        <span className="text-[8px] tracking-[0.2em] uppercase font-bold text-premium-deep flex-shrink-0">
+                          Yakında
+                        </span>
+                      )}
+                      {a.karma && !pasif && (
                         <Icon
                           name="Star"
                           size={11}

@@ -38,6 +38,8 @@ export type UnitesRow = {
   sira: number;
   icerik: unknown | null;
   icerik_guncellendi: string | null;
+  // 20260516000007 — aktif/pasif kontrolü (admin yönetir)
+  aktif: boolean;
   created_at: string;
 };
 
@@ -69,6 +71,8 @@ export type UniteKonusuRow = {
   icerik: unknown | null;
   icerik_guncellendi: string | null;
   sira: number;
+  // 20260516000007 — aktif/pasif kontrolü
+  aktif: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -86,6 +90,8 @@ export type UniteModuluRow = {
   // 20260515000009 — modül seviyesi BlockNote içerik
   icerik: unknown | null;
   icerik_guncellendi: string | null;
+  // 20260516000007 — aktif/pasif kontrolü
+  aktif: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -99,6 +105,8 @@ export type ModulAltBaslikRow = {
   // 20260515000009 — alt başlık seviyesi BlockNote içerik
   icerik: unknown | null;
   icerik_guncellendi: string | null;
+  // 20260516000007 — aktif/pasif kontrolü
+  aktif: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -374,10 +382,11 @@ export type Database = {
       };
       unites: {
         Row: UnitesRow;
-        Insert: Omit<UnitesRow, 'created_at' | 'icerik' | 'icerik_guncellendi'> & {
+        Insert: Omit<UnitesRow, 'created_at' | 'icerik' | 'icerik_guncellendi' | 'aktif'> & {
           created_at?: string;
           icerik?: unknown | null;
           icerik_guncellendi?: string | null;
+          aktif?: boolean;
         };
         Update: Partial<UnitesRow>;
         Relationships: [];
@@ -497,13 +506,14 @@ export type Database = {
       };
       unite_konulari: {
         Row: UniteKonusuRow;
-        Insert: Omit<UniteKonusuRow, 'created_at' | 'updated_at' | 'icerik' | 'icerik_guncellendi' | 'aciklama' | 'sira'> & {
+        Insert: Omit<UniteKonusuRow, 'created_at' | 'updated_at' | 'icerik' | 'icerik_guncellendi' | 'aciklama' | 'sira' | 'aktif'> & {
           created_at?: string;
           updated_at?: string;
           icerik?: unknown | null;
           icerik_guncellendi?: string | null;
           aciklama?: string | null;
           sira?: number;
+          aktif?: boolean;
         };
         Update: Partial<UniteKonusuRow>;
         Relationships: [];
@@ -520,6 +530,7 @@ export type Database = {
           | 'opsiyonel'
           | 'icerik'
           | 'icerik_guncellendi'
+          | 'aktif'
         > & {
           created_at?: string;
           updated_at?: string;
@@ -529,6 +540,7 @@ export type Database = {
           opsiyonel?: boolean;
           icerik?: unknown | null;
           icerik_guncellendi?: string | null;
+          aktif?: boolean;
         };
         Update: Partial<UniteModuluRow>;
         Relationships: [];
@@ -543,6 +555,7 @@ export type Database = {
           | 'karma'
           | 'icerik'
           | 'icerik_guncellendi'
+          | 'aktif'
         > & {
           created_at?: string;
           updated_at?: string;
@@ -550,6 +563,7 @@ export type Database = {
           karma?: boolean;
           icerik?: unknown | null;
           icerik_guncellendi?: string | null;
+          aktif?: boolean;
         };
         Update: Partial<ModulAltBaslikRow>;
         Relationships: [];

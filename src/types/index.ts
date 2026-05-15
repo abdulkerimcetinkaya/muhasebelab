@@ -178,6 +178,8 @@ export interface Konu {
   /** BlockNote JSON dokümanı (admin panelinde yazılıyor). */
   icerik?: unknown | null;
   sira: number;
+  /** Aktif değilse kullanıcı tarafında "Yakında" rozetiyle görünür, tıklanamaz. */
+  aktif: boolean;
   sorular: Soru[];
 }
 
@@ -188,6 +190,8 @@ export interface Unite {
   aciklama: string;
   /** BlockNote JSON dökümanı (admin panelinde yazılıyor). Boşsa içerik henüz hazırlanmadı. */
   icerik?: unknown | null;
+  /** Aktif değilse kullanıcı tarafında "Yakında" rozetiyle görünür, tıklanamaz. */
+  aktif: boolean;
   sorular: Soru[];
   /** Alt-konular — sırayla. Boşsa eski yapı (sorular doğrudan ünitede). */
   konular?: Konu[];
@@ -217,6 +221,8 @@ export interface Modul {
   /** BlockNote Block[] — modülün "Genel Bakış" sayfasındaki konu anlatımı. */
   icerik?: unknown[] | null;
   icerikGuncellendi?: string | null;
+  /** Aktif değilse kullanıcı tarafında "Yakında" rozetiyle görünür, tıklanamaz. */
+  aktif: boolean;
   altBasliklar: AltBaslik[];
 }
 
@@ -233,6 +239,8 @@ export interface AltBaslik {
   /** BlockNote Block[] — alt başlığın konu anlatımı (sorulardan önce gösterilir). */
   icerik?: unknown[] | null;
   icerikGuncellendi?: string | null;
+  /** Aktif değilse kullanıcı tarafında "Yakında" rozetiyle görünür, tıklanamaz. */
+  aktif: boolean;
   sorular: Soru[];
 }
 

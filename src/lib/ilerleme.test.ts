@@ -85,6 +85,7 @@ describe('istatistikHesapla', () => {
       ad: 'U1',
       thiingsIcon: 'i',
       aciklama: '',
+      aktif: true,
       sorular: [
         { id: 's1', baslik: 's1', zorluk: 'kolay', senaryo: '', ipucu: '', aciklama: '', cozum: [] },
         { id: 's2', baslik: 's2', zorluk: 'orta', senaryo: '', ipucu: '', aciklama: '', cozum: [] },
@@ -95,6 +96,7 @@ describe('istatistikHesapla', () => {
       ad: 'U2',
       thiingsIcon: 'i',
       aciklama: '',
+      aktif: true,
       sorular: [{ id: 's3', baslik: 's3', zorluk: 'zor', senaryo: '', ipucu: '', aciklama: '', cozum: [] }],
     },
   ];
@@ -141,7 +143,7 @@ describe('istatistikHesapla', () => {
   });
 
   it('sorusu olmayan üniteyi tamamlanmış saymaz', () => {
-    const bosUniteler: Unite[] = [{ id: 'u3', ad: 'U3', thiingsIcon: 'i', aciklama: '', sorular: [] }];
+    const bosUniteler: Unite[] = [{ id: 'u3', ad: 'U3', thiingsIcon: 'i', aciklama: '', aktif: true, sorular: [] }];
     const s = istatistikHesapla(varsayilanIlerleme(), bosUniteler, []);
     expect(s.uniteTamamlanmis).toEqual({ u3: false });
   });

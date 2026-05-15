@@ -116,6 +116,18 @@ export const AdminUnitelerSayfasi = () => {
     yukle();
   };
 
+  const aktifToggle = async (u: UnitesRow) => {
+    const r = await supabase
+      .from('unites')
+      .update({ aktif: !u.aktif })
+      .eq('id', u.id);
+    if (r.error) {
+      alert('Aktif durumu güncellenemedi: ' + r.error.message);
+      return;
+    }
+    yukle();
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
       <AdminYanMenu />
@@ -167,7 +179,7 @@ export const AdminUnitelerSayfasi = () => {
           />
         ) : (
           <div className="border border-line rounded-xl overflow-hidden bg-surface">
-            <div className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
+            <div className="grid grid-cols-[64px_56px_1fr_120px_310px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <div>Sıra</div>
               <div>İkon</div>
               <div>Ünite</div>
@@ -177,7 +189,7 @@ export const AdminUnitelerSayfasi = () => {
             {filtreli.map((u) => (
               <div
                 key={u.id}
-                className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
+                className="grid grid-cols-[64px_56px_1fr_120px_310px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
               >
                 <div>
                   <input
@@ -191,8 +203,13 @@ export const AdminUnitelerSayfasi = () => {
                   <Thiings name={u.thiings_icon ?? 'square'} size={36} />
                 </div>
                 <div className="min-w-0">
-                  <div className="font-display font-bold text-[15px] tracking-tight text-ink truncate">
+                  <div className="font-display font-bold text-[15px] tracking-tight text-ink truncate flex items-center gap-2">
                     {u.ad}
+                    {!u.aktif && (
+                      <span className="text-[9px] tracking-[0.18em] uppercase font-bold px-1.5 py-0.5 rounded bg-premium-soft text-premium-deep">
+                        Pasif
+                      </span>
+                    )}
                   </div>
                   <div className="font-mono text-[11px] text-ink-quiet mt-0.5">
                     {u.id}
@@ -214,6 +231,17 @@ export const AdminUnitelerSayfasi = () => {
                   )}
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
+                  <button
+                    onClick={() => aktifToggle(u)}
+                    title={u.aktif ? 'Aktif — pasif yap' : 'Pasif — aktif yap'}
+                    className={`text-[10px] tracking-[0.18em] uppercase font-bold px-2 py-1 rounded border transition ${
+                      u.aktif
+                        ? 'bg-success-soft text-success border-success/30 hover:opacity-80'
+                        : 'bg-premium-soft text-premium-deep border-premium-soft hover:opacity-80'
+                    }`}
+                  >
+                    {u.aktif ? 'Aktif' : 'Pasif'}
+                  </button>
                   <button
                     onClick={() => nav(`/admin/uniteler/${u.id}/moduller`)}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 text-ink text-[11.5px] font-bold tracking-wide hover:bg-line-soft transition"
