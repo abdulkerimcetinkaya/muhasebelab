@@ -1,9 +1,12 @@
 // AI Yanlış Analizi — yanlış yevmiye kaydını satır satır eleştirip doğruya yönlendirir
-// Premium gerekir. Günlük limit: kullanıcı başına 50 istek.
+// Free: 3/gün (ai_quota_artir RPC), Premium: sınırsız.
+// Prompt v2 (16 Mayıs 2026): öğrencinin yazdığı satıra birebir referans veren çıktı.
 
 import { corsHeaders } from '../_shared/cors.ts';
 import { kullaniciDogrula, premiumKontrol } from '../_shared/auth.ts';
 import { anthropicCagir } from '../_shared/anthropic.ts';
+
+const FREE_GUNLUK_LIMIT = 3;
 
 interface CozumSatir {
   kod: string;
@@ -21,15 +24,46 @@ interface Istek {
 const SYSTEM_PROMPT = `Sen Türk muhasebe öğrencilerine rehberlik eden deneyimli bir muhasebe öğretmenisin.
 Tek Düzen Hesap Planı'na göre yevmiye kayıtlarını değerlendiriyorsun.
 
-Kullanıcı bir soruyu yanlış çözdü. Sana hem doğru çözümü hem de kullanıcının cevabını vereceğim.
-Görevin:
-1. Kullanıcının neyi yanlış yaptığını net bir şekilde tespit et (hangi hesap kodu yanlış? borç/alacak yönü mü hatalı? eksik satır mı var? fazla satır mı var?)
-2. Yanlışın altında yatan kavramsal hatayı açıkla ("bu hesap neden kullanılmaz?", "burada neden aktif karakterli hesap gerekli?")
-3. Öğrencinin bir sonraki benzer soruda doğru düşünmesi için pratik bir ipucu ver
+Öğrenci bir soruyu yanlış çözdü. Sana hem doğru çözümü hem de öğrencinin **gerçek** kayıt
+satırlarını vereceğim. Görevin, öğrencinin yazdığı satıra **birebir referans vererek**
+neyi yanlış yaptığını ve neden yanlış olduğunu açıklamak.
+
+ÇIKTI YAPISI — KATI:
+
+**Senin yazdığın satır:** Öğrencinin tam olarak yazdığı yanlış satırı **tırnak içinde**
+ve hesap kodu + tutarıyla aynen yaz. Örnek: "153 TİCARİ MALLAR — Borç 10.000 TL".
+
+**Bu yanlış çünkü:** Kavramsal sebep — hangi muhasebe ilkesi/mantığı ihlal edilmiş?
+"Şu hesap olmalıydı" gibi yüzeysel açıklama YETERSİZ. "Bu işlem aslında bir
+hammadde alımı değil ticari mal alımı, çünkü…" gibi düşünsel temele in.
+
+**Doğrusu:** Doğru satırı yine **tırnak içinde** kod + tutar ile yaz. Örnek:
+"150 İLK MADDE VE MALZEME — Borç 10.000 TL".
+
+**İpucu:** Benzer soruda doğru karar vermek için kısa bir pratik kural (1 cümle).
+
+DİĞER KURALLAR:
+- Eğer öğrenci birden çok satırda hata yapmışsa, en kritik 1-2 hatayı seç,
+  hepsini sıralama. Toplam çıktı 250 kelimeyi geçmesin.
+- Yön hatası (borç/alacak karışmış) varsa açıkça söyle: "Bu hesap **borç**
+  tarafına yazılmalıydı çünkü…"
+- Eksik satır varsa: "Cevabında **191 İNDİRİLECEK KDV** satırı yok — alış faturasında
+  KDV ödendiği için indirilebilir KDV olarak kaydedilmeli."
+- Fazla satır varsa: "Yazdığın **600 YURTİÇİ SATIŞLAR** satırı gereksiz çünkü…"
 
 Ton: sıcak, teşvik edici, akademik ama dostça. Asla küçümseme. Hata doğal karşıla.
-Maksimum 250 kelime. Madde işaretleri kullan, başlıkları **kalın** yap.
-"Cevabın yanlış" gibi basit ifadelerle başlama — doğrudan analize gir.`;
+Madde işaretleri yerine **kalın başlıklar** kullan. "Cevabın yanlış" gibi basit
+ifadelerle başlama — doğrudan analize gir.`;
+
+const formatSatir = (s: CozumSatir[]): string => {
+  if (s.length === 0) return '(satır yok)';
+  return s
+    .map((r) => {
+      const yon = r.borc > 0 ? `Borç ${r.borc.toLocaleString('tr-TR')} TL` : `Alacak ${r.alacak.toLocaleString('tr-TR')} TL`;
+      return `- ${r.kod} — ${yon}`;
+    })
+    .join('\n');
+};
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -39,17 +73,34 @@ Deno.serve(async (req) => {
     if (yetki instanceof Response) return yetki;
 
     const premium = await premiumKontrol(yetki.supabase, yetki.user.id);
+
+    // Free: günlük kota artır; Premium: bypass
+    let kalan: number | null = null;
     if (!premium) {
-      return new Response(
-        JSON.stringify({ hata: 'Bu özellik premium üyelik gerektirir' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      const { data: quota, error: qErr } = await yetki.supabase.rpc('ai_quota_artir', {
+        _max: FREE_GUNLUK_LIMIT,
+      });
+      if (qErr) {
+        return new Response(
+          JSON.stringify({ hata: 'Kota kontrolü başarısız', detay: qErr.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      if (!quota?.izin_var) {
+        return new Response(
+          JSON.stringify({
+            hata: 'Günlük AI sorgu hakkın doldu',
+            limit: quota?.limit ?? FREE_GUNLUK_LIMIT,
+            kalan: 0,
+            premium_gerekli: true,
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      kalan = (quota.limit ?? FREE_GUNLUK_LIMIT) - (quota.sayac ?? 0);
     }
 
     const { soruBaslik, senaryo, dogruCozum, kullaniciCevap }: Istek = await req.json();
-
-    const formatSatir = (s: CozumSatir[]) =>
-      s.map((r) => `- ${r.kod}: Borç ${r.borc}, Alacak ${r.alacak}`).join('\n');
 
     const mesaj = `**Soru:** ${soruBaslik}
 
@@ -58,15 +109,22 @@ Deno.serve(async (req) => {
 **Doğru çözüm:**
 ${formatSatir(dogruCozum)}
 
-**Öğrencinin cevabı:**
+**Öğrencinin yazdığı kayıt:**
 ${formatSatir(kullaniciCevap)}
 
-Yukarıdaki farkları analiz et ve öğrenciye yol göster.`;
+Yukarıdaki sistem promptundaki yapıyı KATIYEN uygula: önce "Senin yazdığın satır",
+sonra "Bu yanlış çünkü", sonra "Doğrusu", sonra "İpucu". Öğrencinin yazdığı satırı
+tırnak içinde aynen referans al.`;
 
     const yanit = await anthropicCagir(SYSTEM_PROMPT, [{ role: 'user', content: mesaj }], 600);
 
     return new Response(
-      JSON.stringify({ metin: yanit.metin, token: yanit.inputToken + yanit.outputToken }),
+      JSON.stringify({
+        metin: yanit.metin,
+        token: yanit.inputToken + yanit.outputToken,
+        kalan,
+        premium,
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (e) {
