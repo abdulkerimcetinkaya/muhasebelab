@@ -60,7 +60,7 @@ export const AnaSayfa = ({ ilerleme, stat }: Props) => {
 const KullaniciPaneli = ({ ilerleme, stat }: Props) => {
   const nav = useNavigate();
   const { uniteler, tumSorular } = useUniteler();
-  const gununSoru = useMemo(() => gununSorusu(tumSorular), [tumSorular]);
+  const gununSoru = useMemo(() => gununSorusu(tumSorular, ilerleme), [tumSorular, ilerleme]);
   const bugun = bugununTarihi();
   const gununCozulduMu = gununSoru ? ilerleme.cozulenler[gununSoru.id]?.tarih === bugun : false;
   const devamSoru = useMemo(() => devamEtSorusu(ilerleme, tumSorular), [ilerleme, tumSorular]);
