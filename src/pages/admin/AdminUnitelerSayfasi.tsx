@@ -116,17 +116,6 @@ export const AdminUnitelerSayfasi = () => {
     yukle();
   };
 
-  const aktifToggle = async (u: UnitesRow) => {
-    const r = await supabase
-      .from('unites')
-      .update({ aktif: !u.aktif })
-      .eq('id', u.id);
-    if (r.error) {
-      alert('Aktif durumu güncellenemedi: ' + r.error.message);
-      return;
-    }
-    yukle();
-  };
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
@@ -179,7 +168,7 @@ export const AdminUnitelerSayfasi = () => {
           />
         ) : (
           <div className="border border-line rounded-xl overflow-hidden bg-surface">
-            <div className="grid grid-cols-[64px_56px_1fr_120px_310px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
+            <div className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <div>Sıra</div>
               <div>İkon</div>
               <div>Ünite</div>
@@ -189,7 +178,7 @@ export const AdminUnitelerSayfasi = () => {
             {filtreli.map((u) => (
               <div
                 key={u.id}
-                className="grid grid-cols-[64px_56px_1fr_120px_310px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
+                className="grid grid-cols-[64px_56px_1fr_120px_240px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
               >
                 <div>
                   <input
@@ -231,17 +220,6 @@ export const AdminUnitelerSayfasi = () => {
                   )}
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
-                  <button
-                    onClick={() => aktifToggle(u)}
-                    title={u.aktif ? 'Aktif — pasif yap' : 'Pasif — aktif yap'}
-                    className={`text-[10px] tracking-[0.18em] uppercase font-bold px-2 py-1 rounded border transition ${
-                      u.aktif
-                        ? 'bg-success-soft text-success border-success/30 hover:opacity-80'
-                        : 'bg-premium-soft text-premium-deep border-premium-soft hover:opacity-80'
-                    }`}
-                  >
-                    {u.aktif ? 'Aktif' : 'Pasif'}
-                  </button>
                   <button
                     onClick={() => nav(`/admin/uniteler/${u.id}/moduller`)}
                     className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-2 text-ink text-[11.5px] font-bold tracking-wide hover:bg-line-soft transition"
@@ -311,6 +289,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
   const [sira, setSira] = useState(
     duzenleniyor?.sira ?? Math.max(0, ...mevcutSiralar) + 1,
   );
+  const [aktif, setAktif] = useState(duzenleniyor?.aktif ?? true);
   const [kaydediyor, setKaydediyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
 
@@ -333,6 +312,7 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
       aciklama: aciklama.trim() || null,
       thiings_icon: thiingsIcon,
       sira,
+      aktif,
     };
     const r = yeni
       ? await supabase.from('unites').insert(veri)
@@ -435,6 +415,22 @@ const UniteForm = ({ duzenleniyor, onKapat, onKaydet, mevcutSiralar }: UniteForm
               </div>
             </Alan>
           </div>
+
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={aktif}
+              onChange={(e) => setAktif(e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-ink"
+            />
+            <span className="text-[13px] leading-snug">
+              <span className="font-semibold text-ink">Aktif</span>
+              <span className="block text-[11.5px] text-ink-mute mt-0.5">
+                Pasif ünite kullanıcı tarafında "Yakında" rozetiyle gösterilir
+                ve tıklanamaz. Modül/alt başlık/soru içerikleri silinmez.
+              </span>
+            </span>
+          </label>
 
           {hata && (
             <div className="p-3 bg-danger-soft border border-danger-soft rounded-lg text-sm text-danger">
