@@ -141,6 +141,77 @@ Yalnızca aşağıdaki şemada **geçerli JSON dizisi** döndür. Markdown blok,
 - **Amortisman:** `770/770/632` borç ↔ `257 Birikmiş Amortismanlar` alacak. Normal amortisman = (Maliyet × oran).
 - **Banka masrafları:** `653` veya `770/770/632` borç ↔ `102 Bankalar` alacak.
 
+## MAL-ALIS-SATIS ÜNİTESİ — DETAYLI YAPI
+
+**Senaryo:** "Yıldız Beyaz Eşya Ticaret A.Ş." (sabit kurum). Tüm sorular bu
+işletmenin perspektifinden yazılır.
+
+**Muavin (alt cari) zorunluluğu:** Bu projede ana hesaba (örn. 153, 120, 320)
+**doğrudan kayıt YAPILAMAZ.** Her zaman bir muavin kod kullanılır (örn.
+`153.001`, `120.003`, `320.005`). Aşağıdaki muavin listesinden seç.
+
+### Modül 1 — Mal Hareketleri (10 alt başlık)
+
+| Sıra | Alt başlık ID | Konu |
+|---|---|---|
+| 1 | mal-alis-satis-1-1 | Mal Alımı |
+| 2 | mal-alis-satis-1-6 | Alıştan İade |
+| 3 | mal-alis-satis-1-8 | Alış İskontosu |
+| 4 | mal-alis-satis-1-10 | Verilen Sipariş Avansı |
+| 5 | mal-alis-satis-1-2 | Mal Satışı |
+| 6 | mal-alis-satis-1-5 | Satıştan İade |
+| 7 | mal-alis-satis-1-7 | Satış İskontosu |
+| 8 | mal-alis-satis-1-11 | Alınan Sipariş Avansı |
+| 9 | mal-alis-satis-1-13 | Satışa Bağlı Giderler (760 PSDG) |
+| 10 | mal-alis-satis-1-9 | Fiyat Farkı Faturası |
+
+### Modül 2 — Vergi Boyutu (9 alt başlık)
+
+| Sıra | Alt başlık ID | Konu |
+|---|---|---|
+| 1 | mal-alis-satis-2-1 | KDV Oranları ve Doğru Hesap Seçimi |
+| 2 | mal-alis-satis-2-2 | İndirilecek KDV — Hesaplanan KDV Mahsubu |
+| 3 | mal-alis-satis-2-3 | Devreden KDV / Ödenecek KDV Tahakkuku |
+| 4 | mal-alis-satis-2-4 | KDV Beyannamesi Tahakkuku ve Ödemesi |
+| 5 | mal-alis-satis-2-5 | KDV Tevkifatı — Hizmet Alımı |
+| 6 | mal-alis-satis-2-6 | Gelir Vergisi Stopajı (Kira + Serbest Meslek) |
+| 7 | mal-alis-satis-2-7 | Çalışan Stopajları — Personel Bordrosu |
+| 8 | mal-alis-satis-2-8 | Damga Vergisi |
+| 9 | mal-alis-satis-2-9 | Muhtasar Beyanname ve SGK Ödemeleri |
+
+### Muavin Havuzu (mal-alis-satis ünitesi için kullanılabilen kodlar)
+
+**M1 — Mal hareketleri:**
+- `100.001` Merkez Kasa – TL
+- `102.001-005` Bankalar: Garanti BBVA, İş Bankası, Akbank, Yapı Kredi, Ziraat
+- `120.001-009` Alıcılar: Çağdaş, Akel, Yıldız Mağazacılık, Demirören, Beyaz İnci, Mert, Demirsoy, Aydın, Yapıkent
+- `153.001-010` Ticari Mallar: Buzdolabı (No-Frost/Mini), TV (LED 50''/32''), Bulaşık Mak., Çamaşır Mak., Kurutma Mak., Klima (Split/Salon), Fırın
+- `157.001-002` Hasarlı Mallar (Sigortadan/Tedarikçi İadesi Bekleyen)
+- `159.001-003` Verilen Sip. Avansı: LG, Arçelik, Samsung
+- `191.001-002` İndirilecek KDV: %20, %10
+- `320.001-006` Satıcılar: Arçelik, Vestel, Bosch, Samsung, LG, Hızlı Lojistik
+- `340.001-003` Alınan Sip. Avansı: Mert, Yapıkent, Beyaz İnci
+- `391.001-002` Hesaplanan KDV: %20, %10
+- `600.001-008` Yurtiçi Satışlar (mal cinsi bazlı, 600.008 = Diğer)
+- `610.001-003` Satıştan İadeler (Buzdolabı/TV/Çamaşır Mak.)
+- `611.001-003` Satış İskontosu: Erken Ödeme, Yıllık Ciro Primi, Sezonluk Kampanya
+- `649.001-003` Diğer Gelirler: Cayma Tazminatı, Ciro Primi Geliri, Diğer Çeşitli
+- `760.001-004` PSDG: Komisyon, Nakliye, Reklam-Tanıtım, Ambalaj-Paketleme
+
+**M2 — Vergi:**
+- `190.001` Devreden KDV
+- `191.004` Tevkifata Tabi İndirilecek KDV
+- `320.007` Pırlanta Temizlik · `320.010` Erdem Danışmanlık
+- `329.001-003` Diğer Ticari Borçlar (gerçek kişi): Ahmet Yılmaz (kiraya veren), Çelik Mali Müşavirlik, Yılmaz Hukuk Bürosu
+- `335.001-003` Personele Borçlar: Mehmet Demir, Ayşe Kaya, Hasan Çelik
+- `360.001-006` Ödenecek Vergi ve Fonlar: KDV, GV Stopajı (Kira/SM/Ücret), Damga, KDV Tevkifatı
+- `361.001-004` SGK Kesintileri: SGK İşçi/İşveren, İşsizlik İşçi/İşveren
+- `770.001-010` GYG: Kira, Mali Müşavirlik, Avukatlık, Personel Ücretleri (Brüt), SGK İşveren Gideri, Damga Vergisi Gideri, Temizlik, Danışmanlık, Taşımacılık, Bina Tadilat
+
+> **Kural:** Çözümlerdeki `kod` alanı yukarıdaki muavin listesinden seçilmeli.
+> Ana hesap kodu (3 haneli, örn. `153`) ile değil, muavin kodu (örn. `153.001`)
+> ile yazılmalı. Muavin yoksa o senaryoyu kullanma.
+
 ## ZORLUK SEVİYESİ
 
 - **Kolay (5 puan):** 2-3 hesap satırı, tek işlem, sayılar yuvarlak (10.000 / 5.000 gibi). KDV varsa %20 ile düz hesap.

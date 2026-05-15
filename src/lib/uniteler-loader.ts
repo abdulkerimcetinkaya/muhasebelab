@@ -10,11 +10,12 @@ import type {
   Unite,
 } from '../types';
 
-// v4: Modül/alt başlık `icerik` (BlockNote) alanı eklendi — eski cache invalidate
-const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v4';
+// v5: Mal-alis-satis M1/M2 yeniden yapılandırma — alt başlık adları ve sıraları
+// değişti, M2'ye 9 yeni alt başlık eklendi. Eski cache invalidate.
+const UNITELER_CACHE_KEY = 'mli_uniteler_cache_v5';
 
 interface OnbellekPaketi {
-  v: 4;
+  v: 5;
   ts: number;
   uniteler: Unite[];
 }
@@ -167,7 +168,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
     const raw = localStorage.getItem(UNITELER_CACHE_KEY);
     if (!raw) return null;
     const paket = JSON.parse(raw) as OnbellekPaketi;
-    if (paket.v !== 4 || !Array.isArray(paket.uniteler)) return null;
+    if (paket.v !== 5 || !Array.isArray(paket.uniteler)) return null;
     return { uniteler: paket.uniteler, tumSorular: duzleTumSorular(paket.uniteler) };
   } catch {
     return null;
@@ -176,7 +177,7 @@ export const uniteleriCachedenOku = (): UnitelerVerisi | null => {
 
 export const uniteleriCacheeYaz = (uniteler: Unite[]): void => {
   try {
-    const paket: OnbellekPaketi = { v: 4, ts: Date.now(), uniteler };
+    const paket: OnbellekPaketi = { v: 5, ts: Date.now(), uniteler };
     localStorage.setItem(UNITELER_CACHE_KEY, JSON.stringify(paket));
   } catch {
     // ignore (quota)
