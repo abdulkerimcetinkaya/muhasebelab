@@ -153,19 +153,6 @@ export const AdminAltBasliklarSayfasi = () => {
     yukle();
   };
 
-  const aktifToggle = async (a: ModulAltBaslikRow) => {
-    const yeni = !a.aktif;
-    const r = await supabase
-      .from('modul_alt_basliklari')
-      .update({ aktif: yeni })
-      .eq('id', a.id);
-    if (r.error) {
-      alert('Aktif durumu güncellenemedi: ' + r.error.message);
-      return;
-    }
-    await unitelerYenile().catch(() => {});
-    yukle();
-  };
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
@@ -242,7 +229,7 @@ export const AdminAltBasliklarSayfasi = () => {
           />
         ) : (
           <div className="border border-line rounded-xl overflow-hidden bg-surface">
-            <div className="grid grid-cols-[64px_1fr_90px_80px_360px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
+            <div className="grid grid-cols-[64px_1fr_90px_80px_290px] gap-3 px-4 py-2.5 bg-bg-tint border-b border-line text-[10px] tracking-[0.2em] uppercase text-ink-mute font-bold">
               <div>Sıra</div>
               <div>Alt Başlık</div>
               <div>Karma</div>
@@ -252,7 +239,7 @@ export const AdminAltBasliklarSayfasi = () => {
             {filtreli.map((a) => (
               <div
                 key={a.id}
-                className="grid grid-cols-[64px_1fr_90px_80px_360px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
+                className="grid grid-cols-[64px_1fr_90px_80px_290px] gap-3 px-4 py-3 items-center border-b border-line last:border-b-0 hover:bg-bg-tint/60 transition"
               >
                 <div>
                   <input
@@ -301,17 +288,6 @@ export const AdminAltBasliklarSayfasi = () => {
                   </span>
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
-                  <button
-                    onClick={() => aktifToggle(a)}
-                    title={a.aktif ? 'Aktif — pasif yap' : 'Pasif — aktif yap'}
-                    className={`text-[10px] tracking-[0.18em] uppercase font-bold px-2 py-1 rounded border transition ${
-                      a.aktif
-                        ? 'bg-success-soft text-success border-success/30 hover:opacity-80'
-                        : 'bg-premium-soft text-premium-deep border-premium-soft hover:opacity-80'
-                    }`}
-                  >
-                    {a.aktif ? 'Aktif' : 'Pasif'}
-                  </button>
                   <button
                     onClick={() =>
                       nav(
@@ -392,6 +368,7 @@ const AltBaslikForm = ({
     duzenleniyor?.sira ?? Math.max(0, ...mevcutSiralar) + 1,
   );
   const [karma, setKarma] = useState(duzenleniyor?.karma ?? false);
+  const [aktif, setAktif] = useState(duzenleniyor?.aktif ?? true);
   const [kaydediyor, setKaydediyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
 
@@ -415,6 +392,7 @@ const AltBaslikForm = ({
         sira,
         baslik: baslik.trim(),
         karma,
+        aktif,
       });
       setKaydediyor(false);
       if (r.error) {
@@ -428,6 +406,7 @@ const AltBaslikForm = ({
           baslik: baslik.trim(),
           sira,
           karma,
+          aktif,
         })
         .eq('id', duzenleniyor!.id);
       setKaydediyor(false);
@@ -512,6 +491,22 @@ const AltBaslikForm = ({
               <span className="font-semibold text-ink">Karma alt başlık</span>
               <span className="block text-[11.5px] text-ink-mute mt-0.5">
                 Birden çok kavramı birleştiren bütünleşik vaka. UI'da yıldız ile vurgulanır.
+              </span>
+            </span>
+          </label>
+
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={aktif}
+              onChange={(e) => setAktif(e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-ink"
+            />
+            <span className="text-[13px] leading-snug">
+              <span className="font-semibold text-ink">Aktif</span>
+              <span className="block text-[11.5px] text-ink-mute mt-0.5">
+                Pasif alt başlık kullanıcı tarafında "Yakında" rozetiyle gösterilir
+                ve tıklanamaz. Soru içerikleri silinmez.
               </span>
             </span>
           </label>
