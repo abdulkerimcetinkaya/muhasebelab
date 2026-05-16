@@ -703,7 +703,7 @@ const AnonimAnaSayfa = () => {
       <section className="px-5 sm:px-8 py-28 sm:py-36 border-t border-line">
         <div className="max-w-[1240px] mx-auto">
           <h2
-            className="font-display font-bold text-ink leading-[0.95] tracking-tight max-w-[20ch] mb-14 sm:mb-20"
+            className="font-display font-bold text-ink leading-[1.05] tracking-tight max-w-[20ch] mb-14 sm:mb-20"
             style={{ fontSize: 'clamp(36px, 5.6vw, 76px)' }}
           >
             <SlideInWords
