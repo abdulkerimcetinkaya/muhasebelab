@@ -36,8 +36,12 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
     { id: '/', ad: 'Anasayfa', aktif: aktifAna },
     { id: '/uniteler', ad: 'Üniteler', aktif: aktifUnite },
     { id: '/problemler', ad: 'Problemler', aktif: aktifProblem },
-    { id: '/liderlik', ad: 'Liderlik', aktif: aktifLiderlik },
-    ...(user ? [{ id: '/profil', ad: 'Profil', aktif: aktifProfil }] : []),
+    ...(user
+      ? [
+          { id: '/liderlik', ad: 'Liderlik', aktif: aktifLiderlik },
+          { id: '/profil', ad: 'Profil', aktif: aktifProfil },
+        ]
+      : []),
   ];
 
   return (
