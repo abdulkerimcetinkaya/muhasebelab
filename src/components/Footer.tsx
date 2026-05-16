@@ -45,13 +45,15 @@ export const Footer = () => {
               <button onClick={() => nav('/sozluk')} className="block transition">
                 Mali Sözlük
               </button>
-              <button onClick={() => nav('/liderlik')} className="block transition">
-                Liderlik
-              </button>
               {user && (
-                <button onClick={() => nav('/profil')} className="block transition">
-                  Profil
-                </button>
+                <>
+                  <button onClick={() => nav('/liderlik')} className="block transition">
+                    Liderlik
+                  </button>
+                  <button onClick={() => nav('/profil')} className="block transition">
+                    Profil
+                  </button>
+                </>
               )}
             </div>
           </div>
