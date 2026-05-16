@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
 import { SiteLoader } from './components/SiteLoader';
 import { ProtectedAdminRoute } from './components/ProtectedAdminRoute';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { RozetToast } from './components/RozetToast';
 import { HesapPlaniModal } from './components/HesapPlaniModal';
 import { HesapPlaniYanPanel } from './components/HesapPlaniYanPanel';
@@ -396,18 +397,37 @@ const App = () => {
             <Route path="/premium/sonuc" element={<PremiumSonucSayfasi />} />
             <Route path="/premium/kurum-odeme" element={<KurumOdemeSayfasi />} />
             <Route path="/uniteler" element={<UnitelerSayfasi />} />
-            <Route path="/uniteler/:uniteId" element={<UniteSayfasi ilerleme={ilerleme} />} />
+            <Route
+              path="/uniteler/:uniteId"
+              element={
+                <ProtectedRoute>
+                  <UniteSayfasi ilerleme={ilerleme} />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/uniteler/:uniteId/modul/:modulId"
-              element={<ModulSayfasi ilerleme={ilerleme} />}
+              element={
+                <ProtectedRoute>
+                  <ModulSayfasi ilerleme={ilerleme} />
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/uniteler/:uniteId/modul/:modulId/alt/:altBaslikId"
-              element={<AltBaslikSayfasi ilerleme={ilerleme} />}
+              element={
+                <ProtectedRoute>
+                  <AltBaslikSayfasi ilerleme={ilerleme} />
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/uniteler/:uniteId/:konuId"
-              element={<KonuSayfasi ilerleme={ilerleme} />}
+              element={
+                <ProtectedRoute>
+                  <KonuSayfasi ilerleme={ilerleme} />
+                </ProtectedRoute>
+              }
             />
             <Route path="/problemler" element={<ProblemlerSayfasi ilerleme={ilerleme} />} />
             <Route
