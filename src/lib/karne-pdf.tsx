@@ -260,12 +260,12 @@ const s = StyleSheet.create({
   modulGroup: { marginBottom: 8 },
   modulGroupHead: {
     fontFamily: 'Roboto',
-    fontStyle: 'italic',
     fontSize: 9.5,
     fontWeight: 700,
     color: C.copperDeep,
     marginBottom: 4,
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
   },
   modulRow: {
     flexDirection: 'row',
@@ -291,7 +291,7 @@ const s = StyleSheet.create({
     letterSpacing: 0.3,
     textAlign: 'right',
   },
-  modulYok: { fontSize: 9, color: C.inkMute, fontStyle: 'italic', paddingVertical: 2 },
+  modulYok: { fontSize: 9, color: C.inkMute, paddingVertical: 2 },
 
   // ─── BAND 5 — Rozetler + Rekorlar ─────────────────────────────────
   rozetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
