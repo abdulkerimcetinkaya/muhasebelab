@@ -578,23 +578,30 @@ const SoruEkraniIci = ({
           </button>
           <button
             onClick={() => {
-              if (cozumGosterildi) {
+              // Soru zaten çözülmüşse veya bu oturumda çözüm açılmışsa
+              // doğrudan modali aç — uyarı/onay gerekmez (puan zaten kazanılmış).
+              if (cozulmusMu || cozumGosterildi) {
                 setCozumAcik(true);
               } else {
                 setCozumOnayAcik(true);
               }
             }}
             className={`flex items-center gap-2.5 px-3 py-2.5 border rounded-lg text-left text-sm font-semibold transition ${
- cozumGosterildi
+ cozumGosterildi && !cozulmusMu
  ? 'border-danger bg-danger-soft/40 text-danger'
  : 'border-line-strong hover:border-ink '
  }`}
           >
             <Icon name="Eye" size={14} className="flex-shrink-0" />
             <span>Çözümü Gör</span>
-            {cozumGosterildi && (
+            {cozumGosterildi && !cozulmusMu && (
               <span className="ml-auto text-[8px] tracking-[0.2em] uppercase font-bold text-danger dark:text-danger">
                 0 puan
+              </span>
+            )}
+            {cozulmusMu && (
+              <span className="ml-auto text-[8px] tracking-[0.2em] uppercase font-bold text-success">
+                Açık
               </span>
             )}
           </button>
