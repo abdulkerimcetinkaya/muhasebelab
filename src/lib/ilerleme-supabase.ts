@@ -9,7 +9,7 @@ export interface CozumYardim {
   cozumGosterildi?: boolean;
 }
 
-const dunTarihi = (gun: string): string => {
+export const dunTarihi = (gun: string): string => {
   const d = new Date(gun);
   d.setDate(d.getDate() - 1);
   return d.toISOString().split('T')[0];
@@ -25,7 +25,7 @@ const soruZorlukMap = (tumSorular: SoruWithUnite[]): Record<string, Zorluk> =>
   );
 
 // Ardışık aktivite tarihlerinden streak hesapla
-const streakHesapla = (aktiviteTarihleri: Record<string, number>): { streak: number; sonTarih: string | null } => {
+export const streakHesapla = (aktiviteTarihleri: Record<string, number>): { streak: number; sonTarih: string | null } => {
   const tarihler = Object.keys(aktiviteTarihleri).sort();
   if (tarihler.length === 0) return { streak: 0, sonTarih: null };
   const sonTarih = tarihler[tarihler.length - 1];

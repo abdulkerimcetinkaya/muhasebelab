@@ -14,6 +14,8 @@ import { useUniteler } from '../contexts/UnitelerContext';
 import { ZORLUK_AD, ZORLUK_PUAN, ZORLUK_STIL } from '../data/sabitler';
 import { bugununTarihi, paraFormat } from '../lib/format';
 import { yanlisAnaliziYap, type YanlisAnaliz } from '../lib/kontrol';
+import { kutlamaBaglamiUret, type KutlamaBaglami } from '../lib/kutlama-baglami';
+import { CevapKutlama } from '../components/CevapKutlama';
 import { aiYanlisAnalizi, AIKotaHatasi } from '../lib/ai';
 import { authDonusYaz } from '../lib/auth-donus';
 import { aktifMuavinleriYukle, type MuavinHesap } from '../lib/muavin';
@@ -29,6 +31,7 @@ import type {
   FaturaBelge,
   FisBilgi,
   FisTuru,
+  Ilerleme,
   PerakendeFisBelge,
   SenetBelge,
   Soru,
@@ -49,6 +52,9 @@ interface Props {
   onYanlis: (soruId: string) => void;
   cozulmusMu: boolean;
   onHesapPlaniYanPanel: () => void;
+  /** Doğru cevap kutlama bağlamı için tam ilerleme + session combo getter */
+  ilerleme: Ilerleme;
+  getSessionCombo: () => number;
 }
 
 const bosSatir = (): UserRow => ({ kod: '', borc: '', alacak: '', aciklama: '' });
@@ -165,6 +171,8 @@ const SoruEkraniIci = ({
   onYanlis,
   cozulmusMu,
   onHesapPlaniYanPanel,
+  ilerleme,
+  getSessionCombo,
 }: Props) => {
   const nav = useNavigate();
   const location = useLocation();
@@ -184,6 +192,7 @@ const SoruEkraniIci = ({
   const [yazar, setYazar] = useState<{ ad: string; unvan: string | null } | null>(null);
   const [satirSonuclari, setSatirSonuclari] = useState<(boolean | null)[]>([]);
   const [yanlisAnaliz, setYanlisAnaliz] = useState<YanlisAnaliz | null>(null);
+  const [kutlamaBaglami, setKutlamaBaglami] = useState<KutlamaBaglami | null>(null);
   const [kontrolHatasi, setKontrolHatasi] = useState<string | null>(null);
   const [cozumAcik, setCozumAcik] = useState(false);
   const [cozumOnayAcik, setCozumOnayAcik] = useState(false);
@@ -424,15 +433,30 @@ const SoruEkraniIci = ({
     setSatirSonuclari(sonuclar);
 
     if (hepsiDogru) {
+      // sessionCombo: bu çözümle birlikte oturum içi ardışık doğru sayısı.
+      // App.tsx'te ref tutulan combo, onCozuldu callback'inde +1 oluyor —
+      // bizim göstermek istediğimiz "bu çözüm sonrası" değer için +1 ekliyoruz.
+      // Daha önce çözülmüşse combo'yu etkilemez (ref aynı kalır).
+      const eskidenCozulmus = !!ilerleme.cozulenler[soru.id];
+      const yeniCombo = eskidenCozulmus ? getSessionCombo() : getSessionCombo() + 1;
+      const baglam = kutlamaBaglamiUret({
+        soru,
+        ilerlemeOnce: ilerleme,
+        uniteler,
+        tumSorular,
+        sessionCombo: yeniCombo,
+      });
+      setKutlamaBaglami(baglam);
       setDurum('dogru');
       setYanlisAnaliz(null);
       onCozuldu(soru, { kullanilanAi, cozumGosterildi });
     } else {
+      setKutlamaBaglami(null);
       setDurum('yanlis');
       setYanlisAnaliz(analiz);
       onYanlis(soru.id);
     }
-  }, [kayitlar, soru, onCozuldu, onYanlis, kullanilanAi, cozumGosterildi]);
+  }, [kayitlar, soru, onCozuldu, onYanlis, kullanilanAi, cozumGosterildi, ilerleme, uniteler, tumSorular, getSessionCombo]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -834,8 +858,8 @@ const SoruEkraniIci = ({
         </div>
       )}
 
-      {/* Sonuç paneli */}
-      {durum === 'dogru' && (() => {
+      {/* Sonuç paneli — doğru cevap için yeni context-aware kutlama */}
+      {durum === 'dogru' && kutlamaBaglami && (() => {
         // Bu çözümden kazanılan gerçek puan (sadece çözüm gör cezasını uygular)
         const kazanilan = cozumGosterildi ? 0 : ZORLUK_PUAN[soru.zorluk];
         const puanMesaji = cozulmusMu
@@ -844,27 +868,21 @@ const SoruEkraniIci = ({
             ? `+${kazanilan} puan`
             : 'Çözümü gördüğün için puan kazanamadın.';
         return (
-        <div className="mt-4 p-5 border-l-4 border-success bg-success-soft rounded-xl">
-          <div className="flex items-center gap-3 mb-2">
-            <Icon
-              name="CheckCircle2"
-              size={20}
-              className="text-success dark:text-success"
+          <div className="mt-4">
+            <CevapKutlama
+              baglam={kutlamaBaglami}
+              puanMesaji={puanMesaji}
+              aciklama={soru.aciklama}
+              cta={
+                <button
+                  onClick={sonraki}
+                  className="flex items-center gap-2 text-sm bg-ink text-bg px-4 py-2 hover:bg-ink-soft dark:hover:bg-surface transition rounded-lg font-semibold"
+                >
+                  Sıradaki Soru <Icon name="ArrowRight" size={14} />
+                </button>
+              }
             />
-            <div className="font-display text-lg font-bold">
-              Doğru kayıt. {puanMesaji}
-            </div>
           </div>
-          <p className="text-sm text-ink-soft leading-relaxed mb-4 font-medium">
-            {soru.aciklama}
-          </p>
-          <button
-            onClick={sonraki}
-            className="flex items-center gap-2 text-sm bg-ink text-bg px-4 py-2 hover:bg-ink-soft dark:hover:bg-surface transition rounded-lg font-semibold"
-          >
-            Sıradaki Soru <Icon name="ArrowRight" size={14} />
-          </button>
-        </div>
         );
       })()}
       {durum === 'yanlis' && yanlisAnaliz && (
@@ -1064,10 +1082,12 @@ const SoruEkraniIci = ({
 };
 
 interface WrapperProps {
-  ilerleme: { cozulenler: Record<string, unknown> };
+  ilerleme: Ilerleme;
   onCozuldu: (soru: Soru, yardim?: CozumYardim) => void;
   onYanlis: (soruId: string) => void;
   onHesapPlaniYanPanel: () => void;
+  /** App.tsx'teki session-scoped ardışık doğru sayısı getter'ı */
+  getSessionCombo: () => number;
 }
 
 export const SoruEkrani = ({
@@ -1075,6 +1095,7 @@ export const SoruEkrani = ({
   onCozuldu,
   onYanlis,
   onHesapPlaniYanPanel,
+  getSessionCombo,
 }: WrapperProps) => {
   const { soruId } = useParams<{ soruId: string }>();
   const nav = useNavigate();
@@ -1105,6 +1126,8 @@ export const SoruEkrani = ({
       onYanlis={onYanlis}
       cozulmusMu={!!ilerleme.cozulenler[soru.id]}
       onHesapPlaniYanPanel={onHesapPlaniYanPanel}
+      ilerleme={ilerleme}
+      getSessionCombo={getSessionCombo}
     />
   );
 };
