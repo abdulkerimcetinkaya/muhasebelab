@@ -141,6 +141,11 @@ const App = () => {
   const [rozetKuyrugu, setRozetKuyrugu] = useState<Rozet[]>([]);
   const sonUserId = useRef<string | null>(null);
   const sonGirisKaydi = useRef<string | null>(null);
+  /** Oturum içi ardışık doğru cevap sayacı — sayfa yenilenince sıfırlanır.
+   *  Doğru cevap kutlamasında combo milestone'ları için kullanılır.
+   *  useRef çünkü değişikliği render tetiklemiyor; SoruEkrani anlık değer
+   *  okumak için getter prop alıyor. */
+  const sessionComboRef = useRef(0);
 
   // Oturum durumu değişince veriyi doğru kaynaktan tekrar yükle.
   // Uniteler yüklenmeden ilerleme yüklenemez (zorluk lookup lazım).
@@ -233,6 +238,13 @@ const App = () => {
     const eskiKayit = ilerleme.cozulenler[soru.id];
     const eskiPuan = eskiKayit?.puan ?? (eskiKayit ? puanHesapla(eskiKayit.zorluk) : 0);
 
+    // Oturum combo — yalnızca ilk defa çözülen sorularda artar. Tekrar çözüm
+    // combo'yu etkilemez (kullanıcı zaten bildiği soruyla "üst üste doğru"
+    // ödülü kazanmamalı).
+    if (!eskiKayit) {
+      sessionComboRef.current += 1;
+    }
+
     // Best-score: yeni puan eskiden büyükse güncelle, değilse atla.
     // İlk çözümde eskiKayit null, atlanmaz.
     if (eskiKayit && yeniPuan <= eskiPuan) {
@@ -272,6 +284,8 @@ const App = () => {
   };
 
   const yanlisKaydet = (soruId: string) => {
+    // Yanlış cevap oturum combo'yu sıfırlar — "üst üste doğru" anlamı bozuluyor
+    sessionComboRef.current = 0;
     setIlerleme((prev) => ({
       ...prev,
       yanlislar: { ...prev.yanlislar, [soruId]: (prev.yanlislar[soruId] || 0) + 1 },
@@ -438,6 +452,7 @@ const App = () => {
                   onCozuldu={soruCozuldu}
                   onYanlis={yanlisKaydet}
                   onHesapPlaniYanPanel={() => setYanPanelAcik(true)}
+                  getSessionCombo={() => sessionComboRef.current}
                 />
               }
             />
