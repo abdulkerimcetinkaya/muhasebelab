@@ -545,12 +545,20 @@ export const HesapView = ({
               <div>
                 <div className="font-semibold">Karneyi PDF olarak indir</div>
                 <div className="text-[11.5px] text-ink-mute font-medium mt-0.5">
-                  Akademik karne · yetkinlik haritası · rozetler · rekorlar
+                  CV-andıran akademik karne · yetkinlik · aktivite haritası · doğrulama kodu
                 </div>
               </div>
             </div>
             <Icon name="ChevronRight" size={14} className="text-ink-quiet" />
           </button>
+          {/* Düşük çözüm uyarısı — engelleme değil, bilgilendirme. */}
+          {stat.cozulenSayi > 0 && stat.cozulenSayi < 20 && (
+            <div className="px-4 py-3 mt-1 text-[12px] text-ink-soft bg-bg-tint border border-line rounded-lg leading-relaxed">
+              <span className="font-bold text-ink">{stat.cozulenSayi}</span> soru çözdün.
+              Karne her zaman indirilebilir, ama <span className="font-bold">20+ çözümle</span>{' '}
+              daha dolu bir karne oluşur — heatmap, modül haritası ve rozetler dolmaya başlar.
+            </div>
+          )}
           {karneHata && (
             <div className="px-4 py-2 text-[12px] text-danger dark:text-danger font-medium">
               {karneHata}

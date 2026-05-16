@@ -27,6 +27,7 @@ const PremiumSonucSayfasi = lazy(() => import('./pages/PremiumSonucSayfasi').the
 const KurumOdemeSayfasi = lazy(() => import('./pages/KurumOdemeSayfasi').then((m) => ({ default: m.KurumOdemeSayfasi })));
 const ProfilSayfasi = lazy(() => import('./pages/ProfilSayfasi').then((m) => ({ default: m.ProfilSayfasi })));
 const KvkkSayfasi = lazy(() => import('./pages/KvkkSayfasi').then((m) => ({ default: m.KvkkSayfasi })));
+const KarneStubSayfasi = lazy(() => import('./pages/KarneStubSayfasi').then((m) => ({ default: m.KarneStubSayfasi })));
 const LiderlikSayfasi = lazy(() => import('./pages/LiderlikSayfasi').then((m) => ({ default: m.LiderlikSayfasi })));
 const AdminAnaSayfa = lazy(() => import('./pages/admin/AdminAnaSayfa').then((m) => ({ default: m.AdminAnaSayfa })));
 const AdminSorularSayfasi = lazy(() => import('./pages/admin/AdminSorularSayfasi').then((m) => ({ default: m.AdminSorularSayfasi })));
@@ -389,6 +390,7 @@ const App = () => {
               }
             />
             <Route path="/kvkk" element={<KvkkSayfasi />} />
+            <Route path="/k/:karneId" element={<KarneStubSayfasi />} />
             <Route path="/liderlik" element={<LiderlikSayfasi />} />
             <Route path="/sozluk" element={<SozlukSayfasi />} />
             <Route path="/sozluk/:slug" element={<SozlukTerimSayfasi />} />
