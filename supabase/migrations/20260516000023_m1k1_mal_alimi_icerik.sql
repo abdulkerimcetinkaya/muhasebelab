@@ -1,0 +1,58 @@
+-- =====================================================================
+-- Modül 1 / Konu 1: Mal Alımı — Konu Anlatım İçeriği
+-- =====================================================================
+-- AltBaslikSayfasi'nda öğrencinin gördüğü konu anlatım metni.
+-- BlockNote JSON formatı. Emoji yok, akademik, kavramsal.
+
+begin;
+
+update modul_alt_basliklari set
+  icerik = '[
+    {"id":"k1-blk-001","type":"heading","props":{"level":1,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Mal Alımı","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-002","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Mal alımı, ticaret işletmesinin satmak amacıyla bir tedarikçiden mal satın alması işlemidir. Bu işlem, işletmenin stoğunu artırır ve karşılığında ya nakit/banka çıkışı ya da tedarikçiye borç doğmasına yol açar. Mal alımı, Modül 1''in temelidir; iade, iskonto ve sipariş avansı gibi diğer konuların hepsi bu kaydın üzerine kurulur.","type":"text","styles":{}}],"children":[]},
+
+    {"id":"k1-blk-010","type":"heading","props":{"level":2,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Yevmiye Kaydının Mantığı","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-011","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Her mal alımında iki şey kesindir: stoğa mal girer ve KDV ödenir. Bunlar borç tarafına yazılır. Karşılığında ne çıktığı (kasa, banka veya tedarikçiye borç) alacak tarafını belirler.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-012","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Borç tarafı — 153 Ticari Mallar: Alınan malın KDV hariç tutarı yazılır. Hangi tür mal alındıysa o muavin seçilir (örneğin 153.001 Buzdolabı).","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-013","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Borç tarafı — 191 İndirilecek KDV: Fatura üzerindeki KDV tutarı yazılır. KDV oranına göre 191.001 (%20), 191.002 (%10) veya 191.003 (%1) muavini kullanılır.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-014","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Alacak tarafı: Ödeme şekline göre değişir. Peşinse 100 Kasa veya 102 Bankalar; kredili ise 320 Satıcılar. Karma ödemede her ikisi de aynı kayıtta çalışır.","type":"text","styles":{}}],"children":[]},
+
+    {"id":"k1-blk-020","type":"heading","props":{"level":2,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Ödeme Şekline Göre Üç Varyant","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-021","type":"heading","props":{"level":3,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"1. Peşin Alım (Banka veya Kasa)","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-022","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Fatura bedelinin tamamı anında ödendiğinde 320 hesabı hiç çalışmaz. EFT veya havale ile ödenmişse 102 Bankalar, nakit ödenmişse 100 Kasa muavini alacaklanır. Senaryoda hangi banka adı geçiyorsa (Garanti BBVA, İş Bankası, Akbank, Yapı Kredi, Ziraat) o muavin seçilir.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-023","type":"heading","props":{"level":3,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"2. Kredili Alım (Cari Hesap)","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-024","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Ödeme ileri bir tarihe ertelendiğinde kasa ve banka çalışmaz; tedarikçinin cari hesabı borçlanır. 320 Satıcılar hesabının altında her tedarikçinin kendi muavini vardır (320.001 Arçelik, 320.002 Vestel gibi). Senaryoda hangi tedarikçi adı geçiyorsa o muavin alacaklanır.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-025","type":"heading","props":{"level":3,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"3. Karma Ödeme","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-026","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Fatura bedelinin bir kısmı peşin, kalanı kredili ödendiğinde aynı yevmiye fişinde hem ödeme hesabı (100 veya 102) hem tedarikçi (320) alacaklanır. Toplamları eşitlemek gerekir: borç tarafı (153 + 191) = alacak tarafı (kasa/banka payı + 320 payı).","type":"text","styles":{}}],"children":[]},
+
+    {"id":"k1-blk-030","type":"heading","props":{"level":2,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"KDV''nin Rolü","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-031","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Alıştaki KDV, devlete sen ödemiyorsun; tedarikçiye ödüyorsun. Tedarikçi onu devlete aktarıyor. Ama bu tutar senin için kaybedilmiş para değil; ay sonunda kendi sattığın mallar üzerinden topladığın Hesaplanan KDV''den indirim hakkı olarak kullanılıyor. Bu nedenle alış KDV''si gider değil, varlık niteliğinde 191 İndirilecek KDV''ye yazılır.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-032","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Sorularda farklı KDV oranlarıyla karşılaşacaksın. Standart oran %20''dir; bazı ürünlerde (özel düzenlemeye tabi enerji verimli ankastre fırın gibi) %10 olabilir; çok az kalemde %1 uygulanır. Her oranın kendi muavini vardır ve aynı faturada iki oran birden geçtiğinde her birini ayrı muavine yazmak gerekir.","type":"text","styles":{}}],"children":[]},
+
+    {"id":"k1-blk-040","type":"heading","props":{"level":2,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Örnek: Kredili Buzdolabı Alımı","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-041","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Arçelik''ten 10 adet buzdolabı, KDV hariç birim 18.000 TL, KDV %20, kredili.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-042","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Mal bedeli: 10 × 18.000 = 180.000 TL. KDV: 36.000 TL. Toplam: 216.000 TL.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-043","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Borç — 153.001 Ticari Mallar (Buzdolabı): 180.000","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-044","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Borç — 191.001 İndirilecek KDV %20: 36.000","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-045","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Alacak — 320.001 Satıcılar (Arçelik A.Ş.): 216.000","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-046","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Aynı işlem peşin yapılsaydı: 320.001 yerine alacak tarafına 102.001 Garanti BBVA – TL gelirdi. Yarısı peşin yarısı kredili olsaydı: alacak tarafı 102.001 (108.000) ve 320.001 (108.000) olarak ikiye bölünürdü.","type":"text","styles":{}}],"children":[]},
+
+    {"id":"k1-blk-050","type":"heading","props":{"level":2,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Alışla Birlikte Doğan Nakliye Gideri","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-051","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Tedarikçinin tahsil ettiği veya ayrı bir nakliye firmasına ödenen taşıma bedeli alışın bir parçasıdır; mal maliyetine eklenir, gider yazılmaz. Bu yüzden nakliye tutarı 153 Ticari Mallar''a, KDV''si 191 İndirilecek KDV''ye yazılır. Sadece satış için yapılan taşıma (müşteriye gönderim) 760 Pazarlama Satış Dağıtım Giderleri''ne yazılır — ikisini karıştırmamak gerekir.","type":"text","styles":{}}],"children":[]},
+
+    {"id":"k1-blk-060","type":"heading","props":{"level":2,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Sık Yapılan Hatalar","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-061","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"KDV''yi 191 yerine 391 Hesaplanan KDV''ye yazmak. 391 satışa özeldir; alışta her zaman 191 kullanılır.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-062","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"153 muavinini ana hesap koduyla yazmak (ör. 153 yerine 153.001 olmalı). Muavin defteri eksik kalırsa ay sonunda hangi maldan ne kadar stok olduğu görülmez.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-063","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Toplam tutarı 153''e yazmak. 153 yalnızca KDV hariç mal bedelini taşır; KDV ayrıca 191''e ayrılır.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-064","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Karma ödemede 320''yi unutmak ya da peşin kısmı yine 320''ye yazmak. Senaryoda iki ödeme şekli açıkça geçtiyse iki ayrı alacak satırı yazılır.","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-065","type":"bulletListItem","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Banka muavinini ‘sezgisel'' seçmek. Senaryoda banka adı açıkça yazıyor; başka bir banka muavini seçilirse cevap yanlış sayılır.","type":"text","styles":{}}],"children":[]},
+
+    {"id":"k1-blk-070","type":"heading","props":{"level":2,"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Bu Konudaki Sorularda Karşılaşacakların","type":"text","styles":{}}],"children":[]},
+    {"id":"k1-blk-071","type":"paragraph","props":{"textColor":"default","textAlignment":"left","backgroundColor":"default"},"content":[{"text":"Bu konunun 10 sorusunda; banka EFT''li peşin alım, kasadan nakit alım, kredili alım, yarı banka–yarı kredili karma ödeme, farklı bankalardan ödeme, birden fazla KDV oranıyla karma mal alımı ve nakliyenin maliyete eklenmesi gibi durumlar yer alıyor. Hepsi tek bir mantığın varyantı: borç tarafına stok ve KDV, alacak tarafına ödeme aracı veya cari hesap.","type":"text","styles":{}}],"children":[]}
+  ]'::jsonb,
+  icerik_guncellendi = now()
+where id = 'mal-alis-satis-1-1';
+
+commit;
+
+notify pgrst, 'reload schema';
