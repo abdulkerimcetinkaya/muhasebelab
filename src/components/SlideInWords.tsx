@@ -52,8 +52,12 @@ export const SlideInWords = ({
           overflow: 'hidden',
           verticalAlign: 'top',
           lineHeight: 1.1,
-          paddingBottom: '1em',
-          marginBottom: '-1em',
+          paddingBottom: '0.35em',
+          marginBottom: '-0.35em',
+          paddingLeft: '0.15em',
+          marginLeft: '-0.15em',
+          paddingRight: '0.05em',
+          marginRight: '-0.05em',
         }}
       >
         <motion.span
