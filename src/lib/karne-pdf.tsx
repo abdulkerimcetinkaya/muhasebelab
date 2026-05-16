@@ -1,26 +1,26 @@
-// MuhasebeLab Karne — A4 PDF rapor kartı.
+// MuhasebeLab Karne — A4 PDF, CV-andıran hibrit editorial.
 // Profil sayfasındaki "Karneyi PDF indir" butonu bu modülü dynamic import'la
 // yükler — @react-pdf/renderer ~600KB initial bundle'a girmesin diye.
 //
-// Türkçe karakter desteği için Roboto fontu @fontsource/roboto paketinden
-// (latin-ext alfabesi — ş ı ğ ü ö ç dahil). Vite asset olarak sunulur,
-// runtime fetch yok, offline çalışır, versionlanır.
+// Türkçe karakter desteği:
+// - Roboto TTF (public/fonts/, latin-ext) — body ve mono için.
+// - Fraunces 900 italic/normal WOFF2 (public/fonts/, @fontsource'tan kopya) —
+//   display moment (kullanıcı adı, key sayılar). Fraunces 2024+ build'i
+//   Türkçe alfabe (ş ı ğ ü ö ç) ve dotless ı (U+0131) destekliyor.
 import {
   Document,
   Font,
+  Image,
   Page,
   StyleSheet,
   Text,
   View,
   pdf,
 } from '@react-pdf/renderer';
-// TTF — public/fonts/'tan sunulan Roboto. fontkit (PDFKit altyapısı) TTF'yi en
-// güvenilir şekilde parse ediyor. WOFF1'de dotless ı (U+0131) "1" olarak
-// görünüyor, WOFF2'de "DataView out of bounds" hatası — TTF her ikisini de
-// çözüyor.
+import QRCode from 'qrcode';
 import { ROZETLER } from '../data/rozetler';
 import { kisiselRekorlar } from './profil-rekorlar';
-import { uniteYetkinlikleri } from './yetkinlik';
+import { uniteYetkinlikleri, modulYetkinlikleri } from './yetkinlik';
 import type { Ilerleme, Istatistik, Unite } from '../types';
 
 const FONT_BASE = `${window.location.origin}/fonts`;
@@ -35,6 +35,14 @@ Font.register({
   ],
 });
 
+Font.register({
+  family: 'Fraunces',
+  fonts: [
+    { src: `${FONT_BASE}/Fraunces-DisplayBlack.woff2`, fontWeight: 900, fontStyle: 'normal' },
+    { src: `${FONT_BASE}/Fraunces-DisplayItalic.woff2`, fontWeight: 900, fontStyle: 'italic' },
+  ],
+});
+
 const C = {
   ink: '#0f172a',
   inkSoft: '#475569',
@@ -42,98 +50,130 @@ const C = {
   bg: '#ffffff',
   surface: '#f8fafc',
   line: '#e2e8f0',
-  blue: '#1d4ed8',
-  blueLight: '#dbeafe',
-  amber: '#b45309',
-  amberLight: '#fef3c7',
-  rose: '#b91c1c',
-  emerald: '#047857',
-  violet: '#6d28d9',
-};
+  // Copper trio — marka aksenti
+  copper: '#b56b3e',
+  copperDeep: '#8a4a23',
+  copperSoft: '#f5e6d3',
+  copperMid: '#dca47a',
+} as const;
 
 const s = StyleSheet.create({
   page: {
     fontFamily: 'Roboto',
     backgroundColor: C.bg,
-    padding: 36,
+    paddingTop: 32,
+    paddingBottom: 28,
+    paddingHorizontal: 36,
     color: C.ink,
     fontSize: 10,
     lineHeight: 1.4,
   },
-  // Header
-  header: {
+
+  // ─── BAND 1 — Name Plate ──────────────────────────────────────────
+  namePlate: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 2,
+    alignItems: 'flex-start',
+    paddingBottom: 14,
+    borderBottomWidth: 1.5,
     borderBottomColor: C.ink,
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: { color: '#fff', fontSize: 28, fontWeight: 900 },
-  headerInfo: { flex: 1 },
-  brand: {
-    fontSize: 8,
-    letterSpacing: 2,
+  brandStrip: {
+    fontSize: 7,
+    letterSpacing: 2.5,
     textTransform: 'uppercase',
     color: C.inkMute,
     fontWeight: 700,
-    marginBottom: 4,
-  },
-  name: {
-    fontSize: 22,
-    fontWeight: 900,
-    letterSpacing: -0.3,
-    lineHeight: 1.15,
     marginBottom: 6,
   },
-  meta: {
-    fontSize: 9,
+  nameDisplay: {
+    fontFamily: 'Fraunces',
+    fontStyle: 'italic',
+    fontWeight: 900,
+    fontSize: 36,
+    color: C.ink,
+    lineHeight: 1.05,
+    letterSpacing: -0.5,
+  },
+  nameContext: {
+    fontSize: 9.5,
     color: C.inkSoft,
     fontWeight: 500,
+    marginTop: 6,
     lineHeight: 1.3,
   },
-  tarih: {
-    fontSize: 9,
-    color: C.inkMute,
-    fontWeight: 500,
-    textAlign: 'right',
-  },
-
-  // Bölüm başlığı
-  sectionH: {
-    fontSize: 8,
+  nameMeta: { flex: 1 },
+  dateBlock: { alignItems: 'flex-end', minWidth: 130 },
+  dateLabel: {
+    fontSize: 7,
     letterSpacing: 2,
     textTransform: 'uppercase',
-    color: C.inkSoft,
+    color: C.copper,
     fontWeight: 700,
-    marginBottom: 8,
+    marginBottom: 3,
   },
-  sectionGap: { marginBottom: 18 },
+  dateValue: {
+    fontFamily: 'Roboto',
+    fontSize: 10,
+    color: C.ink,
+    fontWeight: 700,
+    letterSpacing: 0.5,
+  },
+  karneIdLabel: {
+    fontSize: 7,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    color: C.inkMute,
+    fontWeight: 700,
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  karneIdValue: {
+    fontFamily: 'Roboto',
+    fontSize: 8.5,
+    color: C.ink,
+    fontWeight: 700,
+    letterSpacing: 0.6,
+  },
 
-  // Karne özeti — 4 büyük sayı yan yana
-  karne: {
+  // ─── Section header (CV-style) ─────────────────────────────────────
+  sectionHead: {
     flexDirection: 'row',
-    backgroundColor: C.surface,
-    borderRadius: 8,
-    padding: 14,
-    gap: 0,
+    alignItems: 'center',
+    marginBottom: 9,
   },
-  karneCol: {
+  sectionLabel: {
+    fontSize: 8,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
+    color: C.ink,
+    fontWeight: 700,
+  },
+  sectionLabelExtra: {
+    marginLeft: 'auto',
+    fontSize: 8,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: C.inkMute,
+    fontWeight: 700,
+  },
+  sectionRule: {
+    height: 0.5,
+    backgroundColor: C.line,
+    marginBottom: 9,
+  },
+  bandGap: { marginBottom: 14 },
+
+  // ─── BAND 2 — Profil özet (key stats) ─────────────────────────────
+  statRow: { flexDirection: 'row' },
+  statCol: {
     flex: 1,
-    paddingHorizontal: 10,
-    borderLeftWidth: 1,
+    paddingHorizontal: 8,
+    borderLeftWidth: 0.5,
     borderLeftColor: C.line,
   },
-  karneColFirst: { borderLeftWidth: 0 },
-  karneEt: {
+  statColFirst: { borderLeftWidth: 0, paddingLeft: 0 },
+  statLabel: {
     fontSize: 7,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
@@ -141,99 +181,198 @@ const s = StyleSheet.create({
     fontWeight: 700,
     marginBottom: 4,
   },
-  karneVal: { fontSize: 24, fontWeight: 900, color: C.ink, lineHeight: 1 },
-  karneAlt: { fontSize: 8, color: C.inkSoft, marginTop: 4, fontWeight: 500 },
-
-  // Yetkinlik
-  yetkinlikRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingVertical: 5,
-    borderBottomWidth: 0.5,
-    borderBottomColor: C.line,
+  statValue: {
+    fontFamily: 'Fraunces',
+    fontWeight: 900,
+    fontSize: 28,
+    color: C.ink,
+    lineHeight: 1,
+    letterSpacing: -0.5,
   },
-  yetkinlikAd: { flex: 1, fontSize: 10, fontWeight: 500, color: C.ink },
+  statContext: {
+    fontFamily: 'Roboto',
+    fontSize: 8,
+    color: C.copper,
+    fontWeight: 500,
+    marginTop: 4,
+  },
+
+  // ─── BAND 3 — İki sütun (yetkinlik + heatmap) ─────────────────────
+  twoCol: { flexDirection: 'row', gap: 18 },
+  colHalf: { flex: 1 },
+
+  // Yetkinlik bar
+  yetkinlikRow: { marginBottom: 8 },
+  yetkinlikLine: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 4,
+  },
+  yetkinlikAd: { flex: 1, fontSize: 10, color: C.ink, fontWeight: 500 },
+  yetkinlikYuzde: {
+    fontFamily: 'Fraunces',
+    fontSize: 14,
+    fontWeight: 900,
+    color: C.copperDeep,
+    letterSpacing: -0.3,
+  },
   yetkinlikBarBg: {
-    flex: 2,
-    height: 6,
+    height: 8,
     backgroundColor: C.line,
-    borderRadius: 3,
+    borderRadius: 1,
     overflow: 'hidden',
   },
-  yetkinlikBarFill: { height: '100%', backgroundColor: C.blue },
-  yetkinlikDeger: {
-    width: 50,
-    fontSize: 9,
-    fontWeight: 700,
-    color: C.inkSoft,
-    textAlign: 'right',
-  },
-  yetkinlikYuzde: {
-    width: 35,
-    fontSize: 11,
-    fontWeight: 900,
-    textAlign: 'right',
+  yetkinlikBarFill: { height: '100%', backgroundColor: C.copper },
+  yetkinlikSub: {
+    fontFamily: 'Roboto',
+    fontSize: 7.5,
+    color: C.inkMute,
+    fontWeight: 500,
+    marginTop: 3,
+    letterSpacing: 0.5,
   },
 
-  // Rozetler
-  rozetGrid: {
+  // Heatmap
+  heatmapGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 3,
   },
-  rozetItem: {
+  heatCell: {
+    width: 12,
+    height: 12,
+    borderRadius: 1,
+  },
+  heatLegend: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: C.amberLight,
-    borderRadius: 12,
+    gap: 4,
+    marginTop: 8,
   },
-  rozetText: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: C.amber,
+  heatLegendText: {
+    fontSize: 7,
+    color: C.inkMute,
+    letterSpacing: 0.5,
+    fontWeight: 500,
   },
 
-  // Rekorlar
-  rekorRow: {
-    flexDirection: 'row',
-    gap: 12,
+  // ─── BAND 4 — Modül haritası ──────────────────────────────────────
+  modulGroup: { marginBottom: 8 },
+  modulGroupHead: {
+    fontFamily: 'Roboto',
+    fontStyle: 'italic',
+    fontSize: 9.5,
+    fontWeight: 700,
+    color: C.copperDeep,
+    marginBottom: 4,
+    letterSpacing: 0.3,
   },
-  rekorBox: {
-    flex: 1,
-    padding: 10,
+  modulRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 3,
+    borderBottomWidth: 0.4,
+    borderBottomColor: C.line,
+  },
+  modulAd: { fontSize: 9.5, color: C.ink, fontWeight: 500 },
+  modulAdDim: { fontSize: 9.5, color: C.inkMute, fontWeight: 500 },
+  modulBarBg: {
+    height: 4,
+    backgroundColor: C.line,
+    borderRadius: 1,
+    overflow: 'hidden',
+  },
+  modulBarFill: { height: '100%', backgroundColor: C.copper },
+  modulSayi: {
+    fontFamily: 'Roboto',
+    fontSize: 8.5,
+    color: C.inkSoft,
+    fontWeight: 700,
+    letterSpacing: 0.3,
+    textAlign: 'right',
+  },
+  modulYok: { fontSize: 9, color: C.inkMute, fontStyle: 'italic', paddingVertical: 2 },
+
+  // ─── BAND 5 — Rozetler + Rekorlar ─────────────────────────────────
+  rozetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
+  rozetChip: {
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    backgroundColor: C.copperSoft,
+    borderLeftWidth: 2,
+    borderLeftColor: C.copper,
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+    minWidth: 78,
+  },
+  rozetChipDim: {
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    backgroundColor: C.bg,
     borderWidth: 0.5,
     borderColor: C.line,
-    borderRadius: 6,
+    borderRadius: 4,
+    minWidth: 78,
+  },
+  rozetText: { fontSize: 8.5, fontWeight: 700, color: C.copperDeep, letterSpacing: 0.2 },
+  rozetTextDim: { fontSize: 8.5, fontWeight: 500, color: C.inkMute, letterSpacing: 0.2 },
+
+  rekorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  rekorBox: {
+    width: '47%',
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderLeftWidth: 2,
+    borderLeftColor: C.line,
   },
   rekorEt: {
     fontSize: 7,
-    letterSpacing: 1.5,
+    letterSpacing: 1.4,
     textTransform: 'uppercase',
     color: C.inkMute,
     fontWeight: 700,
-    marginBottom: 4,
+    marginBottom: 3,
   },
-  rekorVal: { fontSize: 16, fontWeight: 900, color: C.ink, lineHeight: 1 },
-  rekorAlt: { fontSize: 8, color: C.inkSoft, marginTop: 3, fontWeight: 500 },
+  rekorVal: {
+    fontFamily: 'Fraunces',
+    fontSize: 18,
+    fontWeight: 900,
+    color: C.ink,
+    lineHeight: 1,
+    letterSpacing: -0.3,
+  },
+  rekorAlt: { fontSize: 7.5, color: C.inkSoft, marginTop: 3, fontWeight: 500 },
 
-  // Footer
-  footer: {
-    position: 'absolute',
-    bottom: 24,
-    left: 36,
-    right: 36,
+  // ─── BAND 6 — Doğrulama footer ────────────────────────────────────
+  footerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    fontSize: 8,
-    color: C.inkMute,
+    alignItems: 'flex-end',
+    gap: 14,
+  },
+  footerText: { flex: 1 },
+  footerMain: {
+    fontSize: 9,
+    color: C.ink,
     fontWeight: 500,
-    paddingTop: 8,
-    borderTopWidth: 0.5,
-    borderTopColor: C.line,
+    marginBottom: 3,
+    lineHeight: 1.4,
+  },
+  footerSub: {
+    fontSize: 7.5,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+    color: C.copper,
+    fontWeight: 700,
+  },
+  qrBlock: { alignItems: 'flex-end' },
+  qrImg: { width: 56, height: 56 },
+  qrUrl: {
+    fontFamily: 'Roboto',
+    fontSize: 7,
+    color: C.inkMute,
+    marginTop: 3,
+    fontWeight: 500,
+    letterSpacing: 0.3,
   },
 });
 
@@ -264,22 +403,56 @@ const HEDEF_ETIKET: Record<string, string> = {
   belirsiz: '',
 };
 
-const avatarRengi = (ad: string): string => {
-  const renkler = ['#1d4ed8', '#047857', '#b91c1c', '#b45309', '#6d28d9', '#0e7490'];
+/**
+ * Deterministik karne ID — user'in kullanıcı adından + tarihten 8-haneli hash.
+ * Aynı kullanıcı aynı gün her zaman aynı ID'yi üretir; tarih değişince ID değişir.
+ */
+const karneIdUret = (kullaniciAdi: string, tarihYmd: string): string => {
+  const giris = `${kullaniciAdi.toLowerCase()}-${tarihYmd}`;
   let hash = 0;
-  for (let i = 0; i < ad.length; i++) hash += ad.charCodeAt(i);
-  return renkler[hash % renkler.length];
+  for (let i = 0; i < giris.length; i++) {
+    hash = ((hash << 5) - hash + giris.charCodeAt(i)) | 0;
+  }
+  const hex = Math.abs(hash).toString(16).padStart(8, '0').slice(0, 8);
+  return `K-${hex}-${tarihYmd.replace(/-/g, '')}`;
 };
 
-const KarneDoc = ({ ilerleme, stat, uniteler, profil }: KarneVerisi) => {
+/**
+ * Son 30 günün aktivite haritası: bugünden geriye doğru 30 hücre.
+ * En soldaki hücre 29 gün önceki tarih.
+ */
+const heatmapCellRengi = (sayi: number): string => {
+  if (sayi <= 0) return C.line;
+  if (sayi === 1) return C.copperSoft;
+  if (sayi === 2) return C.copperMid;
+  return C.copper; // 3+
+};
+
+const son30GunAktivite = (aktiviteTarihleri: Record<string, number>): number[] => {
+  const bugun = new Date();
+  const sonuc: number[] = [];
+  for (let i = 29; i >= 0; i--) {
+    const t = new Date(bugun);
+    t.setDate(bugun.getDate() - i);
+    const ymd = t.toISOString().split('T')[0];
+    sonuc.push(aktiviteTarihleri[ymd] ?? 0);
+  }
+  return sonuc;
+};
+
+interface KarneDocProps extends KarneVerisi {
+  qrDataUrl: string;
+  karneId: string;
+}
+
+const KarneDoc = ({ ilerleme, stat, uniteler, profil, qrDataUrl, karneId }: KarneDocProps) => {
   const ad = ilerleme.kullaniciAdi || 'Öğrenci';
   const rekorlar = kisiselRekorlar(ilerleme);
   const yetkinlikler = uniteYetkinlikleri(uniteler, ilerleme);
-  const kazanilanRozetler = ROZETLER.filter((r) => ilerleme.kazanilanRozetler[r.id]);
-  const bitirilenUnite = uniteler.filter((u) => {
-    if (u.sorular.length === 0) return false;
-    return u.sorular.every((sx) => ilerleme.cozulenler[sx.id]);
-  }).length;
+  const moduller = modulYetkinlikleri(uniteler, ilerleme);
+  const kazanilanRozetIds = new Set(Object.keys(ilerleme.kazanilanRozetler));
+  const baslananModulSayisi = moduller.filter((m) => m.cozulen > 0).length;
+  const aktivite = son30GunAktivite(ilerleme.aktiviteTarihleri);
 
   const akademik = [
     profil.universite,
@@ -296,6 +469,12 @@ const KarneDoc = ({ ilerleme, stat, uniteler, profil }: KarneVerisi) => {
     year: 'numeric',
   });
 
+  // Modülleri ünite (işletme türü) bazında grupla — CV "Experience" gibi
+  const modulGruplari = moduller.reduce<Record<string, typeof moduller>>((acc, m) => {
+    (acc[m.uniteAd] = acc[m.uniteAd] ?? []).push(m);
+    return acc;
+  }, {});
+
   return (
     <Document
       title={`MuhasebeLab Karne — ${ad}`}
@@ -303,137 +482,231 @@ const KarneDoc = ({ ilerleme, stat, uniteler, profil }: KarneVerisi) => {
       subject="Öğrenci ilerleme karnesi"
     >
       <Page size="A4" style={s.page}>
-        {/* Header */}
-        <View style={s.header}>
-          <View style={[s.avatar, { backgroundColor: avatarRengi(ad) }]}>
-            <Text style={s.avatarText}>{ad[0].toUpperCase()}</Text>
+        {/* ─── BAND 1 — Name Plate ──────────────────────────────────── */}
+        <View style={s.namePlate}>
+          <View style={s.nameMeta}>
+            <Text style={s.brandStrip}>MuhasebeLab · Karne</Text>
+            <Text style={s.nameDisplay}>{ad}</Text>
+            {akademik && <Text style={s.nameContext}>{akademik}</Text>}
           </View>
-          <View style={s.headerInfo}>
-            <Text style={s.brand}>MuhasebeLab — Karne</Text>
-            <Text style={s.name}>{ad}</Text>
-            {akademik && <Text style={s.meta}>{akademik}</Text>}
-          </View>
-          <View>
-            <Text style={s.brand}>Tarih</Text>
-            <Text style={s.tarih}>{tarih}</Text>
-          </View>
-        </View>
-
-        {/* Karne Özeti */}
-        <View style={s.sectionGap}>
-          <Text style={s.sectionH}>Karne Özeti</Text>
-          <View style={s.karne}>
-            <View style={[s.karneCol, s.karneColFirst]}>
-              <Text style={s.karneEt}>Toplam Çözüm</Text>
-              <Text style={s.karneVal}>{stat.cozulenSayi}</Text>
-              <Text style={s.karneAlt}>/ {stat.toplamSoru} soru</Text>
-            </View>
-            <View style={s.karneCol}>
-              <Text style={s.karneEt}>Toplam Puan</Text>
-              <Text style={s.karneVal}>{ilerleme.puan}</Text>
-              <Text style={s.karneAlt}>kazanılan</Text>
-            </View>
-            <View style={s.karneCol}>
-              <Text style={s.karneEt}>Rozet</Text>
-              <Text style={s.karneVal}>{kazanilanRozetler.length}</Text>
-              <Text style={s.karneAlt}>/ {ROZETLER.length} rozet</Text>
-            </View>
-            <View style={s.karneCol}>
-              <Text style={s.karneEt}>En Uzun Streak</Text>
-              <Text style={s.karneVal}>{rekorlar.enUzunStreak}</Text>
-              <Text style={s.karneAlt}>gün</Text>
-            </View>
+          <View style={s.dateBlock}>
+            <Text style={s.dateLabel}>Tarih</Text>
+            <Text style={s.dateValue}>{tarih}</Text>
+            <Text style={s.karneIdLabel}>Karne No</Text>
+            <Text style={s.karneIdValue}>{karneId}</Text>
           </View>
         </View>
 
-        {/* Yetkinlik Haritası */}
-        <View style={s.sectionGap}>
-          <Text style={s.sectionH}>Yetkinlik Haritası — Ünite × Mastery</Text>
-          {yetkinlikler.map((y) => (
-            <View key={y.uniteId} style={s.yetkinlikRow}>
-              <Text style={s.yetkinlikAd}>{y.uniteAd}</Text>
-              <View style={s.yetkinlikBarBg}>
-                <View style={[s.yetkinlikBarFill, { width: `${y.yetkinlik}%` }]} />
+        {/* ─── BAND 2 — § Profil Özeti ─────────────────────────────── */}
+        <View style={s.bandGap}>
+          <View style={s.sectionHead}>
+            <Text style={s.sectionLabel}>§ Profil Özeti</Text>
+          </View>
+          <View style={s.sectionRule} />
+          <View style={s.statRow}>
+            <View style={[s.statCol, s.statColFirst]}>
+              <Text style={s.statLabel}>Toplam Çözüm</Text>
+              <Text style={s.statValue}>{stat.cozulenSayi}</Text>
+              <Text style={s.statContext}>/ {stat.toplamSoru} soru</Text>
+            </View>
+            <View style={s.statCol}>
+              <Text style={s.statLabel}>Kazanılan Puan</Text>
+              <Text style={s.statValue}>{ilerleme.puan}</Text>
+              <Text style={s.statContext}>kazanılan</Text>
+            </View>
+            <View style={s.statCol}>
+              <Text style={s.statLabel}>Rozet</Text>
+              <Text style={s.statValue}>{kazanilanRozetIds.size}</Text>
+              <Text style={s.statContext}>/ {ROZETLER.length} rozet</Text>
+            </View>
+            <View style={s.statCol}>
+              <Text style={s.statLabel}>En Uzun Streak</Text>
+              <Text style={s.statValue}>{rekorlar.enUzunStreak}</Text>
+              <Text style={s.statContext}>gün</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* ─── BAND 3 — § Yetkinlikler + § 30 Gün Aktivite ─────────── */}
+        <View style={[s.bandGap, s.twoCol]}>
+          {/* Yetkinlik (Sol) */}
+          <View style={s.colHalf}>
+            <View style={s.sectionHead}>
+              <Text style={s.sectionLabel}>§ Yetkinlikler · İşletme Türü</Text>
+            </View>
+            <View style={s.sectionRule} />
+            {yetkinlikler.map((y) => (
+              <View key={y.uniteId} style={s.yetkinlikRow}>
+                <View style={s.yetkinlikLine}>
+                  <Text style={s.yetkinlikAd}>{y.uniteAd}</Text>
+                  <Text style={s.yetkinlikYuzde}>%{y.yetkinlik}</Text>
+                </View>
+                <View style={s.yetkinlikBarBg}>
+                  <View
+                    style={[
+                      s.yetkinlikBarFill,
+                      { width: `${Math.max(0, Math.min(100, y.yetkinlik))}%` },
+                    ]}
+                  />
+                </View>
+                <Text style={s.yetkinlikSub}>
+                  {y.cozulenSoru}/{y.toplamSoru} soru
+                </Text>
               </View>
-              <Text style={s.yetkinlikDeger}>
-                {y.cozulenSoru}/{y.toplamSoru}
-              </Text>
-              <Text style={s.yetkinlikYuzde}>%{y.yetkinlik}</Text>
+            ))}
+          </View>
+
+          {/* Heatmap (Sağ) */}
+          <View style={s.colHalf}>
+            <View style={s.sectionHead}>
+              <Text style={s.sectionLabel}>§ Son 30 Gün Aktivite</Text>
             </View>
-          ))}
+            <View style={s.sectionRule} />
+            <View style={s.heatmapGrid}>
+              {aktivite.map((sayi, i) => (
+                <View
+                  key={i}
+                  style={[s.heatCell, { backgroundColor: heatmapCellRengi(sayi) }]}
+                />
+              ))}
+            </View>
+            <View style={s.heatLegend}>
+              <Text style={s.heatLegendText}>az</Text>
+              <View style={[s.heatCell, { width: 10, height: 10, backgroundColor: C.line }]} />
+              <View style={[s.heatCell, { width: 10, height: 10, backgroundColor: C.copperSoft }]} />
+              <View style={[s.heatCell, { width: 10, height: 10, backgroundColor: C.copperMid }]} />
+              <View style={[s.heatCell, { width: 10, height: 10, backgroundColor: C.copper }]} />
+              <Text style={s.heatLegendText}>yoğun</Text>
+            </View>
+          </View>
         </View>
 
-        {/* Rozetler */}
-        <View style={s.sectionGap}>
-          <Text style={s.sectionH}>
-            Kazanılan Rozetler ({kazanilanRozetler.length}/{ROZETLER.length})
-          </Text>
-          {kazanilanRozetler.length > 0 ? (
-            <View style={s.rozetGrid}>
-              {kazanilanRozetler.map((r) => (
-                <View key={r.id} style={s.rozetItem}>
-                  <Text style={s.rozetText}>{r.ad}</Text>
+        {/* ─── BAND 4 — § Modül Haritası ───────────────────────────── */}
+        <View style={s.bandGap}>
+          <View style={s.sectionHead}>
+            <Text style={s.sectionLabel}>§ Modül Haritası</Text>
+            <Text style={s.sectionLabelExtra}>{baslananModulSayisi}/{moduller.length} başlandı</Text>
+          </View>
+          <View style={s.sectionRule} />
+          {Object.entries(modulGruplari).map(([uniteAd, gMods]) => (
+            <View key={uniteAd} style={s.modulGroup}>
+              <Text style={s.modulGroupHead}>▸ {uniteAd}</Text>
+              {gMods.map((m) => (
+                <View key={m.modulId} style={s.modulRow}>
+                  <Text
+                    style={[
+                      m.toplam > 0 ? s.modulAd : s.modulAdDim,
+                      { width: '42%', paddingRight: 8 },
+                    ]}
+                  >
+                    M{m.modulSira} · {m.modulAd}
+                  </Text>
+                  <View style={[s.modulBarBg, { width: '32%' }]}>
+                    {m.toplam > 0 && (
+                      <View style={[s.modulBarFill, { width: `${m.yuzde}%` }]} />
+                    )}
+                  </View>
+                  <Text style={[s.modulSayi, { width: '26%' }]}>
+                    {m.toplam > 0 ? `${m.cozulen}/${m.toplam} · %${m.yuzde}` : 'hazırlanıyor'}
+                  </Text>
                 </View>
               ))}
             </View>
-          ) : (
-            <Text style={{ fontSize: 9, color: C.inkMute, fontStyle: 'italic' }}>
-              Henüz kazanılmış rozet yok.
-            </Text>
+          ))}
+          {moduller.length === 0 && (
+            <Text style={s.modulYok}>Modüller henüz oluşturulmadı.</Text>
           )}
         </View>
 
-        {/* Kişisel Rekorlar */}
-        <View style={s.sectionGap}>
-          <Text style={s.sectionH}>Kişisel Rekorlar</Text>
-          <View style={s.rekorRow}>
-            <View style={s.rekorBox}>
-              <Text style={s.rekorEt}>Tek günde rekor</Text>
-              <Text style={s.rekorVal}>{rekorlar.enCokGun.sayi}</Text>
-              <Text style={s.rekorAlt}>
-                {rekorlar.enCokGun.tarih
-                  ? new Date(rekorlar.enCokGun.tarih).toLocaleDateString('tr-TR', {
-                      day: 'numeric',
-                      month: 'short',
-                    })
-                  : '—'}
-              </Text>
+        {/* ─── BAND 5 — § Başarılar + § Rekorlar ───────────────────── */}
+        <View style={[s.bandGap, s.twoCol]}>
+          <View style={[s.colHalf, { flex: 1.4 }]}>
+            <View style={s.sectionHead}>
+              <Text style={s.sectionLabel}>§ Başarılar</Text>
+              <Text style={s.sectionLabelExtra}>{kazanilanRozetIds.size}/{ROZETLER.length} rozet</Text>
             </View>
-            <View style={s.rekorBox}>
-              <Text style={s.rekorEt}>Aktif gün</Text>
-              <Text style={s.rekorVal}>{rekorlar.toplamAktifGun}</Text>
-              <Text style={s.rekorAlt}>toplam</Text>
+            <View style={s.sectionRule} />
+            <View style={s.rozetGrid}>
+              {ROZETLER.map((r) => {
+                const kazanildi = kazanilanRozetIds.has(r.id);
+                return (
+                  <View key={r.id} style={kazanildi ? s.rozetChip : s.rozetChipDim}>
+                    <Text style={kazanildi ? s.rozetText : s.rozetTextDim}>{r.ad}</Text>
+                  </View>
+                );
+              })}
             </View>
-            <View style={s.rekorBox}>
-              <Text style={s.rekorEt}>İlk soru</Text>
-              <Text style={s.rekorVal}>
-                {rekorlar.ilkSoruTarihi
-                  ? new Date(rekorlar.ilkSoruTarihi).toLocaleDateString('tr-TR', {
-                      day: 'numeric',
-                      month: 'short',
-                    })
-                  : '—'}
-              </Text>
-              <Text style={s.rekorAlt}>
-                {rekorlar.ilkSoruTarihi
-                  ? new Date(rekorlar.ilkSoruTarihi).toLocaleDateString('tr-TR', {
-                      year: 'numeric',
-                    })
-                  : 'henüz yok'}
-              </Text>
+          </View>
+
+          <View style={s.colHalf}>
+            <View style={s.sectionHead}>
+              <Text style={s.sectionLabel}>§ Rekorlar</Text>
             </View>
-            <View style={s.rekorBox}>
-              <Text style={s.rekorEt}>Bitirilen ünite</Text>
-              <Text style={s.rekorVal}>{bitirilenUnite}</Text>
-              <Text style={s.rekorAlt}>/ {uniteler.length} ünite</Text>
+            <View style={s.sectionRule} />
+            <View style={s.rekorGrid}>
+              <View style={s.rekorBox}>
+                <Text style={s.rekorEt}>Tek Günde</Text>
+                <Text style={s.rekorVal}>{rekorlar.enCokGun.sayi}</Text>
+                <Text style={s.rekorAlt}>
+                  {rekorlar.enCokGun.tarih
+                    ? new Date(rekorlar.enCokGun.tarih).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'short',
+                      })
+                    : '—'}
+                </Text>
+              </View>
+              <View style={s.rekorBox}>
+                <Text style={s.rekorEt}>Aktif Gün</Text>
+                <Text style={s.rekorVal}>{rekorlar.toplamAktifGun}</Text>
+                <Text style={s.rekorAlt}>toplam</Text>
+              </View>
+              <View style={s.rekorBox}>
+                <Text style={s.rekorEt}>İlk Soru</Text>
+                <Text style={s.rekorVal}>
+                  {rekorlar.ilkSoruTarihi
+                    ? new Date(rekorlar.ilkSoruTarihi).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'short',
+                      })
+                    : '—'}
+                </Text>
+                <Text style={s.rekorAlt}>
+                  {rekorlar.ilkSoruTarihi
+                    ? new Date(rekorlar.ilkSoruTarihi).toLocaleDateString('tr-TR', {
+                        year: 'numeric',
+                      })
+                    : 'henüz yok'}
+                </Text>
+              </View>
+              <View style={s.rekorBox}>
+                <Text style={s.rekorEt}>Modül</Text>
+                <Text style={s.rekorVal}>{baslananModulSayisi}</Text>
+                <Text style={s.rekorAlt}>/ {moduller.length} başlandı</Text>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Footer */}
-        <View style={s.footer} fixed>
-          <Text>MuhasebeLab — muhasebelab.com</Text>
-          <Text>{tarih}</Text>
+        {/* ─── BAND 6 — § Doğrulama ────────────────────────────────── */}
+        <View style={s.bandGap}>
+          <View style={s.sectionHead}>
+            <Text style={s.sectionLabel}>§ Doğrulama</Text>
+            <Text style={s.sectionLabelExtra}>Karne No · {karneId}</Text>
+          </View>
+          <View style={s.sectionRule} />
+          <View style={s.footerRow}>
+            <View style={s.footerText}>
+              <Text style={s.footerMain}>
+                Bu karne {ad} tarafından {tarih} itibarıyla MuhasebeLab üzerinden üretilmiştir.
+              </Text>
+              <Text style={s.footerSub}>muhasebelab.com — bağımsız doğrulama platformu</Text>
+            </View>
+            <View style={s.qrBlock}>
+              {qrDataUrl && <Image src={qrDataUrl} style={s.qrImg} />}
+              <Text style={s.qrUrl}>muhasebelab.com/k/{karneId.slice(2, 10)}</Text>
+            </View>
+          </View>
         </View>
       </Page>
     </Document>
@@ -441,17 +714,30 @@ const KarneDoc = ({ ilerleme, stat, uniteler, profil }: KarneVerisi) => {
 };
 
 /**
- * Karneyi PDF olarak indirir. Tarayıcıda blob URL üretip download tetikler.
+ * Karneyi PDF olarak indirir. Önce QR data URL üretir, sonra blob.
  */
 export const karneyiIndir = async (veri: KarneVerisi): Promise<void> => {
-  const blob = await pdf(<KarneDoc {...veri} />).toBlob();
+  const tarihYmd = new Date().toISOString().split('T')[0];
+  const ad = veri.ilerleme.kullaniciAdi || 'ogrenci';
+  const karneId = karneIdUret(ad, tarihYmd);
+  const qrUrl = `https://muhasebelab.com/k/${karneId.slice(2, 10)}`;
+
+  // QR — ink üzerine beyaz, kenar boşluğu yok, scale 4 = 132x132 px (PDF'te 56pt'a downsample)
+  const qrDataUrl = await QRCode.toDataURL(qrUrl, {
+    margin: 0,
+    scale: 4,
+    color: { dark: '#0f172a', light: '#ffffff' },
+    errorCorrectionLevel: 'M',
+  });
+
+  const blob = await pdf(
+    <KarneDoc {...veri} qrDataUrl={qrDataUrl} karneId={karneId} />,
+  ).toBlob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  const ad = (veri.ilerleme.kullaniciAdi || 'ogrenci')
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, '-');
-  a.download = `muhasebelab-karne-${ad}-${new Date().toISOString().split('T')[0]}.pdf`;
+  const adSlug = ad.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  a.download = `muhasebelab-karne-${adSlug}-${tarihYmd}.pdf`;
   a.click();
   URL.revokeObjectURL(url);
 };

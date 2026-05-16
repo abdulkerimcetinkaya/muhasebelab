@@ -23,6 +23,62 @@ export interface UniteYetkinligi {
   dagilim: Record<Zorluk, ZorlukDagilim>;
 }
 
+/**
+ * Tek bir modülün ilerleme bilgisi — karne tablosunda satır olarak gösterilir.
+ * Modülün altındaki tüm alt başlıklara bağlı soruları topla, çözüleni say.
+ */
+export interface ModulYetkinligi {
+  modulId: string;
+  modulAd: string;
+  uniteId: string;
+  uniteAd: string;
+  modulSira: number;
+  uniteSira: number; // sıralama için (ünitenin yer aldığı işletme grubunun sırası)
+  cozulen: number;
+  toplam: number;
+  yuzde: number; // 0..100
+}
+
+/**
+ * Tüm ünitelerin modüllerini düzleştirir, her birinin ilerlemesini hesaplar.
+ * Modülün soruları AltBaslik.sorular üzerinden gelir (yeni atölye yapısı).
+ * Boş modüller (henüz soru yok) yuzde=0, toplam=0 olarak döner.
+ *
+ * Sıralama: ünite (işletme türü) → modül.sira
+ */
+export const modulYetkinlikleri = (
+  uniteler: Unite[],
+  ilerleme: Ilerleme,
+): ModulYetkinligi[] => {
+  const sonuc: ModulYetkinligi[] = [];
+  uniteler.forEach((u, uniteIdx) => {
+    if (!u.moduller) return;
+    for (const m of u.moduller) {
+      const soruIds: string[] = [];
+      m.altBasliklar.forEach((ab) => {
+        if (ab.sorular) ab.sorular.forEach((s) => soruIds.push(s.id));
+      });
+      const cozulen = soruIds.filter((id) => !!ilerleme.cozulenler[id]).length;
+      const toplam = soruIds.length;
+      const yuzde = toplam > 0 ? Math.round((cozulen / toplam) * 100) : 0;
+      sonuc.push({
+        modulId: m.id,
+        modulAd: m.baslik,
+        uniteId: u.id,
+        uniteAd: u.ad,
+        modulSira: m.sira,
+        uniteSira: uniteIdx,
+        cozulen,
+        toplam,
+        yuzde,
+      });
+    }
+  });
+  return sonuc.sort((a, b) =>
+    a.uniteSira !== b.uniteSira ? a.uniteSira - b.uniteSira : a.modulSira - b.modulSira,
+  );
+};
+
 export const uniteYetkinlikleri = (
   uniteler: Unite[],
   ilerleme: Ilerleme,
