@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Thiings } from '../components/Thiings';
@@ -13,6 +13,9 @@ interface Props {
 
 type DurumFiltre = 'hepsi' | 'cozulen' | 'cozulmeyen';
 type SiralamaFld = 'sira' | 'zorluk' | 'unite' | 'durum';
+
+/** Bir sayfada gösterilecek soru sayısı */
+const SAYFA_BOYUT = 10;
 
 /* Sıralama oku — parent dışında tanımlı (her render'da yeniden oluşmasın) */
 const SirOk = ({
@@ -39,6 +42,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
   const [durumFiltre, setDurumFiltre] = useState<DurumFiltre>('hepsi');
   const [siralamaFld, setSiralamaFld] = useState<SiralamaFld>('sira');
   const [siralamaYon, setSiralamaYon] = useState<'asc' | 'desc'>('asc');
+  const [sayfa, setSayfa] = useState(1);
 
   const filtreli = useMemo(() => {
     let sonuc = [...tumSorular];
@@ -65,6 +69,18 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
     });
     return sonuc;
   }, [tumSorular, arama, zorlukFiltre, uniteFiltre, durumFiltre, siralamaFld, siralamaYon, ilerleme.cozulenler]);
+
+  // Filtre veya sıralama değişince ilk sayfaya dön — kullanıcı yanlış sayfada
+  // boş veri görmesin (örn. 20. sayfadayken filtre 3 soruya düşerse).
+  useEffect(() => {
+    setSayfa(1);
+  }, [arama, zorlukFiltre, uniteFiltre, durumFiltre, siralamaFld, siralamaYon]);
+
+  const toplamSayfa = Math.max(1, Math.ceil(filtreli.length / SAYFA_BOYUT));
+  const guvenliSayfa = Math.min(sayfa, toplamSayfa);
+  const ilk = (guvenliSayfa - 1) * SAYFA_BOYUT;
+  const son = Math.min(ilk + SAYFA_BOYUT, filtreli.length);
+  const sayfadakiler = filtreli.slice(ilk, son);
 
   const sirala = (fld: SiralamaFld) => {
     if (siralamaFld === fld) setSiralamaYon(siralamaYon === 'asc' ? 'desc' : 'asc');
@@ -162,7 +178,7 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
           </button>
           <div className="col-span-1 text-right">Puan</div>
         </div>
-        {filtreli.map((s) => {
+        {sayfadakiler.map((s) => {
           const cozulmus = !!ilerleme.cozulenler[s.id];
           const yanlisSayi = ilerleme.yanlislar[s.id] || 0;
           const durumIkon = cozulmus ? (
@@ -259,9 +275,84 @@ export const ProblemlerSayfasi = ({ ilerleme }: Props) => {
         )}
       </div>
 
-      <div className="mt-4 text-xs text-ink-mute font-semibold">
-        {filtreli.length} / {tumSorular.length} soru gösteriliyor
-      </div>
+      {/* Sayfalama */}
+      {filtreli.length > 0 && (
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="text-xs text-ink-mute font-semibold">
+            {ilk + 1}–{son} / {filtreli.length} soru
+            {filtreli.length !== tumSorular.length && (
+              <span className="text-ink-quiet"> (toplam {tumSorular.length})</span>
+            )}
+          </div>
+          {toplamSayfa > 1 && (
+            <nav className="flex items-center gap-1" aria-label="Sayfalama">
+              <button
+                type="button"
+                onClick={() => setSayfa((p) => Math.max(1, p - 1))}
+                disabled={guvenliSayfa <= 1}
+                className="px-2.5 py-1.5 rounded border border-line text-[12px] font-semibold text-ink-soft hover:bg-bg-tint disabled:opacity-40 disabled:cursor-not-allowed transition"
+                aria-label="Önceki sayfa"
+              >
+                <Icon name="ChevronLeft" size={14} />
+              </button>
+              {sayfaNumaralari(guvenliSayfa, toplamSayfa).map((n, i) =>
+                n === '…' ? (
+                  <span
+                    key={`gap-${i}`}
+                    className="px-1 text-[12px] text-ink-quiet select-none"
+                  >
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setSayfa(n)}
+                    className={`min-w-[32px] px-2 py-1.5 rounded text-[12px] font-mono font-bold transition ${
+                      n === guvenliSayfa
+                        ? 'bg-ink text-paper'
+                        : 'border border-line text-ink-soft hover:bg-bg-tint'
+                    }`}
+                    aria-label={`Sayfa ${n}`}
+                    aria-current={n === guvenliSayfa ? 'page' : undefined}
+                  >
+                    {n}
+                  </button>
+                ),
+              )}
+              <button
+                type="button"
+                onClick={() => setSayfa((p) => Math.min(toplamSayfa, p + 1))}
+                disabled={guvenliSayfa >= toplamSayfa}
+                className="px-2.5 py-1.5 rounded border border-line text-[12px] font-semibold text-ink-soft hover:bg-bg-tint disabled:opacity-40 disabled:cursor-not-allowed transition"
+                aria-label="Sonraki sayfa"
+              >
+                <Icon name="ChevronRight" size={14} />
+              </button>
+            </nav>
+          )}
+        </div>
+      )}
     </main>
   );
 };
+
+/**
+ * Sayfa numarası şeridi üretir: [1, '…', 4, 5, 6, '…', 22] gibi.
+ * Aktif sayfanın etrafında 1 sayfa, baş/son sabit, gerekirse … koy.
+ */
+function sayfaNumaralari(aktif: number, toplam: number): (number | '…')[] {
+  if (toplam <= 7) return Array.from({ length: toplam }, (_, i) => i + 1);
+
+  const set = new Set<number>([1, toplam, aktif, aktif - 1, aktif + 1]);
+  const sirali = Array.from(set)
+    .filter((n) => n >= 1 && n <= toplam)
+    .sort((a, b) => a - b);
+
+  const sonuc: (number | '…')[] = [];
+  for (let i = 0; i < sirali.length; i++) {
+    if (i > 0 && sirali[i] - sirali[i - 1] > 1) sonuc.push('…');
+    sonuc.push(sirali[i]);
+  }
+  return sonuc;
+}
