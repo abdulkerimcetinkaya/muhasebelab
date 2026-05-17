@@ -128,6 +128,35 @@ const ScrollToTop = () => {
   return null;
 };
 
+/**
+ * Supabase auth flow hata yönlendirmesi yakalayıcısı.
+ *
+ * Şifre sıfırlama linki süresi doldu / geçersiz olduğunda Supabase kullanıcıyı
+ * `https://muhasebeakademi.com/#/error=access_denied&error_code=otp_expired&...`
+ * gibi bir URL'e geri yönlendirir. HashRouter bunu route olarak match edemez
+ * ve kullanıcı boş bir sayfa görür — çözümü olmayan kötü UX.
+ *
+ * Bu component pathname'in `/error=` ile başladığını fark eder, hata kodunu
+ * parse eder, kullanıcı dostu mesajla `/sifre-sifirla` sayfasına yönlendirir.
+ */
+const AuthErrorRedirect = () => {
+  const nav = useNavigate();
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (!pathname.startsWith('/error=')) return;
+    const params = new URLSearchParams(pathname.slice(1));
+    const errorCode = params.get('error_code');
+    let mesaj = 'Şifre sıfırlama linki geçersiz. Yeni bir link talep edebilirsin.';
+    if (errorCode === 'otp_expired') {
+      mesaj = 'Şifre sıfırlama linkinin süresi dolmuş. Yeni bir sıfırlama linki talep et.';
+    } else if (errorCode === 'access_denied') {
+      mesaj = 'Erişim reddedildi. Şifre sıfırlama linki geçersiz veya daha önce kullanılmış. Yeni bir link iste.';
+    }
+    nav('/sifre-sifirla', { replace: true, state: { supabaseError: mesaj } });
+  }, [pathname, nav]);
+  return null;
+};
+
 const App = () => {
   const { user, yukleniyor: oturumYukleniyor } = useAuth();
   const {
@@ -373,6 +402,7 @@ const App = () => {
   return (
     <HashRouter>
       <ScrollToTop />
+      <AuthErrorRedirect />
       <SiteLoader />
       <div className="min-h-screen bg-bg-tint text-ink transition-colors">
         <Navbar
@@ -697,6 +727,8 @@ const App = () => {
                 </ProtectedAdminRoute>
               }
             />
+            {/* Hiçbir route eşleşmezse anasayfaya yönlendir — boş sayfa olmasın */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
 
