@@ -3,6 +3,8 @@ export type Sinif = '' | '1' | '2' | '3' | '4' | 'mezun' | 'diger';
 export type Hedef = '' | 'vize-final' | 'kpss' | 'genel' | 'belirsiz';
 
 export interface ProfilBilgi {
+  ad: string;
+  soyad: string;
   universite: string;
   bolum: string;
   sinif: Sinif;
@@ -12,6 +14,8 @@ export interface ProfilBilgi {
 }
 
 export const PROFIL_BOS: ProfilBilgi = {
+  ad: '',
+  soyad: '',
   universite: '',
   bolum: '',
   sinif: '',

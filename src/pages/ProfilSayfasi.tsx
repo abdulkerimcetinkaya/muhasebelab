@@ -59,7 +59,7 @@ export const ProfilSayfasi = ({
     setProfilYukleniyor(true);
     supabase
       .from('kullanicilar')
-      .select('universite, bolum, sinif, hedef, dogum_yili, bulten_izni')
+      .select('ad, soyad, universite, bolum, sinif, hedef, dogum_yili, bulten_izni')
       .eq('id', user.id)
       .maybeSingle()
       .then(({ data }) => {
@@ -67,6 +67,8 @@ export const ProfilSayfasi = ({
         setProfilYukleniyor(false);
         if (data) {
           setProfil({
+            ad: (data as { ad: string | null }).ad ?? '',
+            soyad: (data as { soyad: string | null }).soyad ?? '',
             universite: (data as { universite: string | null }).universite ?? '',
             bolum: (data as { bolum: string | null }).bolum ?? '',
             sinif: ((data as { sinif: Sinif | null }).sinif ?? '') as Sinif,
@@ -84,10 +86,11 @@ export const ProfilSayfasi = ({
   // Profil tamamlanma yüzdesi — onboarding kaldırıldığı için kullanıcı
   // eksik alanları profil üzerinden tamamlasın diye nazikçe yönlendiriyoruz.
   // Zorunlu alan yok; sadece "tamamlandığında daha kişisel" değer önerisi.
+  // Tüm 6 alan profil state'inde (Supabase'den fetch edilir + HesapView'de düzenlenir).
   const profilTamamlanmaSkor = useMemo(() => {
     const alanlar = [
-      !!ilerleme.ad,
-      !!ilerleme.soyad,
+      !!profil.ad,
+      !!profil.soyad,
       !!profil.universite,
       !!profil.bolum,
       !!profil.sinif,
@@ -95,7 +98,7 @@ export const ProfilSayfasi = ({
     ];
     const dolan = alanlar.filter(Boolean).length;
     return { dolan, toplam: alanlar.length, yuzde: Math.round((dolan / alanlar.length) * 100) };
-  }, [ilerleme.ad, ilerleme.soyad, profil.universite, profil.bolum, profil.sinif, profil.hedef]);
+  }, [profil.ad, profil.soyad, profil.universite, profil.bolum, profil.sinif, profil.hedef]);
   const profilEksik = profilTamamlanmaSkor.yuzde < 100;
 
   const kazanilanRozetSayi = Object.keys(ilerleme.kazanilanRozetler).length;
