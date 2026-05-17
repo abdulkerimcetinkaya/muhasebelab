@@ -86,6 +86,9 @@ export const cikisYap = async (): Promise<AuthSonuc> => {
   // kullanıcı giriş yaptığında eski streak/puan/rozet UI'da görünmesin
   // ve migration yoluyla yeni hesaba sızmasın.
   ilerlemeTemizle();
+  // Recovery modunda iken logout edildiyse flag temizle, aksi halde
+  // sonraki normal girişlerde takılı kalıp /sifre-yenile'ye yönlendirir.
+  sessionStorage.removeItem('sifre_yenileme_modu');
   const { error } = await supabase.auth.signOut();
   if (error) return { basarili: false, hata: cevirHata(error.message) };
   return { basarili: true };
