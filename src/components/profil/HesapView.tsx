@@ -8,8 +8,21 @@ import { useUniteler } from '../../contexts/UnitelerContext';
 import { cikisYap, girisYap, sifreyiYenile } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import type { Ilerleme, Istatistik } from '../../types';
-import { HEDEF_LABEL, SINIF_LABEL } from './types';
-import type { Hedef, ProfilBilgi, Sinif } from './types';
+import {
+  HAFTALIK_HEDEF_LABEL,
+  HEDEF_LABEL,
+  MESLEK_LABEL,
+  NEREDEN_DUYDU_LABEL,
+  SINIF_LABEL,
+} from './types';
+import type {
+  HaftalikHedef,
+  Hedef,
+  Meslek,
+  NeredenDuydu,
+  ProfilBilgi,
+  Sinif,
+} from './types';
 
 interface Props {
   user: User | null;
@@ -98,26 +111,52 @@ export const HesapView = ({
     setKaydediliyor(true);
     setMesaj(null);
 
+    // Sayı doğrulamaları
     const dogumYiliNum = profil.dogumYili.trim() ? parseInt(profil.dogumYili.trim(), 10) : null;
     if (dogumYiliNum !== null && (isNaN(dogumYiliNum) || dogumYiliNum < 1950 || dogumYiliNum > 2015)) {
       setKaydediliyor(false);
       setMesaj({ tip: 'hata', metin: 'Doğum yılı 1950-2015 arasında olmalı.' });
       return;
     }
+    const mezuniyetYiliNum = profil.mezuniyetYili.trim()
+      ? parseInt(profil.mezuniyetYili.trim(), 10)
+      : null;
+    if (mezuniyetYiliNum !== null && (isNaN(mezuniyetYiliNum) || mezuniyetYiliNum < 1970 || mezuniyetYiliNum > 2030)) {
+      setKaydediliyor(false);
+      setMesaj({ tip: 'hata', metin: 'Mezuniyet yılı 1970-2030 arasında olmalı.' });
+      return;
+    }
+    const tecrubeYilNum = profil.tecrubeYil.trim() ? parseInt(profil.tecrubeYil.trim(), 10) : null;
+    if (tecrubeYilNum !== null && (isNaN(tecrubeYilNum) || tecrubeYilNum < 0 || tecrubeYilNum > 60)) {
+      setKaydediliyor(false);
+      setMesaj({ tip: 'hata', metin: 'Tecrübe yılı 0-60 arasında olmalı.' });
+      return;
+    }
 
-    const { error } = await supabase
-      .from('kullanicilar')
-      .update({
-        ad: profil.ad.trim() || null,
-        soyad: profil.soyad.trim() || null,
-        universite: profil.universite.trim() || null,
-        bolum: profil.bolum.trim() || null,
-        sinif: profil.sinif === '' ? null : profil.sinif,
-        hedef: profil.hedef === '' ? null : profil.hedef,
-        dogum_yili: dogumYiliNum,
-        bulten_izni: profil.bultenIzni,
-      })
-      .eq('id', user.id);
+    // Supabase auto-generated types henüz migration_20260517000001 sonrası
+    // regenerate edilmedi; yeni kolonlar (meslek, mezuniyet_yili, sektor,
+    // tecrube_yil, haftalik_hedef, nereden_duydu) ve genişletilmiş hedef
+    // enum'u TS tarafında bilinmiyor. Migration uygulanıp types regenerate
+    // edilince bu cast kaldırılabilir.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload: any = {
+      ad: profil.ad.trim() || null,
+      soyad: profil.soyad.trim() || null,
+      meslek: profil.meslek === '' ? null : profil.meslek,
+      universite: profil.universite.trim() || null,
+      bolum: profil.bolum.trim() || null,
+      sinif: profil.sinif === '' ? null : profil.sinif,
+      mezuniyet_yili: mezuniyetYiliNum,
+      sektor: profil.sektor.trim() || null,
+      tecrube_yil: tecrubeYilNum,
+      hedef: profil.hedef === '' ? null : profil.hedef,
+      haftalik_hedef: profil.haftalikHedef === '' ? null : profil.haftalikHedef,
+      nereden_duydu: profil.neredenDuydu === '' ? null : profil.neredenDuydu,
+      dogum_yili: dogumYiliNum,
+      bulten_izni: profil.bultenIzni,
+    };
+
+    const { error } = await supabase.from('kullanicilar').update(payload).eq('id', user.id);
     setKaydediliyor(false);
 
     if (error) {
@@ -411,102 +450,164 @@ export const HesapView = ({
         </div>
       </section>
 
-      {/* ──── 2. EĞİTİM BİLGİLERİ ──── */}
+      {/* ──── 2. PROFİLİN — meslek + conditional eğitim/iş alanları ──── */}
       {user && (
         <section>
-          <div className="flex items-baseline justify-between mb-4">
-            <h2 className={sectionTitleClass + ' mb-0'}>Eğitim Bilgileri</h2>
+          <div className="flex items-baseline justify-between mb-1">
+            <h2 className={sectionTitleClass + ' mb-0'}>Profilin</h2>
             {profilYukleniyor && (
               <Icon name="Loader2" size={14} className="animate-spin text-ink-quiet" />
             )}
           </div>
+          <p className="text-[12.5px] text-ink-mute mb-4 leading-snug">
+            Seni daha iyi tanıyalım — buradaki bilgiler içerik önerilerini ve liderlik tablolarını şekillendirir.
+          </p>
 
           <div className={sectionCardClass + ' space-y-5'}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className={labelClass}>Üniversite</label>
-                <input
-                  type="text"
-                  value={profil.universite}
-                  onChange={(e) => onProfilDegis({ ...profil, universite: e.target.value })}
-                  maxLength={80}
-                  placeholder="Örn: Boğaziçi, ODTÜ..."
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>Bölüm</label>
-                <input
-                  type="text"
-                  value={profil.bolum}
-                  onChange={(e) => onProfilDegis({ ...profil, bolum: e.target.value })}
-                  maxLength={80}
-                  placeholder="Örn: İşletme, İktisat..."
-                  className={inputClass}
-                />
-              </div>
-            </div>
-
+            {/* Meslek dropdown — kapsayıcı identity */}
             <div>
-              <label className={labelClass}>Sınıf</label>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                {(Object.keys(SINIF_LABEL) as Exclude<Sinif, ''>[]).map((kod) => (
-                  <button
-                    key={kod}
-                    type="button"
-                    onClick={() =>
-                      onProfilDegis({ ...profil, sinif: profil.sinif === kod ? '' : kod })
-                    }
-                    className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
-                      profil.sinif === kod
-                        ? 'border-ink bg-bg-tint text-ink'
-                        : 'border-line hover:border-ink text-ink-soft'
-                    }`}
-                  >
-                    {SINIF_LABEL[kod]}
-                  </button>
+              <label className={labelClass} htmlFor="meslek-select">
+                Şu an ne yapıyorsun?
+              </label>
+              <select
+                id="meslek-select"
+                value={profil.meslek}
+                onChange={(e) =>
+                  onProfilDegis({ ...profil, meslek: e.target.value as Meslek })
+                }
+                className={inputClass + ' appearance-none bg-no-repeat pr-9'}
+                style={{
+                  backgroundImage:
+                    'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
+                  backgroundPosition: 'right 12px center',
+                  backgroundSize: '12px',
+                }}
+              >
+                <option value="">Seçmek istemiyorum</option>
+                {(Object.keys(MESLEK_LABEL) as Exclude<Meslek, ''>[]).map((kod) => (
+                  <option key={kod} value={kod}>
+                    {MESLEK_LABEL[kod]}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
-            <div>
-              <label className={labelClass}>Hedef</label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {(Object.keys(HEDEF_LABEL) as Exclude<Hedef, ''>[]).map((kod) => (
-                  <button
-                    key={kod}
-                    type="button"
-                    onClick={() =>
-                      onProfilDegis({ ...profil, hedef: profil.hedef === kod ? '' : kod })
+            {/* Conditional: Öğrenci veya Mezun → Üniversite + Bölüm görünür */}
+            {(profil.meslek === 'ogrenci' ||
+              profil.meslek === 'mezun' ||
+              profil.meslek === 'akademisyen') && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className={labelClass}>Üniversite</label>
+                  <input
+                    type="text"
+                    value={profil.universite}
+                    onChange={(e) =>
+                      onProfilDegis({ ...profil, universite: e.target.value })
                     }
-                    className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
-                      profil.hedef === kod
-                        ? 'border-ink bg-bg-tint text-ink'
-                        : 'border-line hover:border-ink text-ink-soft'
-                    }`}
-                  >
-                    {HEDEF_LABEL[kod]}
-                  </button>
-                ))}
+                    maxLength={80}
+                    placeholder="Örn: Boğaziçi, ODTÜ..."
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>Bölüm</label>
+                  <input
+                    type="text"
+                    value={profil.bolum}
+                    onChange={(e) => onProfilDegis({ ...profil, bolum: e.target.value })}
+                    maxLength={80}
+                    placeholder="Örn: İşletme, İktisat..."
+                    className={inputClass}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Conditional: Öğrenci → Sınıf grid */}
+            {profil.meslek === 'ogrenci' && (
               <div>
-                <label className={labelClass}>
-                  Doğum Yılı <span className="text-ink-quiet normal-case tracking-normal">(opsiyonel)</span>
-                </label>
-                <input
-                  type="number"
-                  value={profil.dogumYili}
-                  onChange={(e) => onProfilDegis({ ...profil, dogumYili: e.target.value })}
-                  min={1950}
-                  max={2015}
-                  placeholder="1998"
-                  className={inputClass + ' font-mono'}
-                />
+                <label className={labelClass}>Sınıfın</label>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  {(Object.keys(SINIF_LABEL) as Exclude<Sinif, ''>[]).map((kod) => (
+                    <button
+                      key={kod}
+                      type="button"
+                      onClick={() =>
+                        onProfilDegis({
+                          ...profil,
+                          sinif: profil.sinif === kod ? '' : kod,
+                        })
+                      }
+                      className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
+                        profil.sinif === kod
+                          ? 'border-ink bg-bg-tint text-ink'
+                          : 'border-line hover:border-ink text-ink-soft'
+                      }`}
+                    >
+                      {SINIF_LABEL[kod]}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Conditional: Mezun → Mezuniyet Yılı */}
+            {profil.meslek === 'mezun' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className={labelClass}>Mezuniyet Yılı</label>
+                  <input
+                    type="number"
+                    value={profil.mezuniyetYili}
+                    onChange={(e) =>
+                      onProfilDegis({ ...profil, mezuniyetYili: e.target.value })
+                    }
+                    min={1970}
+                    max={2030}
+                    placeholder="2023"
+                    className={inputClass + ' font-mono'}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Conditional: SMMM Stajyeri / SMMM / İş arayan → Sektör + Tecrübe */}
+            {(profil.meslek === 'smmm_stajyer' ||
+              profil.meslek === 'smmm' ||
+              profil.meslek === 'is_ariyor') && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className={labelClass}>
+                    Çalıştığın sektör{' '}
+                    <span className="text-ink-quiet normal-case tracking-normal">(opsiyonel)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={profil.sektor}
+                    onChange={(e) => onProfilDegis({ ...profil, sektor: e.target.value })}
+                    maxLength={80}
+                    placeholder="Örn: Mali müşavirlik bürosu, üretim, kamu..."
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className={labelClass}>
+                    Tecrübe (yıl){' '}
+                    <span className="text-ink-quiet normal-case tracking-normal">(opsiyonel)</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={profil.tecrubeYil}
+                    onChange={(e) => onProfilDegis({ ...profil, tecrubeYil: e.target.value })}
+                    min={0}
+                    max={60}
+                    placeholder="3"
+                    className={inputClass + ' font-mono'}
+                  />
+                </div>
+              </div>
+            )}
 
             {mesaj && (
               <div
@@ -543,6 +644,128 @@ export const HesapView = ({
                   </>
                 )}
               </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ──── 2B. HEDEFİN — platform kullanım amacı + haftalık hedef ──── */}
+      {user && (
+        <section>
+          <h2 className={sectionTitleClass + ' mb-1'}>Hedefin</h2>
+          <p className="text-[12.5px] text-ink-mute mb-4 leading-snug">
+            Platformu ne için kullandığını söyle — sana hangi modülleri önereceğimizi belirler.
+          </p>
+
+          <div className={sectionCardClass + ' space-y-5'}>
+            <div>
+              <label className={labelClass} htmlFor="hedef-select">
+                Buradaki ana amacın
+              </label>
+              <select
+                id="hedef-select"
+                value={profil.hedef}
+                onChange={(e) => onProfilDegis({ ...profil, hedef: e.target.value as Hedef })}
+                className={inputClass + ' appearance-none bg-no-repeat pr-9'}
+                style={{
+                  backgroundImage:
+                    'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
+                  backgroundPosition: 'right 12px center',
+                  backgroundSize: '12px',
+                }}
+              >
+                <option value="">Seçmek istemiyorum</option>
+                {(Object.keys(HEDEF_LABEL) as Exclude<Hedef, ''>[]).map((kod) => (
+                  <option key={kod} value={kod}>
+                    {HEDEF_LABEL[kod]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className={labelClass}>Haftada ne kadar pratik yapmak istiyorsun?</label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {(Object.keys(HAFTALIK_HEDEF_LABEL) as Exclude<HaftalikHedef, ''>[]).map((kod) => (
+                  <button
+                    key={kod}
+                    type="button"
+                    onClick={() =>
+                      onProfilDegis({
+                        ...profil,
+                        haftalikHedef: profil.haftalikHedef === kod ? '' : kod,
+                      })
+                    }
+                    className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
+                      profil.haftalikHedef === kod
+                        ? 'border-ink bg-bg-tint text-ink'
+                        : 'border-line hover:border-ink text-ink-soft'
+                    }`}
+                  >
+                    {HAFTALIK_HEDEF_LABEL[kod]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ──── 2C. TANIŞALIM — discovery + dogum yili (opsiyonel) ──── */}
+      {user && (
+        <section>
+          <h2 className={sectionTitleClass + ' mb-1'}>Tanışalım</h2>
+          <p className="text-[12.5px] text-ink-mute mb-4 leading-snug">
+            Opsiyonel — atlamak istersen boş bırakabilirsin.
+          </p>
+
+          <div className={sectionCardClass + ' space-y-5'}>
+            <div>
+              <label className={labelClass} htmlFor="nereden-duydu-select">
+                Bizi nereden duydun?
+              </label>
+              <select
+                id="nereden-duydu-select"
+                value={profil.neredenDuydu}
+                onChange={(e) =>
+                  onProfilDegis({
+                    ...profil,
+                    neredenDuydu: e.target.value as NeredenDuydu,
+                  })
+                }
+                className={inputClass + ' appearance-none bg-no-repeat pr-9'}
+                style={{
+                  backgroundImage:
+                    'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
+                  backgroundPosition: 'right 12px center',
+                  backgroundSize: '12px',
+                }}
+              >
+                <option value="">Söylemek istemiyorum</option>
+                {(Object.keys(NEREDEN_DUYDU_LABEL) as Exclude<NeredenDuydu, ''>[]).map((kod) => (
+                  <option key={kod} value={kod}>
+                    {NEREDEN_DUYDU_LABEL[kod]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className={labelClass}>
+                  Doğum Yılı{' '}
+                  <span className="text-ink-quiet normal-case tracking-normal">(opsiyonel)</span>
+                </label>
+                <input
+                  type="number"
+                  value={profil.dogumYili}
+                  onChange={(e) => onProfilDegis({ ...profil, dogumYili: e.target.value })}
+                  min={1950}
+                  max={2015}
+                  placeholder="1998"
+                  className={inputClass + ' font-mono'}
+                />
+              </div>
             </div>
           </div>
         </section>
