@@ -108,6 +108,15 @@ const OnboardingGuard = ({
   useEffect(() => {
     if (oturumYukleniyor) return;
     if (!girisYapildi) return;
+    // Recovery (şifre yenileme) modunda kullanıcı zaten giriş yapmış sayılır
+    // ama onboarding'e değil şifre yenileme formuna gitmesi gerekir. Bu kontrol
+    // OnboardingGuard'ı geçersiz kılmaz, sadece recovery'yi öne alır.
+    if (sessionStorage.getItem('sifre_yenileme_modu') === '1') {
+      if (pathname !== '/sifre-yenile') {
+        nav('/sifre-yenile', { replace: true });
+      }
+      return;
+    }
     if (onboardingTamam) return;
     if (pathname === '/onboarding' || pathname === '/giris') return;
     nav('/onboarding', { replace: true });
@@ -442,7 +451,10 @@ const App = () => {
             <Route
               path="/"
               element={
-                user ? (
+                // Recovery modunda hiçbir yere gitme — direkt şifre yenilemeye
+                sessionStorage.getItem('sifre_yenileme_modu') === '1' ? (
+                  <Navigate to="/sifre-yenile" replace />
+                ) : user ? (
                   <Navigate to="/dashboard" replace />
                 ) : (
                   <AnaSayfa ilerleme={ilerleme} stat={stat} />
