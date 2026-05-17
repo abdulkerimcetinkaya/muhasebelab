@@ -206,7 +206,8 @@ export const profilKaydetSupabase = async (
     onboarding_tamam_at: string;
   }>,
 ): Promise<void> => {
-  await supabase.from('kullanicilar').update(guncel).eq('id', userId);
+  const { error } = await supabase.from('kullanicilar').update(guncel).eq('id', userId);
+  if (error) throw error;
 };
 
 // İlk login: localStorage verisini Supabase'e basıp tek seferlik migration yap.

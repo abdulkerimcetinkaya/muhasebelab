@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { Icon } from '../Icon';
@@ -8,8 +8,81 @@ import { useUniteler } from '../../contexts/UnitelerContext';
 import { cikisYap, girisYap, sifreyiYenile } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import type { Ilerleme, Istatistik } from '../../types';
-import { AY_LABEL, MESLEK_LABEL, SINIF_LABEL } from './types';
-import type { Durum, Meslek, ProfilBilgi, Sinif } from './types';
+import {
+  EGITIM_DURUMU_LABEL,
+  LISE_SINIFLARI,
+  MESLEK_LABEL,
+  SINIF_LABEL,
+  UNI_SINIFLARI,
+} from './types';
+import type {
+  EgitimDurumu,
+  Meslek,
+  ProfilBilgi,
+  Sinif,
+} from './types';
+
+// Hakkında bölümü için satır şablonu — label-sol/control-sağ, mobilde stacklenir.
+// first/last padding sıfırlanır → card içinde ilk satır ve son satır rahat oturur.
+const ProfilSatir = ({
+  etiket,
+  children,
+}: {
+  etiket: string;
+  children: ReactNode;
+}) => (
+  <div className="py-4 first:pt-0 last:pb-0 sm:grid sm:grid-cols-[120px_1fr] sm:gap-5 sm:items-center">
+    <label className="block text-[12.5px] font-medium text-ink-soft mb-1.5 sm:mb-0">
+      {etiket}
+    </label>
+    <div>{children}</div>
+  </div>
+);
+
+// Seçilebilir pill butonu — persona, sınıf, staj_yer vb tüm pill row'larında kullanılır.
+const SecimPill = ({
+  aktif,
+  onClick,
+  children,
+  boyut = 'normal',
+}: {
+  aktif: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  boyut?: 'normal' | 'kompakt';
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`${
+      boyut === 'kompakt' ? 'px-3 py-1.5 text-[12px]' : 'px-3.5 py-1.5 text-[12.5px]'
+    } font-semibold rounded-full border transition active:scale-[0.97] ${
+      aktif
+        ? 'border-ink bg-ink text-bg'
+        : 'border-line hover:border-line-strong text-ink-soft'
+    }`}
+  >
+    {children}
+  </button>
+);
+
+// 3 parça → tek ISO date string ve geri dönüşüm — date input ile çalışmak için.
+const dogumIso = (p: ProfilBilgi): string => {
+  if (!p.dogumYil || !p.dogumAy || !p.dogumGun) return '';
+  return `${p.dogumYil}-${p.dogumAy.padStart(2, '0')}-${p.dogumGun.padStart(2, '0')}`;
+};
+
+const isoToParcala = (
+  iso: string,
+): Pick<ProfilBilgi, 'dogumGun' | 'dogumAy' | 'dogumYil'> => {
+  if (!iso) return { dogumGun: '', dogumAy: '', dogumYil: '' };
+  const [yil, ay, gun] = iso.split('-');
+  return {
+    dogumYil: yil ?? '',
+    dogumAy: String(parseInt(ay ?? '0', 10)),
+    dogumGun: String(parseInt(gun ?? '0', 10)),
+  };
+};
 
 interface Props {
   user: User | null;
@@ -18,7 +91,7 @@ interface Props {
   profil: ProfilBilgi;
   onProfilDegis: (yeni: ProfilBilgi) => void;
   profilYukleniyor: boolean;
-  onKullaniciAdiGuncelle: (ad: string) => void;
+  onKullaniciAdiGuncelle: (ad: string) => Promise<void>;
   onTemaDegistir: () => void;
   onSifirla: () => void;
 }
@@ -26,7 +99,7 @@ interface Props {
 /**
  * Hesap ayarları görünümü — sadeleştirilmiş yapı (migration 20260518000001):
  *
- * 1. Hesap     — avatar + görünen ad + ad/soyad + e-posta + üyelik
+ * 1. Hesap     — avatar + takma ad (unique) + ad/soyad + e-posta + üyelik
  * 2. Hakkında  — durum (öğrenci/çalışan) + doğum tarihi + conditional alanlar
  *                (öğrenci: okul/bölüm/sınıf · çalışan: deneyim)
  * 3. Güvenlik  — şifre değiştir + 2FA placeholder
@@ -53,25 +126,58 @@ export const HesapView = ({
   const isPremium = useIsPremium();
 
   // ─────────────────────────────────────────────────────────────
-  // Hesap — Görünen Ad (App state seviyesi, ayrı kaydetme akışı)
+  // Hesap — Takma ad (App state seviyesi, ayrı kaydetme akışı, unique)
   // ─────────────────────────────────────────────────────────────
   const [adTaslak, setAdTaslak] = useState(ilerleme.kullaniciAdi);
   const [adKaydediliyor, setAdKaydediliyor] = useState(false);
-  const [adMesaj, setAdMesaj] = useState<string | null>(null);
+  const [adMesaj, setAdMesaj] = useState<
+    { tip: 'basarili' | 'hata'; metin: string } | null
+  >(null);
   useEffect(() => {
     setAdTaslak(ilerleme.kullaniciAdi);
   }, [ilerleme.kullaniciAdi]);
   const adDegisti = adTaslak.trim() !== ilerleme.kullaniciAdi.trim();
 
-  const adKaydet = () => {
+  // Hesap kartı Kaydet butonu: takma_ad + ad + soyad birlikte. (Önceden sadece
+  // takma_ad kaydediyordu; ad/soyad inputları görünüyor ama save akışı
+  // Hakkında butonuna bağlıydı — kullanıcı "kaydolmuyor" diyordu.)
+  const adKaydet = async () => {
     const yeni = adTaslak.trim() || 'Öğrenci';
     setAdKaydediliyor(true);
-    onKullaniciAdiGuncelle(yeni);
-    setTimeout(() => {
-      setAdKaydediliyor(false);
-      setAdMesaj('Görünen adın güncellendi.');
+    setAdMesaj(null);
+    try {
+      // 1. Takma ad: state + DB (App.tsx üzerinden, unique check throw eder)
+      if (adDegisti) {
+        await onKullaniciAdiGuncelle(yeni);
+      }
+      // 2. Ad + Soyad: doğrudan DB (sadece giriş yapan kullanıcı için)
+      if (user) {
+        const { error } = await supabase
+          .from('kullanicilar')
+          .update({
+            ad: profil.ad.trim() || null,
+            soyad: profil.soyad.trim() || null,
+          })
+          .eq('id', user.id);
+        if (error) throw error;
+      }
+      setAdMesaj({ tip: 'basarili', metin: 'Hesap bilgilerin güncellendi.' });
       setTimeout(() => setAdMesaj(null), 2500);
-    }, 200);
+    } catch (e) {
+      const err = e as { code?: string; message?: string };
+      const cakisma =
+        err.code === '23505' ||
+        (err.message ?? '').toLowerCase().includes('duplicate') ||
+        (err.message ?? '').toLowerCase().includes('unique');
+      setAdMesaj({
+        tip: 'hata',
+        metin: cakisma
+          ? 'Bu takma ad zaten kullanılıyor. Başka bir tane dene.'
+          : 'Kaydedilemedi: ' + (err.message ?? 'bilinmeyen hata'),
+      });
+    } finally {
+      setAdKaydediliyor(false);
+    }
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -127,27 +233,20 @@ export const HesapView = ({
       dogumTarihi = `${yil}-${String(ay).padStart(2, '0')}-${String(gun).padStart(2, '0')}`;
     }
 
-    // Tecrübe yıl (çalışan için)
-    const tecrubeYilNum = profil.tecrubeYil.trim() ? parseInt(profil.tecrubeYil.trim(), 10) : null;
-    if (tecrubeYilNum !== null && (isNaN(tecrubeYilNum) || tecrubeYilNum < 0 || tecrubeYilNum > 60)) {
-      setKaydediliyor(false);
-      setMesaj({ tip: 'hata', metin: 'Tecrübe yılı 0-60 arasında olmalı.' });
-      return;
-    }
-
-    // Supabase auto-gen types henüz migration_20260518000001 sonrası regenerate
-    // edilmedi; yeni kolonlar (durum, dogum_tarihi) TS tarafında bilinmiyor.
+    // Eğitim durumu yapısı (migration 20260518000003) — düz alanlar.
+    // Sınıf eğitim durumuna göre filtre: mezunsa null. Meslek sadece mezunsa.
+    // Supabase auto-gen types henüz regenerate edilmedi — any cast.
+    const ogrenciMi = profil.egitimDurumu === 'lise' || profil.egitimDurumu === 'universite';
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const payload: any = {
       ad: profil.ad.trim() || null,
       soyad: profil.soyad.trim() || null,
-      durum: profil.durum === '' ? null : profil.durum,
-      dogum_tarihi: dogumTarihi,
+      egitim_durumu: profil.egitimDurumu === '' ? null : profil.egitimDurumu,
       universite: profil.universite.trim() || null,
-      bolum: profil.bolum.trim() || null,
-      sinif: profil.sinif === '' ? null : profil.sinif,
-      meslek: profil.meslek === '' ? null : profil.meslek,
-      tecrube_yil: tecrubeYilNum,
+      sinif: ogrenciMi && profil.sinif !== '' ? profil.sinif : null,
+      dogum_tarihi: dogumTarihi,
+      meslek:
+        profil.egitimDurumu === 'mezun' && profil.meslek !== '' ? profil.meslek : null,
       bulten_izni: profil.bultenIzni,
     };
 
@@ -236,9 +335,9 @@ export const HesapView = ({
         uniteler,
         profil: {
           universite: profil.universite,
-          bolum: profil.bolum,
+          // bolum + hedef alanları UI'dan kaldırıldı — karne PDF için boş string geç
+          bolum: '',
           sinif: profil.sinif,
-          // hedef alanı kaldırıldı (UI'dan) — karne PDF için boş string geç
           hedef: '',
         },
       });
@@ -338,43 +437,23 @@ export const HesapView = ({
             </div>
           </div>
 
-          {/* Görünen Ad */}
+          {/* Takma ad — unique, lower(kullanici_adi) üzerinde index */}
           <div className="mb-5">
-            <label className={labelClass}>Görünen Ad</label>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="text"
-                value={adTaslak}
-                onChange={(e) => setAdTaslak(e.target.value)}
-                maxLength={30}
-                placeholder="Öğrenci"
-                className={`${inputClass} flex-1`}
-              />
-              <button
-                onClick={adKaydet}
-                disabled={!adDegisti || adKaydediliyor}
-                className={primaryBtnClass}
-              >
-                {adKaydediliyor ? (
-                  <Icon name="Loader2" size={12} className="animate-spin" />
-                ) : (
-                  <Icon name="Save" size={12} />
-                )}
-                Kaydet
-              </button>
-            </div>
+            <label className={labelClass}>Takma Ad</label>
+            <input
+              type="text"
+              value={adTaslak}
+              onChange={(e) => setAdTaslak(e.target.value)}
+              maxLength={30}
+              placeholder="kerim"
+              className={inputClass}
+            />
             <p className="text-[11.5px] text-ink-mute mt-1.5 leading-snug">
-              Sıralamalar, paylaşımlar ve karnede gözüken takma adın.
+              Sıralamalarda ve paylaşımlarda gözüken adın. Benzersiz olmalı.
             </p>
-            {adMesaj && (
-              <div className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-success dark:text-success font-bold">
-                <Icon name="Check" size={12} />
-                {adMesaj}
-              </div>
-            )}
           </div>
 
-          {/* Ad + Soyad (Supabase'e ayrı kaydet butonunda gider — Eğitim bilgileriyle birlikte) */}
+          {/* Ad + Soyad — yukarıdaki "Kaydet" butonu ile birlikte kaydolur */}
           {user && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
               <div>
@@ -435,253 +514,31 @@ export const HesapView = ({
             </div>
           )}
 
-          {/* Ad/Soyad değiştiyse kaydet uyarısı — Eğitim Bilgileri ortak butonu kullanıyor */}
-          {user && (profil.ad || profil.soyad) && (
-            <div className="mt-5 pt-5 border-t border-line-soft flex items-center justify-between gap-3 flex-wrap">
-              <p className="text-[12px] text-ink-mute leading-snug">
-                Ad, Soyad ve eğitim bilgilerin tek seferde aşağıdaki <strong>Kaydet</strong> butonuyla saklanır.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ──── 2. HAKKINDA — durum + doğum tarihi + conditional alanlar ──── */}
-      {user && (
-        <section>
-          <div className="flex items-baseline justify-between mb-1">
-            <h2 className={sectionTitleClass + ' mb-0'}>Hakkında</h2>
-            {profilYukleniyor && (
-              <Icon name="Loader2" size={14} className="animate-spin text-ink-quiet" />
-            )}
-          </div>
-          <p className="text-[12.5px] text-ink-mute mb-4 leading-snug">
-            Sadece ihtiyacımız olan kadarı — her şey opsiyonel.
-          </p>
-
-          <div className={sectionCardClass + ' space-y-5'}>
-            {/* Durum — kompakt pill butonlar (yan yana) */}
-            <div>
-              <label className={labelClass}>Durumun</label>
-              <div className="flex flex-wrap gap-2">
-                {([
-                  { kod: 'ogrenci', etiket: 'Öğrenciyim', ikon: 'GraduationCap' },
-                  { kod: 'mezun', etiket: 'Mezunum', ikon: 'Award' },
-                ] as { kod: Exclude<Durum, ''>; etiket: string; ikon: string }[]).map((opt) => {
-                  const aktif = profil.durum === opt.kod;
-                  return (
-                    <button
-                      key={opt.kod}
-                      type="button"
-                      onClick={() =>
-                        onProfilDegis({ ...profil, durum: aktif ? '' : opt.kod })
-                      }
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[12.5px] font-bold rounded-full border transition ${
-                        aktif
-                          ? 'border-ink bg-ink text-bg'
-                          : 'border-line hover:border-line-strong text-ink-soft'
-                      }`}
-                    >
-                      <Icon name={opt.ikon} size={12} />
-                      {opt.etiket}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Doğum tarihi — 3 ayrı select, tighter */}
-            <div>
-              <label className={labelClass}>Doğum tarihi</label>
-              <div className="grid grid-cols-3 gap-2">
-                <select
-                  value={profil.dogumGun}
-                  onChange={(e) => onProfilDegis({ ...profil, dogumGun: e.target.value })}
-                  aria-label="Gün"
-                  className={inputClass + ' appearance-none bg-no-repeat pr-7'}
-                  style={{
-                    backgroundImage:
-                      'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
-                    backgroundPosition: 'right 8px center',
-                    backgroundSize: '11px',
-                  }}
-                >
-                  <option value="">Gün</option>
-                  {Array.from({ length: 31 }, (_, i) => i + 1).map((g) => (
-                    <option key={g} value={String(g)}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={profil.dogumAy}
-                  onChange={(e) => onProfilDegis({ ...profil, dogumAy: e.target.value })}
-                  aria-label="Ay"
-                  className={inputClass + ' appearance-none bg-no-repeat pr-7'}
-                  style={{
-                    backgroundImage:
-                      'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
-                    backgroundPosition: 'right 8px center',
-                    backgroundSize: '11px',
-                  }}
-                >
-                  <option value="">Ay</option>
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map((a) => (
-                    <option key={a} value={String(a)}>
-                      {AY_LABEL[String(a)]}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={profil.dogumYil}
-                  onChange={(e) => onProfilDegis({ ...profil, dogumYil: e.target.value })}
-                  aria-label="Yıl"
-                  className={inputClass + ' appearance-none bg-no-repeat pr-7'}
-                  style={{
-                    backgroundImage:
-                      'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
-                    backgroundPosition: 'right 8px center',
-                    backgroundSize: '11px',
-                  }}
-                >
-                  <option value="">Yıl</option>
-                  {Array.from({ length: 2015 - 1950 + 1 }, (_, i) => 2015 - i).map((y) => (
-                    <option key={y} value={String(y)}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Conditional: Öğrenciyim → Okul + Bölüm + Sınıf */}
-            {profil.durum === 'ogrenci' && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass}>Okul</label>
-                    <input
-                      type="text"
-                      value={profil.universite}
-                      onChange={(e) =>
-                        onProfilDegis({ ...profil, universite: e.target.value })
-                      }
-                      maxLength={80}
-                      placeholder="Örn: Boğaziçi, ODTÜ, Anadolu..."
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Bölüm</label>
-                    <input
-                      type="text"
-                      value={profil.bolum}
-                      onChange={(e) => onProfilDegis({ ...profil, bolum: e.target.value })}
-                      maxLength={80}
-                      placeholder="Örn: İşletme, İktisat..."
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className={labelClass}>Sınıf</label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(Object.keys(SINIF_LABEL) as Exclude<Sinif, ''>[]).map((kod) => {
-                      const aktif = profil.sinif === kod;
-                      return (
-                        <button
-                          key={kod}
-                          type="button"
-                          onClick={() =>
-                            onProfilDegis({
-                              ...profil,
-                              sinif: aktif ? '' : kod,
-                            })
-                          }
-                          className={`px-3 py-1.5 text-[12px] font-bold rounded-full border transition ${
-                            aktif
-                              ? 'border-ink bg-ink text-bg'
-                              : 'border-line hover:border-line-strong text-ink-soft'
-                          }`}
-                        >
-                          {SINIF_LABEL[kod]}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Conditional: Mezunum → Meslek + Deneyim */}
-            {profil.durum === 'mezun' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClass}>Meslek</label>
-                  <select
-                    value={profil.meslek}
-                    onChange={(e) =>
-                      onProfilDegis({ ...profil, meslek: e.target.value as Meslek })
-                    }
-                    aria-label="Meslek"
-                    className={inputClass + ' appearance-none bg-no-repeat pr-7'}
-                    style={{
-                      backgroundImage:
-                        'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
-                      backgroundPosition: 'right 8px center',
-                      backgroundSize: '11px',
-                    }}
-                  >
-                    <option value="">Seçim yap</option>
-                    {(Object.keys(MESLEK_LABEL) as Exclude<Meslek, ''>[]).map((kod) => (
-                      <option key={kod} value={kod}>
-                        {MESLEK_LABEL[kod]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass}>
-                    Deneyim{' '}
-                    <span className="text-ink-quiet normal-case tracking-normal">(yıl)</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={profil.tecrubeYil}
-                    onChange={(e) => onProfilDegis({ ...profil, tecrubeYil: e.target.value })}
-                    min={0}
-                    max={60}
-                    placeholder="3"
-                    className={inputClass + ' font-mono'}
-                  />
-                </div>
-              </div>
-            )}
-
-            {mesaj && (
+          {/* Kaydet — takma_ad + ad + soyad birlikte */}
+          <div className="mt-6 pt-5 border-t border-line-soft">
+            {adMesaj && (
               <div
-                className={`flex items-start gap-2 p-3 rounded-lg text-sm font-medium ${
-                  mesaj.tip === 'basarili'
+                className={`mb-3 flex items-start gap-2 px-3 py-2.5 rounded-lg text-[13px] font-medium ${
+                  adMesaj.tip === 'basarili'
                     ? 'bg-success-soft border border-success-soft text-success'
                     : 'bg-danger-soft border border-danger-soft text-danger'
                 }`}
               >
                 <Icon
-                  name={mesaj.tip === 'basarili' ? 'CheckCircle2' : 'AlertCircle'}
-                  size={16}
+                  name={adMesaj.tip === 'basarili' ? 'CheckCircle2' : 'AlertCircle'}
+                  size={15}
                   className="flex-shrink-0 mt-0.5"
                 />
-                <span>{mesaj.metin}</span>
+                <span>{adMesaj.metin}</span>
               </div>
             )}
-
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-end">
               <button
-                onClick={kaydet}
-                disabled={kaydediliyor || profilYukleniyor}
+                onClick={adKaydet}
+                disabled={adKaydediliyor}
                 className={primaryBtnClass}
               >
-                {kaydediliyor ? (
+                {adKaydediliyor ? (
                   <>
                     <Icon name="Loader2" size={12} className="animate-spin" />
                     Kaydediliyor
@@ -693,6 +550,167 @@ export const HesapView = ({
                   </>
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ──── 2. HAKKINDA — minimalist satır düzeni, native date input ──── */}
+      {user && (
+        <section>
+          <div className="flex items-baseline justify-between mb-1.5">
+            <h2 className={sectionTitleClass + ' mb-0'}>Hakkında</h2>
+            {profilYukleniyor && (
+              <Icon name="Loader2" size={14} className="animate-spin text-ink-quiet" />
+            )}
+          </div>
+          <p className="text-[12.5px] text-ink-mute mb-4 leading-snug">
+            Seni biraz tanıyalım — hepsi opsiyonel.
+          </p>
+
+          {/* Card içinde satırlar — Tercihler/Verilerim ile aynı pattern (divide-y) */}
+          <div className={sectionCardClass + ' divide-y divide-line-soft'}>
+            {/* Eğitim durumu — bağımsız 3'lü pill */}
+            <ProfilSatir etiket="Eğitim">
+              <div className="flex flex-wrap gap-1.5">
+                {(Object.keys(EGITIM_DURUMU_LABEL) as Exclude<EgitimDurumu, ''>[]).map(
+                  (kod) => (
+                    <SecimPill
+                      key={kod}
+                      aktif={profil.egitimDurumu === kod}
+                      onClick={() => {
+                        const yeniDurum = profil.egitimDurumu === kod ? '' : kod;
+                        // Eğitim durumu değişince sınıf'ı temizle — eski sınıf
+                        // yeni durumla uyumsuz olabilir (örn: lise 9 → mezun)
+                        onProfilDegis({
+                          ...profil,
+                          egitimDurumu: yeniDurum,
+                          sinif: '',
+                        });
+                      }}
+                    >
+                      {EGITIM_DURUMU_LABEL[kod]}
+                    </SecimPill>
+                  ),
+                )}
+              </div>
+            </ProfilSatir>
+
+            {/* Okul adı — her zaman göster (lise / üni / mezun olunan kurum) */}
+            <ProfilSatir etiket="Okul">
+              <input
+                type="text"
+                value={profil.universite}
+                onChange={(e) => onProfilDegis({ ...profil, universite: e.target.value })}
+                maxLength={80}
+                placeholder={
+                  profil.egitimDurumu === 'lise'
+                    ? 'Lise adı'
+                    : profil.egitimDurumu === 'universite'
+                      ? 'Üniversite adı'
+                      : 'Mezun olduğun okul (opsiyonel)'
+                }
+                className={inputClass}
+              />
+            </ProfilSatir>
+
+            {/* Sınıf — sadece lise / üniversite seçiliyse */}
+            {(profil.egitimDurumu === 'lise' || profil.egitimDurumu === 'universite') && (
+              <ProfilSatir etiket="Sınıf">
+                <div className="flex flex-wrap gap-1.5">
+                  {(profil.egitimDurumu === 'lise' ? LISE_SINIFLARI : UNI_SINIFLARI).map(
+                    (kod) => (
+                      <SecimPill
+                        key={kod}
+                        boyut="kompakt"
+                        aktif={profil.sinif === kod}
+                        onClick={() =>
+                          onProfilDegis({
+                            ...profil,
+                            sinif: profil.sinif === kod ? '' : (kod as Sinif),
+                          })
+                        }
+                      >
+                        {SINIF_LABEL[kod]}
+                      </SecimPill>
+                    ),
+                  )}
+                </div>
+              </ProfilSatir>
+            )}
+
+            {/* Doğum tarihi — tek native date input */}
+            <ProfilSatir etiket="Doğum yılı">
+              <input
+                type="date"
+                value={dogumIso(profil)}
+                min="1950-01-01"
+                max="2015-12-31"
+                onChange={(e) => onProfilDegis({ ...profil, ...isoToParcala(e.target.value) })}
+                className={`${inputClass} max-w-[200px] font-mono`}
+              />
+            </ProfilSatir>
+
+            {/* Meslek — sadece mezun seçiliyse */}
+            {profil.egitimDurumu === 'mezun' && (
+              <ProfilSatir etiket="Meslek">
+                <div className="flex flex-wrap gap-1.5">
+                  {(Object.keys(MESLEK_LABEL) as Exclude<Meslek, ''>[]).map((kod) => (
+                    <SecimPill
+                      key={kod}
+                      boyut="kompakt"
+                      aktif={profil.meslek === kod}
+                      onClick={() =>
+                        onProfilDegis({
+                          ...profil,
+                          meslek: profil.meslek === kod ? '' : kod,
+                        })
+                      }
+                    >
+                      {MESLEK_LABEL[kod]}
+                    </SecimPill>
+                  ))}
+                </div>
+              </ProfilSatir>
+            )}
+
+            {/* Mesaj + Kaydet — card içinde, satırlardan ayrı bir blok */}
+            <div className="pt-4">
+              {mesaj && (
+                <div
+                  className={`mb-3 flex items-start gap-2 px-3 py-2.5 rounded-lg text-[13px] font-medium ${
+                    mesaj.tip === 'basarili'
+                      ? 'bg-success-soft border border-success-soft text-success'
+                      : 'bg-danger-soft border border-danger-soft text-danger'
+                  }`}
+                >
+                  <Icon
+                    name={mesaj.tip === 'basarili' ? 'CheckCircle2' : 'AlertCircle'}
+                    size={15}
+                    className="flex-shrink-0 mt-0.5"
+                  />
+                  <span>{mesaj.metin}</span>
+                </div>
+              )}
+              <div className="flex justify-end">
+                <button
+                  onClick={kaydet}
+                  disabled={kaydediliyor || profilYukleniyor}
+                  className={primaryBtnClass}
+                >
+                  {kaydediliyor ? (
+                    <>
+                      <Icon name="Loader2" size={12} className="animate-spin" />
+                      Kaydediliyor
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="Save" size={12} />
+                      Kaydet
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -825,28 +843,54 @@ export const HesapView = ({
       <section>
         <h2 className={sectionTitleClass}>Tercihler</h2>
         <div className={sectionCardClass + ' divide-y divide-line-soft'}>
-          {/* Tema */}
-          <button
-            onClick={onTemaDegistir}
-            className="w-full flex items-center justify-between py-3.5 first:pt-0 last:pb-0 text-left group"
-          >
-            <div className="flex items-center gap-3">
-              <Icon
-                name={ilerleme.tema === 'dark' ? 'Moon' : 'Sun'}
-                size={16}
-                className="text-ink-soft"
-              />
-              <div>
-                <div className="text-[13.5px] font-semibold text-ink">Görünüm</div>
-                <div className="text-[11.5px] text-ink-mute font-medium mt-0.5">
-                  {ilerleme.tema === 'dark' ? 'Karanlık tema aktif' : 'Açık tema aktif'}
-                </div>
+          {/* Tema — pill toggle (sun/moon, ink knob, brand bg-tint track) */}
+          <div className="flex items-center justify-between py-3.5 first:pt-0 last:pb-0">
+            <div>
+              <div className="text-[13.5px] font-semibold text-ink">Görünüm</div>
+              <div className="text-[11.5px] text-ink-mute font-medium mt-0.5">
+                {ilerleme.tema === 'dark' ? 'Karanlık tema aktif' : 'Açık tema aktif'}
               </div>
             </div>
-            <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-ink-mute group-hover:text-ink transition">
-              {ilerleme.tema === 'dark' ? '→ Açık' : '→ Karanlık'}
-            </span>
-          </button>
+            <button
+              type="button"
+              onClick={onTemaDegistir}
+              aria-label={
+                ilerleme.tema === 'dark'
+                  ? 'Açık temaya geç'
+                  : 'Karanlık temaya geç'
+              }
+              role="switch"
+              aria-checked={ilerleme.tema === 'dark'}
+              className="relative w-[60px] h-[30px] rounded-full bg-bg-tint border border-line-strong hover:border-ink/50 transition flex-shrink-0"
+            >
+              {/* Sun — sol */}
+              <Icon
+                name="Sun"
+                size={12}
+                className={`absolute left-[8px] top-1/2 -translate-y-1/2 transition-colors ${
+                  ilerleme.tema === 'dark' ? 'text-ink-mute' : 'text-ink-quiet'
+                }`}
+              />
+              {/* Moon — sağ */}
+              <Icon
+                name="Moon"
+                size={12}
+                className={`absolute right-[8px] top-1/2 -translate-y-1/2 transition-colors ${
+                  ilerleme.tema === 'dark' ? 'text-ink-quiet' : 'text-ink-mute'
+                }`}
+              />
+              {/* Knob — aktif tarafın üzerine sliding ink daire */}
+              <span
+                className="absolute top-1/2 -translate-y-1/2 w-[24px] h-[24px] rounded-full bg-ink shadow-sm transition-transform duration-200 ease-out"
+                style={{
+                  left: '2px',
+                  transform: `translateY(-50%) translateX(${
+                    ilerleme.tema === 'dark' ? '30px' : '0px'
+                  })`,
+                }}
+              />
+            </button>
+          </div>
 
           {/* Bülten */}
           {user && (

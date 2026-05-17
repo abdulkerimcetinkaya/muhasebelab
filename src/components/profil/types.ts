@@ -1,90 +1,95 @@
 // Profil bölümleri arasında paylaşılan tipler.
 //
-// SADELEŞTİRME (migration 20260518000001): Eski 13 alanlık karmaşa
-// (Profilin/Hedefin/Tanışalım) yerine sade "Hakkında" yapısı:
-//   - Durum (Öğrenci / Mezun)
-//   - Doğum tarihi (gün + ay + yıl)
-//   - Öğrenciyse: universite + bolum + sinif
-//   - Mezunsa: meslek (SMMM, muhasebeci, akademisyen, vs.) + tecrube_yil
+// EĞİTİM DURUMU YAPISI (migration 20260518000003): Düz 3 ana alan +
+// 2 conditional alan.
 //
-// v2 iterasyon (2026-05-18): 'calisan' → 'mezun' yeniden adlandırma.
-// Mezun olunca meslek dropdown'ı gösterilir.
+//   1. egitim_durumu — lise / universite / mezun (bağımsız)
+//   2. universite (okul adı) — text, her durum için kullanılabilir
+//   3. sinif — lise için 9-12, üniversite için hazırlık/1-4 (mezun için yok)
+//   4. dogum_tarihi — date input
+//   5. meslek — sadece "mezun" seçildiyse gösterilir
 //
-// Eski enum'lar (Hedef, HaftalikHedef, NeredenDuydu) ve type'lar kaldırıldı —
-// DB kolonları geriye uyumluluk için duruyor ama TS tarafında kullanılmıyor.
+// Persona modeli (20260518000002) iptal edildi: gerçek hayatta bir öğrenci
+// aynı zamanda stajyer olabiliyor, persona binary seçim zorluyordu.
+// Eğitim ve meslek artık bağımsız alanlar.
 
-export type Sinif = '' | '1' | '2' | '3' | '4' | 'mezun' | 'diger';
-export type Durum = '' | 'ogrenci' | 'mezun';
+export type EgitimDurumu = '' | 'lise' | 'universite' | 'mezun';
+
+// Sınıf — eğitim durumuna göre filtrelenir:
+//   - lise: 9, 10, 11, 12
+//   - üniversite: hazırlık, 1, 2, 3, 4
+//   - mezun: gösterilmez
+export type Sinif =
+  | ''
+  | 'hazirlik'
+  | '1' | '2' | '3' | '4'
+  | '9' | '10' | '11' | '12';
+
+// Meslek — sadece "mezun" durumu için. 5 sade seçenek.
 export type Meslek =
   | ''
   | 'smmm_stajyer'
   | 'smmm'
-  | 'muhasebeci'
   | 'akademisyen'
-  | 'is_ariyor'
+  | 'calismiyor'
   | 'diger';
 
 export interface ProfilBilgi {
   ad: string;
   soyad: string;
-  durum: Durum;
-  dogumGun: string;  // '1' - '31'
-  dogumAy: string;   // '1' - '12'
-  dogumYil: string;  // '1950' - '2015'
-  universite: string;
-  bolum: string;
+  egitimDurumu: EgitimDurumu;
+  universite: string;  // okul adı (lise + üni + mezun olunan kurum)
   sinif: Sinif;
+  dogumGun: string;   // '1' - '31'
+  dogumAy: string;    // '1' - '12'
+  dogumYil: string;   // '1950' - '2015'
   meslek: Meslek;
-  tecrubeYil: string; // '0' - '60'
   bultenIzni: boolean;
 }
 
 export const PROFIL_BOS: ProfilBilgi = {
   ad: '',
   soyad: '',
-  durum: '',
+  egitimDurumu: '',
+  universite: '',
+  sinif: '',
   dogumGun: '',
   dogumAy: '',
   dogumYil: '',
-  universite: '',
-  bolum: '',
-  sinif: '',
   meslek: '',
-  tecrubeYil: '',
   bultenIzni: false,
 };
 
+export const EGITIM_DURUMU_LABEL: Record<Exclude<EgitimDurumu, ''>, string> = {
+  lise: 'Lise',
+  universite: 'Üniversite',
+  mezun: 'Mezun',
+};
+
+// Lise sınıfları (9-12)
+export const LISE_SINIFLARI: Exclude<Sinif, ''>[] = ['9', '10', '11', '12'];
+
+// Üniversite sınıfları (hazırlık + 1-4)
+export const UNI_SINIFLARI: Exclude<Sinif, ''>[] = ['hazirlik', '1', '2', '3', '4'];
+
 export const SINIF_LABEL: Record<Exclude<Sinif, ''>, string> = {
+  hazirlik: 'Hazırlık',
   '1': '1. Sınıf',
   '2': '2. Sınıf',
   '3': '3. Sınıf',
   '4': '4. Sınıf',
-  mezun: 'Mezun',
-  diger: 'Diğer',
+  '9': '9. Sınıf',
+  '10': '10. Sınıf',
+  '11': '11. Sınıf',
+  '12': '12. Sınıf',
 };
 
 export const MESLEK_LABEL: Record<Exclude<Meslek, ''>, string> = {
   smmm_stajyer: 'SMMM Stajyeri',
   smmm: 'SMMM',
-  muhasebeci: 'Muhasebeci',
   akademisyen: 'Akademisyen',
-  is_ariyor: 'İş arıyor',
+  calismiyor: 'Çalışmıyorum',
   diger: 'Diğer',
-};
-
-export const AY_LABEL: Record<string, string> = {
-  '1': 'Ocak',
-  '2': 'Şubat',
-  '3': 'Mart',
-  '4': 'Nisan',
-  '5': 'Mayıs',
-  '6': 'Haziran',
-  '7': 'Temmuz',
-  '8': 'Ağustos',
-  '9': 'Eylül',
-  '10': 'Ekim',
-  '11': 'Kasım',
-  '12': 'Aralık',
 };
 
 export type Bolum = 'genel' | 'yetkinlik' | 'rozetler' | 'uyelik' | 'hesap';

@@ -3,7 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { useAuth } from '../contexts/AuthContext';
 import { liderlikYukle, kullaniciSiralamasi } from '../lib/liderlik';
+import { supabase } from '../lib/supabase';
 import type { LiderlikDonem, LiderlikRow } from '../types';
+
+type LiderlikKapsam = 'genel' | 'okulum';
+
+const KAPSAM_LABEL: Record<LiderlikKapsam, string> = {
+  genel: 'Genel',
+  okulum: 'Okulumdaki',
+};
 
 const SINIF_LABEL: Record<string, string> = {
   '1': '1. Sınıf',
@@ -24,15 +32,53 @@ export const LiderlikSayfasi = () => {
   const nav = useNavigate();
   const { user } = useAuth();
   const [donem, setDonem] = useState<LiderlikDonem>('tum');
+  const [kapsam, setKapsam] = useState<LiderlikKapsam>('genel');
   const [liste, setListe] = useState<LiderlikRow[]>([]);
   const [yukleniyor, setYukleniyor] = useState(true);
   const [hata, setHata] = useState<string | null>(null);
 
+  // Kullanıcının okul/üniversitesi — okul filtresi için lazım.
+  // undefined = henüz çekilmedi, null = boş, string = okul adı.
+  const [kullaniciOkul, setKullaniciOkul] = useState<string | null | undefined>(
+    undefined,
+  );
   useEffect(() => {
+    if (!user) {
+      setKullaniciOkul(null);
+      return;
+    }
+    let aktif = true;
+    supabase
+      .from('kullanicilar')
+      .select('universite')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!aktif) return;
+        const u = (data?.universite as string | null) ?? null;
+        setKullaniciOkul(u && u.trim() ? u.trim() : null);
+      });
+    return () => {
+      aktif = false;
+    };
+  }, [user]);
+
+  // Okulum kapsamı için filtre uygulanır mı? (giriş + okul bilgisi şart)
+  const okulFiltresiAktif = kapsam === 'okulum' && !!kullaniciOkul;
+  // Okulum seçildi ama okul yoksa (anonim ya da profil eksik) → fetch atma, boş göster.
+  const fetchIptal = kapsam === 'okulum' && !kullaniciOkul;
+
+  useEffect(() => {
+    if (fetchIptal) {
+      setListe([]);
+      setYukleniyor(false);
+      setHata(null);
+      return;
+    }
     let aktif = true;
     setYukleniyor(true);
     setHata(null);
-    liderlikYukle(donem, 100)
+    liderlikYukle(donem, 100, okulFiltresiAktif ? kullaniciOkul : null)
       .then((rows) => {
         if (aktif) setListe(rows);
       })
@@ -45,15 +91,12 @@ export const LiderlikSayfasi = () => {
     return () => {
       aktif = false;
     };
-  }, [donem]);
+  }, [donem, kapsam, kullaniciOkul, okulFiltresiAktif, fetchIptal]);
 
   const kullaniciSira = useMemo(
     () => kullaniciSiralamasi(liste, user?.id),
     [liste, user?.id],
   );
-
-  const top3 = liste.slice(0, 3);
-  const kalan = liste.slice(3);
 
   return (
     <main className="max-w-[1240px] mx-auto px-5 sm:px-8 py-12 sm:py-16">
@@ -77,54 +120,85 @@ export const LiderlikSayfasi = () => {
         </p>
       </header>
 
-      {/* Filtre + kullanıcı rütbesi */}
+      {/* Filtreler: zaman + kapsam + kullanıcı rütbesi */}
       <div className="flex flex-wrap items-baseline justify-between gap-4 mb-10 sm:mb-14 pb-5 border-b border-line">
-        <div role="tablist" className="flex gap-1 p-1 bg-surface-2/60 rounded-lg">
-          {(['tum', 'ay', 'hafta'] as const).map((d) => (
-            <button
-              key={d}
-              role="tab"
-              aria-selected={donem === d}
-              onClick={() => setDonem(d)}
-              className={`px-4 py-1.5 text-[13px] font-mono uppercase tracking-[0.14em] rounded-md transition ${
- donem === d
- ? 'bg-bg text-ink shadow-sm'
- : 'text-ink-mute hover:text-ink'
- }`}
-            >
-              {DONEM_LABEL[d]}
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          {/* Zaman dönemi */}
+          <div role="tablist" className="flex gap-1 p-1 bg-surface-2/60 rounded-lg">
+            {(['tum', 'ay', 'hafta'] as const).map((d) => (
+              <button
+                key={d}
+                role="tab"
+                aria-selected={donem === d}
+                onClick={() => setDonem(d)}
+                className={`px-4 py-1.5 text-[13px] font-mono uppercase tracking-[0.14em] rounded-md transition ${
+                  donem === d
+                    ? 'bg-bg text-ink shadow-sm'
+                    : 'text-ink-mute hover:text-ink'
+                }`}
+              >
+                {DONEM_LABEL[d]}
+              </button>
+            ))}
+          </div>
+
+          {/* Kapsam — Genel / Okulumdaki */}
+          <div role="tablist" className="flex gap-1 p-1 bg-surface-2/60 rounded-lg">
+            {(['genel', 'okulum'] as const).map((k) => (
+              <button
+                key={k}
+                role="tab"
+                aria-selected={kapsam === k}
+                onClick={() => setKapsam(k)}
+                className={`px-4 py-1.5 text-[13px] font-mono uppercase tracking-[0.14em] rounded-md transition ${
+                  kapsam === k
+                    ? 'bg-bg text-ink shadow-sm'
+                    : 'text-ink-mute hover:text-ink'
+                }`}
+              >
+                {KAPSAM_LABEL[k]}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {user && kullaniciSira && (
-          <div className="flex items-baseline gap-3 text-[13px]">
+        <div className="flex flex-col items-end gap-1">
+          {/* Okulum aktifken hangi okul filtrelenmiş — şeffaflık */}
+          {okulFiltresiAktif && (
             <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-mute">
-              Senin sıran
+              <span className="text-ink-soft">{kullaniciOkul}</span> içinde
             </span>
-            <span className="font-display font-bold text-ink text-[20px] tnum">
-              #{kullaniciSira.sira}
-            </span>
-            <span className="font-mono tnum text-ink-soft">
-              {kullaniciSira.row.toplamPuan}p
-            </span>
-          </div>
-        )}
+          )}
 
-        {user && !kullaniciSira && !yukleniyor && liste.length > 0 && (
-          <div className="flex items-baseline gap-3 text-[13px]">
-            <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-mute">
-              Henüz sıralamada değilsin
-            </span>
-            <button
-              onClick={() => nav('/problemler')}
-              className="font-mono text-[11px] tracking-[0.16em] uppercase font-bold ml-link"
-              style={{ color: 'var(--copper-deep)' }}
-            >
-              Soru çöz →
-            </button>
-          </div>
-        )}
+          {user && kullaniciSira && (
+            <div className="flex items-baseline gap-3 text-[13px]">
+              <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-mute">
+                Senin sıran
+              </span>
+              <span className="font-display font-bold text-ink text-[20px] tnum">
+                #{kullaniciSira.sira}
+              </span>
+              <span className="font-mono tnum text-ink-soft">
+                {kullaniciSira.row.toplamPuan}p
+              </span>
+            </div>
+          )}
+
+          {user && !kullaniciSira && !yukleniyor && liste.length > 0 && (
+            <div className="flex items-baseline gap-3 text-[13px]">
+              <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-mute">
+                Henüz sıralamada değilsin
+              </span>
+              <button
+                onClick={() => nav('/problemler')}
+                className="font-mono text-[11px] tracking-[0.16em] uppercase font-bold ml-link"
+                style={{ color: 'var(--copper-deep)' }}
+              >
+                Soru çöz →
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Yükleniyor */}
@@ -144,37 +218,67 @@ export const LiderlikSayfasi = () => {
         </div>
       )}
 
-      {/* Boş durum */}
+      {/* Boş durum — okul filtresi için özel mesajlar */}
       {!yukleniyor && !hata && liste.length === 0 && (
         <div className="border border-line bg-surface-2/40 p-12 sm:p-16 text-center">
-          <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-copper-deep mb-4 font-bold">
-            Henüz veri yok
-          </div>
-          <p
-            className="font-display-italic text-ink leading-tight tracking-tight max-w-lg mx-auto mb-6"
-            style={{ fontSize: 'clamp(22px, 3vw, 32px)' }}
-          >
-            {donem === 'tum'
-              ? 'İlk sıralamayı sen başlat.'
-              : 'Bu dönem için kayıt yok — ilk olabilirsin.'}
-          </p>
-          <button onClick={() => nav('/problemler')} className="btn btn-primary">
-            Soruları aç
-          </button>
+          {/* Okulum + anonim kullanıcı */}
+          {kapsam === 'okulum' && !user ? (
+            <>
+              <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-copper-deep mb-4 font-bold">
+                Hesap gerekli
+              </div>
+              <p
+                className="font-display-italic text-ink leading-tight tracking-tight max-w-lg mx-auto mb-6"
+                style={{ fontSize: 'clamp(22px, 3vw, 32px)' }}
+              >
+                Okulundaki sıralamayı görmek için hesap aç.
+              </p>
+              <button onClick={() => nav('/giris')} className="btn btn-primary">
+                Hesap oluştur
+              </button>
+            </>
+          ) : kapsam === 'okulum' && !kullaniciOkul ? (
+            /* Okulum + giriş yapmış ama okul bilgisi yok */
+            <>
+              <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-copper-deep mb-4 font-bold">
+                Okul bilgin eksik
+              </div>
+              <p
+                className="font-display-italic text-ink leading-tight tracking-tight max-w-lg mx-auto mb-6"
+                style={{ fontSize: 'clamp(22px, 3vw, 32px)' }}
+              >
+                Profiline okul/üniversite ekle, sıralamaya gir.
+              </p>
+              <button onClick={() => nav('/profil')} className="btn btn-primary">
+                Profili düzenle →
+              </button>
+            </>
+          ) : (
+            /* Genel kapsam ya da okulum aktif + filtrelenen okulda kimse yok */
+            <>
+              <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-copper-deep mb-4 font-bold">
+                Henüz veri yok
+              </div>
+              <p
+                className="font-display-italic text-ink leading-tight tracking-tight max-w-lg mx-auto mb-6"
+                style={{ fontSize: 'clamp(22px, 3vw, 32px)' }}
+              >
+                {kapsam === 'okulum'
+                  ? `${kullaniciOkul} için henüz sıralama yok — ilk olabilirsin.`
+                  : donem === 'tum'
+                    ? 'İlk sıralamayı sen başlat.'
+                    : 'Bu dönem için kayıt yok — ilk olabilirsin.'}
+              </p>
+              <button onClick={() => nav('/problemler')} className="btn btn-primary">
+                Soruları aç
+              </button>
+            </>
+          )}
         </div>
       )}
 
-      {/* TOP 3 — büyük editorial kart */}
-      {!yukleniyor && !hata && top3.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-12 sm:mb-16">
-          {top3.map((row, i) => (
-            <Top3Kart key={row.id} row={row} sira={i + 1} kendisiMi={user?.id === row.id} />
-          ))}
-        </div>
-      )}
-
-      {/* 4–100 sıralı tablo */}
-      {!yukleniyor && !hata && kalan.length > 0 && (
+      {/* Liderlik tablosu — tek liste, top 3 görsel olarak vurgulu */}
+      {!yukleniyor && !hata && liste.length > 0 && (
         <div className="border-t border-line">
           {/* Header */}
           <div className="grid grid-cols-[44px_1fr_140px_90px_90px] gap-4 px-4 py-3 border-b border-line font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
@@ -185,26 +289,64 @@ export const LiderlikSayfasi = () => {
             <span className="text-right">Puan</span>
           </div>
 
-          {/* Satırlar */}
-          {kalan.map((row, i) => {
-            const sira = i + 4;
+          {/* Satırlar — top 3 sıra numarası renkli + font biraz büyük; geri kalan mono padded */}
+          {liste.map((row, i) => {
+            const sira = i + 1;
             const kendisi = user?.id === row.id;
+            const top1 = sira === 1;
+            const top2 = sira === 2;
+            const top3 = sira === 3;
+            const topX = top1 || top2 || top3;
+
+            const siraRengi = top1
+              ? 'var(--copper-deep)'
+              : top2
+                ? 'var(--ink-soft)'
+                : top3
+                  ? 'var(--ink-mute)'
+                  : undefined;
+
             return (
               <div
                 key={row.id}
-                className={`grid grid-cols-[44px_1fr_140px_90px_90px] gap-4 px-4 py-4 border-b border-line-soft items-center transition ${
- kendisi ? 'bg-surface-2/60' : 'hover:bg-surface-2/30'
- }`}
+                className={`grid grid-cols-[44px_1fr_140px_90px_90px] gap-4 px-4 ${
+                  topX ? 'py-5' : 'py-4'
+                } border-b border-line-soft items-center transition ${
+                  kendisi ? 'bg-surface-2/60' : 'hover:bg-surface-2/30'
+                }`}
               >
-                <span className="font-mono text-[14px] tnum text-ink-quiet text-right">
-                  {String(sira).padStart(2, '0')}
-                </span>
+                {/* Sıra — top 3 için display font + renk, diğerleri mono padded */}
+                {topX ? (
+                  <span
+                    className={`font-display font-bold tnum text-right leading-none ${
+                      top1 ? 'text-[24px]' : 'text-[19px]'
+                    }`}
+                    style={{ color: siraRengi }}
+                  >
+                    {sira}
+                  </span>
+                ) : (
+                  <span className="font-mono text-[13px] tnum text-ink-quiet text-right">
+                    {String(sira).padStart(2, '0')}
+                  </span>
+                )}
+
+                {/* Kullanıcı adı + rozetler */}
                 <div className="min-w-0 flex items-baseline gap-3">
-                  <span className="font-display font-bold text-ink text-[15px] sm:text-[16px] truncate">
+                  <span
+                    className={`font-display font-bold text-ink truncate ${
+                      top1
+                        ? 'text-[17px] sm:text-[18px]'
+                        : 'text-[15px] sm:text-[16px]'
+                    }`}
+                  >
                     {row.kullaniciAdi}
                   </span>
                   {kendisi && (
-                    <span className="font-mono text-[9.5px] tracking-[0.18em] uppercase font-bold flex-shrink-0" style={{ color: 'var(--copper-deep)' }}>
+                    <span
+                      className="font-mono text-[9.5px] tracking-[0.18em] uppercase font-bold flex-shrink-0"
+                      style={{ color: 'var(--copper-deep)' }}
+                    >
                       Sen
                     </span>
                   )}
@@ -214,6 +356,8 @@ export const LiderlikSayfasi = () => {
                     </span>
                   )}
                 </div>
+
+                {/* Üniversite */}
                 <div className="hidden sm:block min-w-0">
                   {row.universite ? (
                     <div className="text-[12.5px] truncate">
@@ -228,10 +372,16 @@ export const LiderlikSayfasi = () => {
                     <span className="text-ink-quiet text-[12.5px]">—</span>
                   )}
                 </div>
+
+                {/* Çözüm + Puan */}
                 <span className="text-right font-mono tnum text-[14px] text-ink-soft">
                   {row.cozulenSoru}
                 </span>
-                <span className="text-right font-mono tnum text-[15px] font-bold text-ink">
+                <span
+                  className={`text-right font-mono tnum font-bold text-ink ${
+                    top1 ? 'text-[17px]' : topX ? 'text-[16px]' : 'text-[15px]'
+                  }`}
+                >
                   {row.toplamPuan}
                 </span>
               </div>
@@ -286,107 +436,3 @@ export const LiderlikSayfasi = () => {
   );
 };
 
-interface Top3Props {
-  row: LiderlikRow;
-  sira: number;
-  kendisiMi: boolean;
-}
-
-const Top3Kart = ({ row, sira, kendisiMi }: Top3Props) => {
-  const renkler: Record<number, { kenar: string; sira: string; bg: string }> = {
-    1: {
-      kenar: 'var(--copper-deep)',
-      sira: 'var(--copper-deep)',
-      bg: 'rgba(184, 115, 43, 0.06)',
-    },
-    2: {
-      kenar: 'var(--ink-soft)',
-      sira: 'var(--ink-soft)',
-      bg: 'transparent',
-    },
-    3: {
-      kenar: 'var(--ink-mute)',
-      sira: 'var(--ink-mute)',
-      bg: 'transparent',
-    },
-  };
-  const renk = renkler[sira];
-
-  return (
-    <article
-      className="relative border-2 p-6 sm:p-7 transition-shadow hover:shadow-md"
-      style={{
-        borderColor: kendisiMi ? 'var(--copper-deep)' : renk.kenar,
-        background: renk.bg,
-      }}
-    >
-      <div className="flex items-baseline justify-between mb-6">
-        <div
-          className="font-display font-bold tracking-tighter leading-none tnum"
-          style={{
-            fontSize: 'clamp(56px, 8vw, 88px)',
-            color: renk.sira,
-          }}
-        >
-          {sira}
-        </div>
-        {sira === 1 && (
-          <Icon name="Award" size={28} style={{ color: 'var(--copper-deep)' }} />
-        )}
-      </div>
-
-      <div className="mb-4">
-        <div className="flex items-baseline gap-2 mb-1.5">
-          <h3 className="font-display font-bold text-ink text-[20px] sm:text-[22px] tracking-tight truncate">
-            {row.kullaniciAdi}
-          </h3>
-          {kendisiMi && (
-            <span
-              className="font-mono text-[9.5px] tracking-[0.18em] uppercase font-bold flex-shrink-0"
-              style={{ color: 'var(--copper-deep)' }}
-            >
-              Sen
-            </span>
-          )}
-        </div>
-        {row.universite && (
-          <div className="text-[12.5px] text-ink-soft truncate">
-            {row.universite}
-            {row.sinif && SINIF_LABEL[row.sinif] && (
-              <span className="text-ink-mute font-mono"> · {SINIF_LABEL[row.sinif]}</span>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="hairline mb-4" />
-
-      <div className="grid grid-cols-3 gap-2 text-[12px]">
-        <div>
-          <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-ink-mute mb-1">
-            Puan
-          </div>
-          <div className="font-display font-bold text-ink tnum text-[20px] leading-none">
-            {row.toplamPuan}
-          </div>
-        </div>
-        <div>
-          <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-ink-mute mb-1">
-            Çözüm
-          </div>
-          <div className="font-display font-bold text-ink tnum text-[20px] leading-none">
-            {row.cozulenSoru}
-          </div>
-        </div>
-        <div>
-          <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-ink-mute mb-1">
-            Rozet
-          </div>
-          <div className="font-display font-bold text-ink tnum text-[20px] leading-none">
-            {row.rozetSayisi}
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-};

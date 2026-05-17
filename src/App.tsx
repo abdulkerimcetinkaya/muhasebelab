@@ -394,9 +394,14 @@ const App = () => {
     });
   };
 
-  const kullaniciAdiGuncelle = (ad: string) => {
+  // Takma ad güncelleme — DB unique constraint (lower(kullanici_adi)) çakışırsa
+  // throw eder; çağıran (HesapView) hatayı yakalayıp UI'da mesaj gösterir.
+  // State güncellemesi sadece DB save başarılıysa yapılır (rollback derdi yok).
+  const kullaniciAdiGuncelle = async (ad: string): Promise<void> => {
+    if (user) {
+      await profilKaydetSupabase(user.id, { kullanici_adi: ad });
+    }
     setIlerleme((prev) => ({ ...prev, kullaniciAdi: ad }));
-    if (user) profilKaydetSupabase(user.id, { kullanici_adi: ad }).catch(() => {});
   };
 
   const stat = istatistikHesapla(ilerleme, uniteler, tumSorular);

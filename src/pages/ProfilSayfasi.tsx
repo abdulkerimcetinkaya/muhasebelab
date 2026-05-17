@@ -5,8 +5,19 @@ import { HesapView } from '../components/profil/HesapView';
 import { RozetlerView } from '../components/profil/RozetlerView';
 import { UyelikView } from '../components/profil/UyelikView';
 import { YetkinlikView } from '../components/profil/YetkinlikView';
-import { PROFIL_BOS, SINIF_LABEL } from '../components/profil/types';
-import type { Bolum, Durum, Meslek, ProfilBilgi, Sinif } from '../components/profil/types';
+import {
+  EGITIM_DURUMU_LABEL,
+  MESLEK_LABEL,
+  PROFIL_BOS,
+  SINIF_LABEL,
+} from '../components/profil/types';
+import type {
+  Bolum,
+  EgitimDurumu,
+  Meslek,
+  ProfilBilgi,
+  Sinif,
+} from '../components/profil/types';
 import { useAuth, useIsPremium } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ROZETLER } from '../data/rozetler';
@@ -16,7 +27,7 @@ import type { Ilerleme, Istatistik } from '../types';
 interface Props {
   ilerleme: Ilerleme;
   stat: Istatistik;
-  onKullaniciAdiGuncelle: (ad: string) => void;
+  onKullaniciAdiGuncelle: (ad: string) => Promise<void>;
   onSifirla: () => void;
   onTemaDegistir: () => void;
 }
@@ -57,14 +68,14 @@ export const ProfilSayfasi = ({
     }
     let aktif = true;
     setProfilYukleniyor(true);
-    // Sadeleştirme: yeni "Hakkında" yapısı için sadece gerekli kolonları çek.
-    // Yeni kolonlar (durum, dogum_tarihi) migration_20260518000001 ile geldi.
+    // Eğitim durumu yapısı (migration 20260518000003) — düz alanlar.
     // Supabase auto-gen types henüz regenerate edilmedi — any cast.
     supabase
       .from('kullanicilar')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .select(
-        'ad, soyad, durum, dogum_tarihi, universite, bolum, sinif, meslek, tecrube_yil, bulten_izni' as any,
+        'ad, soyad, egitim_durumu, durum, universite, sinif, ' +
+          'dogum_tarihi, meslek, bulten_izni' as any,
       )
       .eq('id', user.id)
       .maybeSingle()
@@ -86,25 +97,51 @@ export const ProfilSayfasi = ({
               dogumGun = String(parseInt(parcalar[2]!, 10));
             }
           }
-          // Eski 'calisan' değeri olabilir — migration güncellemesi sırasında
-          // DB-side 'mezun'a taşındı ama in-flight bir veri varsa frontend de
-          // normalize etsin.
-          const ham = d.durum as string | null;
-          const durum: Durum = ham === 'ogrenci' ? 'ogrenci'
-            : ham === 'mezun' || ham === 'calisan' ? 'mezun'
-            : '';
+
+          // Eğitim durumu — DB'de yoksa eski durum kolonundan fallback
+          // (migration zaten taşıdı, bu safety net).
+          const egitimHam = d.egitim_durumu as string | null;
+          const durumHam = d.durum as string | null;
+          let egitimDurumu: EgitimDurumu = '';
+          if (egitimHam && ['lise', 'universite', 'mezun'].includes(egitimHam)) {
+            egitimDurumu = egitimHam as EgitimDurumu;
+          } else if (durumHam === 'ogrenci') {
+            egitimDurumu = 'universite';
+          } else if (durumHam === 'mezun' || durumHam === 'calisan') {
+            egitimDurumu = 'mezun';
+          }
+
+          // Sınıf — yeni constraint 9-12 + hazırlık/1-4 + (legacy) mezun/diger
+          // izin veriyor. TS type'ı dar — legacy değerler boş'a düşer.
+          const sinifGecerli: Sinif[] = [
+            '', 'hazirlik', '1', '2', '3', '4', '9', '10', '11', '12',
+          ];
+          const sinifHam = d.sinif as string | null;
+          const sinif = (sinifGecerli.includes(sinifHam as Sinif)
+            ? (sinifHam as Sinif | null) ?? ''
+            : '') as Sinif;
+
+          // Meslek — 5 sade seçenek (migration 20260518000004). Eski değerler
+          // (muhasebeci, mali_musavir, is_ariyor) artık geçerli değil — UI'da
+          // boş gösterilir, DB tarafı zaten temizlendi.
+          const meslekGecerli: Meslek[] = [
+            '', 'smmm_stajyer', 'smmm', 'akademisyen', 'calismiyor', 'diger',
+          ];
+          const meslekHam = d.meslek as string | null;
+          const meslek = (meslekGecerli.includes(meslekHam as Meslek)
+            ? (meslekHam as Meslek | null) ?? ''
+            : '') as Meslek;
+
           setProfil({
             ad: (d.ad as string | null) ?? '',
             soyad: (d.soyad as string | null) ?? '',
-            durum,
+            egitimDurumu,
+            universite: (d.universite as string | null) ?? '',
+            sinif,
             dogumGun,
             dogumAy,
             dogumYil,
-            universite: (d.universite as string | null) ?? '',
-            bolum: (d.bolum as string | null) ?? '',
-            sinif: ((d.sinif as Sinif | null) ?? '') as Sinif,
-            meslek: ((d.meslek as Meslek | null) ?? '') as Meslek,
-            tecrubeYil: (d.tecrube_yil as number | null)?.toString() ?? '',
+            meslek,
             bultenIzni: (d.bulten_izni as boolean | null) ?? false,
           });
         }
@@ -114,14 +151,14 @@ export const ProfilSayfasi = ({
     };
   }, [user]);
 
-  // Profil tamamlanma yüzdesi — sade 3 çekirdek alan: ad + durum + doğum tarihi.
-  // (Soyad ve diğerleri opsiyonel — çok fazla zorunluluk hissi vermeyelim.)
+  // Profil tamamlanma yüzdesi — 3 çekirdek alan: ad + eğitim durumu + doğum tarihi.
+  // (Soyad, okul, sınıf, meslek opsiyonel — çok fazla zorunluluk hissi vermeyelim.)
   const profilTamamlanmaSkor = useMemo(() => {
     const tarihTamamMi = !!(profil.dogumGun && profil.dogumAy && profil.dogumYil);
-    const alanlar = [!!profil.ad, !!profil.durum, tarihTamamMi];
+    const alanlar = [!!profil.ad, !!profil.egitimDurumu, tarihTamamMi];
     const dolan = alanlar.filter(Boolean).length;
     return { dolan, toplam: alanlar.length, yuzde: Math.round((dolan / alanlar.length) * 100) };
-  }, [profil.ad, profil.durum, profil.dogumGun, profil.dogumAy, profil.dogumYil]);
+  }, [profil.ad, profil.egitimDurumu, profil.dogumGun, profil.dogumAy, profil.dogumYil]);
   const profilEksik = profilTamamlanmaSkor.yuzde < 100;
 
   const kazanilanRozetSayi = Object.keys(ilerleme.kazanilanRozetler).length;
@@ -215,29 +252,29 @@ export const ProfilSayfasi = ({
                 </div>
               </div>
 
-              {/* Akademik etiketler */}
-              {(profil.universite || profil.bolum || profil.sinif || profil.durum) && (
+              {/* Etiketler — eğitim durumu + meslek + okul/sınıf context'i */}
+              {(profil.egitimDurumu || profil.meslek || profil.universite || profil.sinif) && (
                 <div className="flex flex-wrap gap-1">
-                  {profil.durum && (
+                  {profil.egitimDurumu && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-soft text-[10.5px] font-bold text-brand-deep dark:text-brand-soft">
                       <Icon
-                        name={profil.durum === 'ogrenci' ? 'GraduationCap' : 'Award'}
+                        name={profil.egitimDurumu === 'mezun' ? 'Award' : 'GraduationCap'}
                         size={10}
                         className="flex-shrink-0"
                       />
-                      {profil.durum === 'ogrenci' ? 'Öğrenci' : 'Mezun'}
+                      {EGITIM_DURUMU_LABEL[profil.egitimDurumu]}
+                    </span>
+                  )}
+                  {profil.meslek && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-2 text-[10.5px] font-bold text-ink-soft">
+                      <Icon name="Briefcase" size={10} className="flex-shrink-0" />
+                      {MESLEK_LABEL[profil.meslek]}
                     </span>
                   )}
                   {profil.universite && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-2 text-[10.5px] font-bold text-ink-soft max-w-full">
                       <Icon name="Landmark" size={10} className="flex-shrink-0" />
                       <span className="truncate">{profil.universite}</span>
-                    </span>
-                  )}
-                  {profil.bolum && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-2 text-[10.5px] font-bold text-ink-soft max-w-full">
-                      <Icon name="BookOpen" size={10} className="flex-shrink-0" />
-                      <span className="truncate">{profil.bolum}</span>
                     </span>
                   )}
                   {profil.sinif && (
