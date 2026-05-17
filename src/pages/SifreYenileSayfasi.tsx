@@ -30,7 +30,15 @@ export const SifreYenileSayfasi = () => {
       return;
     }
 
-    // 2. onAuthStateChange ile PASSWORD_RECOVERY event'ini bekle
+    // 2. App.tsx'in global PASSWORD_RECOVERY listener'ı set ettiyse oku.
+    //    Supabase'in tokenları zaten parse ettiği durumda (hash temizlenmiş)
+    //    tek bilgi kaynağımız bu flag.
+    if (sessionStorage.getItem('sifre_yenileme_modu') === '1') {
+      setOturum('recovery');
+      return;
+    }
+
+    // 3. onAuthStateChange ile PASSWORD_RECOVERY event'ini bekle (yedek yol)
     let recoveryGordu = false;
     const {
       data: { subscription },
@@ -41,7 +49,7 @@ export const SifreYenileSayfasi = () => {
       }
     });
 
-    // 3. 2 saniye içinde recovery event gelmezse normal session demektir
+    // 4. 2 saniye içinde recovery event gelmezse normal session demektir
     const timer = setTimeout(() => {
       if (!recoveryGordu) setOturum('normal');
     }, 2000);
@@ -73,6 +81,8 @@ export const SifreYenileSayfasi = () => {
       );
       return;
     }
+    // Recovery modunu kapat — sessionStorage flag'i temizle
+    sessionStorage.removeItem('sifre_yenileme_modu');
     nav('/dashboard', { replace: true });
   };
 
