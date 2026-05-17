@@ -5,16 +5,8 @@ import { HesapView } from '../components/profil/HesapView';
 import { RozetlerView } from '../components/profil/RozetlerView';
 import { UyelikView } from '../components/profil/UyelikView';
 import { YetkinlikView } from '../components/profil/YetkinlikView';
-import { HEDEF_LABEL, PROFIL_BOS, SINIF_LABEL } from '../components/profil/types';
-import type {
-  Bolum,
-  HaftalikHedef,
-  Hedef,
-  Meslek,
-  NeredenDuydu,
-  ProfilBilgi,
-  Sinif,
-} from '../components/profil/types';
+import { PROFIL_BOS, SINIF_LABEL } from '../components/profil/types';
+import type { Bolum, Durum, ProfilBilgi, Sinif } from '../components/profil/types';
 import { useAuth, useIsPremium } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ROZETLER } from '../data/rozetler';
@@ -65,14 +57,14 @@ export const ProfilSayfasi = ({
     }
     let aktif = true;
     setProfilYukleniyor(true);
-    // Yeni kolonlar (meslek, mezuniyet_yili, sektor, tecrube_yil,
-    // haftalik_hedef, nereden_duydu) migration_20260517000001 ile geldi;
-    // Supabase auto-gen types henüz regenerate edilmedi — cast üzerinden okuyoruz.
+    // Sadeleştirme: yeni "Hakkında" yapısı için sadece gerekli kolonları çek.
+    // Yeni kolonlar (durum, dogum_tarihi) migration_20260518000001 ile geldi.
+    // Supabase auto-gen types henüz regenerate edilmedi — any cast.
     supabase
       .from('kullanicilar')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .select(
-        'ad, soyad, meslek, universite, bolum, sinif, mezuniyet_yili, sektor, tecrube_yil, hedef, haftalik_hedef, nereden_duydu, dogum_yili, bulten_izni' as any,
+        'ad, soyad, durum, dogum_tarihi, universite, bolum, sinif, tecrube_yil, bulten_izni' as any,
       )
       .eq('id', user.id)
       .maybeSingle()
@@ -81,20 +73,30 @@ export const ProfilSayfasi = ({
         setProfilYukleniyor(false);
         if (data) {
           const d = data as unknown as Record<string, unknown>;
+          // dogum_tarihi date — 'YYYY-MM-DD' formatından gün/ay/yıl'a ayır
+          const tarihStr = d.dogum_tarihi as string | null;
+          let dogumYil = '';
+          let dogumAy = '';
+          let dogumGun = '';
+          if (tarihStr) {
+            const parcalar = tarihStr.split('-');
+            if (parcalar.length === 3) {
+              dogumYil = parcalar[0]!;
+              dogumAy = String(parseInt(parcalar[1]!, 10));
+              dogumGun = String(parseInt(parcalar[2]!, 10));
+            }
+          }
           setProfil({
             ad: (d.ad as string | null) ?? '',
             soyad: (d.soyad as string | null) ?? '',
-            meslek: ((d.meslek as Meslek | null) ?? '') as Meslek,
+            durum: ((d.durum as Durum | null) ?? '') as Durum,
+            dogumGun,
+            dogumAy,
+            dogumYil,
             universite: (d.universite as string | null) ?? '',
             bolum: (d.bolum as string | null) ?? '',
             sinif: ((d.sinif as Sinif | null) ?? '') as Sinif,
-            mezuniyetYili: (d.mezuniyet_yili as number | null)?.toString() ?? '',
-            sektor: (d.sektor as string | null) ?? '',
             tecrubeYil: (d.tecrube_yil as number | null)?.toString() ?? '',
-            hedef: ((d.hedef as Hedef | null) ?? '') as Hedef,
-            haftalikHedef: ((d.haftalik_hedef as HaftalikHedef | null) ?? '') as HaftalikHedef,
-            neredenDuydu: ((d.nereden_duydu as NeredenDuydu | null) ?? '') as NeredenDuydu,
-            dogumYili: (d.dogum_yili as number | null)?.toString() ?? '',
             bultenIzni: (d.bulten_izni as boolean | null) ?? false,
           });
         }
@@ -104,21 +106,14 @@ export const ProfilSayfasi = ({
     };
   }, [user]);
 
-  // Profil tamamlanma yüzdesi — onboarding kaldırıldığı için nazikçe nudge.
-  // Kapsayıcı 5 çekirdek alan (meslek/sınıf/üniversite vs. mesleğe göre
-  // değiştiği için condition'a alınmadı, herkes 5/5 ulaşabilir):
-  //   ad + soyad + meslek + hedef + haftalik_hedef
+  // Profil tamamlanma yüzdesi — sade 3 çekirdek alan: ad + durum + doğum tarihi.
+  // (Soyad ve diğerleri opsiyonel — çok fazla zorunluluk hissi vermeyelim.)
   const profilTamamlanmaSkor = useMemo(() => {
-    const alanlar = [
-      !!profil.ad,
-      !!profil.soyad,
-      !!profil.meslek,
-      !!profil.hedef,
-      !!profil.haftalikHedef,
-    ];
+    const tarihTamamMi = !!(profil.dogumGun && profil.dogumAy && profil.dogumYil);
+    const alanlar = [!!profil.ad, !!profil.durum, tarihTamamMi];
     const dolan = alanlar.filter(Boolean).length;
     return { dolan, toplam: alanlar.length, yuzde: Math.round((dolan / alanlar.length) * 100) };
-  }, [profil.ad, profil.soyad, profil.meslek, profil.hedef, profil.haftalikHedef]);
+  }, [profil.ad, profil.durum, profil.dogumGun, profil.dogumAy, profil.dogumYil]);
   const profilEksik = profilTamamlanmaSkor.yuzde < 100;
 
   const kazanilanRozetSayi = Object.keys(ilerleme.kazanilanRozetler).length;
@@ -213,8 +208,18 @@ export const ProfilSayfasi = ({
               </div>
 
               {/* Akademik etiketler */}
-              {(profil.universite || profil.bolum || profil.sinif || profil.hedef) && (
+              {(profil.universite || profil.bolum || profil.sinif || profil.durum) && (
                 <div className="flex flex-wrap gap-1">
+                  {profil.durum && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-soft text-[10.5px] font-bold text-brand-deep dark:text-brand-soft">
+                      <Icon
+                        name={profil.durum === 'ogrenci' ? 'GraduationCap' : 'Briefcase'}
+                        size={10}
+                        className="flex-shrink-0"
+                      />
+                      {profil.durum === 'ogrenci' ? 'Öğrenci' : 'Çalışan'}
+                    </span>
+                  )}
                   {profil.universite && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-2 text-[10.5px] font-bold text-ink-soft max-w-full">
                       <Icon name="Landmark" size={10} className="flex-shrink-0" />
@@ -230,12 +235,6 @@ export const ProfilSayfasi = ({
                   {profil.sinif && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-2 text-[10.5px] font-bold text-ink-soft">
                       {SINIF_LABEL[profil.sinif]}
-                    </span>
-                  )}
-                  {profil.hedef && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-soft text-[10.5px] font-bold text-brand-deep dark:text-brand-soft">
-                      <Icon name="Milestone" size={10} className="flex-shrink-0" />
-                      {HEDEF_LABEL[profil.hedef]}
                     </span>
                   )}
                 </div>
