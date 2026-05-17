@@ -10,6 +10,27 @@ if (!url || !anonKey) {
   );
 }
 
+// Şifre sıfırlama tespiti — modül yüklenir yüklenmez URL'i kontrol et.
+//
+// auth.ts'deki sifreSifirlamaIste, redirectTo'ya `?recovery=1` query param'ı
+// ekliyor. Supabase email'i bu URL'e yönlendiriyor (PKCE code'unu append edip):
+//
+//   https://muhasebeakademi.com/?recovery=1&code=xxx
+//
+// Bu kontrol Supabase JS'in `?code=`'u tüketip URL'i temizlemesinden ÖNCE
+// çalışıyor; recovery=1 marker'ını yakalayıp sessionStorage'a flag yazıyor.
+// OnboardingGuard bu flag'i okuyup kullanıcıyı /sifre-yenile'ye yönlendiriyor.
+//
+// onAuthStateChange + PASSWORD_RECOVERY event tabanlı çözüme göre çok daha
+// güvenilir: event PKCE'de bazen geç fire ediyor / kaçırılabiliyor; query
+// param ise URL'de garanti var ve sync olarak okunabiliyor.
+if (typeof window !== 'undefined') {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('recovery') === '1') {
+    sessionStorage.setItem('sifre_yenileme_modu', '1');
+  }
+}
+
 export const supabase = createClient<Database>(url, anonKey, {
   auth: {
     persistSession: true,
@@ -20,28 +41,3 @@ export const supabase = createClient<Database>(url, anonKey, {
     flowType: 'pkce',
   },
 });
-
-// Şifre sıfırlama (PASSWORD_RECOVERY) event'ini module-init time'da yakala.
-//
-// Supabase JS, PKCE flow'da URL'deki ?code=... param'ını async olarak değişime
-// sokuyor; recovery linki için bu işlem sonunda PASSWORD_RECOVERY event'i fire
-// oluyor. Eğer listener React useEffect'inde subscribe edilirse mount gecikmesi
-// yüzünden event kaçırılabiliyor (URL'de type=recovery yok PKCE'de — sadece code
-// var, bu yüzden URL tabanlı tespit de işe yaramıyor).
-//
-// Çözüm: createClient'tan hemen sonra, modül seviyesinde subscribe ol. Bu sayede
-// recovery event her zaman yakalanır, sessionStorage flag set edilir ve kullanıcı
-// gerekirse zorla /sifre-yenile'ye yönlendirilir.
-if (typeof window !== 'undefined') {
-  supabase.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY') {
-      sessionStorage.setItem('sifre_yenileme_modu', '1');
-      // Kullanıcı OnboardingGuard veya başka redirect'le yanlış yere gitmesin —
-      // zorla şifre yenileme sayfasına götür. window.location.replace history
-      // entry açmıyor, geri butonu loop oluşturmaz.
-      if (!window.location.hash.startsWith('#/sifre-yenile')) {
-        window.location.replace(window.location.origin + '/#/sifre-yenile');
-      }
-    }
-  });
-}

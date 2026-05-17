@@ -96,11 +96,16 @@ export const cikisYap = async (): Promise<AuthSonuc> => {
 
 /**
  * Kullanıcıya şifre sıfırlama e-postası yollar. Link kullanıcıyı
- * `${origin}/#/sifre-yenile` rotasına götürür; recovery oturumu
- * Supabase tarafından otomatik kurulur, kullanıcı yeni şifresini girer.
+ * `${origin}/?recovery=1` rotasına götürür; supabase.ts module-init
+ * bu query param'ı görüp recovery flag set ediyor ve OnboardingGuard
+ * kullanıcıyı /sifre-yenile sayfasına yönlendiriyor.
+ *
+ * Eskiden redirectTo `${origin}/#/sifre-yenile` idi ama PKCE flow bu URL'i
+ * malforme şekilde işliyordu (hash + query param karışıyor) — sonuçta
+ * kullanıcı /onboarding'e düşüyordu. Query param tabanlı marker güvenilir.
  */
 export const sifreSifirlamaIste = async (email: string): Promise<AuthSonuc> => {
-  const redirectTo = `${window.location.origin}/#/sifre-yenile`;
+  const redirectTo = `${window.location.origin}/?recovery=1`;
   const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
   if (error) return { basarili: false, hata: cevirHata(error.message) };
   return { basarili: true };
