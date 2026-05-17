@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
+import { InitialsAvatar } from './InitialsAvatar';
 import { BildirimDropdown } from './BildirimDropdown';
 import { useAuth, useIsAdmin, useIsPremium } from '../contexts/AuthContext';
 import { cikisYap } from '../lib/auth';
@@ -12,6 +13,12 @@ interface Props {
   onHesapPlaniAc: () => void;
 }
 
+/**
+ * Üst navigasyon barı. Sağ üstte kullanıcı dropdown'ı var; Profilim,
+ * Premium, Admin, Tema, Çıkış gibi maddeler buraya toplanmış durumda
+ * (eski dağınık iconlar yerine). Streak/puan badge'ları kullanıcı
+ * tercihi gereği dropdown'ın DIŞINDA, her zaman görünür kalıyor.
+ */
 export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
   const nav = useNavigate();
   const { pathname } = useLocation();
@@ -19,30 +26,50 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
   const isAdmin = useIsAdmin();
   const isPremium = useIsPremium();
   const [mobilMenuAcik, setMobilMenuAcik] = useState(false);
+  const [userMenuAcik, setUserMenuAcik] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const cikis = async () => {
+    setUserMenuAcik(false);
     await cikisYap();
     nav('/');
   };
 
-  const aktifAna = pathname === '/';
+  // Dropdown açıkken dış tıklama → kapat (BildirimDropdown'daki pattern aynısı)
+  useEffect(() => {
+    if (!userMenuAcik) return;
+    const handler = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuAcik(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [userMenuAcik]);
+
+  const goruntuAd =
+    [ilerleme.ad, ilerleme.soyad].filter(Boolean).join(' ').trim() ||
+    ilerleme.kullaniciAdi ||
+    user?.email?.split('@')[0] ||
+    'Kullanıcı';
+
+  const aktifAna = pathname === '/' || pathname === '/dashboard';
   const aktifUnite = pathname === '/uniteler' || pathname.startsWith('/uniteler/');
   const aktifProblem = pathname === '/problemler' || pathname.startsWith('/problemler/');
   const aktifLiderlik = pathname === '/liderlik';
-  const aktifProfil = pathname === '/profil';
   const aktifAdmin = pathname.startsWith('/admin');
 
   const linkler = [
     { id: '/', ad: 'Anasayfa', aktif: aktifAna },
     { id: '/uniteler', ad: 'Üniteler', aktif: aktifUnite },
     { id: '/problemler', ad: 'Problemler', aktif: aktifProblem },
-    ...(user
-      ? [
-          { id: '/liderlik', ad: 'Liderlik', aktif: aktifLiderlik },
-          { id: '/profil', ad: 'Profil', aktif: aktifProfil },
-        ]
-      : []),
+    ...(user ? [{ id: '/liderlik', ad: 'Liderlik', aktif: aktifLiderlik }] : []),
   ];
+
+  const dropdownGit = (yol: string) => {
+    setUserMenuAcik(false);
+    nav(yol);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-bg/85 backdrop-blur-md border-b border-line">
@@ -67,8 +94,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                 <button
                   onClick={() => nav(l.id)}
                   className={`relative text-[13.5px] font-medium tracking-tight transition py-1 ${
- l.aktif ? 'text-ink' : 'text-ink-soft hover:text-ink'
- }`}
+                    l.aktif ? 'text-ink' : 'text-ink-soft hover:text-ink'
+                  }`}
                 >
                   {l.ad}
                   {l.aktif && (
@@ -81,7 +108,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
 
           {/* Sağ */}
           <div className="flex items-center gap-1.5 sm:gap-2.5">
-            {/* Streak / puan — sadece girişli kullanıcılar için */}
+            {/* Streak / puan — sadece girişli kullanıcılar için (kullanıcı tercihi: her zaman dış) */}
             {user && (ilerleme.streak > 0 || ilerleme.puan > 0) && (
               <div className="hidden sm:flex items-center gap-3 mr-1 pr-3 border-r border-line">
                 {ilerleme.streak > 0 && (
@@ -102,70 +129,128 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
               </div>
             )}
 
-            <button
-              onClick={onHesapPlaniAc}
-              className="hidden lg:flex p-1.5 rounded text-ink-soft hover:text-ink transition"
-              title="Hesap Planı"
-            >
-              <Icon name="BookOpen" size={15} />
-            </button>
-
-            <button
-              onClick={onTemaDegistir}
-              className="p-1.5 rounded text-ink-soft hover:text-ink transition"
-              title={ilerleme.tema === 'dark' ? 'Açık tema' : 'Karanlık tema'}
-            >
-              <Icon name={ilerleme.tema === 'dark' ? 'Sun' : 'Moon'} size={15} />
-            </button>
-
             {user && <BildirimDropdown />}
 
-            {user &&
-              (isPremium ? (
-                <button
-                  onClick={() => nav('/premium')}
-                  className="hidden md:inline-flex chip chip-premium"
-                  title="Premium aktif"
-                >
-                  <Icon name="BadgeCheck" size={10} />
-                  Premium
-                </button>
-              ) : (
-                <button
-                  onClick={() => nav('/premium')}
-                  className="hidden md:inline-flex text-[11px] tracking-wider uppercase font-mono font-medium text-premium-deep hover:text-premium transition py-1 px-1"
-                  title="Premium"
-                >
-                  Premium →
-                </button>
-              ))}
-
-            {isAdmin && (
-              <button
-                onClick={() => nav('/admin')}
-                className="hidden md:flex chip"
-                title="Admin"
-              >
-                <Icon name="Shield" size={10} />
-                Admin
-              </button>
-            )}
-
-            {user ? (
-              <button
-                onClick={cikis}
-                className="hidden md:flex p-1.5 rounded text-ink-soft hover:text-danger transition"
-                title={user.email ?? ''}
-              >
-                <Icon name="LogOut" size={15} />
-              </button>
-            ) : (
+            {!user && (
               <button
                 onClick={() => nav('/giris')}
                 className="hidden md:flex btn btn-primary btn-sm"
               >
                 Giriş Yap
               </button>
+            )}
+
+            {/* Kullanıcı dropdown — Profil, Premium, Admin, Tema, Çıkış */}
+            {user && (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuAcik(!userMenuAcik)}
+                  className="hidden md:flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-surface-2/50 transition"
+                  aria-label="Kullanıcı menüsü"
+                  aria-expanded={userMenuAcik}
+                >
+                  <InitialsAvatar ad={goruntuAd} size={28} />
+                  <Icon
+                    name="ChevronDown"
+                    size={12}
+                    className={`text-ink-mute transition ${userMenuAcik ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {userMenuAcik && (
+                  <div className="absolute right-0 top-full mt-1.5 w-64 bg-surface border border-line rounded-xl shadow-xl py-1.5 z-50 overflow-hidden">
+                    {/* Header */}
+                    <div className="px-3.5 py-3 border-b border-line-soft flex items-center gap-3">
+                      <InitialsAvatar ad={goruntuAd} size={36} />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[13.5px] font-semibold text-ink truncate">
+                          {goruntuAd}
+                        </div>
+                        <div className="text-[11.5px] text-ink-mute truncate">
+                          {user.email}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Menü maddeleri */}
+                    <button
+                      onClick={() => dropdownGit('/profil')}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-[13px] text-ink-soft hover:bg-surface-2/70 hover:text-ink transition"
+                    >
+                      <Icon name="User" size={14} />
+                      <span>Profilim</span>
+                    </button>
+
+                    <button
+                      onClick={() => dropdownGit('/premium')}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-[13px] text-ink-soft hover:bg-surface-2/70 hover:text-ink transition"
+                    >
+                      <Icon
+                        name={isPremium ? 'BadgeCheck' : 'Sparkles'}
+                        size={14}
+                        className={isPremium ? 'text-premium-deep' : ''}
+                      />
+                      <span>{isPremium ? 'Premium (aktif)' : 'Premium'}</span>
+                    </button>
+
+                    {isAdmin && (
+                      <button
+                        onClick={() => dropdownGit('/admin')}
+                        className={`w-full flex items-center gap-2.5 px-3.5 py-2 text-[13px] hover:bg-surface-2/70 hover:text-ink transition ${
+                          aktifAdmin ? 'text-ink font-medium' : 'text-ink-soft'
+                        }`}
+                      >
+                        <Icon name="Shield" size={14} />
+                        <span>Admin paneli</span>
+                      </button>
+                    )}
+
+                    <div className="h-px bg-line-soft my-1" />
+
+                    <button
+                      onClick={() => {
+                        onHesapPlaniAc();
+                        setUserMenuAcik(false);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-[13px] text-ink-soft hover:bg-surface-2/70 hover:text-ink transition"
+                    >
+                      <Icon name="BookOpen" size={14} />
+                      <span>Hesap Planı</span>
+                    </button>
+
+                    <button
+                      onClick={() => dropdownGit('/sozluk')}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-[13px] text-ink-soft hover:bg-surface-2/70 hover:text-ink transition"
+                    >
+                      <Icon name="Search" size={14} />
+                      <span>Mali Sözlük</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        onTemaDegistir();
+                        // tema değişikliği için menüyü kapatmıyoruz — kullanıcı sonucu görsün
+                      }}
+                      className="w-full flex items-center justify-between gap-2.5 px-3.5 py-2 text-[13px] text-ink-soft hover:bg-surface-2/70 hover:text-ink transition"
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <Icon name={ilerleme.tema === 'dark' ? 'Sun' : 'Moon'} size={14} />
+                        <span>{ilerleme.tema === 'dark' ? 'Açık tema' : 'Karanlık tema'}</span>
+                      </span>
+                    </button>
+
+                    <div className="h-px bg-line-soft my-1" />
+
+                    <button
+                      onClick={cikis}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-[13px] text-ink-soft hover:bg-danger-soft hover:text-danger transition"
+                    >
+                      <Icon name="LogOut" size={14} />
+                      <span>Çıkış yap</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
 
             <button
@@ -183,6 +268,19 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
       {mobilMenuAcik && (
         <div className="md:hidden border-t border-line bg-surface">
           <div className="max-w-[1240px] mx-auto px-5 py-2">
+            {/* Kullanıcı header (mobil) */}
+            {user && (
+              <div className="flex items-center gap-3 py-3 border-b border-line-soft mb-1">
+                <InitialsAvatar ad={goruntuAd} size={36} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[14px] font-semibold text-ink truncate">
+                    {goruntuAd}
+                  </div>
+                  <div className="text-[12px] text-ink-mute truncate">{user.email}</div>
+                </div>
+              </div>
+            )}
+
             {linkler.map((l) => (
               <button
                 key={l.id}
@@ -191,13 +289,25 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                   setMobilMenuAcik(false);
                 }}
                 className={`w-full px-2 py-3 text-left text-[15px] flex items-center justify-between border-b border-line-soft last:border-b-0 ${
- l.aktif ? 'text-ink font-medium' : 'text-ink-soft'
- }`}
+                  l.aktif ? 'text-ink font-medium' : 'text-ink-soft'
+                }`}
               >
                 <span>{l.ad}</span>
                 {l.aktif && <span className="folio">●</span>}
               </button>
             ))}
+            {user && (
+              <button
+                onClick={() => {
+                  nav('/profil');
+                  setMobilMenuAcik(false);
+                }}
+                className="w-full px-2 py-3 text-left text-[14px] text-ink-soft flex items-center gap-2.5 border-b border-line-soft"
+              >
+                <Icon name="User" size={14} />
+                Profilim
+              </button>
+            )}
             <div className="hairline my-2" />
             <button
               onClick={() => {
@@ -219,6 +329,16 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
               <Icon name="Search" size={14} />
               Mali Sözlük
             </button>
+            <button
+              onClick={() => {
+                onTemaDegistir();
+                setMobilMenuAcik(false);
+              }}
+              className="w-full px-2 py-3 text-left text-[14px] text-ink-soft flex items-center gap-2.5"
+            >
+              <Icon name={ilerleme.tema === 'dark' ? 'Sun' : 'Moon'} size={14} />
+              {ilerleme.tema === 'dark' ? 'Açık tema' : 'Karanlık tema'}
+            </button>
             {user && (
               <button
                 onClick={() => {
@@ -238,8 +358,8 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                   setMobilMenuAcik(false);
                 }}
                 className={`w-full px-2 py-3 text-left text-[14px] flex items-center gap-2.5 ${
- aktifAdmin ? 'text-ink font-medium' : 'text-ink-soft'
- }`}
+                  aktifAdmin ? 'text-ink font-medium' : 'text-ink-soft'
+                }`}
               >
                 <Icon name="Shield" size={14} />
                 Admin
@@ -254,7 +374,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
                 className="w-full px-2 py-3 text-left text-[14px] text-ink-soft flex items-center gap-2.5"
               >
                 <Icon name="LogOut" size={14} />
-                <span className="truncate">Çıkış · {user.email}</span>
+                <span className="truncate">Çıkış yap</span>
               </button>
             ) : (
               <button

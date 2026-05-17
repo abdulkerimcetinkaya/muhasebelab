@@ -22,7 +22,6 @@ const UniteSayfasi = lazy(() => import('./pages/UniteSayfasi').then((m) => ({ de
 const GirisSayfasi = lazy(() => import('./pages/GirisSayfasi').then((m) => ({ default: m.GirisSayfasi })));
 const SifreSifirlaSayfasi = lazy(() => import('./pages/SifreSifirlaSayfasi').then((m) => ({ default: m.SifreSifirlaSayfasi })));
 const SifreYenileSayfasi = lazy(() => import('./pages/SifreYenileSayfasi').then((m) => ({ default: m.SifreYenileSayfasi })));
-const OnboardingSayfasi = lazy(() => import('./pages/OnboardingSayfasi').then((m) => ({ default: m.OnboardingSayfasi })));
 const PremiumSayfasi = lazy(() => import('./pages/PremiumSayfasi').then((m) => ({ default: m.PremiumSayfasi })));
 const PremiumSonucSayfasi = lazy(() => import('./pages/PremiumSonucSayfasi').then((m) => ({ default: m.PremiumSonucSayfasi })));
 const KurumOdemeSayfasi = lazy(() => import('./pages/KurumOdemeSayfasi').then((m) => ({ default: m.KurumOdemeSayfasi })));
@@ -94,13 +93,19 @@ import {
 import { supabase } from './lib/supabase';
 import type { Ilerleme, Rozet, Soru } from './types';
 
-const OnboardingGuard = ({
+/**
+ * Recovery (şifre yenileme) guard.
+ *
+ * Onboarding flow tamamen kaldırıldı (kullanıcılar profil sayfasından
+ * eğitim bilgilerini doldurabilir — bloklayıcı bir adım yok). Geride sadece
+ * recovery yönlendirmesi kaldı: şifre sıfırlama linkine tıklayan kullanıcı
+ * recovery oturumuyla giriş yapar; zorla /sifre-yenile sayfasına yönlendirilir.
+ */
+const RecoveryGuard = ({
   girisYapildi,
-  onboardingTamam,
   oturumYukleniyor,
 }: {
   girisYapildi: boolean;
-  onboardingTamam: boolean;
   oturumYukleniyor: boolean;
 }) => {
   const nav = useNavigate();
@@ -108,19 +113,12 @@ const OnboardingGuard = ({
   useEffect(() => {
     if (oturumYukleniyor) return;
     if (!girisYapildi) return;
-    // Recovery (şifre yenileme) modunda kullanıcı zaten giriş yapmış sayılır
-    // ama onboarding'e değil şifre yenileme formuna gitmesi gerekir. Bu kontrol
-    // OnboardingGuard'ı geçersiz kılmaz, sadece recovery'yi öne alır.
     if (sessionStorage.getItem('sifre_yenileme_modu') === '1') {
       if (pathname !== '/sifre-yenile') {
         nav('/sifre-yenile', { replace: true });
       }
-      return;
     }
-    if (onboardingTamam) return;
-    if (pathname === '/onboarding' || pathname === '/giris') return;
-    nav('/onboarding', { replace: true });
-  }, [girisYapildi, onboardingTamam, oturumYukleniyor, pathname, nav]);
+  }, [girisYapildi, oturumYukleniyor, pathname, nav]);
   return null;
 };
 
@@ -401,11 +399,6 @@ const App = () => {
     if (user) profilKaydetSupabase(user.id, { kullanici_adi: ad }).catch(() => {});
   };
 
-  const onboardingTamamla = (ad: string) => {
-    setIlerleme((prev) => ({ ...prev, kullaniciAdi: ad, onboardingTamam: true }));
-    if (user) profilKaydetSupabase(user.id, { kullanici_adi: ad }).catch(() => {});
-  };
-
   const stat = istatistikHesapla(ilerleme, uniteler, tumSorular);
 
   if (uniteYukleniyor && uniteler.length === 0) {
@@ -440,9 +433,8 @@ const App = () => {
           onHesapPlaniAc={() => setPlanAcik(true)}
         />
 
-        <OnboardingGuard
+        <RecoveryGuard
           girisYapildi={!!user}
-          onboardingTamam={!!ilerleme.onboardingTamam}
           oturumYukleniyor={oturumYukleniyor}
         />
 
@@ -474,15 +466,7 @@ const App = () => {
             <Route path="/giris" element={<GirisSayfasi />} />
             <Route path="/sifre-sifirla" element={<SifreSifirlaSayfasi />} />
             <Route path="/sifre-yenile" element={<SifreYenileSayfasi />} />
-            <Route
-              path="/onboarding"
-              element={
-                <OnboardingSayfasi
-                  onTamamla={onboardingTamamla}
-                  mevcutAd={ilerleme.kullaniciAdi}
-                />
-              }
-            />
+            {/* /onboarding rotası kaldırıldı — profil sayfasında progressive completion var */}
             <Route path="/kvkk" element={<KvkkSayfasi />} />
             <Route path="/k/:karneId" element={<KarneStubSayfasi />} />
             <Route path="/liderlik" element={<LiderlikSayfasi />} />

@@ -81,6 +81,23 @@ export const ProfilSayfasi = ({
     };
   }, [user]);
 
+  // Profil tamamlanma yüzdesi — onboarding kaldırıldığı için kullanıcı
+  // eksik alanları profil üzerinden tamamlasın diye nazikçe yönlendiriyoruz.
+  // Zorunlu alan yok; sadece "tamamlandığında daha kişisel" değer önerisi.
+  const profilTamamlanmaSkor = useMemo(() => {
+    const alanlar = [
+      !!ilerleme.ad,
+      !!ilerleme.soyad,
+      !!profil.universite,
+      !!profil.bolum,
+      !!profil.sinif,
+      !!profil.hedef,
+    ];
+    const dolan = alanlar.filter(Boolean).length;
+    return { dolan, toplam: alanlar.length, yuzde: Math.round((dolan / alanlar.length) * 100) };
+  }, [ilerleme.ad, ilerleme.soyad, profil.universite, profil.bolum, profil.sinif, profil.hedef]);
+  const profilEksik = profilTamamlanmaSkor.yuzde < 100;
+
   const kazanilanRozetSayi = Object.keys(ilerleme.kazanilanRozetler).length;
 
   const sayilar: Partial<Record<Bolum, string>> = useMemo(
@@ -110,6 +127,46 @@ export const ProfilSayfasi = ({
 
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      {/* Tamamlanma banner'ı — eski onboarding flow yerine, isteğe bağlı tamamlamaya nazik nudge */}
+      {profilEksik && !profilYukleniyor && user && (
+        <button
+          onClick={() => setBolum('hesap')}
+          className="w-full mb-6 group flex items-center gap-4 px-4 sm:px-5 py-3.5 rounded-2xl border border-brand-soft bg-brand-soft/40 hover:bg-brand-soft/60 transition text-left"
+          aria-label="Hesap sekmesine git, eksik alanları tamamla"
+        >
+          <div className="relative flex-shrink-0">
+            <svg width="40" height="40" viewBox="0 0 40 40" className="rotate-[-90deg]">
+              <circle cx="20" cy="20" r="16" stroke="currentColor" strokeOpacity="0.15" strokeWidth="3.5" fill="none" />
+              <circle
+                cx="20" cy="20" r="16"
+                stroke="currentColor"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                fill="none"
+                strokeDasharray={`${(profilTamamlanmaSkor.yuzde / 100) * 100.53} 100.53`}
+                className="text-brand-deep dark:text-brand transition-all duration-500"
+              />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-[11px] font-mono font-bold tabular-nums text-brand-deep dark:text-brand">
+              {profilTamamlanmaSkor.yuzde}%
+            </span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[14px] font-bold text-ink leading-snug">
+              Profilini tamamla
+            </div>
+            <div className="text-[12.5px] text-ink-soft leading-snug mt-0.5">
+              {profilTamamlanmaSkor.dolan}/{profilTamamlanmaSkor.toplam} alan dolduruldu. Eğitim bilgilerini ekle, sana daha iyi öneriler getirebilelim.
+            </div>
+          </div>
+          <Icon
+            name="ChevronRight"
+            size={16}
+            className="text-ink-mute group-hover:text-ink transition flex-shrink-0"
+          />
+        </button>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 lg:gap-10">
         {/* Sol kolon: Avatar header (üstte) + nav (altta), birlikte sticky */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
