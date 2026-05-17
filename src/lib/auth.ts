@@ -1,6 +1,7 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 import { authDonusTemizle } from './auth-donus';
+import { ilerlemeTemizle } from './ilerleme';
 
 export interface AuthSonuc {
   basarili: boolean;
@@ -81,6 +82,10 @@ export const googleIleGiris = async (): Promise<AuthSonuc> => {
 
 export const cikisYap = async (): Promise<AuthSonuc> => {
   authDonusTemizle();
+  // Önceki kullanıcının ilerleme cache'ini sil — aynı tarayıcıda farklı
+  // kullanıcı giriş yaptığında eski streak/puan/rozet UI'da görünmesin
+  // ve migration yoluyla yeni hesaba sızmasın.
+  ilerlemeTemizle();
   const { error } = await supabase.auth.signOut();
   if (error) return { basarili: false, hata: cevirHata(error.message) };
   return { basarili: true };
