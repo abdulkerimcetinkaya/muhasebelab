@@ -29,10 +29,14 @@ const normalize = (rows: RawRow[]): LiderlikRow[] =>
  * Anonim ve giriş yapmış kullanıcılar için açık. Tüm dönemler RPC üzerinden
  * çalışır — RPC'ler security_definer ile yalnızca güvenli alanları döndürür
  * (email/dogum_yili/premium_bitis gibi PII dahil değil).
+ *
+ * `universite` parametresi verilirse sadece o okul/üniversiteye ait kullanıcılar
+ * listelenir (case-insensitive + trim ile karşılaştırılır).
  */
 export const liderlikYukle = async (
   donem: LiderlikDonem,
   limit = 100,
+  universite?: string | null,
 ): Promise<LiderlikRow[]> => {
   const rpc =
     donem === 'tum'
@@ -40,9 +44,13 @@ export const liderlikYukle = async (
       : donem === 'hafta'
         ? 'haftalik_liderlik'
         : 'aylik_liderlik';
+  const params: Record<string, unknown> = { _limit: limit };
+  if (universite && universite.trim()) {
+    params._universite = universite.trim();
+  }
   // Bu RPC'ler database.types.ts'te tanımlı değil — runtime'da çalışırlar.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase.rpc as any)(rpc, { _limit: limit });
+  const { data, error } = await (supabase.rpc as any)(rpc, params);
   if (error) throw error;
   return normalize((data ?? []) as RawRow[]);
 };

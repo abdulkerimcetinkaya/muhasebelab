@@ -389,10 +389,15 @@ export interface KarneVerisi {
 }
 
 const SINIF_ETIKET: Record<string, string> = {
+  hazirlik: 'Hazırlık',
   '1': '1. Sınıf',
   '2': '2. Sınıf',
   '3': '3. Sınıf',
   '4': '4. Sınıf',
+  '9': '9. Sınıf',
+  '10': '10. Sınıf',
+  '11': '11. Sınıf',
+  '12': '12. Sınıf',
   mezun: 'Mezun',
   diger: '',
 };
