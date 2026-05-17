@@ -6,7 +6,15 @@ import { RozetlerView } from '../components/profil/RozetlerView';
 import { UyelikView } from '../components/profil/UyelikView';
 import { YetkinlikView } from '../components/profil/YetkinlikView';
 import { HEDEF_LABEL, PROFIL_BOS, SINIF_LABEL } from '../components/profil/types';
-import type { Bolum, Hedef, ProfilBilgi, Sinif } from '../components/profil/types';
+import type {
+  Bolum,
+  HaftalikHedef,
+  Hedef,
+  Meslek,
+  NeredenDuydu,
+  ProfilBilgi,
+  Sinif,
+} from '../components/profil/types';
 import { useAuth, useIsPremium } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ROZETLER } from '../data/rozetler';
@@ -57,24 +65,37 @@ export const ProfilSayfasi = ({
     }
     let aktif = true;
     setProfilYukleniyor(true);
+    // Yeni kolonlar (meslek, mezuniyet_yili, sektor, tecrube_yil,
+    // haftalik_hedef, nereden_duydu) migration_20260517000001 ile geldi;
+    // Supabase auto-gen types henüz regenerate edilmedi — cast üzerinden okuyoruz.
     supabase
       .from('kullanicilar')
-      .select('ad, soyad, universite, bolum, sinif, hedef, dogum_yili, bulten_izni')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .select(
+        'ad, soyad, meslek, universite, bolum, sinif, mezuniyet_yili, sektor, tecrube_yil, hedef, haftalik_hedef, nereden_duydu, dogum_yili, bulten_izni' as any,
+      )
       .eq('id', user.id)
       .maybeSingle()
       .then(({ data }) => {
         if (!aktif) return;
         setProfilYukleniyor(false);
         if (data) {
+          const d = data as unknown as Record<string, unknown>;
           setProfil({
-            ad: (data as { ad: string | null }).ad ?? '',
-            soyad: (data as { soyad: string | null }).soyad ?? '',
-            universite: (data as { universite: string | null }).universite ?? '',
-            bolum: (data as { bolum: string | null }).bolum ?? '',
-            sinif: ((data as { sinif: Sinif | null }).sinif ?? '') as Sinif,
-            hedef: ((data as { hedef: Hedef | null }).hedef ?? '') as Hedef,
-            dogumYili: (data as { dogum_yili: number | null }).dogum_yili?.toString() ?? '',
-            bultenIzni: (data as { bulten_izni: boolean | null }).bulten_izni ?? false,
+            ad: (d.ad as string | null) ?? '',
+            soyad: (d.soyad as string | null) ?? '',
+            meslek: ((d.meslek as Meslek | null) ?? '') as Meslek,
+            universite: (d.universite as string | null) ?? '',
+            bolum: (d.bolum as string | null) ?? '',
+            sinif: ((d.sinif as Sinif | null) ?? '') as Sinif,
+            mezuniyetYili: (d.mezuniyet_yili as number | null)?.toString() ?? '',
+            sektor: (d.sektor as string | null) ?? '',
+            tecrubeYil: (d.tecrube_yil as number | null)?.toString() ?? '',
+            hedef: ((d.hedef as Hedef | null) ?? '') as Hedef,
+            haftalikHedef: ((d.haftalik_hedef as HaftalikHedef | null) ?? '') as HaftalikHedef,
+            neredenDuydu: ((d.nereden_duydu as NeredenDuydu | null) ?? '') as NeredenDuydu,
+            dogumYili: (d.dogum_yili as number | null)?.toString() ?? '',
+            bultenIzni: (d.bulten_izni as boolean | null) ?? false,
           });
         }
       });
@@ -83,22 +104,21 @@ export const ProfilSayfasi = ({
     };
   }, [user]);
 
-  // Profil tamamlanma yüzdesi — onboarding kaldırıldığı için kullanıcı
-  // eksik alanları profil üzerinden tamamlasın diye nazikçe yönlendiriyoruz.
-  // Zorunlu alan yok; sadece "tamamlandığında daha kişisel" değer önerisi.
-  // Tüm 6 alan profil state'inde (Supabase'den fetch edilir + HesapView'de düzenlenir).
+  // Profil tamamlanma yüzdesi — onboarding kaldırıldığı için nazikçe nudge.
+  // Kapsayıcı 5 çekirdek alan (meslek/sınıf/üniversite vs. mesleğe göre
+  // değiştiği için condition'a alınmadı, herkes 5/5 ulaşabilir):
+  //   ad + soyad + meslek + hedef + haftalik_hedef
   const profilTamamlanmaSkor = useMemo(() => {
     const alanlar = [
       !!profil.ad,
       !!profil.soyad,
-      !!profil.universite,
-      !!profil.bolum,
-      !!profil.sinif,
+      !!profil.meslek,
       !!profil.hedef,
+      !!profil.haftalikHedef,
     ];
     const dolan = alanlar.filter(Boolean).length;
     return { dolan, toplam: alanlar.length, yuzde: Math.round((dolan / alanlar.length) * 100) };
-  }, [profil.ad, profil.soyad, profil.universite, profil.bolum, profil.sinif, profil.hedef]);
+  }, [profil.ad, profil.soyad, profil.meslek, profil.hedef, profil.haftalikHedef]);
   const profilEksik = profilTamamlanmaSkor.yuzde < 100;
 
   const kazanilanRozetSayi = Object.keys(ilerleme.kazanilanRozetler).length;
