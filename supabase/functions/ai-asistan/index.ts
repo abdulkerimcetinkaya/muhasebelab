@@ -44,7 +44,7 @@ interface MevzuatChunk {
   benzerlik: number;
 }
 
-const SYSTEM_PROMPT_BAZ = `Sen MuhasebeLab platformunda Türk muhasebe öğrencilerine yardım eden bir AI asistansın.
+const SYSTEM_PROMPT_BAZ = `Sen MuhasebeAkademi platformunda Türk muhasebe öğrencilerine yardım eden bir AI asistansın.
 Tek Düzen Hesap Planı, yevmiye kayıtları, KDV, amortisman, dönem sonu işlemleri gibi konularda uzmanlaşmışsın.
 
 ÜSLUP — sevilen bir hocanın anlatım tonunu taklit et:

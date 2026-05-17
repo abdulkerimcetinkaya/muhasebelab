@@ -87,7 +87,7 @@ export const UyelikView = ({ user, premiumBitis, isPremium }: Props) => {
               Süreyi Uzat
             </button>
             <a
-              href="mailto:kerim.cetinkayaa78@gmail.com?subject=MuhasebeLab%20iade%20talebi"
+              href="mailto:kerim.cetinkayaa78@gmail.com?subject=MuhasebeAkademi%20iade%20talebi"
               className="inline-flex items-center gap-1.5 border border-line-strong px-4 py-2 text-[11px] tracking-[0.2em] uppercase font-bold rounded-lg hover:border-ink transition"
             >
               <Icon name="Send" size={12} />

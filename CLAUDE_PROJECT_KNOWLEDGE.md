@@ -1,4 +1,4 @@
-# MuhasebeLab — Project Knowledge Base
+# MuhasebeAkademi — Project Knowledge Base
 
 > Claude.ai → Projects → senin projen → "Project knowledge" alanına bu dosyayı **upload** et. Diğer .md dosyalarını da ek olarak yükleyebilirsin (hepsi paralel kullanılır).
 
@@ -6,13 +6,13 @@
 
 ## 1. Ürün Özeti
 
-**MuhasebeLab** — Türk üniversite muhasebe öğrencileri için LeetCode tarzı interaktif yevmiye atölyesi.
+**MuhasebeAkademi** — Türk üniversite muhasebe öğrencileri için LeetCode tarzı interaktif yevmiye atölyesi.
 
 **Hedef kitle:** Türkiye'deki muhasebe/işletme/iktisat lisans öğrencileri (Boğaziçi, ODTÜ, İTÜ, Anadolu AÖF gibi).
 
 **Vaat:** Tek Düzen Hesap Planı'nı senaryo bazlı, gerçek belgelerle (fatura, makbuz, dekont) çalışarak öğret. Anında doğrulama, puan + streak, rozet, aktivite ısı haritası ile motivasyon katmanı.
 
-**Domain:** muhasebelab (henüz alınmadı, Vercel default URL ile başlanabilir).
+**Domain:** muhasebeakademi.com (yeni marka — alım/DNS kullanıcı tarafından kuruluyor).
 
 ---
 

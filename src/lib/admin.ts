@@ -1,4 +1,4 @@
-// MuhasebeLab — admin yetki kontrolü
+// MuhasebeAkademi — admin yetki kontrolü
 //
 // DEPRECATED: Hardcoded ADMIN_EMAILS listesi artık kullanılmıyor. Admin durumu
 // AuthContext üzerinden adminler tablosundan dinamik olarak okunuyor.

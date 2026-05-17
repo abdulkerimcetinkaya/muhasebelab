@@ -113,7 +113,7 @@ export const KatkiciBasvuruSayfasi = () => {
         içinde edindiniz. Şimdi <strong>aynı yola çıkmak üzere olan binlerce
         öğrenci</strong> var — bir akademisyenin, bir YMM'nin, bir SMMM'nin
         elinden çıkmış bir soruya, bir senaryoya ihtiyacı olan binlerce öğrenci.
-        MuhasebeLab'a ekleyeceğiniz her soru, onlardan birinin kafasında
+        MuhasebeAkademi'a ekleyeceğiniz her soru, onlardan birinin kafasında
         çakacak bir kıvılcım.
       </p>
       <p className="text-ink-mute mt-3 text-[13.5px] leading-relaxed">

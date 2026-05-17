@@ -1,4 +1,4 @@
-# MuhasebeLab — Tasarım DNA'sı
+# MuhasebeAkademi — Tasarım DNA'sı
 
 **Son güncelleme:** 9 Mayıs 2026
 **Hedef:** Tüm sayfalar tek bir görsel kimliği paylaşır. Token'lar `index.css` içinde, `tailwind.config.js`'e bağlı.

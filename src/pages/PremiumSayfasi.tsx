@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
 import { odemeBaslat, planlariYukle, type Plan } from '../lib/odeme';
 import { indirimDogrula } from '../lib/indirim';
 
-const KURUM_EMAIL = 'kurum@muhasebelab.com';
+const KURUM_EMAIL = 'kurum@muhasebeakademi.com';
 
 const UCRETSIZ_OZELLIKLER = [
   'Tüm soruları sınırsız çöz',
@@ -55,7 +55,7 @@ const SSS: { soru: string; cevap: string }[] = [
   {
     soru: 'Hangi ödeme yöntemleri kabul ediliyor?',
     cevap:
-      'iyzico altyapısı üzerinden tüm Türk bankalarının kredi/banka kartlarını kabul ediyoruz. Kart bilgileriniz MuhasebeLab’a iletilmez, doğrudan iyzico’da işlenir.',
+      'iyzico altyapısı üzerinden tüm Türk bankalarının kredi/banka kartlarını kabul ediyoruz. Kart bilgileriniz MuhasebeAkademi’a iletilmez, doğrudan iyzico’da işlenir.',
   },
 ];
 

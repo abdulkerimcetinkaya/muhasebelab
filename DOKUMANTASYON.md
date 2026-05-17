@@ -1,13 +1,13 @@
-# MuhasebeLab — Kullanıcı Dokümantasyonu
+# MuhasebeAkademi — Kullanıcı Dokümantasyonu
 
 **Muhasebe öğrencileri için interaktif yevmiye kaydı pratik platformu.**
 Tek Düzen Hesap Planı'nı LeetCode tarzı senaryo tabanlı alıştırmalarla öğret.
 
 ---
 
-## 1. MuhasebeLab Nedir?
+## 1. MuhasebeAkademi Nedir?
 
-MuhasebeLab, muhasebe derslerinde teorik olarak öğrendiğin yevmiye kaydı konusunu **gerçek belgelerle** ve **anlık geri bildirimle** pekiştirmen için tasarlanmış bir web uygulamasıdır.
+MuhasebeAkademi, muhasebe derslerinde teorik olarak öğrendiğin yevmiye kaydı konusunu **gerçek belgelerle** ve **anlık geri bildirimle** pekiştirmen için tasarlanmış bir web uygulamasıdır.
 
 Her soru bir **iş senaryosuyla** başlar (örneğin: "ASKİ su faturası gün içinde kasadan nakden ödendi"). Sen soruyu okur, ilgili belgeyi (fatura, makbuz, dekont) incelersin, sonra yevmiye kaydını borç ve alacak satırları olarak girersin. Sistem anında doğru mu yanlış mı olduğunu söyler, açıklamasını yapar; yanlışta da tekrar denemeni ister.
 
@@ -139,7 +139,7 @@ Tüm ünitelerin kart görünümü. Her kartta: ünite adı, Thiings 3D ikonu, k
 
 ## 8. Teknik Arka Plan (Özet)
 
-MuhasebeLab bir **React 19 + TypeScript + Vite** tek sayfa uygulamasıdır. Backend olarak **Supabase** (PostgreSQL + Auth + Row Level Security) kullanılır. Yönlendirme **hash-based router** ile çalışır, yani tüm rotalar `#/` ile başlar (örn. `#/problemler/kasa-1`).
+MuhasebeAkademi bir **React 19 + TypeScript + Vite** tek sayfa uygulamasıdır. Backend olarak **Supabase** (PostgreSQL + Auth + Row Level Security) kullanılır. Yönlendirme **hash-based router** ile çalışır, yani tüm rotalar `#/` ile başlar (örn. `#/problemler/kasa-1`).
 
 **Veri organizasyonu:** Hesap Planı, Üniteler ve Sorular hem kodda (`src/data/`) hem de Supabase'de tutulur — online olmadığında bile uygulama çalışır. Kullanıcı ilerlemesi anonimken localStorage'da (`mli_progress_v3` anahtarı), oturum açıldığında Supabase tablolarında (`ilerleme`, `aktivite`, `kazanilan_rozetler`) saklanır.
 

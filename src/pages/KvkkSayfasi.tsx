@@ -25,7 +25,7 @@ export const KvkkSayfasi = () => {
         Kişisel Verilerin Korunması
       </h1>
       <p className="text-ink-soft text-sm font-medium mb-10">
-        6698 Sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, MuhasebeLab
+        6698 Sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında, MuhasebeAkademi
         olarak kullanıcılarımızın kişisel verilerinin işlenmesine dair sizi aydınlatmak
         istiyoruz.
       </p>
@@ -36,12 +36,12 @@ export const KvkkSayfasi = () => {
             1. Veri Sorumlusu
           </h2>
           <p>
-            MuhasebeLab platformu için veri sorumlusu sıfatıyla iletişim adresi:{' '}
+            MuhasebeAkademi platformu için veri sorumlusu sıfatıyla iletişim adresi:{' '}
             <a
-              href="mailto:bilgi@muhasebelab.com"
+              href="mailto:bilgi@muhasebeakademi.com"
               className="text-brand dark:text-brand-mute underline"
             >
-              bilgi@muhasebelab.com
+              bilgi@muhasebeakademi.com
             </a>
             . Verilerinizle ilgili tüm sorularınızı bu adrese iletebilirsiniz.
           </p>
@@ -127,10 +127,10 @@ export const KvkkSayfasi = () => {
           <p className="mt-3">
             Talepleriniz için{' '}
             <a
-              href="mailto:bilgi@muhasebelab.com"
+              href="mailto:bilgi@muhasebeakademi.com"
               className="text-brand dark:text-brand-mute underline"
             >
-              bilgi@muhasebelab.com
+              bilgi@muhasebeakademi.com
             </a>{' '}
             adresine yazabilirsiniz; en geç 30 gün içinde yanıt veriyoruz.
           </p>
@@ -141,7 +141,7 @@ export const KvkkSayfasi = () => {
             8. Çerezler
           </h2>
           <p>
-            MuhasebeLab yalnızca oturum yönetimi (giriş bilgisi) için zorunlu çerezleri
+            MuhasebeAkademi yalnızca oturum yönetimi (giriş bilgisi) için zorunlu çerezleri
             kullanır. Pazarlama veya izleme amaçlı üçüncü taraf çerezi kullanmıyoruz.
           </p>
         </section>

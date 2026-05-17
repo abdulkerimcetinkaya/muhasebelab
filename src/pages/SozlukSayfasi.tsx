@@ -66,7 +66,7 @@ export const SozlukSayfasi = () => {
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'DefinedTermSet',
-          name: 'MuhasebeLab Mali Sözlük',
+          name: 'MuhasebeAkademi Mali Sözlük',
           description:
             'Türkçe muhasebe ve vergi terimlerinin açıklamalı sözlüğü.',
           inLanguage: 'tr',

@@ -8,7 +8,7 @@ const REZERVE = new Set([
   'ogrenci',
   'öğrenci',
   'admin',
-  'muhasebelab',
+  'muhasebeakademi',
   'destek',
   'kullanici',
   'yonetici',
