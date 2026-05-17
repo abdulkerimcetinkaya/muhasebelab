@@ -129,21 +129,18 @@ const ScrollToTop = () => {
 };
 
 /**
- * Supabase auth flow hata yönlendirmesi yakalayıcısı.
+ * Catch-all route — hiçbir route eşleşmediğinde devreye girer.
  *
- * Şifre sıfırlama linki süresi doldu / geçersiz olduğunda Supabase kullanıcıyı
+ * Supabase auth flow hatası (örn. süresi dolmuş şifre sıfırlama linki)
  * `https://muhasebeakademi.com/#/error=access_denied&error_code=otp_expired&...`
- * gibi bir URL'e geri yönlendirir. HashRouter bunu route olarak match edemez
- * ve kullanıcı boş bir sayfa görür — çözümü olmayan kötü UX.
+ * URL'iyle geri yönlendirir. HashRouter bu yolu route olarak match edemez,
+ * burada yakalayıp kullanıcı dostu mesajla şifre sıfırlama sayfasına gönderiyoruz.
  *
- * Bu component pathname'in `/error=` ile başladığını fark eder, hata kodunu
- * parse eder, kullanıcı dostu mesajla `/sifre-sifirla` sayfasına yönlendirir.
+ * Diğer eşleşmeyen URL'ler (typo, silinmiş sayfa) anasayfaya yönlendirilir.
  */
-const AuthErrorRedirect = () => {
-  const nav = useNavigate();
+const RouteFallback = () => {
   const { pathname } = useLocation();
-  useEffect(() => {
-    if (!pathname.startsWith('/error=')) return;
+  if (pathname.startsWith('/error=')) {
     const params = new URLSearchParams(pathname.slice(1));
     const errorCode = params.get('error_code');
     let mesaj = 'Şifre sıfırlama linki geçersiz. Yeni bir link talep edebilirsin.';
@@ -152,9 +149,9 @@ const AuthErrorRedirect = () => {
     } else if (errorCode === 'access_denied') {
       mesaj = 'Erişim reddedildi. Şifre sıfırlama linki geçersiz veya daha önce kullanılmış. Yeni bir link iste.';
     }
-    nav('/sifre-sifirla', { replace: true, state: { supabaseError: mesaj } });
-  }, [pathname, nav]);
-  return null;
+    return <Navigate to="/sifre-sifirla" replace state={{ supabaseError: mesaj }} />;
+  }
+  return <Navigate to="/" replace />;
 };
 
 const App = () => {
@@ -402,7 +399,6 @@ const App = () => {
   return (
     <HashRouter>
       <ScrollToTop />
-      <AuthErrorRedirect />
       <SiteLoader />
       <div className="min-h-screen bg-bg-tint text-ink transition-colors">
         <Navbar
@@ -727,8 +723,8 @@ const App = () => {
                 </ProtectedAdminRoute>
               }
             />
-            {/* Hiçbir route eşleşmezse anasayfaya yönlendir — boş sayfa olmasın */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Catch-all: auth hatası geliyorsa şifre sıfırlama sayfasına mesajla, değilse anasayfaya */}
+            <Route path="*" element={<RouteFallback />} />
           </Routes>
         </Suspense>
 
