@@ -405,7 +405,7 @@ export const KurumOdemeSayfasi = () => {
 
             <div className="mt-4 text-[11px] text-ink-mute leading-relaxed">
               7 gün koşulsuz iade · İstediğin zaman iptal · iyzico ile güvenli
-              ödeme · Kart bilgilerin MuhasebeLab’a iletilmez.
+              ödeme · Kart bilgilerin MuhasebeAkademi’a iletilmez.
             </div>
           </div>
         </aside>

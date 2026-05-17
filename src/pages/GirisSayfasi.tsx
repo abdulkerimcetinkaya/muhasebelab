@@ -188,7 +188,7 @@ export const GirisSayfasi = () => {
         {/* Marka çizgisi */}
         <div className="flex items-baseline justify-center gap-2 mb-10">
           <span className="font-display text-[28px] font-bold tracking-[-0.02em] text-ink leading-none">
-            muhasebelab
+            muhasebeakademi
           </span>
           <span
             className="font-serif italic text-[32px] leading-none"

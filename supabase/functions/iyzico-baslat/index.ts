@@ -73,12 +73,12 @@ Deno.serve(async (req) => {
     const [adIlk, ...adKalan] = ad.split(' ');
     const adSoyad = {
       name: adIlk || 'Öğrenci',
-      surname: adKalan.join(' ') || 'MuhasebeLab',
+      surname: adKalan.join(' ') || 'MuhasebeAkademi',
     };
 
     // conversationId — bizim taraf takip için
     const conversationId = `${yetki.user.id.slice(0, 8)}-${Date.now()}`;
-    const callbackUrlBase = Deno.env.get('IYZICO_CALLBACK_URL'); // örn: https://muhasebelab.com/iyzico-callback
+    const callbackUrlBase = Deno.env.get('IYZICO_CALLBACK_URL'); // örn: https://muhasebeakademi.com/iyzico-callback
     if (!callbackUrlBase) {
       return new Response(
         JSON.stringify({ hata: 'IYZICO_CALLBACK_URL ayarlı değil (ortam değişkeni)' }),
@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
         id: yetki.user.id,
         name: adSoyad.name,
         surname: adSoyad.surname,
-        email: profil?.email || yetki.user.email || 'noreply@muhasebelab.com',
+        email: profil?.email || yetki.user.email || 'noreply@muhasebeakademi.com',
         identityNumber: '11111111111', // sandbox için sabit
         registrationAddress: 'Bilinmiyor',
         city: 'Istanbul',
@@ -214,8 +214,8 @@ Deno.serve(async (req) => {
           id: `plan-${plan.kod}`,
           name:
             adet > 1
-              ? `MuhasebeLab Premium — ${plan.ad} (${adet} kullanıcı)`
-              : `MuhasebeLab Premium — ${plan.ad}`,
+              ? `MuhasebeAkademi Premium — ${plan.ad} (${adet} kullanıcı)`
+              : `MuhasebeAkademi Premium — ${plan.ad}`,
           category1: 'Eğitim',
           itemType: 'VIRTUAL',
           price: fiyatStr,

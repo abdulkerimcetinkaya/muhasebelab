@@ -168,7 +168,7 @@ export const OnboardingSayfasi = ({ onTamamla, mevcutAd }: Props) => {
             Hoş geldin{mevcutAd && mevcutAd !== 'Öğrenci' ? `, ${mevcutAd}` : ''}!
           </h1>
           <p className="text-lg text-ink-soft leading-relaxed font-medium mb-10 max-w-md mx-auto">
-            MuhasebeLab&apos;a katıldığın için teşekkürler. 30 saniye seni tanıyalım, sonra ilk
+            MuhasebeAkademi&apos;a katıldığın için teşekkürler. 30 saniye seni tanıyalım, sonra ilk
             sorunu çözmeye başlayalım.
           </p>
           <button

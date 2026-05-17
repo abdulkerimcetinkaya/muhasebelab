@@ -3,7 +3,7 @@
 Bu dosyanın tamamını Claude'a yapıştır, ardından son satıra istediğin parametreleri yaz:
 > "5 adet **orta** zorlukta **kdv** ünitesi sorusu üret."
 
-Claude doğrudan içe-aktarılabilir JSON döndürecek. Çıktıyı kopyala → MuhasebeLab admin → "Toplu Ekle (JSON)" → "Doğrula" → "İçe Aktar".
+Claude doğrudan içe-aktarılabilir JSON döndürecek. Çıktıyı kopyala → MuhasebeAkademi admin → "Toplu Ekle (JSON)" → "Doğrula" → "İçe Aktar".
 
 ---
 

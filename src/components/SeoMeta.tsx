@@ -13,7 +13,7 @@ interface Props {
   index?: boolean;
 }
 
-const SITE_BASLIK = 'MuhasebeLab';
+const SITE_BASLIK = 'MuhasebeAkademi';
 const SITE_URL =
   typeof window !== 'undefined'
     ? `${window.location.protocol}//${window.location.host}`

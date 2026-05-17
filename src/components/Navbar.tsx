@@ -55,7 +55,7 @@ export const Navbar = ({ ilerleme, onTemaDegistir, onHesapPlaniAc }: Props) => {
             aria-label="Anasayfa"
           >
             <span className="font-display text-[24px] leading-none text-ink tracking-tight">
-              MuhasebeLab
+              MuhasebeAkademi
             </span>
           </button>
 

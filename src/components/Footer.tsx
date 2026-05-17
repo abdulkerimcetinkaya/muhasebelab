@@ -13,7 +13,7 @@ export const Footer = () => {
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 mb-7">
           <button onClick={() => nav('/')} className="flex items-baseline gap-1.5">
             <span className="font-display text-[22px] font-bold tracking-[-0.02em] leading-none text-ink dark:text-paper">
-              muhasebelab
+              muhasebeakademi
             </span>
             <span
               className="font-serif italic text-[24px] leading-none"
@@ -100,7 +100,7 @@ export const Footer = () => {
 
         {/* Alt şerit */}
         <div className="flex justify-between items-center gap-3 text-[11px] font-mono text-ink-mute dark:text-paper/50 uppercase tracking-[0.1em]">
-          <span>© {yil} MuhasebeLab</span>
+          <span>© {yil} MuhasebeAkademi</span>
           <span>v0.1.0</span>
         </div>
       </div>

@@ -1,6 +1,6 @@
 // Admin → kullanıcı e-posta gönderimi (Resend.com API üzerinden)
 // Sadece is_admin() yetkisi olan kullanıcılar çağırabilir.
-// Env: RESEND_API_KEY zorunlu, RESEND_FROM_EMAIL zorunlu (örn: 'noreply@muhasebelab.com')
+// Env: RESEND_API_KEY zorunlu, RESEND_FROM_EMAIL zorunlu (örn: 'noreply@muhasebeakademi.com')
 
 import { corsHeaders } from '../_shared/cors.ts';
 import { kullaniciDogrula } from '../_shared/auth.ts';

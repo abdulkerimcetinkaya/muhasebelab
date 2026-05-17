@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 // Query: ?durum=basarili | hata | iptal & detay=... & adet=N (kurum bulk için)
 type SyncDurum = 'yukleniyor' | 'tamam' | 'hata';
 
-const KURUM_EMAIL = 'kurum@muhasebelab.com';
+const KURUM_EMAIL = 'kurum@muhasebeakademi.com';
 
 export const PremiumSonucSayfasi = () => {
   const [params] = useSearchParams();
@@ -50,7 +50,7 @@ export const PremiumSonucSayfasi = () => {
     // Bulk/kurum ödeme: öğrenci listesini admin'e ileten mailto
     const bulkMailtoBody = `Merhaba,
 
-MuhasebeLab kurum Premium ödememi tamamladım — ${adet} kullanıcı için.
+MuhasebeAkademi kurum Premium ödememi tamamladım — ${adet} kullanıcı için.
 Aşağıdaki öğrencilere Premium tanımlanmasını rica ederim:
 
 (öğrenci email'lerini her satıra bir tane yapıştırın)

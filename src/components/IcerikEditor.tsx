@@ -43,7 +43,7 @@ const gorselYukle = async (file: File): Promise<string> => {
 /**
  * Notion-tarzı blok editör (admin panelinde kullanılır).
  * BlockNote dokümanı JSON olarak `unites.icerik` kolonuna yazılır.
- * Tema MuhasebeLab paletine (beyaz/mavi, Inter Tight) uydurulur — index.css'teki
+ * Tema MuhasebeAkademi paletine (beyaz/mavi, Inter Tight) uydurulur — index.css'teki
  * `.bn-icerik` class'ı detaylı stil ezmesi yapar.
  *
  * Görsel yükleme: drag-drop / paste / slash-menu üzerinden eklenen görseller

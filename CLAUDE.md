@@ -1,4 +1,4 @@
-# MuhasebeLab Projesi
+# MuhasebeAkademi Projesi
 
 ## Proje Özeti
 Muhasebe öğrencileri için LeetCode tarzı interaktif pratik platformu.

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const SESSION_KEY = 'muhasebelab_loader_seen';
+const SESSION_KEY = 'muhasebeakademi_loader_seen';
 
 /**
  * Site loader — ilk yüklemede 2.1s splash screen.
@@ -33,7 +33,7 @@ export const SiteLoader = () => {
   return (
     <div className={`site-loader ${exit ? 'exit' : ''}`} aria-hidden>
       <div className="site-loader-mark">
-        muhasebelab<span className="mark-section">§</span>
+        muhasebeakademi<span className="mark-section">§</span>
       </div>
       <div className="site-loader-tagline">Tek Düzen Hesap Planı Atölyesi</div>
       <div className="site-loader-progress" />

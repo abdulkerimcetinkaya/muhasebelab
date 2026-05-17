@@ -1,4 +1,4 @@
-// MuhasebeLab Karne — A4 PDF, CV-andıran hibrit editorial.
+// MuhasebeAkademi Karne — A4 PDF, CV-andıran hibrit editorial.
 // Profil sayfasındaki "Karneyi PDF indir" butonu bu modülü dynamic import'la
 // yükler — @react-pdf/renderer ~600KB initial bundle'a girmesin diye.
 //
@@ -477,15 +477,15 @@ const KarneDoc = ({ ilerleme, stat, uniteler, profil, qrDataUrl, karneId }: Karn
 
   return (
     <Document
-      title={`MuhasebeLab Karne — ${ad}`}
-      author="MuhasebeLab"
+      title={`MuhasebeAkademi Karne — ${ad}`}
+      author="MuhasebeAkademi"
       subject="Öğrenci ilerleme karnesi"
     >
       <Page size="A4" style={s.page}>
         {/* ─── BAND 1 — Name Plate ──────────────────────────────────── */}
         <View style={s.namePlate}>
           <View style={s.nameMeta}>
-            <Text style={s.brandStrip}>MuhasebeLab · Karne</Text>
+            <Text style={s.brandStrip}>MuhasebeAkademi · Karne</Text>
             <Text style={s.nameDisplay}>{ad}</Text>
             {akademik && <Text style={s.nameContext}>{akademik}</Text>}
           </View>
@@ -698,13 +698,13 @@ const KarneDoc = ({ ilerleme, stat, uniteler, profil, qrDataUrl, karneId }: Karn
           <View style={s.footerRow}>
             <View style={s.footerText}>
               <Text style={s.footerMain}>
-                Bu karne {ad} tarafından {tarih} itibarıyla MuhasebeLab üzerinden üretilmiştir.
+                Bu karne {ad} tarafından {tarih} itibarıyla MuhasebeAkademi üzerinden üretilmiştir.
               </Text>
-              <Text style={s.footerSub}>muhasebelab.com — bağımsız doğrulama platformu</Text>
+              <Text style={s.footerSub}>muhasebeakademi.com — bağımsız doğrulama platformu</Text>
             </View>
             <View style={s.qrBlock}>
               {qrDataUrl && <Image src={qrDataUrl} style={s.qrImg} />}
-              <Text style={s.qrUrl}>muhasebelab.com/k/{karneId.slice(2, 10)}</Text>
+              <Text style={s.qrUrl}>muhasebeakademi.com/k/{karneId.slice(2, 10)}</Text>
             </View>
           </View>
         </View>
@@ -720,7 +720,7 @@ export const karneyiIndir = async (veri: KarneVerisi): Promise<void> => {
   const tarihYmd = new Date().toISOString().split('T')[0];
   const ad = veri.ilerleme.kullaniciAdi || 'ogrenci';
   const karneId = karneIdUret(ad, tarihYmd);
-  const qrUrl = `https://muhasebelab.com/k/${karneId.slice(2, 10)}`;
+  const qrUrl = `https://muhasebeakademi.com/k/${karneId.slice(2, 10)}`;
 
   // QR — ink üzerine beyaz, kenar boşluğu yok, scale 4 = 132x132 px (PDF'te 56pt'a downsample)
   const qrDataUrl = await QRCode.toDataURL(qrUrl, {
@@ -737,7 +737,7 @@ export const karneyiIndir = async (veri: KarneVerisi): Promise<void> => {
   const a = document.createElement('a');
   a.href = url;
   const adSlug = ad.toLowerCase().replace(/[^a-z0-9]/g, '-');
-  a.download = `muhasebelab-karne-${adSlug}-${tarihYmd}.pdf`;
+  a.download = `muhasebeakademi-karne-${adSlug}-${tarihYmd}.pdf`;
   a.click();
   URL.revokeObjectURL(url);
 };

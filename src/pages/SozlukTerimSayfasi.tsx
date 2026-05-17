@@ -172,7 +172,7 @@ export const SozlukTerimSayfasi = () => {
           inLanguage: 'tr',
           inDefinedTermSet: {
             '@type': 'DefinedTermSet',
-            name: 'MuhasebeLab Mali Sözlük',
+            name: 'MuhasebeAkademi Mali Sözlük',
             url: '/sozluk',
           },
         }}
@@ -296,7 +296,7 @@ export const SozlukTerimSayfasi = () => {
               Bu konuyu pratikle pekiştir
             </div>
             <p className="text-[13.5px] opacity-90 leading-relaxed mb-3">
-              MuhasebeLab'da "{terim.baslik}" konusuyla ilgili soruları
+              MuhasebeAkademi'da "{terim.baslik}" konusuyla ilgili soruları
               gerçeğe yakın belgelerle çöz, anında geri bildirim al.
             </p>
             <Link

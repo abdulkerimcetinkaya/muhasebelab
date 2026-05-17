@@ -81,7 +81,7 @@ export const EmailGonderModal = ({ to, kullaniciAd, onKapat }: Props) => {
               required
               maxLength={120}
               className="w-full px-3 py-2 bg-bg-tint border border-line-strong rounded-lg text-sm font-medium outline-none focus:border-ink"
-              placeholder="MuhasebeLab — Önemli bir bilgilendirme"
+              placeholder="MuhasebeAkademi — Önemli bir bilgilendirme"
             />
           </div>
 

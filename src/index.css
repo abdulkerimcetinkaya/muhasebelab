@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* =====================================================================
-   MERCIA — MuhasebeLab elit editorial sistemi
+   MERCIA — MuhasebeAkademi elit editorial sistemi
    Cream zemin · slate mavi mürekkep · Instrument Serif display
    Hairline kurallar · küçük corner radius · sayısal restraint
    ===================================================================== */
@@ -2815,7 +2815,7 @@ input[type='number'] { -moz-appearance: textfield; }
 }
 
 /* ──────────────────────────────────────────────────────────────────────
-   BlockNote — MuhasebeLab teması
+   BlockNote — MuhasebeAkademi teması
    Editör ve okuyucu (read-only) için kapsam-sınırlı stil ezmesi.
    Beyaz/mavi paleti, Fraunces (başlık) + Inter Tight (gövde),
    bakır vurgu rengi.

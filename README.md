@@ -1,4 +1,4 @@
-# MuhasebeLab
+# MuhasebeAkademi
 
 Muhasebe öğrencileri için LeetCode tarzı interaktif pratik platformu.
 Tek Düzen Hesap Planı'nı senaryo tabanlı yevmiye kaydı alıştırmalarıyla öğretir.

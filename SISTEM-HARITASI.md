@@ -1,4 +1,4 @@
-# MuhasebeLab — Sistem Haritası
+# MuhasebeAkademi — Sistem Haritası
 
 Bu dosya: sistemde **şu an ne var**, **ne çalışıyor**, **ne eksik** ve **siteyi doldurmak için neler yapılabilir** sorularına net cevap.
 

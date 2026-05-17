@@ -1,4 +1,4 @@
-// MuhasebeLab — Mevzuat chunk embed kanalı (admin)
+// MuhasebeAkademi — Mevzuat chunk embed kanalı (admin)
 // Admin paneli mevzuat JSON'u POST eder, fonksiyon her chunk'ı embedler ve
 // `mevzuat_chunklar` tablosuna yazar. Aynı chunk yeniden gönderilirse
 // (kaynak + baslik) bazlı upsert davranışı yok — yenisi eklenir; admin önce silmeli.

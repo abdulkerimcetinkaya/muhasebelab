@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 /**
  * Karne QR'ı taranınca buraya gelinir — şu an gerçek bir doğrulama veritabanı
  * sorgusu yapılmıyor (verifikasyon endpoint'i ayrı PR'da gelecek). Bu stub
- * sayfası boş 404'ten kaçınmak ve "karne sahiden MuhasebeLab tarafından
+ * sayfası boş 404'ten kaçınmak ve "karne sahiden MuhasebeAkademi tarafından
  * üretildi" güvencesini görsel olarak vermek için var.
  *
  * URL pattern: /k/:karneId — karneId 8 haneli hex hash (karne-pdf.tsx'te üretilir).
@@ -16,7 +16,7 @@ export const KarneStubSayfasi = () => {
   return (
     <main className="min-h-[80vh] max-w-2xl mx-auto px-5 sm:px-8 py-20">
       <div className="text-[10px] tracking-[0.32em] uppercase text-ink-mute font-bold mb-4">
-        MuhasebeLab · Karne Doğrulama
+        MuhasebeAkademi · Karne Doğrulama
       </div>
       <h1
         className="font-display-italic text-ink leading-[0.96] tracking-tight mb-8"
@@ -30,7 +30,7 @@ export const KarneStubSayfasi = () => {
 
       <div className="border-l-4 pl-5 py-2 mb-8" style={{ borderColor: 'var(--copper-deep)' }}>
         <p className="text-ink leading-relaxed font-medium">
-          Bu karne MuhasebeLab üzerinden üretilmiştir.
+          Bu karne MuhasebeAkademi üzerinden üretilmiştir.
         </p>
         <p className="text-ink-soft text-sm mt-2 leading-relaxed">
           Tam doğrulama servisi yakında devreye giriyor. Şu an için: karne sahibinin
