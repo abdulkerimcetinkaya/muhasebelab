@@ -8,8 +8,8 @@ import { useUniteler } from '../../contexts/UnitelerContext';
 import { cikisYap, girisYap, sifreyiYenile } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import type { Ilerleme, Istatistik } from '../../types';
-import { AY_LABEL, SINIF_LABEL } from './types';
-import type { Durum, ProfilBilgi, Sinif } from './types';
+import { AY_LABEL, MESLEK_LABEL, SINIF_LABEL } from './types';
+import type { Durum, Meslek, ProfilBilgi, Sinif } from './types';
 
 interface Props {
   user: User | null;
@@ -146,6 +146,7 @@ export const HesapView = ({
       universite: profil.universite.trim() || null,
       bolum: profil.bolum.trim() || null,
       sinif: profil.sinif === '' ? null : profil.sinif,
+      meslek: profil.meslek === '' ? null : profil.meslek,
       tecrube_yil: tecrubeYilNum,
       bulten_izni: profil.bultenIzni,
     };
@@ -455,38 +456,41 @@ export const HesapView = ({
             )}
           </div>
           <p className="text-[12.5px] text-ink-mute mb-4 leading-snug">
-            Sadece ihtiyacımız olan kadarı — boş bırakabileceğin her şey opsiyonel.
+            Sadece ihtiyacımız olan kadarı — her şey opsiyonel.
           </p>
 
-          <div className={sectionCardClass + ' space-y-6'}>
-            {/* Durum — radio gibi 2 büyük buton */}
+          <div className={sectionCardClass + ' space-y-5'}>
+            {/* Durum — kompakt pill butonlar (yan yana) */}
             <div>
-              <label className={labelClass}>Şu an</label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className={labelClass}>Durumun</label>
+              <div className="flex flex-wrap gap-2">
                 {([
                   { kod: 'ogrenci', etiket: 'Öğrenciyim', ikon: 'GraduationCap' },
-                  { kod: 'calisan', etiket: 'Çalışıyorum', ikon: 'Briefcase' },
-                ] as { kod: Exclude<Durum, ''>; etiket: string; ikon: string }[]).map((opt) => (
-                  <button
-                    key={opt.kod}
-                    type="button"
-                    onClick={() =>
-                      onProfilDegis({ ...profil, durum: profil.durum === opt.kod ? '' : opt.kod })
-                    }
-                    className={`flex items-center justify-center gap-2 px-3 py-3 text-[13px] font-bold rounded-lg border-2 transition ${
-                      profil.durum === opt.kod
-                        ? 'border-ink bg-bg-tint text-ink'
-                        : 'border-line hover:border-ink text-ink-soft'
-                    }`}
-                  >
-                    <Icon name={opt.ikon} size={15} />
-                    {opt.etiket}
-                  </button>
-                ))}
+                  { kod: 'mezun', etiket: 'Mezunum', ikon: 'Award' },
+                ] as { kod: Exclude<Durum, ''>; etiket: string; ikon: string }[]).map((opt) => {
+                  const aktif = profil.durum === opt.kod;
+                  return (
+                    <button
+                      key={opt.kod}
+                      type="button"
+                      onClick={() =>
+                        onProfilDegis({ ...profil, durum: aktif ? '' : opt.kod })
+                      }
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[12.5px] font-bold rounded-full border transition ${
+                        aktif
+                          ? 'border-ink bg-ink text-bg'
+                          : 'border-line hover:border-line-strong text-ink-soft'
+                      }`}
+                    >
+                      <Icon name={opt.ikon} size={12} />
+                      {opt.etiket}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Doğum tarihi — 3 ayrı select */}
+            {/* Doğum tarihi — 3 ayrı select, tighter */}
             <div>
               <label className={labelClass}>Doğum tarihi</label>
               <div className="grid grid-cols-3 gap-2">
@@ -553,7 +557,7 @@ export const HesapView = ({
             {/* Conditional: Öğrenciyim → Okul + Bölüm + Sınıf */}
             {profil.durum === 'ogrenci' && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className={labelClass}>Okul</label>
                     <input
@@ -581,38 +585,65 @@ export const HesapView = ({
                 </div>
                 <div>
                   <label className={labelClass}>Sınıf</label>
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                    {(Object.keys(SINIF_LABEL) as Exclude<Sinif, ''>[]).map((kod) => (
-                      <button
-                        key={kod}
-                        type="button"
-                        onClick={() =>
-                          onProfilDegis({
-                            ...profil,
-                            sinif: profil.sinif === kod ? '' : kod,
-                          })
-                        }
-                        className={`px-2.5 py-2 text-xs font-bold rounded-lg border-2 transition ${
-                          profil.sinif === kod
-                            ? 'border-ink bg-bg-tint text-ink'
-                            : 'border-line hover:border-ink text-ink-soft'
-                        }`}
-                      >
-                        {SINIF_LABEL[kod]}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap gap-1.5">
+                    {(Object.keys(SINIF_LABEL) as Exclude<Sinif, ''>[]).map((kod) => {
+                      const aktif = profil.sinif === kod;
+                      return (
+                        <button
+                          key={kod}
+                          type="button"
+                          onClick={() =>
+                            onProfilDegis({
+                              ...profil,
+                              sinif: aktif ? '' : kod,
+                            })
+                          }
+                          className={`px-3 py-1.5 text-[12px] font-bold rounded-full border transition ${
+                            aktif
+                              ? 'border-ink bg-ink text-bg'
+                              : 'border-line hover:border-line-strong text-ink-soft'
+                          }`}
+                        >
+                          {SINIF_LABEL[kod]}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </>
             )}
 
-            {/* Conditional: Çalışıyorum → Deneyim */}
-            {profil.durum === 'calisan' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Conditional: Mezunum → Meslek + Deneyim */}
+            {profil.durum === 'mezun' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>Meslek</label>
+                  <select
+                    value={profil.meslek}
+                    onChange={(e) =>
+                      onProfilDegis({ ...profil, meslek: e.target.value as Meslek })
+                    }
+                    aria-label="Meslek"
+                    className={inputClass + ' appearance-none bg-no-repeat pr-7'}
+                    style={{
+                      backgroundImage:
+                        'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2399a\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'/%3E%3C/svg%3E")',
+                      backgroundPosition: 'right 8px center',
+                      backgroundSize: '11px',
+                    }}
+                  >
+                    <option value="">Seçim yap</option>
+                    {(Object.keys(MESLEK_LABEL) as Exclude<Meslek, ''>[]).map((kod) => (
+                      <option key={kod} value={kod}>
+                        {MESLEK_LABEL[kod]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div>
                   <label className={labelClass}>
-                    Deneyim (yıl){' '}
-                    <span className="text-ink-quiet normal-case tracking-normal">(opsiyonel)</span>
+                    Deneyim{' '}
+                    <span className="text-ink-quiet normal-case tracking-normal">(yıl)</span>
                   </label>
                   <input
                     type="number"

@@ -2,17 +2,27 @@
 //
 // SADELEŞTİRME (migration 20260518000001): Eski 13 alanlık karmaşa
 // (Profilin/Hedefin/Tanışalım) yerine sade "Hakkında" yapısı:
-//   - Durum (Öğrenci / Çalışan)
+//   - Durum (Öğrenci / Mezun)
 //   - Doğum tarihi (gün + ay + yıl)
 //   - Öğrenciyse: universite + bolum + sinif
-//   - Çalışansa: tecrube_yil
+//   - Mezunsa: meslek (SMMM, muhasebeci, akademisyen, vs.) + tecrube_yil
 //
-// Eski enum'lar (Hedef, Meslek, HaftalikHedef, NeredenDuydu) ve type'lar
-// kaldırıldı — DB kolonları geriye uyumluluk için duruyor ama TS tarafında
-// kullanılmıyor.
+// v2 iterasyon (2026-05-18): 'calisan' → 'mezun' yeniden adlandırma.
+// Mezun olunca meslek dropdown'ı gösterilir.
+//
+// Eski enum'lar (Hedef, HaftalikHedef, NeredenDuydu) ve type'lar kaldırıldı —
+// DB kolonları geriye uyumluluk için duruyor ama TS tarafında kullanılmıyor.
 
 export type Sinif = '' | '1' | '2' | '3' | '4' | 'mezun' | 'diger';
-export type Durum = '' | 'ogrenci' | 'calisan';
+export type Durum = '' | 'ogrenci' | 'mezun';
+export type Meslek =
+  | ''
+  | 'smmm_stajyer'
+  | 'smmm'
+  | 'muhasebeci'
+  | 'akademisyen'
+  | 'is_ariyor'
+  | 'diger';
 
 export interface ProfilBilgi {
   ad: string;
@@ -24,6 +34,7 @@ export interface ProfilBilgi {
   universite: string;
   bolum: string;
   sinif: Sinif;
+  meslek: Meslek;
   tecrubeYil: string; // '0' - '60'
   bultenIzni: boolean;
 }
@@ -38,6 +49,7 @@ export const PROFIL_BOS: ProfilBilgi = {
   universite: '',
   bolum: '',
   sinif: '',
+  meslek: '',
   tecrubeYil: '',
   bultenIzni: false,
 };
@@ -48,6 +60,15 @@ export const SINIF_LABEL: Record<Exclude<Sinif, ''>, string> = {
   '3': '3. Sınıf',
   '4': '4. Sınıf',
   mezun: 'Mezun',
+  diger: 'Diğer',
+};
+
+export const MESLEK_LABEL: Record<Exclude<Meslek, ''>, string> = {
+  smmm_stajyer: 'SMMM Stajyeri',
+  smmm: 'SMMM',
+  muhasebeci: 'Muhasebeci',
+  akademisyen: 'Akademisyen',
+  is_ariyor: 'İş arıyor',
   diger: 'Diğer',
 };
 

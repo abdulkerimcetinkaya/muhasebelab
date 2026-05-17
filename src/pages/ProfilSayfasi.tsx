@@ -6,7 +6,7 @@ import { RozetlerView } from '../components/profil/RozetlerView';
 import { UyelikView } from '../components/profil/UyelikView';
 import { YetkinlikView } from '../components/profil/YetkinlikView';
 import { PROFIL_BOS, SINIF_LABEL } from '../components/profil/types';
-import type { Bolum, Durum, ProfilBilgi, Sinif } from '../components/profil/types';
+import type { Bolum, Durum, Meslek, ProfilBilgi, Sinif } from '../components/profil/types';
 import { useAuth, useIsPremium } from '../contexts/AuthContext';
 import { useUniteler } from '../contexts/UnitelerContext';
 import { ROZETLER } from '../data/rozetler';
@@ -64,7 +64,7 @@ export const ProfilSayfasi = ({
       .from('kullanicilar')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .select(
-        'ad, soyad, durum, dogum_tarihi, universite, bolum, sinif, tecrube_yil, bulten_izni' as any,
+        'ad, soyad, durum, dogum_tarihi, universite, bolum, sinif, meslek, tecrube_yil, bulten_izni' as any,
       )
       .eq('id', user.id)
       .maybeSingle()
@@ -86,16 +86,24 @@ export const ProfilSayfasi = ({
               dogumGun = String(parseInt(parcalar[2]!, 10));
             }
           }
+          // Eski 'calisan' değeri olabilir — migration güncellemesi sırasında
+          // DB-side 'mezun'a taşındı ama in-flight bir veri varsa frontend de
+          // normalize etsin.
+          const ham = d.durum as string | null;
+          const durum: Durum = ham === 'ogrenci' ? 'ogrenci'
+            : ham === 'mezun' || ham === 'calisan' ? 'mezun'
+            : '';
           setProfil({
             ad: (d.ad as string | null) ?? '',
             soyad: (d.soyad as string | null) ?? '',
-            durum: ((d.durum as Durum | null) ?? '') as Durum,
+            durum,
             dogumGun,
             dogumAy,
             dogumYil,
             universite: (d.universite as string | null) ?? '',
             bolum: (d.bolum as string | null) ?? '',
             sinif: ((d.sinif as Sinif | null) ?? '') as Sinif,
+            meslek: ((d.meslek as Meslek | null) ?? '') as Meslek,
             tecrubeYil: (d.tecrube_yil as number | null)?.toString() ?? '',
             bultenIzni: (d.bulten_izni as boolean | null) ?? false,
           });
@@ -213,11 +221,11 @@ export const ProfilSayfasi = ({
                   {profil.durum && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-soft text-[10.5px] font-bold text-brand-deep dark:text-brand-soft">
                       <Icon
-                        name={profil.durum === 'ogrenci' ? 'GraduationCap' : 'Briefcase'}
+                        name={profil.durum === 'ogrenci' ? 'GraduationCap' : 'Award'}
                         size={10}
                         className="flex-shrink-0"
                       />
-                      {profil.durum === 'ogrenci' ? 'Öğrenci' : 'Çalışan'}
+                      {profil.durum === 'ogrenci' ? 'Öğrenci' : 'Mezun'}
                     </span>
                   )}
                   {profil.universite && (
