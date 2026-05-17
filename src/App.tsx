@@ -251,6 +251,30 @@ const App = () => {
     document.body.classList.toggle('dark', ilerleme.tema === 'dark');
   }, [ilerleme]);
 
+  // Şifre sıfırlama (PASSWORD_RECOVERY) event'ini globalde yakala.
+  //
+  // Supabase recovery linki kullanıcıyı tokenlarla geri yönlendiriyor; URL
+  // formatı (#access_token=... veya başka hash kombinasyonları) HashRouter'ın
+  // /sifre-yenile route'una doğrudan match etmiyor — kullanıcı / route'una
+  // düşüyor ve recovery oturumu zaten aktif olduğu için "girişli" sayılıyor,
+  // dashboard'a yönleniyor. Şifre yenileme formunu hiç görmüyor.
+  //
+  // Bu listener event'i yakalayıp:
+  //   1) sessionStorage flag'i set eder (SifreYenileSayfasi okur)
+  //   2) URL hash'ini /sifre-yenile'e yönlendirir
+  // Böylece kullanıcı her zaman şifre değiştirme formuna düşer.
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        sessionStorage.setItem('sifre_yenileme_modu', '1');
+        if (!window.location.hash.startsWith('#/sifre-yenile')) {
+          window.location.hash = '#/sifre-yenile';
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Yeni kazanılan rozetleri tespit et
   useEffect(() => {
     if (uniteYukleniyor) return;
