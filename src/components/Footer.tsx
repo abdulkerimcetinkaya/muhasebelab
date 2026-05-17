@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Footer = () => {
@@ -88,13 +88,14 @@ export const Footer = () => {
             <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute/80 dark:text-paper/40 mb-3">
               Yasal
             </div>
-            {/* Gerçek <a> etiketi (Link react-router-dom) — Google crawler
-                privacy policy linkini bu sayede algılıyor; OnauthConsent
-                branding verification button onClick'lerini tanımıyor. */}
+            {/* Statik HTML dosyası — Google OAuth Branding verification için.
+                HashRouter SPA route'u (#/kvkk) Google'ın kabul ettiği bir URL
+                değildi; /kvkk.html ise public klasörden gerçek URL olarak servis
+                ediliyor, crawler doğrudan tarayabiliyor. */}
             <div className="space-y-2 text-[13.5px]">
-              <Link to="/kvkk" className="block transition">
+              <a href="/kvkk.html" className="block transition">
                 Gizlilik Politikası (KVKK)
-              </Link>
+              </a>
             </div>
           </div>
         </div>
