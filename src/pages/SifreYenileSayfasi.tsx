@@ -63,12 +63,14 @@ export const SifreYenileSayfasi = () => {
   const gonder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (oturum !== 'recovery') return; // güvenlik: render zaten engelliyor ama defansif
-    if (sifre.length < 6) {
-      setHata('Şifre en az 6 karakter olmalı.');
-      return;
-    }
     if (sifre !== sifreTekrar) {
       setHata('Şifreler eşleşmiyor.');
+      return;
+    }
+    // Şifre güçlülük kontrolü — GirisSayfasi kayıt akışıyla aynı kural.
+    const sifreGuclu = /^(?=.*[A-Za-zÇĞİÖŞÜçğıöşü])(?=.*\d).{8,}$/.test(sifre);
+    if (!sifreGuclu) {
+      setHata('Şifre en az 8 karakter olmalı, en az 1 harf ve 1 rakam içermeli.');
       return;
     }
     setYukleniyor(true);
@@ -93,7 +95,7 @@ export const SifreYenileSayfasi = () => {
           Yeni şifre belirle
         </h1>
         <p className="text-[13.5px] text-ink-soft leading-relaxed mb-6">
-          En az 6 karakterli yeni bir şifre gir.
+          En az 8 karakter, en az 1 harf ve 1 rakam içermeli.
         </p>
 
         {oturum === 'kontrol' && (
@@ -133,10 +135,10 @@ export const SifreYenileSayfasi = () => {
                 onChange={(e) => setSifre(e.target.value)}
                 autoComplete="new-password"
                 required
-                minLength={6}
+                minLength={8}
                 autoFocus
                 className="w-full px-3 py-2.5 bg-surface-2/30 border border-line focus:border-ink-soft rounded-lg text-[14px] font-medium outline-none transition focus:ring-2 focus:ring-blue-500/15"
-                placeholder="En az 6 karakter"
+                placeholder="En az 8 karakter, 1 harf + 1 rakam"
               />
             </div>
 
@@ -150,7 +152,7 @@ export const SifreYenileSayfasi = () => {
                 onChange={(e) => setSifreTekrar(e.target.value)}
                 autoComplete="new-password"
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full px-3 py-2.5 bg-surface-2/30 border border-line focus:border-ink-soft rounded-lg text-[14px] font-medium outline-none transition focus:ring-2 focus:ring-blue-500/15"
                 placeholder="Şifreyi tekrar gir"
               />
