@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { sifreSifirlamaIste } from '../lib/auth';
 
@@ -7,11 +7,16 @@ import { sifreSifirlamaIste } from '../lib/auth';
  * Şifremi unuttum akışı — kullanıcı e-postasını girer, Supabase
  * sıfırlama linkini e-posta ile gönderir. Link `/sifre-yenile` rotasına
  * götürür ve recovery oturumu açar.
+ *
+ * AuthErrorRedirect bu sayfaya state.supabaseError ile yönlendirebilir
+ * (örn. süresi dolmuş link); ilk hata mesajı olarak gösterilir.
  */
 export const SifreSifirlaSayfasi = () => {
+  const location = useLocation();
+  const ilkHata = (location.state as { supabaseError?: string } | null)?.supabaseError ?? null;
   const [email, setEmail] = useState('');
   const [yukleniyor, setYukleniyor] = useState(false);
-  const [hata, setHata] = useState<string | null>(null);
+  const [hata, setHata] = useState<string | null>(ilkHata);
   const [gonderildi, setGonderildi] = useState(false);
 
   const gonder = async (e: React.FormEvent) => {
