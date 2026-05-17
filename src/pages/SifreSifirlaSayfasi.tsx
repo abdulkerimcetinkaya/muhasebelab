@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { sifreSifirlamaIste } from '../lib/auth';
@@ -18,6 +18,13 @@ export const SifreSifirlaSayfasi = () => {
   const [yukleniyor, setYukleniyor] = useState(false);
   const [hata, setHata] = useState<string | null>(ilkHata);
   const [gonderildi, setGonderildi] = useState(false);
+
+  // Kullanıcı yeni bir şifre sıfırlama akışı başlatıyor — önceki recovery
+  // session'dan kalan flag varsa temizle. Aksi halde OnboardingGuard
+  // kullanıcıyı navbar'dan anasayfaya basınca /sifre-yenile'ye fırlatıyor.
+  useEffect(() => {
+    sessionStorage.removeItem('sifre_yenileme_modu');
+  }, []);
 
   const gonder = async (e: React.FormEvent) => {
     e.preventDefault();
