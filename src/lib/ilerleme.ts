@@ -45,6 +45,19 @@ export const ilerlemeKaydet = (data: Ilerleme): void => {
   }
 };
 
+/**
+ * localStorage'daki ilerleme cache'ini sil. Çıkış yaparken veya kullanıcı
+ * değişiminde çağrılır — önceki kullanıcının verisi yeni kullanıcının
+ * oturumuna sızmasın diye. cross-account data leak'i önler.
+ */
+export const ilerlemeTemizle = (): void => {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+};
+
 export const istatistikHesapla = (
   ilerleme: Ilerleme,
   uniteler: Unite[],

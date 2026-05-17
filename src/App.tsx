@@ -77,13 +77,13 @@ import { puanHesapla } from './data/sabitler';
 import { bugununTarihi } from './lib/format';
 import {
   ilerlemeKaydet,
+  ilerlemeTemizle,
   ilerlemeYukle,
   istatistikHesapla,
   varsayilanIlerleme,
 } from './lib/ilerleme';
 import {
   gunlukGirisKaydetSupabase,
-  ilerlemeMigrateSupabase,
   ilerlemeYukleSupabase,
   profilKaydetSupabase,
   rozetKaydetSupabase,
@@ -150,25 +150,42 @@ const App = () => {
 
   // Oturum durumu değişince veriyi doğru kaynaktan tekrar yükle.
   // Uniteler yüklenmeden ilerleme yüklenemez (zorluk lookup lazım).
+  //
+  // KRİTİK: Kullanıcı değişiminde (login/logout/farklı hesaba geçiş) önce
+  // localStorage cache'i temizleriz. Aksi halde:
+  //   - Önceki kullanıcının streak/puan/rozet'i UI'da kısa süre görünür
+  //   - Daha kötüsü: localStorage'a yazılı eski veri yeni hesabın
+  //     Supabase kayıtlarıyla karışır, kullanıcılar arası veri sızıntısı olur
+  //
+  // Eski "anonim → bulut migration" yolu kaldırıldı: artık tüm kullanıcılar
+  // login zorunlu, localStorage→Supabase upload yapılmıyor (cross-account
+  // leak'in kaynağıydı; CLAUDE.md notuna göre zaten devre dışıydı).
   useEffect(() => {
     if (oturumYukleniyor) return;
     if (uniteYukleniyor) return;
     if (user) {
       if (sonUserId.current === user.id) return;
+      // Farklı kullanıcıya geçiş veya ilk login — eski cache'i sil
+      ilerlemeTemizle();
       sonUserId.current = user.id;
       const bugun = bugununTarihi();
       sonGirisKaydi.current = bugun;
-      const yerel = ilerlemeYukle();
-      ilerlemeMigrateSupabase(user.id, yerel)
-        // Önce login kaydını yaz, ki yukleme sırasında streak doğru hesaplansın
-        .then(() => gunlukGirisKaydetSupabase(user.id, bugun))
+      // Önce login kaydını yaz, ki yukleme sırasında streak doğru hesaplansın
+      gunlukGirisKaydetSupabase(user.id, bugun)
         .then(() => ilerlemeYukleSupabase(user.id, tumSorular))
         .then(setIlerleme)
         .catch((e) => console.error('İlerleme yüklenemedi', e));
     } else {
+      // Çıkış — önceki kullanıcının cache'i kalmasın
+      if (sonUserId.current !== null) {
+        ilerlemeTemizle();
+        setIlerleme(varsayilanIlerleme());
+      } else {
+        // Sayfa ilk açılış (hiç login yapılmamış guest) — legacy tema/dil için yükle
+        setIlerleme(ilerlemeYukle());
+      }
       sonUserId.current = null;
       sonGirisKaydi.current = null;
-      setIlerleme(ilerlemeYukle());
     }
   }, [user, oturumYukleniyor, uniteYukleniyor, tumSorular]);
 
