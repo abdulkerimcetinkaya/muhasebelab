@@ -32,6 +32,11 @@ export async function* geminiStream(
       generationConfig: {
         maxOutputTokens: maxTokens,
         temperature: 0.7,
+        // Gemini 2.5 Flash thinking özelliği output budget'ını yiyebiliyor —
+        // 400 token limit'iyle düşünceler tüm bütçeyi alıp cevap için 0 bırakıyor,
+        // sonuç boş response. Non-stream yolunda (anthropic.ts) zaten kapalı,
+        // burada da aynı şekilde kapatıyoruz.
+        thinkingConfig: { thinkingBudget: 0 },
       },
     }),
   });
