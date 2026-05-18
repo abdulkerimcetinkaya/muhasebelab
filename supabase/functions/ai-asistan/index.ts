@@ -440,18 +440,17 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
     }
 
     // Streaming mode: URL'de ?stream=1 varsa SSE format yanıt döner.
-    // Kullanıcı yazıyorken token-token görür, algılanan süre azalır.
+    //
+    // ÖNEMLİ NOT: Gemini streamGenerateContent gerçek streaming'i (geminiStream)
+    // şu an stable değil — yeni 5-katman prompt + RAG inject ile output_token=0
+    // sorunu yaşanıyor (sebep henüz tam anlaşılmadı). Geçici çözüm: stream
+    // endpoint'ini koru ama içeride non-stream çağrısı (anthropicCagir) yap,
+    // sonucu küçük parçalara bölerek SSE üzerinden gönder — UX bozulmasın,
+    // kullanıcı yazıyor hissi devam etsin. Gerçek stream tekrar oturduğunda
+    // geminiStream'e dönülebilir.
     const stream = new URL(req.url).searchParams.get('stream') === '1';
     if (stream) {
       const encoder = new TextEncoder();
-      const contents = kesit.map((m) => ({
-        role: (m.role === 'assistant' ? 'model' : 'user') as 'user' | 'model',
-        parts: [{ text: m.content }],
-      }));
-
-      // Stream'de token sayısı API'den dönmüyor — karakter/4 yaklaşımıyla tahmin
-      const inputKarakter = systemPrompt.length + kesit.reduce((s, m) => s + m.content.length, 0);
-
       const responseStream = new ReadableStream({
         async start(controller) {
           // Açılış meta — quota ve premium bilgisi
@@ -461,28 +460,38 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
             ),
           );
 
-          let outputKarakter = 0;
           try {
-            for await (const chunk of geminiStream(systemPrompt, contents, 1500)) {
-              outputKarakter += chunk.length;
+            // Non-stream çağrı — çalışıyor, output garanti
+            const yanit = await anthropicCagir(systemPrompt, kesit, 1500);
+            const metin = yanit.metin ?? '';
+
+            // Kelime bazlı chunk'lara böl, küçük gecikme ile gönder
+            // (gerçek streaming illüzyonu için)
+            const kelimeler = metin.split(/(\s+)/); // boşlukları koru
+            for (const kelime of kelimeler) {
+              if (!kelime) continue;
               controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ type: 'chunk', text: chunk })}\n\n`),
+                encoder.encode(`data: ${JSON.stringify({ type: 'chunk', text: kelime })}\n\n`),
               );
+              // 15ms gecikme = doğal yazma hızı hissi
+              await new Promise((r) => setTimeout(r, 15));
             }
+
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
 
-            // Stream bitti — maliyet izleme (tahmini token)
+            // Maliyet izleme — gerçek token sayıları
             yetki.supabase
               .rpc('ai_log_yaz', {
                 _ozellik: 'asistan',
-                _input_token: Math.ceil(inputKarakter / 4),
-                _output_token: Math.ceil(outputKarakter / 4),
+                _input_token: yanit.inputToken ?? 0,
+                _output_token: yanit.outputToken ?? 0,
                 _premium: premium || admin,
               })
               .then(({ error }) => {
                 if (error) console.error('ai_log_yaz hata:', error.message);
               });
           } catch (e) {
+            console.error('Stream içinde non-stream çağrısı hatası:', (e as Error).message);
             controller.enqueue(
               encoder.encode(
                 `data: ${JSON.stringify({ type: 'error', message: (e as Error).message })}\n\n`,
