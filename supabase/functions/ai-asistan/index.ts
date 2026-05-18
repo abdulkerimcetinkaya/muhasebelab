@@ -463,7 +463,7 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
 
           let outputKarakter = 0;
           try {
-            for await (const chunk of geminiStream(systemPrompt, contents, 400)) {
+            for await (const chunk of geminiStream(systemPrompt, contents, 1500)) {
               outputKarakter += chunk.length;
               controller.enqueue(
                 encoder.encode(`data: ${JSON.stringify({ type: 'chunk', text: chunk })}\n\n`),
@@ -505,7 +505,7 @@ kaynaklardan veri çekilemedi. **Spesifik sayı ASLA söyleme** — yukarıdaki
     }
 
     // Non-stream (geri uyumluluk) — eski JSON yolu
-    const yanit = await anthropicCagir(systemPrompt, kesit, 400);
+    const yanit = await anthropicCagir(systemPrompt, kesit, 1500);
 
     // Maliyet izleme
     yetki.supabase
