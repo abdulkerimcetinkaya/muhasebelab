@@ -2821,6 +2821,24 @@ input[type='number'] { -moz-appearance: textfield; }
    bakır vurgu rengi.
    ────────────────────────────────────────────────────────────────────── */
 
+/* Özel "term" inline style — sözlük açıklaması bağlı kelimeler.
+   Noktalı altı çizili + cursor help; hover'da bakır accent.
+   Click handler SozlukPopover'da global delegation ile çalışır. */
+.bn-term {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--copper-deep, #b8732b);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  cursor: help;
+  transition: color 120ms ease, background-color 120ms ease;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.bn-term:hover {
+  color: var(--copper-deep, #b8732b);
+  background-color: rgba(184, 115, 43, 0.08);
+}
+
 .bn-icerik {
   --bn-colors-editor-text: var(--ink);
   --bn-colors-editor-background: transparent;
