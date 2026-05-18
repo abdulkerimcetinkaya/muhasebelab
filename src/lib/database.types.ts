@@ -8,7 +8,23 @@ export type SoruDurum = 'taslak' | 'inceleme' | 'onayli' | 'arsiv';
 export type Zorluk = 'kolay' | 'orta' | 'zor';
 export type OdemeDurum = 'beklemede' | 'basarili' | 'iptal' | 'iade' | 'hata';
 export type OdemeDonem = 'aylik' | 'yillik';
-export type MuavinTip = 'musteri' | 'tedarikci' | 'banka' | 'personel' | 'kasa' | 'stok' | 'diger';
+// TDHP grup kodu — muavin'in bağlı olduğu hesap grubu (2 haneli).
+// Sınıf bilgisi (1-7) kodun ilk hanesinden türetilir; UI'da sadece etiket ayırıcı.
+export type MuavinTip =
+  // 1 — Dönen Varlıklar
+  | '10' | '11' | '12' | '13' | '15' | '17' | '18' | '19'
+  // 2 — Duran Varlıklar
+  | '22' | '23' | '24' | '25' | '26' | '27' | '28' | '29'
+  // 3 — Kısa Vadeli Yabancı Kaynaklar
+  | '30' | '32' | '33' | '34' | '35' | '36' | '37' | '38' | '39'
+  // 4 — Uzun Vadeli Yabancı Kaynaklar
+  | '40' | '42' | '43' | '44' | '47' | '48' | '49'
+  // 5 — Özkaynaklar
+  | '50' | '52' | '54' | '57' | '58' | '59'
+  // 6 — Gelir Tablosu Hesapları
+  | '60' | '61' | '62' | '63' | '64' | '65' | '66' | '67' | '68' | '69'
+  // 7 — Maliyet Hesapları
+  | '70' | '71' | '72' | '73' | '74' | '75' | '76' | '77' | '78';
 
 export type HesapPlaniRow = {
   kod: string;
