@@ -281,7 +281,7 @@ export const LiderlikSayfasi = () => {
       {!yukleniyor && !hata && liste.length > 0 && (
         <div className="border-t border-line">
           {/* Header */}
-          <div className="grid grid-cols-[44px_1fr_140px_90px_90px] gap-4 px-4 py-3 border-b border-line font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
+          <div className="grid grid-cols-[44px_minmax(140px,1fr)_240px_90px_90px] gap-4 px-4 py-3 border-b border-line font-mono text-[10px] tracking-[0.22em] uppercase text-ink-mute font-bold">
             <span className="text-right">No</span>
             <span>Kullanıcı</span>
             <span className="hidden sm:block">Üniversite</span>
@@ -309,7 +309,7 @@ export const LiderlikSayfasi = () => {
             return (
               <div
                 key={row.id}
-                className={`grid grid-cols-[44px_1fr_140px_90px_90px] gap-4 px-4 ${
+                className={`grid grid-cols-[44px_minmax(140px,1fr)_240px_90px_90px] gap-4 px-4 ${
                   topX ? 'py-5' : 'py-4'
                 } border-b border-line-soft items-center transition ${
                   kendisi ? 'bg-surface-2/60' : 'hover:bg-surface-2/30'

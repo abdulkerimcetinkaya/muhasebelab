@@ -4,6 +4,8 @@ import type { Block } from '@blocknote/core';
 import { useMemo } from 'react';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
+import { ozelSema } from '../lib/blocknote-schema';
+import { SozlukPopover } from './SozlukPopover';
 
 interface Props {
   icerik: unknown | null;
@@ -13,6 +15,10 @@ interface Props {
  * Read-only BlockNote viewer. UniteSayfasi'nda kullanıcı tarafında
  * üniteye ait konu anlatımını gösterir. Boşsa null döner — caller boş
  * durumu (örn. "İçerik henüz hazırlanmadı") kendi karar versin.
+ *
+ * Özel "term" inline style ile işaretlenmiş kelimeler `span.bn-term` olarak
+ * render edilir; `SozlukPopover` global tıklama yakalayıcısı bunlara
+ * popover bağlar.
  */
 export const IcerikGoruntuleyici = ({ icerik }: Props) => {
   const blocks = useMemo<Block[] | undefined>(() => {
@@ -22,7 +28,9 @@ export const IcerikGoruntuleyici = ({ icerik }: Props) => {
   }, [icerik]);
 
   const editor = useCreateBlockNote({
-    initialContent: blocks,
+    schema: ozelSema,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    initialContent: blocks as any,
   });
 
   if (!blocks) return null;
@@ -30,6 +38,7 @@ export const IcerikGoruntuleyici = ({ icerik }: Props) => {
   return (
     <div className="bn-icerik bn-okunur">
       <BlockNoteView editor={editor} editable={false} theme="light" />
+      <SozlukPopover />
     </div>
   );
 };
