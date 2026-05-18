@@ -66,7 +66,15 @@ export async function* geminiStream(
       if (!json) continue;
       try {
         const data = JSON.parse(json);
-        const text = data.candidates?.[0]?.content?.parts
+        // Debug — boş cevap sebebini görmek için: finishReason, safety, error
+        if (data.error) {
+          console.error('Gemini stream error:', JSON.stringify(data.error));
+        }
+        const cand = data.candidates?.[0];
+        if (cand?.finishReason && cand.finishReason !== 'STOP') {
+          console.error('Gemini finishReason:', cand.finishReason, 'safetyRatings:', JSON.stringify(cand.safetyRatings ?? []));
+        }
+        const text = cand?.content?.parts
           ?.map((p: { text?: string }) => p.text ?? '')
           .join('') ?? '';
         if (text) yield text;
